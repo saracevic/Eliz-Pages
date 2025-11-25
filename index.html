@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Coin Whale Tracker PRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        
+        button:active {
+            transform: scale(0.95);
+        }
+        
+        .trade-item {
+            transition: background 0.2s;
+        }
+        
+        .trade-item:hover {
+            background: rgba(31, 41, 55, 0.5);
+        }
+        
+        .scanning-coin {
+            animation: scan 1s ease-in-out infinite;
+        }
+        
+        @keyframes scan {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-black text-white p-3">
+    <audio id="alertSound" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiDcIGWi77eeeTRALUKfj8LZjHAY4ktfyy3ksBSR3x/DdkUAKFF60"></audio>
+    
+    <div class="max-w-2xl mx-auto">
+        <!-- Header -->
+        <div class="bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-800">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <svg class="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                    <div>
+                        <h1 class="text-xl font-bold">Multi-Coin Whale Tracker</h1>
+                        <p class="text-xs text-gray-500">Auto-Scan • 70+ Coins • Min $20K</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <button id="toolsBtn" class="p-2 bg-gray-800 rounded-lg hover:bg-gray-700">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                        </svg>
+                    </button>
+                    <button id="soundBtn" class="p-2 bg-gray-800 rounded-lg hover:bg-gray-700">
+                        <svg id="soundIcon" class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clip-rule="evenodd"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>
+                        </svg>
+                    </button>
+                    <div id="liveIndicator" class="hidden items-center gap-2 px-3 py-1 bg-green-900 rounded-full">
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <span class="text-xs font-bold text-green-400">SCANNING</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-xl px-4 py-3 mb-3">
+                <div class="text-xs text-gray-400 mb-2">Şu an taranan coin:</div>
+                <div id="currentCoin" class="text-white text-lg font-bold scanning-coin">-</div>
+                <div class="text-xs text-gray-500 mt-1">
+                    <span id="coinProgress">0</span> / <span id="totalCoins">70</span> coin tarandı
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-xl px-4 py-3 mb-3">
+                <div class="text-xs text-gray-400 mb-2">Minimum Eşik (Auto x15)</div>
+                <div class="text-white text-sm font-bold">$20,000 - $150,000</div>
+            </div>
+
+            <button id="toggleBtn" class="w-full py-4 rounded-xl font-bold text-lg bg-blue-600 transition-transform">
+                ▶ Taramayı Başlat
+            </button>
+            
+            <div id="errorMsg" class="hidden mt-3 p-3 bg-red-900/50 border border-red-700 rounded-xl text-xs text-red-300"></div>
+        </div>
+<!-- Tools Panel -->
+        <div id="toolsPanel" class="hidden bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-800">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-lg">🛠️ Whale Tracker Tools</h3>
+                <button id="closeTools" class="text-gray-500 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Filter Settings -->
+            <div class="bg-gray-800 rounded-xl p-4 mb-3">
+                <h4 class="text-sm font-bold mb-3 text-blue-400">📊 Filtre Ayarları</h4>
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-2">Minimum İşlem Tutarı</label>
+                        <input type="range" id="minValueSlider" min="10000" max="100000" step="5000" value="20000" 
+                               class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                        <div class="text-xs text-white mt-1">Min: $<span id="minValueDisplay">20,000</span></div>
+                    </div>
+                    
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-2">Tarama Hızı</label>
+                        <select id="scanSpeed" class="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm">
+                            <option value="2000">Çok Hızlı (2 saniye)</option>
+                            <option value="4000" selected>Normal (4 saniye)</option>
+                            <option value="6000">Yavaş (6 saniye)</option>
+                            <option value="10000">Çok Yavaş (10 saniye)</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-400">Sadece MEGA göster</span>
+                        <button id="megaOnlyToggle" class="px-3 py-1 bg-gray-700 rounded-lg text-xs font-bold">
+                            OFF
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-400">Sadece BUY göster</span>
+                        <button id="buyOnlyToggle" class="px-3 py-1 bg-gray-700 rounded-lg text-xs font-bold">
+                            OFF
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-400">Sadece SELL göster</span>
+                        <button id="sellOnlyToggle" class="px-3 py-1 bg-gray-700 rounded-lg text-xs font-bold">
+                            OFF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Tools -->
+            <div class="bg-gray-800 rounded-xl p-4 mb-3">
+                <h4 class="text-sm font-bold mb-3 text-green-400">📈 Analiz Araçları</h4>
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="exportBtn" class="bg-gray-700 hover:bg-gray-600 text-white text-xs py-2 rounded-lg font-bold">
+                        💾 CSV Export
+                    </button>
+                    <button id="clearBtn" class="bg-gray-700 hover:bg-gray-600 text-white text-xs py-2 rounded-lg font-bold">
+                        🗑️ Temizle
+                    </button>
+                    <button id="statsBtn" class="bg-gray-700 hover:bg-gray-600 text-white text-xs py-2 rounded-lg font-bold">
+                        📊 İstatistik
+                    </button>
+                    <button id="alertsBtn" class="bg-gray-700 hover:bg-gray-600 text-white text-xs py-2 rounded-lg font-bold">
+                        🔔 Alarmlar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="bg-gray-800 rounded-xl p-4">
+                <h4 class="text-sm font-bold mb-3 text-yellow-400">🔗 Hızlı Linkler</h4>
+                <div class="space-y-2">
+                    <a href="https://www.binance.com/en/markets/overview" target="_blank" 
+                       class="block bg-yellow-900 hover:bg-yellow-800 text-yellow-300 text-xs py-2 px-3 rounded-lg font-bold">
+                        📈 Binance Markets
+                    </a>
+                    <a href="https://www.bybit.com/trade/usdt/BTCUSDT" target="_blank" 
+                       class="block bg-orange-900 hover:bg-orange-800 text-orange-300 text-xs py-2 px-3 rounded-lg font-bold">
+                        📈 Bybit Markets
+                    </a>
+                    <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" 
+                       class="block bg-purple-900 hover:bg-purple-800 text-purple-300 text-xs py-2 px-3 rounded-lg font-bold">
+                        😱 Fear & Greed Index
+                    </a>
+                    <a href="https://www.coingecko.com/" target="_blank" 
+                       class="block bg-green-900 hover:bg-green-800 text-green-300 text-xs py-2 px-3 rounded-lg font-bold">
+                        🦎 CoinGecko
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div id="statsContainer" class="hidden grid-cols-3 gap-2 mb-3">
+            <div class="bg-gray-900 rounded-xl p-3 border border-blue-700">
+                <div class="text-blue-400 text-xs mb-1">TOPLAM</div>
+                <div id="totalCount" class="text-white text-lg font-bold">0</div>
+                <div class="text-gray-400 text-xs mt-1"><span id="uniqueCoins">0</span> coin</div>
+            </div>
+            <div class="bg-gray-900 rounded-xl p-3 border border-yellow-700">
+                <div class="text-yellow-400 text-xs mb-1">BINANCE</div>
+                <div id="binanceCount" class="text-white text-lg font-bold">0</div>
+                <div class="text-green-400 text-xs mt-1">↑ <span id="binanceBuy">$0</span></div>
+                <div class="text-red-400 text-xs">↓ <span id="binanceSell">$0</span></div>
+            </div>
+            <div class="bg-gray-900 rounded-xl p-3 border border-orange-700">
+                <div class="text-orange-400 text-xs mb-1">BYBIT</div>
+                <div id="bybitCount" class="text-white text-lg font-bold">0</div>
+                <div class="text-green-400 text-xs mt-1">↑ <span id="bybitBuy">$0</span></div>
+                <div class="text-red-400 text-xs">↓ <span id="bybitSell">$0</span></div>
+            </div>
+        </div>
+
+        <!-- Trades -->
+        <div class="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden">
+            <div class="p-3 bg-gray-800 border-b border-gray-700 flex items-center gap-2">
+                <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                <span class="font-bold">Whale İşlemleri</span>
+                <span class="text-xs text-gray-500 ml-auto">Tüm Coinler</span>
+            </div>
+
+            <div id="tradesContainer" class="max-h-[60vh] overflow-y-auto">
+                <div class="p-8 text-center text-gray-500">
+                    <svg class="w-12 h-12 mx-auto mb-2 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                    <p class="text-sm">Henüz sinyal yok</p>
+                    <p class="text-xs mt-1">70+ coin otomatik taranıyor...</p>
+                    <p class="text-xs mt-2 text-gray-600">Minimum: $20,000 USD</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-gray-600 text-xs mt-3 pb-6">
+            <p>🔄 Auto-Scan Mode • Binance • Bybit</p>
+            <p class="mt-1">📊 70+ Coins • Min $20K • Real-time Tracking</p>
+            <p class="mt-1 text-gray-700">MEGA: 5x • BIG: 2.5x • Cross-exchange ⚡</p>
+        </div>
+    </div>
+<script>
+        // Coin listesi
+        const COIN_LIST = [
+            'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'XRPUSDT', 'ADAUSDT', 'DOGEUSDT', 'TRXUSDT',
+            'LINKUSDT', 'AVAXUSDT', 'FETUSDT', 'RENDERUSDT', 'GRTUSDT', 'OCEANUSDT', 'NMRUSDT',
+            'AGIXUSDT', 'IQUSDT', 'AXSUSDT', 'SANDUSDT', 'MANAUSDT', 'ENJUSDT', 'GALAUSDT',
+            'IMXUSDT', 'THETAUSDT', 'APUSDT', 'ATOMUSDT', 'NEARUSDT', 'ALGOUSDT', 'FTMUSDT',
+            'ICPUSDT', 'APTUSDT', 'SUIUSDT', 'INJUSDT', 'SEIUSDT', 'MATICUSDT', 'OPUSDT',
+            'ARBUSDT', 'LDOUSDT', 'STXUSDT', 'UNIUSDT', 'AAVEUSDT', 'MKRUSDT', 'CRVUSDT',
+            'COMPUSDT', 'SNXUSDT', 'SUSHIUSDT', '1INCHUSDT', 'WBTCUSDT', 'STETHUSDT',
+            'XMRUSDT', 'ZECUSDT', 'FLOWUSDT', 'CHZUSDT', 'FILUSDT', 'ARUSDT', 'HBARUSDT',
+            'VETUSDT', 'SHIBUSDT', 'PEPEUSDT', 'FLOKIUSDT', 'BONKUSDT', 'WLDUSDT',
+            'PYTHUSDT', 'JUPUSDT', 'DOTUSDT', 'LTCUSDT', 'BCHUSDT', 'ETCUSDT', 'XLMUSDT'
+        ];
+
+        // State
+        let isTracking = false;
+        let soundEnabled = false;
+        let trades = [];
+        let interval = null;
+        let coinThresholds = {};
+        let lastTradeIds = { binance: new Set(), bybit: new Set() };
+        let recentTradesWindow = [];
+        let currentCoinIndex = 0;
+        let scannedCoinsCount = 0;
+        const MIN_HARD_FILTER = 20000;
+        
+        // Filter settings
+        let filters = {
+            minValue: 20000,
+            scanSpeed: 4000,
+            megaOnly: false,
+            buyOnly: false,
+            sellOnly: false
+        };
+
+        // DOM Elements
+        const soundBtn = document.getElementById('soundBtn');
+        const soundIcon = document.getElementById('soundIcon');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const liveIndicator = document.getElementById('liveIndicator');
+        const statsContainer = document.getElementById('statsContainer');
+        const tradesContainer = document.getElementById('tradesContainer');
+        const errorMsg = document.getElementById('errorMsg');
+        const currentCoinEl = document.getElementById('currentCoin');
+        const coinProgressEl = document.getElementById('coinProgress');
+        const totalCoinsEl = document.getElementById('totalCoins');
+
+        // Format money
+        function fmt(n) {
+            if (n >= 1000000) return `$${(n / 1000000).toFixed(1)}M`;
+            if (n >= 1000) return `$${(n / 1000).toFixed(0)}K`;
+            return `$${n.toFixed(0)}`;
+        }
+
+        // Get coin name from symbol
+        function getCoinName(symbol) {
+            return symbol.replace('USDT', '');
+        }
+
+        // Play sound
+        function playSound() {
+            if (soundEnabled) {
+                const audio = document.getElementById('alertSound');
+                audio.currentTime = 0;
+                audio.volume = 0.2;
+                audio.play().catch(() => {});
+            }
+        }
+
+        // Check correlation
+        function checkCorrelation(newTrade) {
+            const now = Date.now();
+            recentTradesWindow = recentTradesWindow.filter(t => now - t.timestamp <= 3000);
+            
+            const correlated = recentTradesWindow.find(t => {
+                if (t.exchange === newTrade.exchange) return false;
+                if (t.side !== newTrade.side) return false;
+                if (t.coin !== newTrade.coin) return false;
+                const timeDiff = Math.abs(newTrade.timestamp - t.timestamp);
+                const priceDiff = Math.abs((newTrade.price - t.price) / t.price);
+                return timeDiff <= 3000 && priceDiff <= 0.0015;
+            });
+            
+            recentTradesWindow.push(newTrade);
+            return correlated;
+        }
+
+        // Calculate threshold for a symbol
+        async function calculateThreshold(symbol) {
+            if (coinThresholds[symbol]) return coinThresholds[symbol];
+            
+            try {
+                const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
+                const data = await response.json();
+                
+                if (data.code) throw new Error('API Error');
+                
+                const volume = parseFloat(data.quoteVolume);
+                const count = parseFloat(data.count);
+                const avg = volume / count;
+                const threshold = Math.max(5000, Math.min(150000, avg * 15));
+                
+                coinThresholds[symbol] = Math.round(threshold);
+                return coinThresholds[symbol];
+            } catch (error) {
+                coinThresholds[symbol] = 20000;
+                return 20000;
+            }
+        }
+
+        // Fetch Binance
+        async function fetchBinance(symbol) {
+            try {
+                const response = await fetch(`https://api.binance.com/api/v3/aggTrades?symbol=${symbol}&limit=100`);
+                const data = await response.json();
+                if (!Array.isArray(data)) return [];
+                
+                const threshold = await calculateThreshold(symbol);
+                const coin = getCoinName(symbol);
+                const whaleTrades = [];
+                
+                data.forEach(trade => {
+                    const value = parseFloat(trade.p) * parseFloat(trade.q);
+                    const id = `b-${symbol}-${trade.a}`;
+                    
+                    if (value < filters.minValue) return;
+                    if (value >= threshold && !lastTradeIds.binance.has(id)) {
+                        lastTradeIds.binance.add(id);
+                        
+                        const newTrade = {
+                            id,
+                            exchange: 'BIN',
+                            coin: coin,
+                            symbol: symbol,
+                            timestamp: trade.T,
+                            price: parseFloat(trade.p),
+                            quantity: parseFloat(trade.q),
+                            value: value,
+                            side: trade.m ? 'SELL' : 'BUY',
+                            level: value >= threshold * 5 ? 'MEGA' : value >= threshold * 2.5 ? 'BIG' : 'MED',
+                            time: new Date(trade.T).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                            correlated: false
+                        };
+                        
+                        const correlatedTrade = checkCorrelation(newTrade);
+                        if (correlatedTrade) {
+                            newTrade.correlated = true;
+                            newTrade.correlatedWith = correlatedTrade.exchange;
+                        }
+                        
+                        whaleTrades.push(newTrade);
+                    }
+                });
+                
+                return whaleTrades;
+            } catch (error) {
+                console.error('Binance error:', error);
+                return [];
+            }
+        }
+
+        // Fetch Bybit
+        async function fetchBybit(symbol) {
+            try {
+                const response = await fetch(`https://api.bybit.com/v5/market/recent-trade?category=spot&symbol=${symbol}&limit=100`);
+                const data = await response.json();
+                if (!data.result?.list) return [];
+                
+                const threshold = coinThresholds[symbol] || 20000;
+                const coin = getCoinName(symbol);
+                const whaleTrades = [];
+                
+                data.result.list.forEach(trade => {
+                    const value = parseFloat(trade.price) * parseFloat(trade.size);
+                    const id = `y-${symbol}-${trade.execId}`;
+                    
+                    if (value < filters.minValue) return;
+                    if (value >= threshold && !lastTradeIds.bybit.has(id)) {
+                        lastTradeIds.bybit.add(id);
+                        
+                        const newTrade = {
+                            id,
+                            exchange: 'BYB',
+                            coin: coin,
+                            symbol: symbol,
+                            timestamp: parseInt(trade.time),
+                            price: parseFloat(trade.price),
+                            quantity: parseFloat(trade.size),
+                            value: value,
+                            side: trade.side === 'Buy' ? 'BUY' : 'SELL',
+                            level: value >= threshold * 5 ? 'MEGA' : value >= threshold * 2.5 ? 'BIG' : 'MED',
+                            time: new Date(parseInt(trade.time)).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                            correlated: false
+                        };
+                        
+                        const correlatedTrade = checkCorrelation(newTrade);
+                        if (correlatedTrade) {
+                            newTrade.correlated = true;
+                            newTrade.correlatedWith = correlatedTrade.exchange;
+                        }
+                        
+                        whaleTrades.push(newTrade);
+                    }
+                });
+                
+                return whaleTrades;
+            } catch (error) {
+                console.error('Bybit error:', error);
+                return [];
+            }
+        }
+
+// Fetch current coin
+        async function fetchCurrentCoin() {
+            try {
+                errorMsg.classList.add('hidden');
+                
+                const symbol = COIN_LIST[currentCoinIndex];
+                const coinName = getCoinName(symbol);
+                
+                currentCoinEl.textContent = coinName;
+                scannedCoinsCount++;
+                coinProgressEl.textContent = scannedCoinsCount;
+                totalCoinsEl.textContent = COIN_LIST.length;
+                
+                const [b, y] = await Promise.all([
+                    fetchBinance(symbol),
+                    fetchBybit(symbol)
+                ]);
+                
+                const allTrades = [...b, ...y].sort((a, b) => b.timestamp - a.timestamp);
+                
+                if (allTrades.length > 0) {
+                    playSound();
+                    trades = [...allTrades, ...trades].slice(0, 100);
+                    updateUI();
+                }
+                
+                currentCoinIndex = (currentCoinIndex + 1) % COIN_LIST.length;
+                if (currentCoinIndex === 0) {
+                    scannedCoinsCount = 0;
+                }
+                
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        }
+
+        // Update UI
+        function updateUI() {
+            let filteredTrades = trades;
+            
+            if (filters.megaOnly) {
+                filteredTrades = filteredTrades.filter(t => t.level === 'MEGA');
+            }
+            
+            if (filters.buyOnly) {
+                filteredTrades = filteredTrades.filter(t => t.side === 'BUY');
+            } else if (filters.sellOnly) {
+                filteredTrades = filteredTrades.filter(t => t.side === 'SELL');
+            }
+            
+            const uniqueCoins = new Set(filteredTrades.map(t => t.coin)).size;
+            const binanceTrades = filteredTrades.filter(t => t.exchange === 'BIN');
+            const bybitTrades = filteredTrades.filter(t => t.exchange === 'BYB');
+            
+            document.getElementById('totalCount').textContent = filteredTrades.length;
+            document.getElementById('uniqueCoins').textContent = uniqueCoins;
+            
+            document.getElementById('binanceCount').textContent = binanceTrades.length;
+            document.getElementById('binanceBuy').textContent = fmt(binanceTrades.filter(t => t.side === 'BUY').reduce((s, t) => s + t.value, 0));
+            document.getElementById('binanceSell').textContent = fmt(binanceTrades.filter(t => t.side === 'SELL').reduce((s, t) => s + t.value, 0));
+            
+            document.getElementById('bybitCount').textContent = bybitTrades.length;
+            document.getElementById('bybitBuy').textContent = fmt(bybitTrades.filter(t => t.side === 'BUY').reduce((s, t) => s + t.value, 0));
+            document.getElementById('bybitSell').textContent = fmt(bybitTrades.filter(t => t.side === 'SELL').reduce((s, t) => s + t.value, 0));
+            
+            if (filteredTrades.length === 0) {
+                tradesContainer.innerHTML = `
+                    <div class="p-8 text-center text-gray-500">
+                        <svg class="w-12 h-12 mx-auto mb-2 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                        <p class="text-sm">Henüz sinyal yok</p>
+                        <p class="text-xs mt-1">70+ coin otomatik taranıyor...</p>
+                        <p class="text-xs mt-2 text-gray-600">Minimum: $20,000 USD</p>
+                    </div>
+                `;
+            } else {
+                tradesContainer.innerHTML = filteredTrades.map((trade, i) => `
+                    <div class="trade-item p-3 ${i === 0 ? 'bg-gray-800 border-l-4 border-blue-500' : ''} ${trade.correlated ? 'border-r-4 border-yellow-500' : ''}">
+                        <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="px-2 py-1 rounded-lg text-xs font-bold bg-blue-900 text-blue-300">
+                                    ${trade.coin}
+                                </span>
+                                <span class="px-2 py-1 rounded-lg text-xs font-bold ${trade.exchange === 'BIN' ? 'bg-yellow-900 text-yellow-300' : 'bg-orange-900 text-orange-300'}">
+                                    ${trade.exchange}
+                                </span>
+                                <span class="px-2 py-1 rounded-lg text-xs font-bold ${trade.level === 'MEGA' ? 'bg-purple-900 text-purple-300' : trade.level === 'BIG' ? 'bg-red-900 text-red-300' : 'bg-gray-800 text-gray-300'}">
+                                    ${trade.level === 'MEGA' ? '🚀 MEGA' : trade.level === 'BIG' ? '🔥 BIG' : '🟢 MED'}
+                                </span>
+                                <span class="px-2 py-1 rounded-lg text-xs font-bold ${trade.side === 'BUY' ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}">
+                                    ${trade.side}
+                                </span>
+                                ${trade.correlated ? `<span class="px-2 py-1 rounded-lg text-xs font-bold bg-yellow-900 text-yellow-300">⚡ ${trade.correlatedWith}</span>` : ''}
+                            </div>
+                            <div class="text-xs text-gray-400">${trade.time}</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-xs">
+                            <div>
+                                <div class="text-gray-500">Değer</div>
+                                <div class="text-white font-bold">${fmt(trade.value)}</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-500">Fiyat</div>
+                                <div class="text-white">$${trade.price.toLocaleString()}</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-500">Miktar</div>
+                                <div class="text-white">${trade.quantity.toFixed(3)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Toggle tracking
+        async function toggleTracking() {
+            if (!isTracking) {
+                lastTradeIds = { binance: new Set(), bybit: new Set() };
+                recentTradesWindow = [];
+                trades = [];
+                coinThresholds = {};
+                currentCoinIndex = 0;
+                scannedCoinsCount = 0;
+                
+                await fetchCurrentCoin();
+                interval = setInterval(fetchCurrentCoin, filters.scanSpeed);
+                
+                isTracking = true;
+                toggleBtn.textContent = '⏸ Durdur';
+                toggleBtn.classList.remove('bg-blue-600');
+                toggleBtn.classList.add('bg-red-600');
+                liveIndicator.classList.remove('hidden');
+                liveIndicator.classList.add('flex');
+                statsContainer.classList.remove('hidden');
+                statsContainer.classList.add('grid');
+            } else {
+                clearInterval(interval);
+                recentTradesWindow = [];
+                isTracking = false;
+                toggleBtn.textContent = '▶ Taramayı Başlat';
+                toggleBtn.classList.remove('bg-red-600');
+                toggleBtn.classList.add('bg-blue-600');
+                liveIndicator.classList.add('hidden');
+                liveIndicator.classList.remove('flex');
+                currentCoinEl.textContent = '-';
+            }
+        }
+
+        // Toggle sound
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            if (soundEnabled) {
+                soundIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>';
+                soundIcon.classList.remove('text-gray-500');
+                soundIcon.classList.add('text-green-400');
+            } else {
+                soundIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clip-rule="evenodd"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>';
+                soundIcon.classList.add('text-gray-500');
+                soundIcon.classList.remove('text-green-400');
+            }
+        }
+
+        // Event listeners
+        toggleBtn.addEventListener('click', toggleTracking);
+soundBtn.addEventListener('click', toggleSound);
+// Tools panel
+    const toolsBtn = document.getElementById('toolsBtn');
+    const toolsPanel = document.getElementById('toolsPanel');
+    const closeTools = document.getElementById('closeTools');
+toolsBtn.addEventListener('click', () => {
+        toolsPanel.classList.toggle('hidden');
+    });
+closeTools.addEventListener('click', () => {
+        toolsPanel.classList.add('hidden');
+    });
+// Min Value Slider
+    const minValueSlider = document.getElementById('minValueSlider');
+    const minValueDisplay = document.getElementById('minValueDisplay');
+minValueSlider.addEventListener('input', (e) => {
+        filters.minValue = parseInt(e.target.value);
+        minValueDisplay.textContent = filters.minValue.toLocaleString();
+    });
+// Scan Speed
+    document.getElementById('scanSpeed').addEventListener('change', (e) => {
+        filters.scanSpeed = parseInt(e.target.value);
+        if (isTracking) {
+            clearInterval(interval);
+            interval = setInterval(fetchCurrentCoin, filters.scanSpeed);
+        }
+    });
+// MEGA Only Toggle
+    const megaOnlyToggle = document.getElementById('megaOnlyToggle');
+    megaOnlyToggle.addEventListener('click', () => {
+        filters.megaOnly = !filters.megaOnly;
+        megaOnlyToggle.textContent = filters.megaOnly ? 'ON' : 'OFF';
+        megaOnlyToggle.classList.toggle('bg-purple-600');
+        megaOnlyToggle.classList.toggle('bg-gray-700');
+        updateUI();
+    });
+// BUY Only Toggle
+    const buyOnlyToggle = document.getElementById('buyOnlyToggle');
+    buyOnlyToggle.addEventListener('click', () => {
+        filters.buyOnly = !filters.buyOnly;
+        if (filters.buyOnly) filters.sellOnly = false;
+        buyOnlyToggle.textContent = filters.buyOnly ? 'ON' : 'OFF';
+        buyOnlyToggle.classList.toggle('bg-green-600');
+        buyOnlyToggle.classList.toggle('bg-gray-700');
+        document.getElementById('sellOnlyToggle').textContent = 'OFF';
+        document.getElementById('sellOnlyToggle').classList.remove('bg-red-600');
+        document.getElementById('sellOnlyToggle').classList.add('bg-gray-700');
+        updateUI();
+    });
+// SELL Only Toggle
+    const sellOnlyToggle = document.getElementById('sellOnlyToggle');
+    sellOnlyToggle.addEventListener('click', () => {
+        filters.sellOnly = !filters.sellOnly;
+        if (filters.sellOnly) filters.buyOnly = false;
+        sellOnlyToggle.textContent = filters.sellOnly ? 'ON' : 'OFF';
+        sellOnlyToggle.classList.toggle('bg-red-600');
+        sellOnlyToggle.classList.toggle('bg-gray-700');
+        document.getElementById('buyOnlyToggle').textContent = 'OFF';
+        document.getElementById('buyOnlyToggle').classList.remove('bg-green-600');
+        document.getElementById('buyOnlyToggle').classList.add('bg-gray-700');
+        updateUI();
+    });
+// Export CSV
+    document.getElementById('exportBtn').addEventListener('click', () => {
+        if (trades.length === 0) {
+            alert('Henüz veri yok!');
+            return;
+        }
+const csv = [
+            ['Zaman', 'Coin', 'Borsa', 'Seviye', 'Yön', 'Değer', 'Fiyat', 'Miktar', 'Korelasyon'],
+            ...trades.map(t => [
+                t.time,
+                t.coin,
+                t.exchange,
+                t.level,
+                t.side,
+                t.value.toFixed(2),
+                t.price,
+                t.quantity,
+                t.correlated ? 'Evet' : 'Hayır'
+            ])
+        ].map(row => row.join(',')).join('\n');
+const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `multi-coin-whale-tracker-${Date.now()}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+// Clear trades
+    document.getElementById('clearBtn').addEventListener('click', () => {
+        if (confirm('Tüm işlemleri temizlemek istediğinize emin misiniz?')) {
+            trades = [];
+            lastTradeIds = { binance: new Set(), bybit: new Set() };
+            recentTradesWindow = [];
+            updateUI();
+        }
+    });
+// Stats
+    document.getElementById('statsBtn').addEventListener('click', () => {
+        const uniqueCoins = new Set(trades.map(t => t.coin)).size;
+        const totalValue = trades.reduce((s, t) => s + t.value, 0);
+        const megaCount = trades.filter(t => t.level === 'MEGA').length;
+        const bigCount = trades.filter(t => t.level === 'BIG').length;
+        const buyCount = trades.filter(t => t.side === 'BUY').length;
+        const sellCount = trades.filter(t => t.side === 'SELL').length;
+        const corrCount = trades.filter(t => t.correlated).length;
+const coinStats = {};
+        trades.forEach(t => {
+            if (!coinStats[t.coin]) {
+                coinStats[t.coin] = { count: 0, value: 0 };
+            }
+            coinStats[t.coin].count++;
+            coinStats[t.coin].value += t.value;
+        });
+const topCoins = Object.entries(coinStats)
+            .sort((a, b) => b[1].value - a[1].value)
+            .slice(0, 5)
+            .map(([coin, stats]) => `${coin}: ${stats.count} işlem (${fmt(stats.value)})`)
+            .join('\n');
+	alert(`📊 İSTATİSTİKLER\n\n` +
+              `Toplam İşlem: ${trades.length}\n` +
+              `Farklı Coin: ${uniqueCoins}\n` +
+              `Toplam Değer: ${fmt(totalValue)}\n\n` +
+              `🚀 MEGA: ${megaCount}\n` +
+              `🔥 BIG: ${bigCount}\n\n` +
+              `🟢 BUY: ${buyCount}\n` +
+              `🔴 SELL: ${sellCount}\n\n` +
+              `⚡ Korelasyonlu: ${corrCount}\n\n` +
+              `Top 5 Coins:\n${topCoins}`);
+    });
+// Alerts
+    document.getElementById('alertsBtn').addEventListener('click', () => {
+        alert('🔔 ALARM SİSTEMİ\n\nYakında eklenecek:\n• Fiyat alarmları\n• Hacim alarmları\n• Telegram bildirimleri\n• Discord webhook entegrasyonu');
+    });
+</script>
+</body>
+</html>
