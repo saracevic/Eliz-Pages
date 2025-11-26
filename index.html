@@ -377,7 +377,18 @@
         <div class="settings-panel">
             <div class="settings-row">
                 <label>Minimum Hacim (USD):</label>
-                <input type="number" id="minVolume" value="500000" step="100000">
+                <input type="number" id="minVolume" value="5000000" step="1000000">
+                <small style="color: #888;">Önerilen: 5M+ (Whale seviyesi)</small>
+            </div>
+            <div class="settings-row">
+                <label>Maksimum Gösterim:</label>
+                <select id="maxCoins">
+                    <option value="10">Top 10 Coin</option>
+                    <option value="20" selected>Top 20 Coin</option>
+                    <option value="30">Top 30 Coin</option>
+                    <option value="50">Top 50 Coin</option>
+                    <option value="999">Tümü</option>
+                </select>
             </div>
             <div class="settings-row">
                 <label>Tarama Modu:</label>
@@ -386,6 +397,11 @@
                     <option value="batch">Batch API (Normal)</option>
                     <option value="legacy">Legacy (Yavaş)</option>
                 </select>
+            </div>
+            <div class="settings-row">
+                <label>Sadece Major Coins:</label>
+                <input type="checkbox" id="majorOnly" style="width: auto;">
+                <small style="color: #888;">BTC, ETH, BNB, SOL, XRP vb. büyük coinler</small>
             </div>
         </div>
 
@@ -447,19 +463,28 @@
             'OPUSDT', 'INJUSDT', 'SUIUSDT', 'STXUSDT', 'WLDUSDT'
         ];
 
+        const MAJOR_COINS = [
+            'BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT',
+            'ADAUSDT', 'DOGEUSDT', 'AVAXUSDT', 'DOTUSDT', 'MATICUSDT',
+            'LINKUSDT', 'TRXUSDT', 'LTCUSDT', 'UNIUSDT', 'ATOMUSDT'
+        ];
+
         const CACHE_DURATION = 10000;
 
         // WebSocket Yönetimi
         function initWebSocket() {
             try {
-                const streams = POPULAR_COINS.map(coin => `${coin.toLowerCase()}@ticker`).join('/');
+                const majorOnly = document.getElementById('majorOnly').checked;
+                const coinsToWatch = majorOnly ? MAJOR_COINS : POPULAR_COINS;
+                
+                const streams = coinsToWatch.map(coin => `${coin.toLowerCase()}@ticker`).join('/');
                 const wsUrl = `wss://stream.binance.com:9443/stream?streams=${streams}`;
                 
                 wsConnection = new WebSocket(wsUrl);
                 
                 wsConnection.onopen = () => {
                     updateWSStatus(true);
-                    console.log('✅ WebSocket bağlantısı kuruldu');
+                    console.log(`✅ WebSocket bağlantısı kuruldu (${coinsToWatch.length} coin)`);
                 };
                 
                 wsConnection.onmessage = (event) => {
