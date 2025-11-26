@@ -20,7 +20,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
@@ -110,90 +110,167 @@
             transform: none;
         }
 
-        .whale-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .whale-card {
+        .settings-panel {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .settings-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .settings-row label {
+            color: #00d4ff;
+            font-weight: 600;
+            min-width: 120px;
+        }
+
+        .settings-row input,
+        .settings-row select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* Tablo Stilleri */
+        .table-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            animation: slideIn 0.5s ease;
+        }
+
+        .whale-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95em;
+        }
+
+        .whale-table thead {
+            background: rgba(0, 212, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .whale-table th {
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: #00d4ff;
+            border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .whale-table th:hover {
+            background: rgba(0, 212, 255, 0.15);
+        }
+
+        .whale-table th.sortable::after {
+            content: ' ↕';
+            opacity: 0.5;
+            font-size: 0.8em;
+        }
+
+        .whale-table th.sorted-asc::after {
+            content: ' ↑';
+            opacity: 1;
+        }
+
+        .whale-table th.sorted-desc::after {
+            content: ' ↓';
+            opacity: 1;
+        }
+
+        .whale-table tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+            animation: slideIn 0.3s ease;
         }
 
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateX(-10px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateX(0);
             }
         }
 
-        .whale-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
-            border-color: rgba(0, 212, 255, 0.5);
+        .whale-table tbody tr:hover {
+            background: rgba(0, 212, 255, 0.08);
+            transform: scale(1.01);
         }
 
-        .coin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .whale-table tbody tr.new-row {
+            animation: highlightRow 2s ease;
         }
 
-        .coin-name {
-            font-size: 1.3em;
-            font-weight: bold;
+        @keyframes highlightRow {
+            0%, 100% { background: rgba(255, 255, 255, 0.05); }
+            50% { background: rgba(0, 255, 136, 0.2); }
+        }
+
+        .whale-table td {
+            padding: 12px 20px;
+            color: #e0e0e0;
+        }
+
+        .coin-cell {
+            font-weight: 700;
             color: #00d4ff;
+            font-size: 1.05em;
         }
 
-        .price {
-            font-size: 1.1em;
+        .price-cell {
             color: #00ff88;
-        }
-
-        .volume-info {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .volume-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.95em;
-        }
-
-        .label {
-            color: #888;
-        }
-
-        .value {
             font-weight: 600;
-            color: #fff;
         }
 
-        .value.high {
+        .volume-cell {
+            font-weight: 700;
+            font-size: 1.05em;
+        }
+
+        .volume-high {
             color: #00ff88;
         }
 
-        .timestamp {
-            margin-top: 10px;
-            font-size: 0.85em;
-            color: #666;
-            text-align: right;
+        .volume-medium {
+            color: #ffd700;
+        }
+
+        .change-positive {
+            color: #00ff88;
+        }
+
+        .change-negative {
+            color: #ff4444;
+        }
+
+        .timestamp-cell {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .rank-cell {
+            color: #7c3aed;
+            font-weight: 600;
         }
 
         .loading {
@@ -227,36 +304,26 @@
             text-align: center;
         }
 
-        .settings-panel {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 20px;
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
             margin-bottom: 20px;
         }
 
-        .settings-row {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
+        @media (max-width: 1200px) {
+            .whale-table {
+                font-size: 0.85em;
+            }
 
-        .settings-row label {
-            color: #00d4ff;
-            font-weight: 600;
-            min-width: 120px;
-        }
-
-        .settings-row input,
-        .settings-row select {
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            background: rgba(0, 0, 0, 0.3);
-            color: #fff;
-            flex: 1;
-            min-width: 200px;
+            .whale-table th,
+            .whale-table td {
+                padding: 10px 12px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -264,8 +331,18 @@
                 font-size: 1.8em;
             }
 
-            .whale-grid {
-                grid-template-columns: 1fr;
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .whale-table {
+                font-size: 0.75em;
+            }
+
+            .whale-table th,
+            .whale-table td {
+                padding: 8px 10px;
+                white-space: nowrap;
             }
 
             .controls {
@@ -282,7 +359,7 @@
     <div class="container">
         <header>
             <h1>🐋 Whale Tracker - Optimized</h1>
-            <p>Gerçek zamanlı büyük hacim takibi - WebSocket Edition</p>
+            <p>Gerçek zamanlı büyük hacim takibi - Excel Görünüm</p>
             <div class="status-bar">
                 <div class="status-item">
                     <div class="status-dot" id="wsStatus"></div>
@@ -325,14 +402,31 @@
 
         <div id="error" class="error" style="display: none;"></div>
 
-        <div class="whale-grid" id="whaleGrid"></div>
+        <div class="table-container">
+            <table class="whale-table">
+                <thead>
+                    <tr>
+                        <th class="sortable" onclick="sortTable('rank')">#</th>
+                        <th class="sortable" onclick="sortTable('symbol')">Coin</th>
+                        <th class="sortable" onclick="sortTable('price')">Fiyat (USD)</th>
+                        <th class="sortable" onclick="sortTable('volume')">24h Hacim</th>
+                        <th class="sortable" onclick="sortTable('change')">24h Değişim</th>
+                        <th class="sortable" onclick="sortTable('timestamp')">Son Güncelleme</th>
+                    </tr>
+                </thead>
+                <tbody id="whaleTableBody">
+                    <tr class="empty-state">
+                        <td colspan="6">
+                            <div class="empty-state-icon">📊</div>
+                            <div>Tarama başlatılmadı. "Taramayı Başlat" butonuna tıklayın.</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
-        // ============================================
-        // WHALE TRACKER OPTIMIZED - COMPLETE JavaScript
-        // ============================================
-
         // Global değişkenler
         let isScanning = false;
         let scanInterval = null;
@@ -340,11 +434,10 @@
         let cache = new Map();
         let wsConnection = null;
         let scanCount = 0;
+        let currentSort = { column: 'volume', direction: 'desc' };
 
-        // Binance API Base URL
         const BINANCE_API = 'https://api.binance.com/api/v3';
 
-        // Popüler coin listesi
         const POPULAR_COINS = [
             'BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT',
             'ADAUSDT', 'DOGEUSDT', 'MATICUSDT', 'DOTUSDT', 'AVAXUSDT',
@@ -356,10 +449,7 @@
 
         const CACHE_DURATION = 10000;
 
-        // ============================================
-        // WebSocket Bağlantı Yönetimi
-        // ============================================
-
+        // WebSocket Yönetimi
         function initWebSocket() {
             try {
                 const streams = POPULAR_COINS.map(coin => `${coin.toLowerCase()}@ticker`).join('/');
@@ -414,7 +504,7 @@
             const minVolume = parseInt(document.getElementById('minVolume').value);
             
             if (volume >= minVolume) {
-                updateWhaleCard({
+                updateWhaleData({
                     symbol: symbol,
                     volume: volume,
                     price: price,
@@ -437,10 +527,7 @@
             }
         }
 
-        // ============================================
-        // Batch API İstekleri
-        // ============================================
-
+        // Batch API
         async function fetchBatchData() {
             try {
                 showLoading(true);
@@ -465,11 +552,9 @@
                         price: parseFloat(ticker.lastPrice),
                         priceChange: parseFloat(ticker.priceChangePercent),
                         timestamp: Date.now()
-                    }))
-                    .sort((a, b) => b.volume - a.volume)
-                    .slice(0, 50);
+                    }));
                 
-                whales.forEach(whale => updateWhaleCard(whale));
+                whales.forEach(whale => updateWhaleData(whale));
                 
                 scanCount++;
                 document.getElementById('scanCount').textContent = scanCount;
@@ -482,10 +567,7 @@
             }
         }
 
-        // ============================================
         // Legacy Mod
-        // ============================================
-
         async function fetchLegacyData() {
             try {
                 showLoading(true);
@@ -500,7 +582,7 @@
                 const results = await Promise.all(promises);
                 const validResults = results.filter(r => r !== null);
                 
-                validResults.forEach(data => updateWhaleCard(data));
+                validResults.forEach(data => updateWhaleData(data));
                 
                 scanCount++;
                 document.getElementById('scanCount').textContent = scanCount;
@@ -553,76 +635,100 @@
             }
         }
 
-        // ============================================
-        // UI Güncelleme
-        // ============================================
-
-        function updateWhaleCard(data) {
-            let card = document.querySelector(`[data-symbol="${data.symbol}"]`);
+        // Veri Güncelleme
+        function updateWhaleData(data) {
+            const existingIndex = whaleData.findIndex(w => w.symbol === data.symbol);
             
-            if (!card) {
-                card = createWhaleCard(data);
-                document.getElementById('whaleGrid').prepend(card);
-                
-                const whaleCount = document.querySelectorAll('.whale-card').length;
-                document.getElementById('whaleCount').textContent = whaleCount;
+            if (existingIndex !== -1) {
+                whaleData[existingIndex] = data;
             } else {
-                updateExistingCard(card, data);
+                whaleData.push(data);
+            }
+            
+            renderTable();
+        }
+
+        // Tablo Render
+        function renderTable() {
+            const tbody = document.getElementById('whaleTableBody');
+            
+            if (whaleData.length === 0) {
+                tbody.innerHTML = `
+                    <tr class="empty-state">
+                        <td colspan="6">
+                            <div class="empty-state-icon">📊</div>
+                            <div>Henüz veri yok. Minimum hacim değerini düşürmeyi deneyin.</div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Sıralama
+            const sortedData = [...whaleData].sort((a, b) => {
+                let aVal = a[currentSort.column];
+                let bVal = b[currentSort.column];
+                
+                if (currentSort.column === 'rank') {
+                    aVal = a.volume;
+                    bVal = b.volume;
+                }
+                
+                if (typeof aVal === 'string') {
+                    return currentSort.direction === 'asc' 
+                        ? aVal.localeCompare(bVal)
+                        : bVal.localeCompare(aVal);
+                }
+                
+                return currentSort.direction === 'asc' 
+                    ? aVal - bVal
+                    : bVal - aVal;
+            });
+            
+            tbody.innerHTML = sortedData.map((whale, index) => {
+                const volumeClass = whale.volume >= 10000000 ? 'volume-high' : 
+                                   whale.volume >= 1000000 ? 'volume-medium' : '';
+                const changeClass = whale.priceChange >= 0 ? 'change-positive' : 'change-negative';
+                const changeIcon = whale.priceChange >= 0 ? '📈' : '📉';
+                
+                return `
+                    <tr data-symbol="${whale.symbol}">
+                        <td class="rank-cell">${index + 1}</td>
+                        <td class="coin-cell">${whale.symbol}</td>
+                        <td class="price-cell">$${formatNumber(whale.price)}</td>
+                        <td class="volume-cell ${volumeClass}">$${formatVolume(whale.volume)}</td>
+                        <td class="${changeClass}">${changeIcon} ${whale.priceChange.toFixed(2)}%</td>
+                        <td class="timestamp-cell">${new Date(whale.timestamp).toLocaleTimeString('tr-TR')}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            document.getElementById('whaleCount').textContent = whaleData.length;
+            
+            // Sıralama göstergesini güncelle
+            document.querySelectorAll('.whale-table th').forEach(th => {
+                th.className = 'sortable';
+            });
+            
+            const sortedHeader = document.querySelector(`th[onclick*="${currentSort.column}"]`);
+            if (sortedHeader) {
+                sortedHeader.className = `sortable sorted-${currentSort.direction}`;
             }
         }
 
-        function createWhaleCard(data) {
-            const card = document.createElement('div');
-            card.className = 'whale-card';
-            card.setAttribute('data-symbol', data.symbol);
+        // Tablo Sıralama
+        function sortTable(column) {
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                currentSort.direction = 'desc';
+            }
             
-            const priceChangeClass = data.priceChange >= 0 ? 'high' : '';
-            const priceChangeIcon = data.priceChange >= 0 ? '📈' : '📉';
-            
-            card.innerHTML = `
-                <div class="coin-header">
-                    <div class="coin-name">${data.symbol}</div>
-                    <div class="price">$${formatNumber(data.price)}</div>
-                </div>
-                <div class="volume-info">
-                    <div class="volume-row">
-                        <span class="label">24h Hacim:</span>
-                        <span class="value high">$${formatVolume(data.volume)}</span>
-                    </div>
-                    <div class="volume-row">
-                        <span class="label">Değişim:</span>
-                        <span class="value ${priceChangeClass}">
-                            ${priceChangeIcon} ${data.priceChange.toFixed(2)}%
-                        </span>
-                    </div>
-                </div>
-                <div class="timestamp">
-                    ${new Date(data.timestamp).toLocaleTimeString('tr-TR')}
-                </div>
-            `;
-            
-            return card;
+            renderTable();
         }
 
-        function updateExistingCard(card, data) {
-            const priceChangeClass = data.priceChange >= 0 ? 'high' : '';
-            const priceChangeIcon = data.priceChange >= 0 ? '📈' : '📉';
-            
-            card.querySelector('.price').textContent = `$${formatNumber(data.price)}`;
-            card.querySelector('.value.high').textContent = `$${formatVolume(data.volume)}`;
-            
-            const changeElement = card.querySelectorAll('.value')[1];
-            changeElement.className = `value ${priceChangeClass}`;
-            changeElement.innerHTML = `${priceChangeIcon} ${data.priceChange.toFixed(2)}%`;
-            
-            card.querySelector('.timestamp').textContent = 
-                new Date(data.timestamp).toLocaleTimeString('tr-TR');
-        }
-
-        // ============================================
-        // Yardımcı Fonksiyonlar
-        // ============================================
-
+        // Format Fonksiyonları
         function formatNumber(num) {
             if (num >= 1) {
                 return num.toFixed(2);
@@ -658,10 +764,7 @@
             }, 5000);
         }
 
-        // ============================================
         // Kontrol Fonksiyonları
-        // ============================================
-
         function startScanning() {
             if (isScanning) return;
             
@@ -717,8 +820,6 @@
         }
 
         function clearResults() {
-            const whaleGrid = document.getElementById('whaleGrid');
-            whaleGrid.innerHTML = '';
             whaleData = [];
             cache.clear();
             scanCount = 0;
@@ -726,13 +827,12 @@
             document.getElementById('scanCount').textContent = '0';
             document.getElementById('whaleCount').textContent = '0';
             
+            renderTable();
+            
             console.log('🗑️ Sonuçlar temizlendi');
         }
 
-        // ============================================
         // Otomatik Temizlik
-        // ============================================
-
         function cleanOldCache() {
             const now = Date.now();
             for (const [key, value] of cache.entries()) {
@@ -744,12 +844,9 @@
 
         setInterval(cleanOldCache, 30000);
 
-        // ============================================
-        // Sayfa Yüklendiğinde
-        // ============================================
-
+        // Sayfa Yükleme
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('🐋 Whale Tracker Optimized yüklendi');
+            console.log('🐋 Whale Tracker Excel Görünüm yüklendi');
             
             document.getElementById('minVolume').addEventListener('change', () => {
                 if (isScanning) {
@@ -768,10 +865,7 @@
             });
         });
 
-        // ============================================
         // Klavye Kısayolları
-        // ============================================
-
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.code === 'Space') {
                 e.preventDefault();
@@ -788,10 +882,7 @@
             }
         });
 
-        // ============================================
-        // Sayfa Kapatılırken
-        // ============================================
-
+        // Sayfa Kapatma
         window.addEventListener('beforeunload', () => {
             if (wsConnection) {
                 wsConnection.close();
@@ -801,7 +892,7 @@
             }
         });
 
-        console.log('✅ Whale Tracker tamamen yüklendi ve hazır!');
+        console.log('✅ Whale Tracker Excel Görünüm hazır!');
     </script>
 </body>
 </html>
