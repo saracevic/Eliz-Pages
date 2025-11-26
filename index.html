@@ -31,6 +31,31 @@
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
             backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .tr-clock {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 212, 255, 0.15);
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            text-align: center;
+        }
+
+        .tr-clock-label {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .tr-clock-time {
+            font-size: 20px;
+            font-weight: 700;
+            color: #00d4ff;
+            font-family: 'Courier New', monospace;
         }
 
         h1 {
@@ -82,6 +107,143 @@
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
+        }
+
+        /* DASHBOARD YENİ */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .leader-card {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 140, 0, 0.1));
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .leader-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ffd700, #ff8c00, #ffd700);
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .leader-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .leader-coin-name {
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .leader-badge {
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            color: #000;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .dashboard-volumes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .volume-box {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .volume-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .volume-value {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .volume-buy {
+            color: #00ff88;
+        }
+
+        .volume-sell {
+            color: #ff4757;
+        }
+
+        .other-coins-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .summary-title {
+            font-size: 18px;
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .summary-table th {
+            text-align: left;
+            padding: 10px;
+            font-size: 13px;
+            color: #00d4ff;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .summary-table td {
+            padding: 12px 10px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .summary-table tbody tr:hover {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .coin-name-cell {
+            font-weight: 700;
+            color: #fff;
         }
 
         .controls {
@@ -294,8 +456,17 @@
         }
 
         @media (max-width: 768px) {
+            .tr-clock {
+                position: static;
+                margin-bottom: 15px;
+            }
+
             h1 {
                 font-size: 1.8em;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
             }
 
             .settings-grid {
@@ -316,6 +487,10 @@
 <body>
     <div class="container">
         <header>
+            <div class="tr-clock">
+                <div class="tr-clock-label">🇹🇷 Türkiye Saati</div>
+                <div class="tr-clock-time" id="trTime">--:--:--</div>
+            </div>
             <h1>🐋 Whale Trade Monitor</h1>
             <p class="subtitle">Gerçek zamanlı büyük emir/işlem takibi - Her işlem anlık görüntülenir</p>
             <div class="status-bar">
@@ -334,6 +509,66 @@
                 </div>
             </div>
         </header>
+
+        <!-- DASHBOARD YENİ BÖLÜM -->
+        <div class="dashboard">
+            <!-- BTC Leader Card -->
+            <div class="leader-card">
+                <div class="leader-header">
+                    <div class="leader-coin-name">₿ BTC</div>
+                    <div class="leader-badge">⭐ LEADER</div>
+                </div>
+                <div class="dashboard-volumes">
+                    <div class="volume-box">
+                        <div class="volume-label">Alış Volume</div>
+                        <div class="volume-value volume-buy" id="btcBuyVolume">$0</div>
+                    </div>
+                    <div class="volume-box">
+                        <div class="volume-label">Satış Volume</div>
+                        <div class="volume-value volume-sell" id="btcSellVolume">$0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ETH Leader Card -->
+            <div class="leader-card">
+                <div class="leader-header">
+                    <div class="leader-coin-name">◆ ETH</div>
+                    <div class="leader-badge">⭐ LEADER</div>
+                </div>
+                <div class="dashboard-volumes">
+                    <div class="volume-box">
+                        <div class="volume-label">Alış Volume</div>
+                        <div class="volume-value volume-buy" id="ethBuyVolume">$0</div>
+                    </div>
+                    <div class="volume-box">
+                        <div class="volume-label">Satış Volume</div>
+                        <div class="volume-value volume-sell" id="ethSellVolume">$0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diğer Coinler Özet Tablosu -->
+        <div class="other-coins-summary">
+            <div class="summary-title">💰 Diğer Coinler - Özet Tablo</div>
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Coin</th>
+                        <th>Alış Volume (USD)</th>
+                        <th>Satış Volume (USD)</th>
+                    </tr>
+                </thead>
+                <tbody id="otherCoinsSummary">
+                    <tr>
+                        <td colspan="3" class="empty-state">
+                            <div style="padding: 20px;">İzleme başlatılmadı</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
         <div class="settings-panel">
             <div class="settings-grid">
@@ -427,14 +662,31 @@
         let audioContext = null;
         let notificationPermission = false;
 
-        // Ses oluşturma fonksiyonları
+        // Dashboard verileri
+        let coinVolumes = {};
+
+        // TR Saati Güncelleme
+        function updateTRTime() {
+            const now = new Date();
+            const trTime = now.toLocaleString('tr-TR', {
+                timeZone: 'Europe/Istanbul',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            document.getElementById('trTime').textContent = trTime;
+        }
+        
+        updateTRTime();
+        setInterval(updateTRTime, 1000);
+
         function initAudioContext() {
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
             }
         }
 
-        // Para sesi (Alış - cha-ching!)
         function playBuySound() {
             initAudioContext();
             const oscillator1 = audioContext.createOscillator();
@@ -459,7 +711,6 @@
             oscillator2.stop(audioContext.currentTime + 0.35);
         }
 
-        // Dong sesi (Satış - alert!)
         function playSellSound() {
             initAudioContext();
             const oscillator = audioContext.createOscillator();
@@ -478,7 +729,6 @@
             oscillator.stop(audioContext.currentTime + 0.4);
         }
 
-        // Mega whale özel sesi
         function playMegaWhaleSound() {
             initAudioContext();
             const oscillator = audioContext.createOscillator();
@@ -498,7 +748,6 @@
             oscillator.stop(audioContext.currentTime + 0.5);
         }
 
-        // Bildirim gönderme (arka planda çalışırken)
         function sendNotification(trade) {
             const backgroundMode = document.getElementById('backgroundMode').value;
             if (backgroundMode === 'disabled') return;
@@ -523,7 +772,6 @@
             setTimeout(() => notification.close(), 5000);
         }
 
-        // Bildirim izni iste
         async function requestNotificationPermission() {
             if ('Notification' in window && Notification.permission === 'default') {
                 const permission = await Notification.requestPermission();
@@ -536,7 +784,6 @@
             }
         }
 
-        // Sayfa görünürlüğü kontrolü
         let isPageVisible = !document.hidden;
         
         document.addEventListener('visibilitychange', () => {
@@ -569,321 +816,4 @@
             'LINKUSDT', 'UNIUSDT', 'LTCUSDT', 'ATOMUSDT', 'ETCUSDT',
             'XLMUSDT', 'NEARUSDT', 'ALGOUSDT', 'VETUSDT', 'ICPUSDT',
             'FILUSDT', 'TRXUSDT', 'HBARUSDT', 'APTUSDT', 'ARBUSDT',
-            'OPUSDT', 'INJUSDT', 'SUIUSDT', 'STXUSDT', 'WLDUSDT',
-            'SHIBUSDT', 'PEPEUSDT', 'TONUSDT', 'TAOUSDT', 'RENDERUSDT',
-            'FTMUSDT', 'BONKUSDT', 'FETUSDT', 'IMXUSDT', 'AAVEUSDT',
-            'SANDUSDT', 'MANAUSDT', 'ROSEUSDT', 'ENSUSDT', 'GRTUSDT',
-            'OCEANUSDT', 'SNXUSDT', 'COMPUSDT', 'MKRUSDT', 'ZRXUSDT'
-        ];
-
-        function getSelectedCoins() {
-            const selection = document.getElementById('coinSelection').value;
-            switch(selection) {
-                case 'major': return MAJOR_COINS;
-                case 'popular': return POPULAR_COINS;
-                case 'top50': return TOP50_COINS;
-                default: return MAJOR_COINS;
-            }
-        }
-
-        function initWebSocketForCoin(symbol) {
-            const wsUrl = `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@trade`;
-            const ws = new WebSocket(wsUrl);
-            
-            ws.onopen = () => {
-                console.log(`✅ ${symbol} bağlantısı kuruldu`);
-            };
-            
-            ws.onmessage = (event) => {
-                try {
-                    const trade = JSON.parse(event.data);
-                    handleTrade(trade);
-                } catch (error) {
-                    console.error(`${symbol} veri hatası:`, error);
-                }
-            };
-            
-            ws.onerror = (error) => {
-                console.error(`❌ ${symbol} hatası:`, error);
-            };
-            
-            ws.onclose = () => {
-                console.log(`🔌 ${symbol} bağlantısı kapandı`);
-            };
-            
-            return ws;
-        }
-
-        function handleTrade(trade) {
-            const symbol = trade.s;
-            const price = parseFloat(trade.p);
-            const quantity = parseFloat(trade.q);
-            const totalUSD = price * quantity;
-            const isBuyerMaker = trade.m;
-            const tradeType = isBuyerMaker ? 'SELL' : 'BUY';
-            
-            const minAmount = parseFloat(document.getElementById('minTradeAmount').value);
-            
-            if (totalUSD >= minAmount) {
-                const tradeData = {
-                    symbol: symbol,
-                    price: price,
-                    quantity: quantity,
-                    totalUSD: totalUSD,
-                    type: tradeType,
-                    timestamp: Date.now(),
-                    tradeId: trade.t
-                };
-                
-                addTradeToTable(tradeData);
-                playTradeSound(tradeData);
-                
-                // Arka plandaysa bildirim gönder
-                if (!isPageVisible) {
-                    sendNotification(tradeData);
-                }
-                
-                whaleTradeCount++;
-                totalVolumeTracked += totalUSD;
-                updateStats();
-            }
-        }
-
-        function playTradeSound(trade) {
-            const soundSetting = document.getElementById('soundAlert').value;
-            const megaWhaleLimit = parseFloat(document.getElementById('megaWhaleAmount').value);
-            const isMegaWhale = trade.totalUSD >= megaWhaleLimit;
-            const isWhale = trade.totalUSD >= 100000;
-            
-            if (soundSetting === 'off') return;
-            if (soundSetting === 'whale' && !isWhale) return;
-            if (soundSetting === 'mega' && !isMegaWhale) return;
-            
-            try {
-                if (isMegaWhale) {
-                    playMegaWhaleSound();
-                } else if (trade.type === 'BUY') {
-                    playBuySound();
-                } else {
-                    playSellSound();
-                }
-            } catch (error) {
-                console.log('Ses çalma hatası:', error);
-            }
-        }
-
-        function addTradeToTable(trade) {
-            const maxTrades = parseInt(document.getElementById('maxTrades').value);
-            
-            tradeHistory.unshift(trade);
-            
-            if (tradeHistory.length > maxTrades) {
-                tradeHistory = tradeHistory.slice(0, maxTrades);
-            }
-            
-            // Sadece sayfa görünürse render et (performans)
-            if (isPageVisible) {
-                renderTrades();
-            }
-        }
-
-        function renderTrades() {
-            const tbody = document.getElementById('tradesTableBody');
-            
-            if (tradeHistory.length === 0) {
-                tbody.innerHTML = `
-                    <tr class="empty-state">
-                        <td colspan="6">
-                            <div class="empty-state-icon">⏳</div>
-                            <div>Whale işlem bekleniyor...</div>
-                            <div style="margin-top: 10px; color: #888; font-size: 0.9em;">
-                                Minimum: ${formatNumber(document.getElementById('minTradeAmount').value)}$ işlemler gösterilecek
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            const megaWhaleLimit = parseFloat(document.getElementById('megaWhaleAmount').value);
-            
-            tbody.innerHTML = tradeHistory.map(trade => {
-                const isMegaWhale = trade.totalUSD >= megaWhaleLimit;
-                const tradeClass = trade.type === 'BUY' ? 'trade-buy' : 'trade-sell';
-                const amountClass = isMegaWhale ? 'amount-huge' : 
-                                   trade.totalUSD >= 100000 ? 'amount-large' : 'amount-medium';
-                const rowClass = isMegaWhale ? 'whale-alert' : '';
-                const badge = isMegaWhale ? '<span class="alert-badge badge-mega">🔥 MEGA</span>' : 
-                             trade.totalUSD >= 100000 ? '<span class="alert-badge badge-whale">🐋 WHALE</span>' : '';
-                
-                return `
-                    <tr class="${rowClass}">
-                        <td class="timestamp-cell">${new Date(trade.timestamp).toLocaleTimeString('tr-TR')}</td>
-                        <td class="coin-cell">${trade.symbol}</td>
-                        <td class="${tradeClass}">${trade.type === 'BUY' ? '🟢 ALIŞ' : '🔴 SATIŞ'}</td>
-                        <td class="price-cell">$${formatPrice(trade.price)}</td>
-                        <td>${formatQuantity(trade.quantity)}</td>
-                        <td class="${amountClass}">
-                            ${badge}
-                            $${formatVolume(trade.totalUSD)}
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function formatPrice(price) {
-            if (price >= 1) return price.toFixed(2);
-            if (price >= 0.01) return price.toFixed(4);
-            return price.toFixed(8);
-        }
-
-        function formatQuantity(qty) {
-            if (qty >= 1000) return (qty / 1000).toFixed(2) + 'K';
-            if (qty >= 1) return qty.toFixed(2);
-            return qty.toFixed(6);
-        }
-
-        function formatVolume(volume) {
-            if (volume >= 1000000) return (volume / 1000000).toFixed(2) + 'M';
-            if (volume >= 1000) return (volume / 1000).toFixed(2) + 'K';
-            return volume.toFixed(2);
-        }
-
-        function formatNumber(num) {
-            return new Intl.NumberFormat('tr-TR').format(num);
-        }
-
-        function updateStats() {
-            document.getElementById('whaleCount').textContent = whaleTradeCount;
-            document.getElementById('totalVolume').textContent = '$' + formatVolume(totalVolumeTracked);
-        }
-
-        function updateWSStatus(isConnected, coinCount = 0) {
-            const statusDot = document.getElementById('wsStatus');
-            const statusText = document.getElementById('wsStatusText');
-            
-            if (isConnected) {
-                statusDot.className = 'status-dot active';
-                statusText.textContent = `${coinCount} Coin Aktif`;
-                document.getElementById('coinCount').textContent = coinCount;
-            } else {
-                statusDot.className = 'status-dot inactive';
-                statusText.textContent = 'Bağlantı Kapalı';
-                document.getElementById('coinCount').textContent = '0';
-            }
-        }
-
-        function startMonitoring() {
-            if (isMonitoring) return;
-            
-            // Bildirim izni iste
-            requestNotificationPermission();
-            
-            isMonitoring = true;
-            tradeHistory = [];
-            whaleTradeCount = 0;
-            totalVolumeTracked = 0;
-            
-            document.getElementById('startBtn').disabled = true;
-            document.getElementById('stopBtn').disabled = false;
-            
-            const coins = getSelectedCoins();
-            
-            console.log(`🚀 ${coins.length} coin için whale izleme başlatıldı`);
-            console.log('🌐 Arka plan modu aktif - Başka sekmeye geçseniz de çalışır!');
-            
-            coins.forEach(coin => {
-                const ws = initWebSocketForCoin(coin);
-                wsConnections.push(ws);
-            });
-            
-            updateWSStatus(true, coins.length);
-            renderTrades();
-        }
-
-        function stopMonitoring() {
-            if (!isMonitoring) return;
-            
-            isMonitoring = false;
-            
-            document.getElementById('startBtn').disabled = false;
-            document.getElementById('stopBtn').disabled = true;
-            
-            wsConnections.forEach(ws => {
-                if (ws.readyState === WebSocket.OPEN) {
-                    ws.close();
-                }
-            });
-            
-            wsConnections = [];
-            updateWSStatus(false);
-            
-            console.log('⏹️ İzleme durduruldu');
-        }
-
-        function clearTrades() {
-            tradeHistory = [];
-            whaleTradeCount = 0;
-            totalVolumeTracked = 0;
-            
-            updateStats();
-            renderTrades();
-            
-            console.log('🗑️ İşlem geçmişi temizlendi');
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('🐋 Whale Trade Monitor yüklendi');
-            console.log('💡 Bu sistem GERÇEK ZAMANLI her işlemi takip eder');
-            console.log('⚡ Sadece belirlediğiniz minimum tutarın üzerindeki işlemler görünür');
-            console.log('🌐 ARKA PLAN MODU: Facebook bakarken bile çalışır!');
-            console.log('🔊 SESLİ UYARI: Alış = Para sesi, Satış = Dong sesi');
-            
-            document.getElementById('coinSelection').addEventListener('change', () => {
-                if (isMonitoring) {
-                    const confirmed = confirm('Coin listesi değişti. İzlemeyi yeniden başlatmak gerekiyor. Devam edilsin mi?');
-                    if (confirmed) {
-                        stopMonitoring();
-                        setTimeout(() => startMonitoring(), 1000);
-                    }
-                }
-            });
-
-            document.getElementById('maxTrades').addEventListener('change', () => {
-                renderTrades();
-            });
-            
-            // Sayfa yüklendiğinde görünürlük durumunu kontrol et
-            isPageVisible = !document.hidden;
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.code === 'Space') {
-                e.preventDefault();
-                if (isMonitoring) {
-                    stopMonitoring();
-                } else {
-                    startMonitoring();
-                }
-            }
-            
-            if ((e.ctrlKey || e.metaKey) && e.code === 'Delete') {
-                e.preventDefault();
-                clearTrades();
-            }
-        });
-
-        window.addEventListener('beforeunload', () => {
-            wsConnections.forEach(ws => {
-                if (ws.readyState === WebSocket.OPEN) {
-                    ws.close();
-                }
-            });
-        });
-
-        console.log('✅ Whale Trade Monitor hazır!');
-        console.log('📊 Örnek: XLM için 0.2005$ fiyattan 50K USD = 249,376 XLM satın alımı görünecek');
-    </script>
-</body>
-</html>
+            'OPUSDT', 'INJUSDT',
