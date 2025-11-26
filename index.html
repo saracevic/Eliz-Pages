@@ -364,6 +364,24 @@
                         <option value="top50">Top 50 Coins</option>
                     </select>
                 </div>
+                <div class="settings-row">
+                    <label>🔊 Sesli Uyarı</label>
+                    <select id="soundAlert">
+                        <option value="all">Tüm İşlemler</option>
+                        <option value="whale">Sadece Whale (100K+)</option>
+                        <option value="mega">Sadece Mega (500K+)</option>
+                        <option value="off">Kapalı</option>
+                    </select>
+                    <small>🟢 Alış = Para sesi | 🔴 Satış = Dong sesi</small>
+                </div>
+                <div class="settings-row">
+                    <label>🌐 Arka Plan Modu</label>
+                    <select id="backgroundMode">
+                        <option value="enabled" selected>Aktif (Sekme kapalıyken çalışır)</option>
+                        <option value="disabled">Kapalı</option>
+                    </select>
+                    <small>Başka sekme açsanız bile çalışmaya devam eder</small>
+                </div>
             </div>
         </div>
 
@@ -406,6 +424,129 @@
         let tradeHistory = [];
         let totalVolumeTracked = 0;
         let whaleTradeCount = 0;
+        let audioContext = null;
+        let notificationPermission = false;
+
+        // Ses oluşturma fonksiyonları
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Para sesi (Alış - cha-ching!)
+        function playBuySound() {
+            initAudioContext();
+            const oscillator1 = audioContext.createOscillator();
+            const oscillator2 = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator1.connect(gainNode);
+            oscillator2.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator1.frequency.value = 800;
+            oscillator2.frequency.value = 1200;
+            oscillator1.type = 'sine';
+            oscillator2.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator1.start(audioContext.currentTime);
+            oscillator2.start(audioContext.currentTime + 0.05);
+            oscillator1.stop(audioContext.currentTime + 0.3);
+            oscillator2.stop(audioContext.currentTime + 0.35);
+        }
+
+        // Dong sesi (Satış - alert!)
+        function playSellSound() {
+            initAudioContext();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 400;
+            oscillator.type = 'square';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.4);
+        }
+
+        // Mega whale özel sesi
+        function playMegaWhaleSound() {
+            initAudioContext();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.2);
+            oscillator.type = 'sawtooth';
+            
+            gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        // Bildirim gönderme (arka planda çalışırken)
+        function sendNotification(trade) {
+            const backgroundMode = document.getElementById('backgroundMode').value;
+            if (backgroundMode === 'disabled') return;
+            
+            if (!notificationPermission || Notification.permission !== 'granted') return;
+            
+            const megaWhaleLimit = parseFloat(document.getElementById('megaWhaleAmount').value);
+            const isMegaWhale = trade.totalUSD >= megaWhaleLimit;
+            
+            const title = isMegaWhale ? '🔥 MEGA WHALE ALERT!' : '🐋 Whale İşlem';
+            const icon = trade.type === 'BUY' ? '🟢' : '🔴';
+            
+            const notification = new Notification(title, {
+                body: `${icon} ${trade.symbol}: ${trade.type}\n${formatVolume(trade.totalUSD)} - ${formatPrice(trade.price)}`,
+                icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75">🐋</text></svg>',
+                badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75">💰</text></svg>',
+                tag: 'whale-trade',
+                requireInteraction: false,
+                silent: true
+            });
+            
+            setTimeout(() => notification.close(), 5000);
+        }
+
+        // Bildirim izni iste
+        async function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                const permission = await Notification.requestPermission();
+                notificationPermission = (permission === 'granted');
+                if (notificationPermission) {
+                    console.log('✅ Bildirim izni verildi - Arka planda uyarı alacaksınız');
+                }
+            } else if (Notification.permission === 'granted') {
+                notificationPermission = true;
+            }
+        }
+
+        // Sayfa görünürlüğü kontrolü
+        let isPageVisible = !document.hidden;
+        
+        document.addEventListener('visibilitychange', () => {
+            isPageVisible = !document.hidden;
+            if (isPageVisible) {
+                console.log('👁️ Sayfa aktif - Normal çalışma');
+            } else {
+                console.log('🌙 Sayfa arka planda - Bildirimler aktif');
+            }
+        });
 
         const MAJOR_COINS = [
             'BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT',
@@ -495,10 +636,39 @@
                 };
                 
                 addTradeToTable(tradeData);
+                playTradeSound(tradeData);
+                
+                // Arka plandaysa bildirim gönder
+                if (!isPageVisible) {
+                    sendNotification(tradeData);
+                }
                 
                 whaleTradeCount++;
                 totalVolumeTracked += totalUSD;
                 updateStats();
+            }
+        }
+
+        function playTradeSound(trade) {
+            const soundSetting = document.getElementById('soundAlert').value;
+            const megaWhaleLimit = parseFloat(document.getElementById('megaWhaleAmount').value);
+            const isMegaWhale = trade.totalUSD >= megaWhaleLimit;
+            const isWhale = trade.totalUSD >= 100000;
+            
+            if (soundSetting === 'off') return;
+            if (soundSetting === 'whale' && !isWhale) return;
+            if (soundSetting === 'mega' && !isMegaWhale) return;
+            
+            try {
+                if (isMegaWhale) {
+                    playMegaWhaleSound();
+                } else if (trade.type === 'BUY') {
+                    playBuySound();
+                } else {
+                    playSellSound();
+                }
+            } catch (error) {
+                console.log('Ses çalma hatası:', error);
             }
         }
 
@@ -511,7 +681,10 @@
                 tradeHistory = tradeHistory.slice(0, maxTrades);
             }
             
-            renderTrades();
+            // Sadece sayfa görünürse render et (performans)
+            if (isPageVisible) {
+                renderTrades();
+            }
         }
 
         function renderTrades() {
@@ -604,6 +777,9 @@
         function startMonitoring() {
             if (isMonitoring) return;
             
+            // Bildirim izni iste
+            requestNotificationPermission();
+            
             isMonitoring = true;
             tradeHistory = [];
             whaleTradeCount = 0;
@@ -615,6 +791,7 @@
             const coins = getSelectedCoins();
             
             console.log(`🚀 ${coins.length} coin için whale izleme başlatıldı`);
+            console.log('🌐 Arka plan modu aktif - Başka sekmeye geçseniz de çalışır!');
             
             coins.forEach(coin => {
                 const ws = initWebSocketForCoin(coin);
@@ -660,6 +837,8 @@
             console.log('🐋 Whale Trade Monitor yüklendi');
             console.log('💡 Bu sistem GERÇEK ZAMANLI her işlemi takip eder');
             console.log('⚡ Sadece belirlediğiniz minimum tutarın üzerindeki işlemler görünür');
+            console.log('🌐 ARKA PLAN MODU: Facebook bakarken bile çalışır!');
+            console.log('🔊 SESLİ UYARI: Alış = Para sesi, Satış = Dong sesi');
             
             document.getElementById('coinSelection').addEventListener('change', () => {
                 if (isMonitoring) {
@@ -674,6 +853,9 @@
             document.getElementById('maxTrades').addEventListener('change', () => {
                 renderTrades();
             });
+            
+            // Sayfa yüklendiğinde görünürlük durumunu kontrol et
+            isPageVisible = !document.hidden;
         });
 
         document.addEventListener('keydown', (e) => {
