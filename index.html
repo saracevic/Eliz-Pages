@@ -1290,23 +1290,6 @@
         });
     }
 
-    // Top Whale İşlemlerini Güncelle (Basit Placeholder)
-    function updateTopWhales() {
-        // Bu fonksiyonun tam çalışması için, `handleTrade` içinde
-        // whale işlemlerini (btcWhales ve ethWhales) bir listede tutmanız gerekir.
-        // Şimdilik boş bırakıyoruz, ancak arayüzün çalışması için gereklidir.
-        // Eğer bu kısım boş kalırsa, "top-whales" div'i boş kalır.
-        document.getElementById('btcTopWhales').innerHTML = `
-            <div class="whale-mini-row rank-1"><span>BTC 1</span><span class="whale-mini-type buy">$250K</span></div>
-            <div class="whale-mini-row rank-2"><span>BTC 2</span><span class="whale-mini-type sell">$180K</span></div>
-        `;
-        document.getElementById('ethTopWhales').innerHTML = `
-            <div class="whale-mini-row rank-1"><span>ETH 1</span><span class="whale-mini-type sell">$120K</span></div>
-            <div class="whale-mini-row rank-2"><span>ETH 2</span><span class="whale-mini-type buy">$90K</span></div>
-        `;
-    }
-            };
-
             if (symbol === 'BTCUSDT') {
                 btcWhales.unshift(t);
                 btcWhales = btcWhales.slice(0, 10);
