@@ -1101,26 +1101,31 @@
     tradeHistory.unshift(t);
     whaleTradeCount++;
     
-    // 🔊 SES ÇALMA KISMI - YENİ EKLENEN
+    // 🔊 SES ÇALMA KISMI
     try {
         if (total >= 100000) {
             // 100K üzeri için gong sesi
             const gong = document.getElementById('gongSound');
-            gong.currentTime = 0;
-            gong.play().catch(e => console.log('Gong ses hatası:', e));
+            if (gong) {
+                gong.currentTime = 0;
+                gong.play().catch(e => console.log('Gong ses hatası:', e));
+            }
         } else {
             // Normal whale için para sesi
             const cash = document.getElementById('cashSound');
-            cash.currentTime = 0;
-            cash.play().catch(e => console.log('Cash ses hatası:', e));
+            if (cash) {
+                cash.currentTime = 0;
+                cash.play().catch(e => console.log('Cash ses hatası:', e));
+            }
         }
     } catch (e) {
         console.log('Ses çalma hatası:', e);
     }
     
     updateDashboard();
-    updateTradesTable(maxTrades);
+    updateTradesTable(parseInt(document.getElementById('maxTrades').value));
 }
+    }
 
 
     // YÜZDE HESAPLAMA VE GÖRSEL GÜNCELLEME FONKSİYONU
