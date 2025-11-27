@@ -1217,27 +1217,6 @@
         });
     }
 
-    // DİĞER EKSİK FONKSİYONLAR (UYGULAMANIN ÇALIŞMASI İÇİN KRİTİK)
-
-
-    // WebSocket Bağlantısını Durdur
-    function stopMonitoring() {
-        if (!isMonitoring) return;
-
-        wsConnections.forEach(ws => {
-            ws.close(1000, 'Kullanıcı durdurdu');
-        });
-        wsConnections = [];
-
-        document.getElementById('wsStatus').classList.remove('active');
-        document.getElementById('wsStatus').classList.add('inactive');
-        document.getElementById('wsStatusText').textContent = 'Durduruldu';
-        document.getElementById('startBtn').disabled = false;
-        document.getElementById('stopBtn').disabled = true;
-        
-        isMonitoring = false;
-    }
-
     // İşlemleri Temizle
     function clearTrades() {
         if (confirm('Tüm işlem geçmişini temizlemek istediğinizden emin misiniz?')) {
