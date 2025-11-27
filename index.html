@@ -1172,7 +1172,10 @@
         const qty = parseFloat(trade.q);
         const total = price * qty;
         const type = trade.m ? 'SELL' : 'BUY';
-        const min = parseFloat(document.getElementById('minTradeAmount').value) || 0;
+        
+        const minInput = document.getElementById('minTradeAmount').value;
+        const min = parseFloat(minInput.replace(/\./g, '').replace(',', '.')) || 0;
+        
 
         if (!coinVolumes[symbol]) {
             coinVolumes[symbol] = { buy: 0, sell: 0 };
