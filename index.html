@@ -38,8 +38,34 @@
             min-height: 100vh;
             padding: 16px;
             padding-top: calc(16px + env(safe-area-inset-top));
-            padding-bottom: calc(16px + env(safe-area-inset-bottom));
+            padding-bottom: calc(72px + env(safe-area-inset-bottom)); /* tab bar için alan */
             -webkit-font-smoothing: antialiased;
+        }
+
+        /* LIGHT MODE */
+        body.light {
+            --bg-main: #f9fafb;
+            --bg-elevated: #ffffff;
+            --bg-elevated-soft: #e5e7eb;
+            --text-main: #0f172a;
+            --text-muted: #6b7280;
+            --border-subtle: rgba(148, 163, 184, 0.5);
+            background: linear-gradient(#f9fafb, #e5e7eb);
+            color: var(--text-main);
+        }
+        body.light .header-card,
+        body.light .leader-card,
+        body.light .other-coins-summary,
+        body.light .settings-panel,
+        body.light .table-container {
+            box-shadow: 0 12px 28px rgba(148, 163, 184, 0.35);
+        }
+        body.light .header-card {
+            background: rgba(255, 255, 255, 0.94);
+            border-color: rgba(148, 163, 184, 0.5);
+        }
+        body.light .whale-table thead {
+            background: #e5e7eb;
         }
 
         .container {
@@ -152,6 +178,12 @@
             font-size: 11px;
             background: rgba(15, 23, 42, 0.9);
             border: 1px solid rgba(148, 163, 184, 0.35);
+            cursor: default;
+        }
+
+        .status-sound-toggle,
+        .status-theme-toggle {
+            cursor: pointer;
         }
 
         .status-dot {
@@ -201,6 +233,7 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 8px;
+            gap: 8px;
         }
 
         .leader-coin-name {
@@ -228,6 +261,46 @@
             color: #bbf7d0;
             border: 1px solid rgba(34, 197, 94, 0.4);
             text-transform: uppercase;
+        }
+
+        .leader-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .leader-diff-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            background: rgba(15, 23, 42, 0.9);
+            color: var(--text-muted);
+        }
+        .leader-diff-badge.diff-positive {
+            background: rgba(22, 163, 74, 0.15);
+            border-color: rgba(34, 197, 94, 0.6);
+            color: #4ade80;
+        }
+        .leader-diff-badge.diff-negative {
+            background: rgba(220, 38, 38, 0.15);
+            border-color: rgba(248, 113, 113, 0.7);
+            color: #fb7185;
+        }
+        .leader-diff-badge.diff-neutral {
+            background: rgba(15, 23, 42, 0.9);
+            border-color: rgba(148, 163, 184, 0.5);
+            color: var(--text-muted);
+        }
+
+        .leader-diff-icon {
+            font-size: 13px;
+        }
+        .leader-diff-text {
+            font-variant-numeric: tabular-nums;
         }
 
         .dashboard-volumes {
@@ -657,6 +730,47 @@
             color: var(--text-muted);
         }
 
+        /* TAB BAR (BOTTOM NAV) */
+        .tab-bar-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .tab-bar {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 6px 18px calc(6px + env(safe-area-inset-bottom));
+            background: rgba(15, 23, 42, 0.97);
+            border-top: 1px solid rgba(15, 23, 42, 1);
+            z-index: 30;
+        }
+        .tab-bar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+        }
+        .tab-item {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            font-size: 10px;
+            padding: 6px 0;
+            border-radius: 999px;
+            cursor: pointer;
+        }
+        .tab-icon {
+            font-size: 16px;
+        }
+
         @media (max-width: 600px) {
             h1 {
                 font-size: 18px;
@@ -711,6 +825,12 @@
                 <div class="status-item">
                     🐋 <span>Whale:</span> <strong id="whaleCount">0</strong>
                 </div>
+                <div class="status-item status-sound-toggle" onclick="toggleSound()">
+                    🔊 <span id="soundStatusText">Ses Açık</span>
+                </div>
+                <div class="status-item status-theme-toggle" onclick="toggleTheme()">
+                    🌓 <span id="themeStatusText">Dark</span>
+                </div>
             </div>
         </div>
     </header>
@@ -718,7 +838,7 @@
     <div class="section-gap"></div>
 
     <!-- DASHBOARD -->
-    <div class="dashboard">
+    <div class="dashboard" id="dashboardSection">
         <!-- BTC CARD -->
         <div class="leader-card">
             <div class="leader-header">
@@ -726,7 +846,13 @@
                     <span>₿ BTC</span>
                     <span class="leader-coin-tag">BTCUSDT</span>
                 </div>
-                <div class="leader-badge">Leader</div>
+                <div class="leader-right">
+                    <div class="leader-badge">Leader</div>
+                    <div class="leader-diff-badge diff-neutral" id="btcDiffBadge">
+                        <span class="leader-diff-icon" id="btcDiffIcon">➖</span>
+                        <span class="leader-diff-text" id="btcDiffValue">0%</span>
+                    </div>
+                </div>
             </div>
 
             <div class="dashboard-volumes">
@@ -756,7 +882,13 @@
                     <span>◆ ETH</span>
                     <span class="leader-coin-tag">ETHUSDT</span>
                 </div>
-                <div class="leader-badge">Leader</div>
+                <div class="leader-right">
+                    <div class="leader-badge">Leader</div>
+                    <div class="leader-diff-badge diff-neutral" id="ethDiffBadge">
+                        <span class="leader-diff-icon" id="ethDiffIcon">➖</span>
+                        <span class="leader-diff-text" id="ethDiffValue">0%</span>
+                    </div>
+                </div>
             </div>
 
             <div class="dashboard-volumes">
@@ -830,7 +962,7 @@
     </div>
 
     <!-- SETTINGS -->
-    <div class="settings-panel">
+    <div class="settings-panel" id="settingsSection">
         <div class="settings-title">
             ⚙️ İzleme Ayarları
         </div>
@@ -884,7 +1016,7 @@
     </div>
 
     <!-- TABLE -->
-    <div class="table-container">
+    <div class="table-container" id="tradesSection">
         <div class="table-scroll">
             <table class="whale-table">
                 <thead>
@@ -907,404 +1039,347 @@
     </div>
 </div>
 
+<!-- TAB BAR (BOTTOM NAV) -->
+<div class="tab-bar">
+    <div class="tab-bar-inner">
+        <button class="tab-item" onclick="scrollToSection('dashboard')">
+            <span class="tab-icon">📊</span>
+            <span class="tab-label">Dashboard</span>
+        </button>
+        <button class="tab-item" onclick="scrollToSection('settings')">
+            <span class="tab-icon">⚙️</span>
+            <span class="tab-label">Ayarlar</span>
+        </button>
+        <button class="tab-item" onclick="scrollToSection('trades')">
+            <span class="tab-icon">📜</span>
+            <span class="tab-label">İşlemler</span>
+        </button>
+    </div>
+</div>
 <script>
-    let isMonitoring = false;
-    let wsConnections = [];
-    let tradeHistory = [];
-    let whaleTradeCount = 0;
-    let coinVolumes = {};
-    let btcWhales = [];
-    let ethWhales = [];
+/* ================================
+   GLOBAL DEĞİŞKENLER
+================================ */
+let ws = null;
+let monitoring = false;
+let trades = [];
+let soundEnabled = true;
 
-    const MAJOR_COINS = [
-        'BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT',
-        'DOGEUSDT','AVAXUSDT','DOTUSDT','MATICUSDT','LINKUSDT',
-        'TRXUSDT','LTCUSDT','UNIUSDT','ATOMUSDT'
-    ];
+let btcBuy = 0, btcSell = 0;
+let ethBuy = 0, ethSell = 0;
 
-    const POPULAR_COINS = [
-        'BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT',
-        'DOGEUSDT','MATICUSDT','DOTUSDT','AVAXUSDT','LINKUSDT',
-        'UNIUSDT','LTCUSDT','ATOMUSDT','ETCUSDT','XLMUSDT','NEARUSDT',
-        'ALGOUSDT','VETUSDT','ICPUSDT','FILUSDT','TRXUSDT','HBARUSDT',
-        'APTUSDT','ARBUSDT','OPUSDT','INJUSDT','SUIUSDT','STXUSDT','WLDUSDT'
-    ];
+let btcTop = [];
+let ethTop = [];
 
-    function updateTRTime() {
-        const now = new Date();
-        const el = document.getElementById('trTime');
-        if (!el) return;
-        el.textContent = now.toLocaleString('tr-TR', {
-            timeZone: 'Europe/Istanbul',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-        });
+const cashSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_7d2ba83357.mp3");
+const gongSound = new Audio("https://cdn.pixabay.com/download/audio/2021/09/16/audio_c1b9b41952.mp3");
+
+cashSound.volume = 0.9;
+gongSound.volume = 0.9;
+
+
+/* ================================
+   SAAT
+================================ */
+function updateTRTime() {
+    const now = new Date();
+    document.getElementById("trTime").innerText =
+        now.toLocaleTimeString("tr-TR", { hour12: false });
+}
+setInterval(updateTRTime, 1000);
+
+
+/* ================================
+   SES KONTROLÜ
+================================ */
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+    document.getElementById("soundStatusText").innerText =
+        soundEnabled ? "Ses Açık" : "Ses Kapalı";
+}
+
+
+/* ================================
+   TEMA DEĞİŞTİRME
+================================ */
+function toggleTheme() {
+    document.body.classList.toggle("light");
+
+    document.getElementById("themeStatusText").innerText =
+        document.body.classList.contains("light") ? "Light" : "Dark";
+}
+
+
+/* ================================
+   SECTİON KAYDIRMA (TAB BAR)
+================================ */
+function scrollToSection(target) {
+    const map = {
+        dashboard: "dashboardSection",
+        settings: "settingsSection",
+        trades: "tradesSection"
+    };
+
+    const el = document.getElementById(map[target]);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+}
+
+
+/* ================================
+   BAĞLANTI DURUM GÜNCELLEME
+================================ */
+function setWSStatus(active) {
+    const dot = document.getElementById("wsStatus");
+    const text = document.getElementById("wsStatusText");
+
+    if (active) {
+        dot.className = "status-dot active";
+        text.innerText = "Bağlandı";
+    } else {
+        dot.className = "status-dot inactive";
+        text.innerText = "Bağlantı yok";
     }
-    updateTRTime();
-    setInterval(updateTRTime, 1000);
+}
 
-    function getSelectedCoins() {
-        const sel = document.getElementById('coinSelection').value;
-        return sel === 'popular' ? POPULAR_COINS : MAJOR_COINS;
+
+/* ================================
+   BAŞLAT / DURDUR
+================================ */
+function startMonitoring() {
+    if (monitoring) return;
+
+    monitoring = true;
+    document.getElementById("startBtn").disabled = true;
+    document.getElementById("stopBtn").disabled = false;
+
+    const exchange = document.getElementById("exchangeSelection").value;
+
+    if (exchange === "binance") openWebSocket("wss://stream.binance.com:9443/ws/!ticker@arr");
+    if (exchange === "bybit") openWebSocket("wss://stream.bybit.com/v5/market");
+    if (exchange === "both") {
+        openWebSocket("wss://stream.binance.com:9443/ws/!ticker@arr");
+        openWebSocket("wss://stream.bybit.com/v5/market");
     }
+}
 
-    function initWebSocketForCoin(symbol) {
-        const exchange = document.getElementById('exchangeSelection').value;
-        const connections = [];
+function stopMonitoring() {
+    monitoring = false;
+    if (ws) ws.close();
 
-        if (exchange === 'binance' || exchange === 'both') {
-            const binanceWs = new WebSocket(
-                `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@trade`
-            );
-            binanceWs.onopen = () => console.log(`Binance ${symbol} bağlandı`);
-            binanceWs.onmessage = (ev) => {
-                try {
-                    const t = JSON.parse(ev.data);
-                    handleTrade({ ...t, exchange: 'Binance' });
-                } catch (e) {
-                    console.error('Binance hata', symbol, e);
-                }
-            };
-            binanceWs.onerror = (e) => console.error('Binance WS error', symbol, e);
-            connections.push(binanceWs);
+    setWSStatus(false);
+    document.getElementById("startBtn").disabled = false;
+    document.getElementById("stopBtn").disabled = true;
+}
+
+
+/* ================================
+   WEBSOCKET
+================================ */
+function openWebSocket(url) {
+    ws = new WebSocket(url);
+
+    ws.onopen = () => setWSStatus(true);
+
+    ws.onclose = () => {
+        if (monitoring) {
+            setTimeout(() => openWebSocket(url), 1500);
         }
+        setWSStatus(false);
+    };
 
-        if (exchange === 'bybit' || exchange === 'both') {
-            const bybitWs = new WebSocket(`wss://stream.bybit.com/v5/public/linear`);
-            bybitWs.onopen = () => {
-                console.log(`Bybit ${symbol} bağlandı`);
-                bybitWs.send(JSON.stringify({
-                    op: 'subscribe',
-                    args: [`publicTrade.${symbol}`]
-                }));
-            };
-            bybitWs.onmessage = (ev) => {
-                try {
-                    const data = JSON.parse(ev.data);
-                    if (data.topic && data.data) {
-                        data.data.forEach(trade => {
-                            handleTrade({
-                                s: symbol,
-                                p: trade.p,
-                                q: trade.v,
-                                m: trade.S === 'Sell',
-                                exchange: 'Bybit'
-                            });
-                        });
-                    }
-                } catch (e) {
-                    console.error('Bybit hata', symbol, e);
-                }
-            };
-            bybitWs.onerror = (e) => console.error('Bybit WS error', symbol, e);
-            connections.push(bybitWs);
-        }
+    ws.onmessage = (msg) => {
+        try {
+            const data = JSON.parse(msg.data);
 
-        return connections;
+            // Binance ticker yapısı değil → Bybit değilse geç
+            if (!Array.isArray(data)) return;
+
+            data.forEach(processTicker);
+        } catch (err) {}
+    };
+}
+
+
+/* ================================
+   TICKER VERİSİNİ İŞLE
+================================ */
+function processTicker(t) {
+
+    const symbol = t.s;
+    if (!symbol.endsWith("USDT")) return;
+
+    const price = parseFloat(t.c);
+    const volume = parseFloat(t.q);
+    if (isNaN(price) || isNaN(volume)) return;
+
+    const totalUSD = price * volume;
+    const minAmount = parseFloat(document.getElementById("minTradeAmount").value);
+
+    if (totalUSD < minAmount) return;
+
+    const isBuy = parseFloat(t.b) > parseFloat(t.a);
+    const type = isBuy ? "BUY" : "SELL";
+
+    /* SES */
+    if (soundEnabled) {
+        if (isBuy) cashSound.play();
+        else gongSound.play();
     }
 
-    function handleTrade(trade) {
-        const symbol = trade.s;
-        const price = parseFloat(trade.p);
-        const qty = parseFloat(trade.q);
-        const total = price * qty;
-        const type = trade.m ? 'SELL' : 'BUY';
-        const min = parseFloat(document.getElementById('minTradeAmount').value) || 0;
+    /* VERİ EKLE */
+    const entry = {
+        time: new Date(),
+        symbol,
+        price,
+        qty: volume,
+        total: totalUSD,
+        type
+    };
 
-        if (!coinVolumes[symbol]) {
-            coinVolumes[symbol] = { buy: 0, sell: 0 };
-        }
+    trades.unshift(entry);
 
-        if (type === 'BUY') {
-            coinVolumes[symbol].buy += total;
-        } else {
-            coinVolumes[symbol].sell += total;
-        }
+    const limit = parseInt(document.getElementById("maxTrades").value);
+    trades = trades.slice(0, limit);
 
-        updateDashboard();
+    updateTable();
+    updateLeaderVolumes(symbol, entry);
+}
 
-        if (total >= min) {
-            const t = {
-                symbol,
-                price,
-                quantity: qty,
-                totalUSD: total,
-                type,
-                timestamp: Date.now(),
-                exchange: trade.exchange
-            };
 
-            if (symbol === 'BTCUSDT') {
-                btcWhales.unshift(t);
-                btcWhales = btcWhales.slice(0, 10);
-            } else if (symbol === 'ETHUSDT') {
-                ethWhales.unshift(t);
-                ethWhales = ethWhales.slice(0, 10);
-            }
+/* ================================
+   TABLOYU GÜNCELLE
+================================ */
+function updateTable() {
+    const tbody = document.getElementById("tradesTableBody");
+    tbody.innerHTML = "";
 
-            addTradeToTable(t);
-            whaleTradeCount++;
-            updateStats();
-            updateTopWhales();
-        }
-    }
+    trades.forEach(t => {
+        const row = document.createElement("tr");
 
-    function updateTopWhales() {
-        const btc5 = btcWhales.slice(0, 5);
-        const eth5 = ethWhales.slice(0, 5);
+        row.innerHTML = `
+            <td>${t.time.toLocaleTimeString("tr-TR")}</td>
+            <td class="coin-cell">${t.symbol}</td>
+            <td class="${t.type === "BUY" ? "trade-buy" : "trade-sell"}">${t.type}</td>
+            <td>$${t.price.toLocaleString()}</td>
+            <td>${t.qty.toLocaleString()}</td>
+            <td>$${t.total.toLocaleString()}</td>
+        `;
 
-        const btcEl = document.getElementById('btcTopWhales');
-        const ethEl = document.getElementById('ethTopWhales');
-
-        btcEl.innerHTML = btc5.length
-            ? btc5.map((w, i) => `
-                <div class="whale-mini-row rank-${i + 1}">
-                    <span class="whale-mini-type ${w.type.toLowerCase()}">
-                        ${w.type === 'BUY' ? '🟢 ALIŞ' : '🔴 SATIŞ'}
-                    </span>
-                    <span class="whale-mini-amount">$${formatVolume(w.totalUSD)}</span>
-                </div>
-            `).join('')
-            : '<div class="empty-state" style="padding:8px 4px;font-size:10px;">Whale bekleniyor...</div>';
-
-        ethEl.innerHTML = eth5.length
-            ? eth5.map((w, i) => `
-                <div class="whale-mini-row rank-${i + 1}">
-                    <span class="whale-mini-type ${w.type.toLowerCase()}">
-                        ${w.type === 'BUY' ? '🟢 ALIŞ' : '🔴 SATIŞ'}
-                    </span>
-                    <span class="whale-mini-amount">$${formatVolume(w.totalUSD)}</span>
-                </div>
-            `).join('')
-            : '<div class="empty-state" style="padding:8px 4px;font-size:10px;">Whale bekleniyor...</div>';
-    }
-
-    function updateDashboard() {
-        if (coinVolumes['BTCUSDT']) {
-            document.getElementById('btcBuyVolume').textContent =
-                '$' + formatVolume(coinVolumes['BTCUSDT'].buy);
-            document.getElementById('btcSellVolume').textContent =
-                '$' + formatVolume(coinVolumes['BTCUSDT'].sell);
-        }
-
-        if (coinVolumes['ETHUSDT']) {
-            document.getElementById('ethBuyVolume').textContent =
-                '$' + formatVolume(coinVolumes['ETHUSDT'].buy);
-            document.getElementById('ethSellVolume').textContent =
-                '$' + formatVolume(coinVolumes['ETHUSDT'].sell);
-        }
-
-        const others = Object.keys(coinVolumes)
-            .filter(c => c !== 'BTCUSDT' && c !== 'ETHUSDT')
-            .map(c => ({
-                coin: c,
-                buy: coinVolumes[c].buy,
-                sell: coinVolumes[c].sell,
-                total: coinVolumes[c].buy + coinVolumes[c].sell
-            }))
-            .sort((a, b) => b.total - a.total);
-
-        const buyDom = others.filter(c => c.buy > c.sell);
-        const sellDom = others.filter(c => c.sell > c.buy);
-
-        const buyTbody = document.getElementById('buyDominantCoins');
-        const sellTbody = document.getElementById('sellDominantCoins');
-
-        buyTbody.innerHTML = buyDom.length
-            ? buyDom.map(c => `
-                <tr>
-                    <td>
-                        <div class="coin-name-cell">
-                            ${c.coin}
-                            <span class="trend-arrow up">↑</span>
-                        </div>
-                    </td>
-                    <td class="volume-buy">${formatVolume(c.buy)}</td>
-                    <td class="volume-sell">${formatVolume(c.sell)}</td>
-                </tr>
-            `).join('')
-            : '<tr><td colspan="3" class="empty-state">Bekleniyor...</td></tr>';
-
-        sellTbody.innerHTML = sellDom.length
-            ? sellDom.map(c => `
-                <tr>
-                    <td>
-                        <div class="coin-name-cell">
-                            ${c.coin}
-                            <span class="trend-arrow down">↓</span>
-                        </div>
-                    </td>
-                    <td class="volume-buy">${formatVolume(c.buy)}</td>
-                    <td class="volume-sell">${formatVolume(c.sell)}</td>
-                </tr>
-            `).join('')
-            : '<tr><td colspan="3" class="empty-state">Bekleniyor...</td></tr>';
-    }
-
-    function addTradeToTable(trade) {
-        const max = parseInt(document.getElementById('maxTrades').value) || 100;
-        tradeHistory.unshift(trade);
-        if (tradeHistory.length > max) {
-            tradeHistory = tradeHistory.slice(0, max);
-        }
-        renderTrades();
-    }
-
-    function renderTrades() {
-        const tbody = document.getElementById('tradesTableBody');
-
-        if (tradeHistory.length === 0) {
-            tbody.innerHTML =
-                '<tr class="empty-state"><td colspan="6">Whale işlem bekleniyor...</td></tr>';
-            return;
-        }
-
-        tbody.innerHTML = tradeHistory.map(t => {
-            const cls = t.type === 'BUY' ? 'trade-buy' : 'trade-sell';
-            const exBadge = t.exchange
-                ? `<span class="exchange-badge">${t.exchange}</span>`
-                : '';
-            return `
-                <tr>
-                    <td>${new Date(t.timestamp).toLocaleTimeString('tr-TR')}</td>
-                    <td class="coin-cell">
-                        ${t.symbol}${exBadge}
-                    </td>
-                    <td class="${cls}">
-                        ${t.type === 'BUY' ? '🟢 ALIŞ' : '🔴 SATIŞ'}
-                    </td>
-                    <td>$${formatPrice(t.price)}</td>
-                    <td>${formatQuantity(t.quantity)}</td>
-                    <td>$${formatVolume(t.totalUSD)}</td>
-                </tr>
-            `;
-        }).join('');
-    }
-
-    function formatPrice(p) {
-        if (!isFinite(p)) return '-';
-        return p >= 1 ? p.toFixed(2)
-             : p >= 0.01 ? p.toFixed(4)
-             : p.toFixed(8);
-    }
-
-    function formatQuantity(q) {
-        if (!isFinite(q)) return '-';
-        return q >= 1000 ? (q / 1000).toFixed(2) + 'K'
-             : q >= 1 ? q.toFixed(2)
-             : q.toFixed(6);
-    }
-
-    function formatVolume(v) {
-        if (!isFinite(v)) return '-';
-        return v >= 1_000_000 ? (v / 1_000_000).toFixed(2) + 'M'
-             : v >= 1_000 ? (v / 1_000).toFixed(2) + 'K'
-             : v.toFixed(2);
-    }
-
-    function updateStats() {
-        document.getElementById('whaleCount').textContent = whaleTradeCount;
-    }
-
-    function updateWSStatus(isConnected, connectionCount) {
-        const dot = document.getElementById('wsStatus');
-        const text = document.getElementById('wsStatusText');
-        if (isConnected) {
-            dot.className = 'status-dot active';
-            text.textContent = `${connectionCount} stream aktif`;
-            document.getElementById('coinCount').textContent = connectionCount;
-        } else {
-            dot.className = 'status-dot inactive';
-            text.textContent = 'Bağlantı kapalı';
-            document.getElementById('coinCount').textContent = '0';
-        }
-    }
-
-    function startMonitoring() {
-        if (isMonitoring) return;
-        isMonitoring = true;
-
-        tradeHistory = [];
-        whaleTradeCount = 0;
-        coinVolumes = {};
-        btcWhales = [];
-        ethWhales = [];
-
-        document.getElementById('startBtn').disabled = true;
-        document.getElementById('stopBtn').disabled = false;
-
-        const coins = getSelectedCoins();
-        const ex = document.getElementById('exchangeSelection').value;
-        const connectionCount = ex === 'both' ? coins.length * 2 : coins.length;
-
-        console.log(`İzleme başladı (${connectionCount} bağlantı)`);
-
-        coins.forEach(coin => {
-            const conns = initWebSocketForCoin(coin);
-            wsConnections.push(...conns);
-        });
-
-        updateWSStatus(true, connectionCount);
-        renderTrades();
-    }
-
-    function stopMonitoring() {
-        if (!isMonitoring) return;
-
-        isMonitoring = false;
-        document.getElementById('startBtn').disabled = false;
-        document.getElementById('stopBtn').disabled = true;
-
-        wsConnections.forEach(ws => {
-            try {
-                if (ws.readyState === WebSocket.OPEN) ws.close();
-            } catch (e) {
-                console.error('WS close error', e);
-            }
-        });
-        wsConnections = [];
-
-        updateWSStatus(false, 0);
-        console.log('İzleme durduruldu');
-    }
-
-    function clearTrades() {
-        tradeHistory = [];
-        whaleTradeCount = 0;
-        coinVolumes = {};
-        btcWhales = [];
-        ethWhales = [];
-
-        document.getElementById('btcBuyVolume').textContent = '$0';
-        document.getElementById('btcSellVolume').textContent = '$0';
-        document.getElementById('ethBuyVolume').textContent = '$0';
-        document.getElementById('ethSellVolume').textContent = '$0';
-
-        document.getElementById('buyDominantCoins').innerHTML =
-            '<tr><td colspan="3" class="empty-state">Bekleniyor...</td></tr>';
-        document.getElementById('sellDominantCoins').innerHTML =
-            '<tr><td colspan="3" class="empty-state">Bekleniyor...</td></tr>';
-
-        document.getElementById('btcTopWhales').innerHTML = '';
-        document.getElementById('ethTopWhales').innerHTML = '';
-
-        updateStats();
-        renderTrades();
-
-        console.log('Temizlendi');
-    }
-
-    window.addEventListener('beforeunload', () => {
-        wsConnections.forEach(ws => {
-            try {
-                if (ws.readyState === WebSocket.OPEN) ws.close();
-            } catch (e) {}
-        });
+        tbody.appendChild(row);
     });
+}
 
-    console.log('Whale Tracker PRO (iOS dark UI) hazır!');
+
+/* ================================
+   LİDER KARTLARINI GÜNCELLE
+================================ */
+function updateLeaderVolumes(symbol, t) {
+
+    const usd = t.total;
+
+    if (symbol === "BTCUSDT") {
+        if (t.type === "BUY") btcBuy += usd;
+        else btcSell += usd;
+
+        updateLeaderCard("btc", btcBuy, btcSell);
+        pushLeaderList("btc", t);
+    }
+
+    if (symbol === "ETHUSDT") {
+        if (t.type === "BUY") ethBuy += usd;
+        else ethSell += usd;
+
+        updateLeaderCard("eth", ethBuy, ethSell);
+        pushLeaderList("eth", t);
+    }
+}
+
+
+/* ================================
+   BTC/ETH LİDER % HESABI
+================================ */
+function updateLeaderCard(coin, buy, sell) {
+    const buyEl = document.getElementById(coin + "BuyVolume");
+    const sellEl = document.getElementById(coin + "SellVolume");
+
+    buyEl.innerText = "$" + buy.toLocaleString();
+    sellEl.innerText = "$" + sell.toLocaleString();
+
+    let diff = buy - sell;
+    let total = buy + sell;
+    let pct = total > 0 ? (diff / total) * 100 : 0;
+
+    const badge = document.getElementById(coin + "DiffBadge");
+    const icon = document.getElementById(coin + "DiffIcon");
+    const text = document.getElementById(coin + "DiffValue");
+
+    text.innerText = pct.toFixed(1) + "%";
+
+    if (pct > 0) {
+        badge.className = "leader-diff-badge diff-positive";
+        icon.innerText = "🟢";
+    } else if (pct < 0) {
+        badge.className = "leader-diff-badge diff-negative";
+        icon.innerText = "🔴";
+    } else {
+        badge.className = "leader-diff-badge diff-neutral";
+        icon.innerText = "➖";
+    }
+}
+
+
+/* ================================
+   SON 5 WHALE KAYDI
+================================ */
+function pushLeaderList(coin, t) {
+    const list = coin === "btc" ? btcTop : ethTop;
+    const dom = document.getElementById(coin === "btc" ? "btcTopWhales" : "ethTopWhales");
+
+    list.unshift(t);
+    if (list.length > 5) list.pop();
+
+    dom.innerHTML = "";
+
+    list.forEach((x, i) => {
+        const row = document.createElement("div");
+        row.className = "whale-mini-row rank-" + (i + 1);
+
+        row.innerHTML = `
+            <span class="whale-mini-type ${x.type === "BUY" ? "buy" : "sell"}">
+                ${x.type}
+            </span>
+            <span class="whale-mini-amount">$${x.total.toLocaleString()}</span>
+        `;
+
+        dom.appendChild(row);
+    });
+}
+
+
+/* ================================
+   TEMİZLE
+================================ */
+function clearTrades() {
+    trades = [];
+    document.getElementById("tradesTableBody").innerHTML = `
+        <tr class="empty-state">
+            <td colspan="6">Temizlendi</td>
+        </tr>
+    `;
+
+    btcBuy = btcSell = 0;
+    ethBuy = ethSell = 0;
+
+    updateLeaderCard("btc", 0, 0);
+    updateLeaderCard("eth", 0, 0);
+
+    btcTop = [];
+    ethTop = [];
+
+    document.getElementById("btcTopWhales").innerHTML = "";
+    document.getElementById("ethTopWhales").innerHTML = "";
+}
 </script>
+
 </body>
 </html>
