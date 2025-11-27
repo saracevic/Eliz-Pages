@@ -1068,64 +1068,66 @@
     }
 
     function handleTrade(trade) {
-        const symbol = trade.s;
-        const price = parseFloat(trade.p);
-        const qty = parseFloat(trade.q);
-        const total = price * qty;
-        const type = trade.m ? 'SELL' : 'BUY';
-        const min = parseFloat(document.getElementById('minTradeAmount').value) || 0;
+    const symbol = trade.s;
+    const price = parseFloat(trade.p);
+    const qty = parseFloat(trade.q);
+    const total = price * qty;
+    const type = trade.m ? 'SELL' : 'BUY';
+    const min = parseFloat(document.getElementById('minTradeAmount').value) || 0;
 
-        if (!coinVolumes[symbol]) {
-            coinVolumes[symbol] = { buy: 0, sell: 0 };
-        }
-
-        if (type === 'BUY') {
-            coinVolumes[symbol].buy += total;
-        } else {
-            coinVolumes[symbol].sell += total;
-        }
-
-        updateDashboard();
-
-        if (total >= min) {
-    const t = {
-        symbol,
-        price,
-        quantity: qty,
-        totalUSD: total,
-        type,
-        timestamp: Date.now(),
-        exchange: trade.exchange
-    };
-
-    tradeHistory.unshift(t);
-    whaleTradeCount++;
-    
-    // 🔊 SES ÇALMA KISMI
-    try {
-        if (total >= 100000) {
-            // 100K üzeri için gong sesi
-            const gong = document.getElementById('gongSound');
-            if (gong) {
-                gong.currentTime = 0;
-                gong.play().catch(e => console.log('Gong ses hatası:', e));
-            }
-        } else {
-            // Normal whale için para sesi
-            const cash = document.getElementById('cashSound');
-            if (cash) {
-                cash.currentTime = 0;
-                cash.play().catch(e => console.log('Cash ses hatası:', e));
-            }
-        }
-    } catch (e) {
-        console.log('Ses çalma hatası:', e);
+    if (!coinVolumes[symbol]) {
+        coinVolumes[symbol] = { buy: 0, sell: 0 };
     }
-    
+
+    if (type === 'BUY') {
+        coinVolumes[symbol].buy += total;
+    } else {
+        coinVolumes[symbol].sell += total;
+    }
+
     updateDashboard();
-    updateTradesTable(parseInt(document.getElementById('maxTrades').value));
-}
+
+    if (total >= min) {
+        const t = {
+            symbol,
+            price,
+            quantity: qty,
+            totalUSD: total,
+            type,
+            timestamp: Date.now(),
+            exchange: trade.exchange
+        };
+
+        tradeHistory.unshift(t);
+        whaleTradeCount++;
+        
+        // 🔊 SES ÇALMA KISMI
+        try {
+            if (total >= 100000) {
+                // 100K üzeri için gong sesi
+                const gong = document.getElementById('gongSound');
+                if (gong) {
+                    gong.currentTime = 0;
+                    gong.volume = 0.7; // Ses seviyesi
+                    gong.play().catch(e => console.log('Gong ses hatası:', e));
+                }
+            } else {
+                // Normal whale için para sesi
+                const cash = document.getElementById('cashSound');
+                if (cash) {
+                    cash.currentTime = 0;
+                    cash.volume = 0.7; // Ses seviyesi
+                    cash.play().catch(e => console.log('Cash ses hatası:', e));
+                }
+            }
+        } catch (e) {
+            console.log('Ses çalma hatası:', e);
+        }
+        
+        updateDashboard();
+        updateTradesTable(parseInt(document.getElementById('maxTrades').value));
     }
+} // ← FONKSİYON BURADA KAPANIYOR
 
 
     // YÜZDE HESAPLAMA VE GÖRSEL GÜNCELLEME FONKSİYONU
@@ -1217,22 +1219,6 @@
 
     // DİĞER EKSİK FONKSİYONLAR (UYGULAMANIN ÇALIŞMASI İÇİN KRİTİK)
 
-    // WebSocket Bağlantısını Başlat
-    function startMonitoring() {
-        if (isMonitoring) return;
-        
-        const selectedCoins = getSelectedCoins();
-        wsConnections = selectedCoins.flatMap(initWebSocketForCoin);
-        
-        document.getElementById('wsStatus').classList.add('active');
-        document.getElementById('wsStatus').classList.remove('inactive');
-        document.getElementById('wsStatusText').textContent = 'Bağlandı';
-        document.getElementById('startBtn').disabled = true;
-        document.getElementById('stopBtn').disabled = false;
-
-        isMonitoring = true;
-        document.getElementById('tradesTableBody').innerHTML = '<tr class="empty-state"><td colspan="6">Veriler bekleniyor...</td></tr>';
-    }
 
     // WebSocket Bağlantısını Durdur
     function stopMonitoring() {
