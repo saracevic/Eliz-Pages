@@ -1334,53 +1334,6 @@
             `).join('')
             : '<div class="empty-state" style="padding:8px 4px;font-size:10px;">Whale bekleniyor...</div>';
     }
-
-    function updateDashboard() {
-        if (coinVolumes['BTCUSDT']) {
-            document.getElementById('btcBuyVolume').textContent =
-                '$' + formatVolume(coinVolumes['BTCUSDT'].buy);
-            document.getElementById('btcSellVolume').textContent =
-                '$' + formatVolume(coinVolumes['BTCUSDT'].sell);
-        }
-
-        if (coinVolumes['ETHUSDT']) {
-            document.getElementById('ethBuyVolume').textContent =
-                '$' + formatVolume(coinVolumes['ETHUSDT'].buy);
-            document.getElementById('ethSellVolume').textContent =
-                '$' + formatVolume(coinVolumes['ETHUSDT'].sell);
-        }
-
-        const others = Object.keys(coinVolumes)
-            .filter(c => c !== 'BTCUSDT' && c !== 'ETHUSDT')
-            .map(c => ({
-                coin: c,
-                buy: coinVolumes[c].buy,
-                sell: coinVolumes[c].sell,
-                total: coinVolumes[c].buy + coinVolumes[c].sell
-            }))
-            .sort((a, b) => b.total - a.total);
-
-        const buyDom = others.filter(c => c.buy > c.sell);
-        const sellDom = others.filter(c => c.sell > c.buy);
-
-        const buyTbody = document.getElementById('buyDominantCoins');
-        const sellTbody = document.getElementById('sellDominantCoins');
-
-        buyTbody.innerHTML = buyDom.length
-            ? buyDom.map(c => `
-                <tr>
-                    <td>
-                        <div class="coin-name-cell">
-                            ${c.coin}
-                            <span class="trend-arrow up">↑</span>
-                        </div>
-                    </td>
-                    <td class="volume-buy">${formatVolume(c.buy)}</td>
-                    <td class="volume-sell">${formatVolume(c.sell)}</td>
-                </tr>
-            `).join('')
-            : '<tr><td colspan="3" class="empty-state">Bekleniyor...</td></tr>';
-
         sellTbody.innerHTML = sellDom.length
             ? sellDom.map(c => `
                 <tr>
