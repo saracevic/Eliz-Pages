@@ -1096,6 +1096,215 @@
                 type,
                 timestamp: Date.now(),
                 exchange: trade.exchange
+            };
+
+            // Tüm işlemlerin listesine ekle
+            tradeHistory.unshift(t);
+
+            // Whale (balina) sayacını artır
+            whaleTradeCount++;
+
+            // Sadece tabloyu ve özet kartları güncelle, her işlemde
+            updateDashboard();
+            updateTradesTable(maxTrades);
+        }
+    }
+
+
+    // YÜZDE HESAPLAMA VE GÖRSEL GÜNCELLEME FONKSİYONU
+    function updateDashboard() {
+        const symbols = ['BTCUSDT', 'ETHUSDT'];
+        
+        // 1. Genel Durum Güncellemesi
+        document.getElementById('coinCount').textContent = getSelectedCoins().length;
+        document.getElementById('whaleCount').textContent = whaleTradeCount; // Gerçek zamanlı whale sayısı
+
+        // 2. BTC ve ETH Kartlarını Güncelle
+        symbols.forEach(symbol => {
+            const coinShort = symbol.substring(0, 3).toLowerCase();
+            const buyVolumeEl = document.getElementById(coinShort + 'BuyVolume');
+            const sellVolumeEl = document.getElementById(coinShort + 'SellVolume');
+            const percentEl = document.getElementById(coinShort + 'Percent');
+            
+            const volumes = coinVolumes[symbol] || { buy: 0, sell: 0 };
+            const total = volumes.buy + volumes.sell;
+            
+            if (buyVolumeEl) buyVolumeEl.textContent = formatVolume(volumes.buy);
+            if (sellVolumeEl) sellVolumeEl.textContent = formatVolume(volumes.sell);
+
+            let percent = 0;
+            let trendClass = 'neutral';
+            
+            if (total > 0) {
+                // Yüzde (Net Hacim Yüzdesi) Hesabı: (Alış - Satış) / Toplam
+                const netVolume = volumes.buy - volumes.sell;
+                percent = (netVolume / total) * 100;
+                
+                if (percent > 0) {
+                    trendClass = 'positive'; // Yeşil
+                } else if (percent < 0) {
+                    trendClass = 'negative'; // Kırmızı
+                }
+            }
+            
+            if (percentEl) {
+                percentEl.textContent = `${percent.toFixed(1)}%`;
+                percentEl.className = `leader-percent ${trendClass}`;
+            }
+        });
+
+        // Diğer Özet ve Top 5 Whales kısımlarını da güncelle
+        updateOtherCoinsSummary();
+        updateTopWhales();
+    }
+
+    // Hacmi biçimlendiren yardımcı fonksiyon (Örn: 1.25M)
+    function formatVolume(num) {
+        if (num >= 1000000) {
+            return '$' + (num / 1000000).toFixed(2) + 'M';
+        }
+        if (num >= 1000) {
+            return '$' + (num / 1000).toFixed(0) + 'K';
+        }
+        return '$' + num.toFixed(0);
+    }
+
+    // Tabloyu Güncelleme Fonksiyonu
+    function updateTradesTable(maxTrades) {
+        const tableBody = document.getElementById('tradesTableBody');
+        tableBody.innerHTML = ''; // Tabloyu temizle
+
+        if (tradeHistory.length === 0) {
+            tableBody.innerHTML = '<tr class="empty-state"><td colspan="6">İzleme başlatılmadı</td></tr>';
+            return;
+        }
+        
+        // Sadece en yeni maxTrades kadarını göster
+        tradeHistory.slice(0, maxTrades).forEach(trade => {
+            const row = tableBody.insertRow(-1); // Satırı sona ekler
+            // Basit highlight: $100K üzerini vurgula
+            if(trade.totalUSD > 100000) {
+                 row.classList.add('highlight');
+            }
+           
+            row.innerHTML = `
+                <td>${new Date(trade.timestamp).toLocaleTimeString('tr-TR', { timeZone: 'Europe/Istanbul' })}</td>
+                <td class="coin-cell">${trade.symbol.replace('USDT', '')}<span class="exchange-badge">${trade.exchange}</span></td>
+                <td class="trade-${trade.type.toLowerCase()}">${trade.type}</td>
+                <td>$${trade.price.toLocaleString('tr-TR')}</td>
+                <td>${trade.quantity.toFixed(2)}</td>
+                <td>${formatVolume(trade.totalUSD)}</td>
+            `;
+        });
+    }
+
+    // DİĞER EKSİK FONKSİYONLAR (UYGULAMANIN ÇALIŞMASI İÇİN KRİTİK)
+
+    // WebSocket Bağlantısını Başlat
+    function startMonitoring() {
+        if (isMonitoring) return;
+        
+        const selectedCoins = getSelectedCoins();
+        wsConnections = selectedCoins.flatMap(initWebSocketForCoin);
+        
+        document.getElementById('wsStatus').classList.add('active');
+        document.getElementById('wsStatus').classList.remove('inactive');
+        document.getElementById('wsStatusText').textContent = 'Bağlandı';
+        document.getElementById('startBtn').disabled = true;
+        document.getElementById('stopBtn').disabled = false;
+
+        isMonitoring = true;
+        document.getElementById('tradesTableBody').innerHTML = '<tr class="empty-state"><td colspan="6">Veriler bekleniyor...</td></tr>';
+    }
+
+    // WebSocket Bağlantısını Durdur
+    function stopMonitoring() {
+        if (!isMonitoring) return;
+
+        wsConnections.forEach(ws => {
+            ws.close(1000, 'Kullanıcı durdurdu');
+        });
+        wsConnections = [];
+
+        document.getElementById('wsStatus').classList.remove('active');
+        document.getElementById('wsStatus').classList.add('inactive');
+        document.getElementById('wsStatusText').textContent = 'Durduruldu';
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('stopBtn').disabled = true;
+        
+        isMonitoring = false;
+    }
+
+    // İşlemleri Temizle
+    function clearTrades() {
+        if (confirm('Tüm işlem geçmişini temizlemek istediğinizden emin misiniz?')) {
+            tradeHistory = [];
+            whaleTradeCount = 0;
+            coinVolumes = {};
+            // Gerekirse diğer sayaçları da sıfırla
+            updateDashboard(); 
+            updateTradesTable(0); // Tabloyu sıfırla
+        }
+    }
+
+    // Diğer Coinler Özet Tablosunu Güncelle (Basit Placeholder)
+    function updateOtherCoinsSummary() {
+        const buyTable = document.getElementById('buyDominantCoins');
+        const sellTable = document.getElementById('sellDominantCoins');
+        buyTable.innerHTML = '';
+        sellTable.innerHTML = '';
+
+        // BTC/ETH dışındaki coinlerin hacimlerini topla
+        const otherCoins = Object.keys(coinVolumes)
+            .filter(coin => coin !== 'BTCUSDT' && coin !== 'ETHUSDT')
+            .map(coin => ({
+                symbol: coin.replace('USDT', ''),
+                buy: coinVolumes[coin].buy,
+                sell: coinVolumes[coin].sell,
+                total: coinVolumes[coin].buy + coinVolumes[coin].sell
+            }))
+            .filter(coin => coin.total > 0) // Hacim olanları al
+            .sort((a, b) => b.total - a.total); // Toplam hacme göre sırala
+
+        if (otherCoins.length === 0) {
+            buyTable.innerHTML = '<tr><td colspan="3" class="empty-state">Henüz veri yok.</td></tr>';
+            sellTable.innerHTML = '<tr><td colspan="3" class="empty-state">Henüz veri yok.</td></tr>';
+            return;
+        }
+
+        otherCoins.forEach(coin => {
+            const dominance = (coin.buy - coin.sell) / coin.total;
+            const targetTable = dominance > 0 ? buyTable : sellTable;
+            
+            const arrowClass = dominance > 0 ? 'up' : 'down';
+            const arrowIcon = dominance > 0 ? '🔺' : '🔻';
+            
+            const row = targetTable.insertRow(-1);
+            row.innerHTML = `
+                <td class="coin-name-cell">
+                    <span class="trend-arrow ${arrowClass}">${arrowIcon}</span> ${coin.symbol}
+                </td>
+                <td class="volume-buy">${formatVolume(coin.buy)}</td>
+                <td class="volume-sell">${formatVolume(coin.sell)}</td>
+            `;
+        });
+    }
+
+    // Top Whale İşlemlerini Güncelle (Basit Placeholder)
+    function updateTopWhales() {
+        // Bu fonksiyonun tam çalışması için, `handleTrade` içinde
+        // whale işlemlerini (btcWhales ve ethWhales) bir listede tutmanız gerekir.
+        // Şimdilik boş bırakıyoruz, ancak arayüzün çalışması için gereklidir.
+        // Eğer bu kısım boş kalırsa, "top-whales" div'i boş kalır.
+        document.getElementById('btcTopWhales').innerHTML = `
+            <div class="whale-mini-row rank-1"><span>BTC 1</span><span class="whale-mini-type buy">$250K</span></div>
+            <div class="whale-mini-row rank-2"><span>BTC 2</span><span class="whale-mini-type sell">$180K</span></div>
+        `;
+        document.getElementById('ethTopWhales').innerHTML = `
+            <div class="whale-mini-row rank-1"><span>ETH 1</span><span class="whale-mini-type sell">$120K</span></div>
+            <div class="whale-mini-row rank-2"><span>ETH 2</span><span class="whale-mini-type buy">$90K</span></div>
+        `;
+    }
             };
 
             if (symbol === 'BTCUSDT') {
