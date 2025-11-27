@@ -258,8 +258,8 @@
         <div class="settings-grid">
             <div class="settings-row">
                 <label>⚡ Minimum İşlem Tutarı (USD)</label>
-                <input type="text" id="minTradeAmount" value="50.000" placeholder="50.000">
-                <small>Örn: 50.000$ = tek işlemde minimum hacim</small>
+                <input type="text" id="minTradeAmount" value="100.000" placeholder="100.000">
+                <small>Örn: 100.000$ = tek işlemde minimum hacim</small>
             </div>
             <div class="settings-row">
                 <label>📊 Maksimum Gösterilecek İşlem</label>
@@ -356,7 +356,8 @@
             const exchange = document.getElementById('exchangeSelection').value;
             
             if (exchange === 'binance') {
-                const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@trade`);
+                // aggr.trade gibi AGGREGATE TRADE stream kullanıyoruz
+                const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@aggTrade`);
                 
                 ws.onopen = () => {
                     console.log(`Binance ${symbol} bağlandı`);
@@ -367,7 +368,14 @@
                 ws.onmessage = (ev) => {
                     try {
                         const t = JSON.parse(ev.data);
-                        handleTrade({ ...t, exchange: 'Binance' });
+                        // Aggregate trade verisi farklı yapıda
+                        handleTrade({ 
+                            s: t.s,           // symbol
+                            p: t.p,           // price
+                            q: t.q,           // quantity
+                            m: t.m,           // is buyer maker (true = satış, false = alış)
+                            exchange: 'Binance'
+                        });
                     } catch (e) {
                         console.error('Binance veri hatası', e);
                     }
@@ -432,7 +440,7 @@
         const price = parseFloat(trade.p);
         const qty = parseFloat(trade.q);
         const total = price * qty;
-        const type = trade.m ? 'SELL' : 'BUY';
+        const type = trade.m ? 'SELL' : 'BUY'; // m=true ise satış, false ise alış
         
         const minInput = document.getElementById('minTradeAmount').value;
         const min = parseNumber(minInput);
@@ -778,7 +786,7 @@
         });
     });
 
-    console.log('Whale Tracker PRO hazır!');
+    console.log('Whale Tracker PRO (aggr.trade style) hazır!');
 </script>
 
 <!-- SES DOSYALARI -->
