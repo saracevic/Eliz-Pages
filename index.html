@@ -1290,21 +1290,6 @@
         });
     }
 
-            if (symbol === 'BTCUSDT') {
-                btcWhales.unshift(t);
-                btcWhales = btcWhales.slice(0, 10);
-            } else if (symbol === 'ETHUSDT') {
-                ethWhales.unshift(t);
-                ethWhales = ethWhales.slice(0, 10);
-            }
-
-            addTradeToTable(t);
-            whaleTradeCount++;
-            updateStats();
-            updateTopWhales();
-        }
-    }
-
     function updateTopWhales() {
         const btc5 = btcWhales.slice(0, 5);
         const eth5 = ethWhales.slice(0, 5);
@@ -1334,22 +1319,6 @@
             `).join('')
             : '<div class="empty-state" style="padding:8px 4px;font-size:10px;">Whale bekleniyor...</div>';
     }
-        sellTbody.innerHTML = sellDom.length
-            ? sellDom.map(c => `
-                <tr>
-                    <td>
-                        <div class="coin-name-cell">
-                            ${c.coin}
-                            <span class="trend-arrow down">↓</span>
-                        </div>
-                    </td>
-                    <td class="volume-buy">${formatVolume(c.buy)}</td>
-                    <td class="volume-sell">${formatVolume(c.sell)}</td>
-                </tr>
-            `).join('')
-            : '<tr><td colspan="3" class="empty-state">Bekleniyor...</td></tr>';
-    }
-
     function addTradeToTable(trade) {
         const max = parseInt(document.getElementById('maxTrades').value) || 100;
         tradeHistory.unshift(trade);
