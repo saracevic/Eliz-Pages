@@ -753,7 +753,7 @@
                     <span class="leader-coin-tag">BTCUSDT</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="leader-badge">Whale ≥3 BTC</div>
+                    <div class="leader-badge">Whale ≥6 BTC</div>
                     <div class="leader-percent neutral" id="btcPercent">0%</div>
                 </div>
             </div>
@@ -770,7 +770,7 @@
             <div class="top-whales">
                 <div class="top-whales-title">
                     <span>🔥 BTC Top 5 Whales</span>
-                    <span>Min: 3 BTC</span>
+                    <span>Min: 6 BTC</span>
                 </div>
                 <div id="btcTopWhales"></div>
             </div>
@@ -783,7 +783,7 @@
                     <span class="leader-coin-tag">ETHUSDT</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="leader-badge">Whale ≥50 ETH</div>
+                    <div class="leader-badge">Whale ≥60 ETH</div>
                     <div class="leader-percent neutral" id="ethPercent">0%</div>
                 </div>
             </div>
@@ -800,7 +800,7 @@
             <div class="top-whales">
                 <div class="top-whales-title">
                     <span>🔥 ETH Top 5 Whales</span>
-                    <span>Min: 50 ETH</span>
+                    <span>Min: 60 ETH</span>
                 </div>
                 <div id="ethTopWhales"></div>
             </div>
@@ -933,42 +933,42 @@
     let coinWhales = {};
 
     // Her coin için özel whale threshold değerleri
-    const COIN_THRESHOLDS = {
-        // Major Coins (yüksek değerli)
-        'BTCUSDT': 3,      // 3 BTC
-        'ETHUSDT': 50,     // 20 ETH
-        'BNBUSDT': 500,    // 100 BNB
-        'SOLUSDT': 500,    // 100 SOL
-        'XRPUSDT': 80000,  // 50,000 XRP
-        'ADAUSDT': 80000,  // 50,000 ADA
-        'DOGEUSDT': 800000, // 500,000 DOGE
-        'AVAXUSDT': 5000,  // 1,000 AVAX
-        'DOTUSDT': 8000,   // 5,000 DOT
-        'MATICUSDT': 80000, // 50,000 MATIC
-        'LINKUSDT': 8000,  // 5,000 LINK
-        'TRXUSDT': 200000, // 100,000 TRX
-        'LTCUSDT': 5000,   // 1,000 LTC
-        'UNIUSDT': 8000,   // 5,000 UNI
-        'ATOMUSDT': 8000,  // 5,000 ATOM
-        
-        // Popular Coins (düşük değerli)
-        'MMTUSDT': 8000,   // 5,000 ETC
-        'XLMUSDT': 80000,  // 50,000 XLM
-        'NEARUSDT': 8000,  // 5,000 NEAR
-        'ALGOUSDT': 80000, // 50,000 ALGO
-        'VETUSDT': 800000, // 500,000 VET
-        'ICPUSDT': 5000,   // 1,000 ICP
-        'FILUSDT': 8000,   // 5,000 FIL
-        'HBARUSDT': 80000, // 50,000 HBAR
-        'APTUSDT': 8000,   // 5,000 APT
-        'ARBUSDT': 8000,   // 5,000 ARB
-        'OPUSDT': 20000,   // 10,000 OP
-        'INJUSDT': 2000,   // 1,000 INJ
-        'SUIUSDT': 20000,  // 10,000 SUI
-        'STXUSDT': 20000,  // 10,000 STX
-        'WLDUSDT': 8000,   // 5,000 WLD
-        'MMTUSDT': 800000  // 500,000 MMT
-    };
+const COIN_THRESHOLDS = {
+    // Major Coins (yüksek değerli) - x3
+    'BTCUSDT': 6,        // 6 BTC (eskiden 3 BTC)
+    'ETHUSDT': 60,       // 60 ETH (eskiden 20 ETH)
+    'BNBUSDT': 300,      // 300 BNB (eskiden 100 BNB)
+    'SOLUSDT': 300,      // 300 SOL (eskiden 100 SOL)
+    'XRPUSDT': 150000,   // 150,000 XRP (eskiden 50,000 XRP)
+    'ADAUSDT': 150000,   // 150,000 ADA (eskiden 50,000 ADA)
+    'DOGEUSDT': 1500000, // 1.5M DOGE (eskiden 500,000 DOGE)
+    'AVAXUSDT': 3000,    // 3,000 AVAX (eskiden 1,000 AVAX)
+    'DOTUSDT': 15000,    // 15,000 DOT (eskiden 5,000 DOT)
+    'MATICUSDT': 150000, // 150,000 MATIC (eskiden 50,000 MATIC)
+    'LINKUSDT': 15000,   // 15,000 LINK (eskiden 5,000 LINK)
+    'TRXUSDT': 300000,   // 300,000 TRX (eskiden 100,000 TRX)
+    'LTCUSDT': 3000,     // 3,000 LTC (eskiden 1,000 LTC)
+    'UNIUSDT': 15000,    // 15,000 UNI (eskiden 5,000 UNI)
+    'ATOMUSDT': 15000,   // 15,000 ATOM (eskiden 5,000 ATOM)
+    
+    // Popular Coins (düşük değerli) - x3
+    'ETCUSDT': 15000,    // 15,000 ETC (eskiden 5,000 ETC)
+    'XLMUSDT': 150000,   // 150,000 XLM (eskiden 50,000 XLM)
+    'NEARUSDT': 15000,   // 15,000 NEAR (eskiden 5,000 NEAR)
+    'ALGOUSDT': 150000,  // 150,000 ALGO (eskiden 50,000 ALGO)
+    'VETUSDT': 1500000,  // 1.5M VET (eskiden 500,000 VET)
+    'ICPUSDT': 3000,     // 3,000 ICP (eskiden 1,000 ICP)
+    'FILUSDT': 15000,    // 15,000 FIL (eskiden 5,000 FIL)
+    'HBARUSDT': 150000,  // 150,000 HBAR (eskiden 50,000 HBAR)
+    'APTUSDT': 15000,    // 15,000 APT (eskiden 5,000 APT)
+    'ARBUSDT': 15000,    // 15,000 ARB (eskiden 5,000 ARB)
+    'OPUSDT': 30000,     // 30,000 OP (eskiden 10,000 OP)
+    'INJUSDT': 3000,     // 3,000 INJ (eskiden 1,000 INJ)
+    'SUIUSDT': 30000,    // 30,000 SUI (eskiden 10,000 SUI)
+    'STXUSDT': 30000,    // 30,000 STX (eskiden 10,000 STX)
+    'WLDUSDT': 15000,    // 15,000 WLD (eskiden 5,000 WLD)
+    'MMTUSDT': 1500000   // 1.5M MMT (eskiden 500,000 MMT)
+};
 
     const MAJOR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','MATICUSDT','LINKUSDT','TRXUSDT','LTCUSDT','UNIUSDT','ATOMUSDT'];
     const POPULAR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','MATICUSDT','DOTUSDT','AVAXUSDT','LINKUSDT','UNIUSDT','LTCUSDT','ATOMUSDT','MMTUSDT','XLMUSDT','NEARUSDT','ALGOUSDT','VETUSDT','ICPUSDT','FILUSDT','TRXUSDT','HBARUSDT','APTUSDT','ARBUSDT','OPUSDT','INJUSDT','SUIUSDT','STXUSDT','WLDUSDT'];
@@ -1275,7 +1275,7 @@
                 type,
                 timestamp: Date.now(),
                 exchange: trade.exchange,
-                isBigWhale: (symbol === 'BTCUSDT' && qty >= 3) || (symbol === 'ETHUSDT' && qty >= 20)
+                isBigWhale: (symbol === 'BTCUSDT' && qty >= 6) || (symbol === 'ETHUSDT' && qty >= 60)
             };
 
             addToTradeHistory(t);
