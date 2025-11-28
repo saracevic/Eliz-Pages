@@ -379,7 +379,8 @@
             color: var(--red);
         }
         
-        .other-coins-summary {
+        /* YENİ: Long/Short Ratio Stilleri */
+        .long-short-container {
             background: var(--bg-elevated);
             border: 1px solid var(--border);
             border-radius: 8px;
@@ -387,88 +388,192 @@
             margin-bottom: 16px;
             box-shadow: var(--shadow);
         }
-        
-        .summary-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 12px;
+
+        .ratio-controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .ratio-controls input {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+            font-size: 12px;
+            outline: none;
+            min-width: 120px;
+        }
+
+        .ratio-controls select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+            font-size: 12px;
+            outline: none;
+        }
+
+        .ratio-controls input:focus,
+        .ratio-controls select:focus {
+            border-color: var(--accent);
+        }
+
+        .ratio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .ratio-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .ratio-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-        
-        .coins-split-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 16px;
-        }
-        
-        .coin-section {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 12px;
-        }
-        
-        .section-header {
-            text-align: center;
-            font-weight: 600;
-            margin-bottom: 8px;
-            padding: 6px;
-            border-radius: 4px;
-            font-size: 11px;
-        }
-        
-        .section-header.buy-section {
-            background: rgba(38, 166, 154, 0.1);
-            color: var(--green);
-            border: 1px solid var(--green);
-        }
-        
-        .section-header.sell-section {
-            background: rgba(239, 83, 80, 0.1);
-            color: var(--red);
-            border: 1px solid var(--red);
-        }
-        
-        .summary-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11px;
-        }
-        
-        .summary-table th {
-            text-align: left;
-            padding: 6px;
-            color: var(--text-muted);
-            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
             border-bottom: 1px solid var(--border);
-        }
-        
-        .summary-table td {
-            padding: 8px 6px;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .summary-table tbody tr:hover {
-            background: var(--bg-elevated);
-        }
-        
-        .coin-name-cell {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: 600;
-            color: green; /* YEŞİL OK */
         }
 
-        .dominance-badge {
-            font-size: 9px;
-            padding: 1px 4px;
-            border-radius: 3px;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
+        .ratio-coin {
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ratio-time {
+            font-size: 10px;
             color: var(--text-muted);
+        }
+
+        .ratio-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .ratio-side {
+            text-align: center;
+            flex: 1;
+        }
+
+        .ratio-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .ratio-percent {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .ratio-long .ratio-percent {
+            color: var(--green);
+        }
+
+        .ratio-short .ratio-percent {
+            color: var(--red);
+        }
+
+        .ratio-bar-container {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .ratio-bar {
+            height: 100%;
+            display: flex;
+        }
+
+        .ratio-bar-long {
+            background: var(--green);
+            transition: width 0.3s ease;
+        }
+
+        .ratio-bar-short {
+            background: var(--red);
+            transition: width 0.3s ease;
+        }
+
+        .ratio-exchanges {
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px dashed var(--border);
+        }
+
+        .exchange-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .exchange-row:last-child {
+            border-bottom: none;
+        }
+
+        .exchange-name {
+            color: var(--text-muted);
+            min-width: 60px;
+        }
+
+        .exchange-ratio {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            max-width: 120px;
+        }
+
+        .exchange-bar {
+            height: 4px;
+            flex: 1;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .exchange-long {
+            background: var(--green);
+            height: 100%;
+        }
+
+        .exchange-short {
+            background: var(--red);
+            height: 100%;
+        }
+
+        .exchange-percent {
+            min-width: 35px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .exchange-long .exchange-percent {
+            color: var(--green);
+        }
+
+        .exchange-short .exchange-percent {
+            color: var(--red);
         }
 
         /* YENİ: Coin Dashboard Stilleri */
@@ -601,6 +706,11 @@
             z-index: 1000;
             animation: slideIn 0.5s ease;
             box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
+        }
+
+        .alarm-notification.buy {
+            background: #00C853 !important;
+            box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3) !important;
         }
 
         @keyframes slideIn {
@@ -792,7 +902,7 @@
             .dashboard {
                 grid-template-columns: 1fr;
             }
-            .coins-split-container {
+            .ratio-grid {
                 grid-template-columns: 1fr;
             }
             .settings-grid {
@@ -814,6 +924,10 @@
             }
             .tr-clock {
                 min-width: 80px;
+            }
+            .ratio-controls {
+                flex-direction: column;
+                align-items: stretch;
             }
         }
     </style>
@@ -893,7 +1007,7 @@
                     <span class="leader-coin-tag">ETHUSDT</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="leader-badge">Whale ≥90 ETH</div>
+                    <div class="leader-badge">Whale ≥60 ETH</div>
                     <div class="leader-percent neutral" id="ethPercent">0%</div>
                 </div>
             </div>
@@ -910,7 +1024,7 @@
             <div class="top-whales">
                 <div class="top-whales-title">
                     <span>🔥 ETH Top 5 Whales</span>
-                    <span>Min: 90 ETH</span>
+                    <span>Min: 60 ETH</span>
                 </div>
                 <div id="ethTopWhales"></div>
             </div>
@@ -928,41 +1042,162 @@
         </div>
     </div>
 
-    <div class="other-coins-summary">
+    <!-- YENİ: Long/Short Ratio Panel (Volume Summary yerine) -->
+    <div class="long-short-container">
         <div class="summary-title">
-            <span>💰 Volume Summary</span>
-            <span style="font-size: 10px; color: var(--text-muted);">Min $1K volume & 30% dominance</span>
+            <span>⚖️ Long/Short Ratios</span>
+            <span style="font-size: 10px; color: var(--text-muted);">Futures market positions</span>
         </div>
-        <div class="coins-split-container">
-            <div class="coin-section">
-                <div class="section-header buy-section">🟢 Buy Dominant</div>
-                <table class="summary-table">
-                    <thead>
-                        <tr>
-                            <th>Coin</th>
-                            <th>Buy</th>
-                            <th>Sell</th>
-                        </tr>
-                    </thead>
-                    <tbody id="buyDominantCoins">
-                        <tr><td colspan="3" class="empty-state">Waiting...</td></tr>
-                    </tbody>
-                </table>
+        
+        <div class="ratio-controls">
+            <input type="text" id="ratioSymbol" placeholder="BTCUSDT.P" value="BTCUSDT.P">
+            <select id="ratioPeriod">
+                <option value="5m">5m</option>
+                <option value="15m">15m</option>
+                <option value="1h">1h</option>
+                <option value="4h">4h</option>
+                <option value="1d">1d</option>
+            </select>
+            <button class="btn btn-primary" onclick="updateLongShortRatios()">🔄 Update</button>
+            <button class="btn" onclick="startAutoRatioUpdate()">▶️ Auto Update</button>
+            <button class="btn" onclick="stopAutoRatioUpdate()">⏸️ Stop</button>
+        </div>
+
+        <div class="ratio-grid" id="longShortRatios">
+            <div class="ratio-card">
+                <div class="ratio-header">
+                    <div class="ratio-coin">₿ BTC</div>
+                    <div class="ratio-time" id="btcRatioTime">--:--:--</div>
+                </div>
+                <div class="ratio-main">
+                    <div class="ratio-side ratio-long">
+                        <div class="ratio-label">LONG</div>
+                        <div class="ratio-percent" id="btcLongPercent">-%</div>
+                    </div>
+                    <div class="ratio-side ratio-short">
+                        <div class="ratio-label">SHORT</div>
+                        <div class="ratio-percent" id="btcShortPercent">-%</div>
+                    </div>
+                </div>
+                <div class="ratio-bar-container">
+                    <div class="ratio-bar">
+                        <div class="ratio-bar-long" id="btcLongBar" style="width: 50%"></div>
+                        <div class="ratio-bar-short" id="btcShortBar" style="width: 50%"></div>
+                    </div>
+                </div>
+                <div class="ratio-exchanges" id="btcExchanges">
+                    <div class="exchange-row">
+                        <div class="exchange-name">Binance</div>
+                        <div class="exchange-ratio">
+                            <div class="exchange-bar">
+                                <div class="exchange-long" style="width: 50%"></div>
+                            </div>
+                            <div class="exchange-percent">-%</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="coin-section">
-                <div class="section-header sell-section">🔴 Sell Dominant</div>
-                <table class="summary-table">
-                    <thead>
-                        <tr>
-                            <th>Coin</th>
-                            <th>Buy</th>
-                            <th>Sell</th>
-                        </tr>
-                    </thead>
-                    <tbody id="sellDominantCoins">
-                        <tr><td colspan="3" class="empty-state">Waiting...</td></tr>
-                    </tbody>
-                </table>
+
+            <div class="ratio-card">
+                <div class="ratio-header">
+                    <div class="ratio-coin">◆ ETH</div>
+                    <div class="ratio-time" id="ethRatioTime">--:--:--</div>
+                </div>
+                <div class="ratio-main">
+                    <div class="ratio-side ratio-long">
+                        <div class="ratio-label">LONG</div>
+                        <div class="ratio-percent" id="ethLongPercent">-%</div>
+                    </div>
+                    <div class="ratio-side ratio-short">
+                        <div class="ratio-label">SHORT</div>
+                        <div class="ratio-percent" id="ethShortPercent">-%</div>
+                    </div>
+                </div>
+                <div class="ratio-bar-container">
+                    <div class="ratio-bar">
+                        <div class="ratio-bar-long" id="ethLongBar" style="width: 50%"></div>
+                        <div class="ratio-bar-short" id="ethShortBar" style="width: 50%"></div>
+                    </div>
+                </div>
+                <div class="ratio-exchanges" id="ethExchanges">
+                    <div class="exchange-row">
+                        <div class="exchange-name">Binance</div>
+                        <div class="exchange-ratio">
+                            <div class="exchange-bar">
+                                <div class="exchange-long" style="width: 50%"></div>
+                            </div>
+                            <div class="exchange-percent">-%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ratio-card">
+                <div class="ratio-header">
+                    <div class="ratio-coin">⎈ BNB</div>
+                    <div class="ratio-time" id="bnbRatioTime">--:--:--</div>
+                </div>
+                <div class="ratio-main">
+                    <div class="ratio-side ratio-long">
+                        <div class="ratio-label">LONG</div>
+                        <div class="ratio-percent" id="bnbLongPercent">-%</div>
+                    </div>
+                    <div class="ratio-side ratio-short">
+                        <div class="ratio-label">SHORT</div>
+                        <div class="ratio-percent" id="bnbShortPercent">-%</div>
+                    </div>
+                </div>
+                <div class="ratio-bar-container">
+                    <div class="ratio-bar">
+                        <div class="ratio-bar-long" id="bnbLongBar" style="width: 50%"></div>
+                        <div class="ratio-bar-short" id="bnbShortBar" style="width: 50%"></div>
+                    </div>
+                </div>
+                <div class="ratio-exchanges" id="bnbExchanges">
+                    <div class="exchange-row">
+                        <div class="exchange-name">Binance</div>
+                        <div class="exchange-ratio">
+                            <div class="exchange-bar">
+                                <div class="exchange-long" style="width: 50%"></div>
+                            </div>
+                            <div class="exchange-percent">-%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ratio-card">
+                <div class="ratio-header">
+                    <div class="ratio-coin">◎ SOL</div>
+                    <div class="ratio-time" id="solRatioTime">--:--:--</div>
+                </div>
+                <div class="ratio-main">
+                    <div class="ratio-side ratio-long">
+                        <div class="ratio-label">LONG</div>
+                        <div class="ratio-percent" id="solLongPercent">-%</div>
+                    </div>
+                    <div class="ratio-side ratio-short">
+                        <div class="ratio-label">SHORT</div>
+                        <div class="ratio-percent" id="solShortPercent">-%</div>
+                    </div>
+                </div>
+                <div class="ratio-bar-container">
+                    <div class="ratio-bar">
+                        <div class="ratio-bar-long" id="solLongBar" style="width: 50%"></div>
+                        <div class="ratio-bar-short" id="solShortBar" style="width: 50%"></div>
+                    </div>
+                </div>
+                <div class="ratio-exchanges" id="solExchanges">
+                    <div class="exchange-row">
+                        <div class="exchange-name">Binance</div>
+                        <div class="exchange-ratio">
+                            <div class="exchange-bar">
+                                <div class="exchange-long" style="width: 50%"></div>
+                            </div>
+                            <div class="exchange-percent">-%</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1039,12 +1274,16 @@
     let updateTimeout;
     const MAX_TRADE_HISTORY = 1000;
 
+    // YENİ: Long/Short Ratio değişkenleri
+    let autoRatioUpdate = null;
+    const RATIO_UPDATE_INTERVAL = 30000; // 30 saniye
+
     // Her coin için whale trade'leri saklayacağımız obje
     let coinWhales = {};
 
     // Her coin için özel whale threshold değerleri (x3 ARTIRILDI)
     const COIN_THRESHOLDS = {
-        // Major Coins (yüksek değerli) - x3
+                // Major Coins (yüksek değerli) - x3
         'BTCUSDT': 9,        // 9 BTC (eskiden 3 BTC)
         'ETHUSDT': 90,       // 60 ETH (eskiden 30 ETH)
         'BNBUSDT': 900,      // 600 BNB (eskiden 300 BNB)
@@ -1123,35 +1362,29 @@
     }
 
     function showAlarmNotification(symbol, quantity, type) {
-    const alarmDiv = document.createElement('div');
-    alarmDiv.className = 'alarm-notification';
-    
-    // Basit renk değişimi
-    alarmDiv.style.background = type === 'BUY' ? '#00C853' : '#ff4444';
-    alarmDiv.style.boxShadow = type === 'BUY' 
-        ? '0 4px 12px rgba(0, 200, 83, 0.3)' 
-        : '0 4px 12px rgba(255, 68, 68, 0.3)';
-    
-    alarmDiv.innerHTML = `
-        🚨 MEGA WHALE ALARM!<br>
-        ${symbol.replace('USDT', '')}: ${quantity.toFixed(2)} ${type}
-    `;
-    
-    document.body.appendChild(alarmDiv);
-    
-    // Alarm sesi çal
-    playAlarmSound();
-    
-    // Titreşim (mobilde)
-    if (navigator.vibrate) {
-        navigator.vibrate([500, 200, 500]);
+        const alarmDiv = document.createElement('div');
+        alarmDiv.className = `alarm-notification ${type.toLowerCase()}`;
+        
+        alarmDiv.innerHTML = `
+            🚨 MEGA WHALE ALARM!<br>
+            ${symbol.replace('USDT', '')}: ${quantity.toFixed(2)} ${type}
+        `;
+        
+        document.body.appendChild(alarmDiv);
+        
+        // Alarm sesi çal
+        playAlarmSound();
+        
+        // Titreşim (mobilde)
+        if (navigator.vibrate) {
+            navigator.vibrate([500, 200, 500]);
+        }
+        
+        // 5 saniye sonra kaldır
+        setTimeout(() => {
+            alarmDiv.remove();
+        }, 5000);
     }
-    
-    // 5 saniye sonra kaldır
-    setTimeout(() => {
-        alarmDiv.remove();
-    }, 5000);
-}
 
     // YENİ: Amerikan borsaları açılış geri sayımı (NASDAQ değişimi dahil)
     function updateUSMarketsCountdown() {
@@ -1246,6 +1479,97 @@
         }
         
         return `<span class="${className}">${change}%</span>`;
+    }
+
+    // YENİ: Long/Short Ratio Fonksiyonları
+    function updateLongShortRatios() {
+        const symbol = document.getElementById('ratioSymbol').value;
+        const period = document.getElementById('ratioPeriod').value;
+        
+        // Örnek veriler - gerçek uygulamada API'den çekilecek
+        const sampleData = {
+            'BTC': { long: 48.5, short: 51.5, exchanges: [
+                { name: 'Binance', long: 48.0, short: 52.0 },
+                { name: 'OKX', long: 49.36, short: 50.64 },
+                { name: 'Bybit', long: 47.74, short: 52.26 },
+                { name: 'Bitget', long: 44.55, short: 55.45 }
+            ]},
+            'ETH': { long: 52.3, short: 47.7, exchanges: [
+                { name: 'Binance', long: 51.8, short: 48.2 },
+                { name: 'OKX', long: 53.2, short: 46.8 },
+                { name: 'Bybit', long: 50.9, short: 49.1 }
+            ]},
+            'BNB': { long: 55.1, short: 44.9, exchanges: [
+                { name: 'Binance', long: 56.2, short: 43.8 },
+                { name: 'OKX', long: 53.8, short: 46.2 }
+            ]},
+            'SOL': { long: 46.8, short: 53.2, exchanges: [
+                { name: 'Binance', long: 45.9, short: 54.1 },
+                { name: 'OKX', long: 47.5, short: 52.5 },
+                { name: 'Bybit', long: 48.2, short: 51.8 }
+            ]}
+        };
+
+        Object.keys(sampleData).forEach(coin => {
+            const data = sampleData[coin];
+            updateRatioCard(coin, data, period);
+        });
+
+        console.log(`🔄 Long/Short ratios updated for ${symbol} (${period})`);
+    }
+
+    function updateRatioCard(coin, data, period) {
+        const timeElement = document.getElementById(`${coin.toLowerCase()}RatioTime`);
+        const longPercentElement = document.getElementById(`${coin.toLowerCase()}LongPercent`);
+        const shortPercentElement = document.getElementById(`${coin.toLowerCase()}ShortPercent`);
+        const longBarElement = document.getElementById(`${coin.toLowerCase()}LongBar`);
+        const shortBarElement = document.getElementById(`${coin.toLowerCase()}ShortBar`);
+        const exchangesElement = document.getElementById(`${coin.toLowerCase()}Exchanges`);
+
+        // Zamanı güncelle
+        timeElement.textContent = new Date().toLocaleTimeString('tr-TR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+
+        // Yüzdeleri güncelle
+        longPercentElement.textContent = `${data.long.toFixed(1)}%`;
+        shortPercentElement.textContent = `${data.short.toFixed(1)}%`;
+
+        // Barları güncelle
+        longBarElement.style.width = `${data.long}%`;
+        shortBarElement.style.width = `${data.short}%`;
+
+        // Exchange listesini güncelle
+        exchangesElement.innerHTML = data.exchanges.map(exchange => `
+            <div class="exchange-row">
+                <div class="exchange-name">${exchange.name}</div>
+                <div class="exchange-ratio">
+                    <div class="exchange-bar">
+                        <div class="exchange-long" style="width: ${exchange.long}%"></div>
+                    </div>
+                    <div class="exchange-percent">${exchange.long.toFixed(1)}%</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function startAutoRatioUpdate() {
+        if (autoRatioUpdate) {
+            clearInterval(autoRatioUpdate);
+        }
+        updateLongShortRatios();
+        autoRatioUpdate = setInterval(updateLongShortRatios, RATIO_UPDATE_INTERVAL);
+        console.log('🔄 Auto Long/Short ratio update started');
+    }
+
+    function stopAutoRatioUpdate() {
+        if (autoRatioUpdate) {
+            clearInterval(autoRatioUpdate);
+            autoRatioUpdate = null;
+            console.log('⏸️ Auto Long/Short ratio update stopped');
+        }
     }
 
     function toggleTheme() {
@@ -1607,7 +1931,6 @@
             percentEl.className = `leader-percent ${trendClass}`;
         });
 
-        updateOtherCoinsSummary();
         updateTopWhales();
     }
 
@@ -1746,61 +2069,6 @@
                 <td><span class="exchange-badge">${trade.exchange}</span></td>
             `;
         });
-    }
-
-    function updateOtherCoinsSummary() {
-        const buyTable = document.getElementById('buyDominantCoins');
-        const sellTable = document.getElementById('sellDominantCoins');
-        buyTable.innerHTML = '';
-        sellTable.innerHTML = '';
-
-        const otherCoins = Object.keys(coinVolumes)
-            .filter(coin => coin !== 'BTCUSDT' && coin !== 'ETHUSDT')
-            .map(coin => ({
-                symbol: coin.replace('USDT', ''),
-                buy: coinVolumes[coin].buy,
-                sell: coinVolumes[coin].sell,
-                total: coinVolumes[coin].buy + coinVolumes[coin].sell,
-                dominance: 0
-            }))
-            .filter(coin => coin.total > 1000) // EN AZ $1000 volume şartı
-            .map(coin => {
-                // Dominance hesaplama: (buy - sell) / total
-                coin.dominance = (coin.buy - coin.sell) / coin.total;
-                return coin;
-            })
-            .filter(coin => Math.abs(coin.dominance) > 0.3) // %30'dan fazla dominance şartı
-            .sort((a, b) => Math.abs(b.dominance) - Math.abs(a.dominance)); // Dominance'a göre sırala
-
-        if (otherCoins.length === 0) {
-            buyTable.innerHTML = '<tr><td colspan="3" class="empty-state">No significant volume dominance</td></tr>';
-            sellTable.innerHTML = '<tr><td colspan="3" class="empty-state">No significant volume dominance</td></tr>';
-            return;
-        }
-
-        otherCoins.forEach(coin => {
-            const targetTable = coin.dominance > 0 ? buyTable : sellTable;
-            const arrowIcon = coin.dominance > 0 ? '🔺' : '🔻';
-            const dominancePercent = (Math.abs(coin.dominance) * 100).toFixed(1);
-
-            const row = targetTable.insertRow();
-            row.innerHTML = `
-                <td class="coin-name-cell">
-                    ${arrowIcon} ${coin.symbol}
-                    <span class="dominance-badge">${dominancePercent}%</span>
-                </td>
-                <td class="volume-buy">${formatVolume(coin.buy)}</td>
-                <td class="volume-sell">${formatVolume(coin.sell)}</td>
-            `;
-        });
-
-        // Eğer bir tarafta hiç coin yoksa boş state göster
-        if (buyTable.rows.length === 0) {
-            buyTable.innerHTML = '<tr><td colspan="3" class="empty-state">No buy dominant coins</td></tr>';
-        }
-        if (sellTable.rows.length === 0) {
-            sellTable.innerHTML = '<tr><td colspan="3" class="empty-state">No sell dominant coins</td></tr>';
-        }
     }
 
     // YENİ: BTC ve ETH Top Whales'a toplam satırı eklendi
@@ -1966,8 +2234,6 @@
             document.getElementById('ethBuyVolume').textContent = '$0';
             document.getElementById('ethSellVolume').textContent = '$0';
 
-            document.getElementById('buyDominantCoins').innerHTML = '<tr><td colspan="3" class="empty-state">Waiting...</td></tr>';
-            document.getElementById('sellDominantCoins').innerHTML = '<tr><td colspan="3" class="empty-state">Waiting...</td></tr>';
             document.getElementById('btcTopWhales').innerHTML = '';
             document.getElementById('ethTopWhales').innerHTML = '';
 
@@ -1983,6 +2249,8 @@
     setInterval(updateTRTime, 1000);
     updateUSMarketsCountdown(); // YENİ: Borsa geri sayımını başlat
     setInterval(updateUSMarketsCountdown, 1000); // YENİ: Her saniye güncelle
+    updateLongShortRatios(); // YENİ: Long/Short ratio'yu başlat
+    startAutoRatioUpdate(); // YENİ: Otomatik güncellemeyi başlat
 
     // Sayfa yüklendiğinde ses sistemini başlat
     document.addEventListener('click', function initAudioOnClick() {
@@ -2004,6 +2272,7 @@
                 }
             } catch (e) {}
         });
+        stopAutoRatioUpdate();
     });
 
     console.log('🐋 Whale Tracker PRO - Multi Exchange Ready!');
