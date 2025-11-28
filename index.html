@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Whale Tracker PRO - Multi Exchange</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -438,6 +440,7 @@
             align-items: center;
             gap: 5px;
             font-weight: 600;
+            color: green; /* YEŞİL OK */
         }
 
         .dominance-badge {
@@ -564,6 +567,26 @@
         .whale-side-total.sell {
             color: var(--red);
             border-color: var(--red);
+        }
+
+        /* YENİ: Alarm bildirimi */
+        .alarm-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff4444;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideIn 0.5s ease;
+            box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
         }
         
         .settings-panel {
@@ -1030,6 +1053,81 @@
     const MAJOR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','MATICUSDT','LINKUSDT','TRXUSDT','LTCUSDT','UNIUSDT','ATOMUSDT'];
     const POPULAR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','MATICUSDT','DOTUSDT','AVAXUSDT','LINKUSDT','UNIUSDT','LTCUSDT','ATOMUSDT','ETCUSDT','XLMUSDT','NEARUSDT','ALGOUSDT','VETUSDT','ICPUSDT','FILUSDT','TRXUSDT','HBARUSDT','APTUSDT','ARBUSDT','OPUSDT','INJUSDT','SUIUSDT','STXUSDT','WLDUSDT','MMTUSDT'];
 
+    // 🎯 YENİ: ALARM SİSTEMİ
+    let audioContext = null;
+    let isAudioEnabled = false;
+
+    function initAudio() {
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            isAudioEnabled = true;
+            console.log('🔊 Ses sistemi hazır');
+        } catch (error) {
+            console.log('🔇 Ses desteklenmiyor:', error);
+        }
+    }
+
+    function playAlarmSound() {
+        if (!isAudioEnabled || !audioContext) return;
+
+        try {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+            
+        } catch (error) {
+            console.log('🔇 Ses çalınamadı:', error);
+        }
+    }
+
+    function showAlarmNotification(symbol, quantity, type) {
+        const alarmDiv = document.createElement('div');
+        alarmDiv.className = 'alarm-notification';
+        alarmDiv.innerHTML = `
+            🚨 MEGA WHALE ALARM!<br>
+            ${symbol.replace('USDT', '')}: ${quantity.toFixed(2)} ${type}
+        `;
+        
+        document.body.appendChild(alarmDiv);
+        
+        // Alarm sesi çal
+        playAlarmSound();
+        
+        // Titreşim (mobilde)
+        if (navigator.vibrate) {
+            navigator.vibrate([500, 200, 500]);
+        }
+        
+        // 5 saniye sonra kaldır
+        setTimeout(() => {
+            alarmDiv.remove();
+        }, 5000);
+    }
+
+    // Sayfa yüklendiğinde ses sistemini başlat
+    document.addEventListener('click', function initAudioOnClick() {
+        initAudio();
+        
+        // Bildirim izni iste
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+        
+        document.removeEventListener('click', initAudioOnClick);
+    }, { once: true });
+
     function toggleTheme() {
         const body = document.body;
         const currentTheme = body.getAttribute('data-theme');
@@ -1335,6 +1433,13 @@
                 isBigWhale: (symbol === 'BTCUSDT' && qty >= 9) || (symbol === 'ETHUSDT' && qty >= 60)
             };
 
+            // 🎯 YENİ: MEGA WHALE ALARM (x2 miktar)
+            const alarmThreshold = threshold * 2;
+            if (qty >= alarmThreshold) {
+                console.log(`🚨 MEGA WHALE ALARM! ${symbol}: ${qty} ${type}`);
+                showAlarmNotification(symbol, qty, type);
+            }
+
             addToTradeHistory(t);
             addToCoinWhales(t);
             whaleTradeCount++;
@@ -1560,7 +1665,7 @@
 
             const row = targetTable.insertRow();
             row.innerHTML = `
-                <td class="coin-name-cell" style="color: green;">
+                <td class="coin-name-cell">
                     ${arrowIcon} ${coin.symbol}
                     <span class="dominance-badge">${dominancePercent}%</span>
                 </td>
