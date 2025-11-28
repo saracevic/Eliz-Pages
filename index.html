@@ -783,6 +783,17 @@
     let btcWhales = [];
     let ethWhales = [];
     let activeConnections = 0;
+
+    function handleReconnect(symbol, exchange) {
+    if (!isMonitoring) return;
+    
+    console.log(`Reconnecting ${exchange}-${symbol}...`);
+    setTimeout(() => {
+        const ws = initWebSocketForCoin(symbol, exchange);
+        if (ws) wsConnections.push(ws);
+    }, 5000);
+}
+   
     const MAX_TRADE_HISTORY = 1000;
 
     const MAJOR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','MATICUSDT','LINKUSDT','TRXUSDT','LTCUSDT','UNIUSDT','ATOMUSDT'];
@@ -840,6 +851,7 @@
                 ws.onclose = () => {
                     activeConnections--;
                     updateWSStatus(isMonitoring);
+                    handleReconnect(symbol, exchange);
                 };
                 return ws;
             }
@@ -871,6 +883,7 @@
                 ws.onclose = () => {
                     activeConnections--;
                     updateWSStatus(isMonitoring);
+                    handleReconnect(symbol, exchange);
                 };
                 return ws;
             }
@@ -938,6 +951,7 @@ return ws;
             ws.onclose = () => {
                 activeConnections--;
                 updateWSStatus(isMonitoring);
+                handleReconnect(symbol, exchange);
             };
             return ws;
         }
@@ -969,6 +983,7 @@ return ws;
             ws.onclose = () => {
                 activeConnections--;
                 updateWSStatus(isMonitoring);
+                handleReconnect(symbol, exchange);
             };
             return ws;
         }
@@ -976,6 +991,15 @@ return ws;
         console.error('WebSocket connection error:', error);
     }
     return null;
+}
+
+// BU 2 SATIRI KODUN EN ÜSTÜNE EKLEYİN (let tradeHistory = []; satırından sonra)
+let updateTimeout;
+function addToTradeHistory(trade) {
+    tradeHistory.unshift(trade);
+    if (tradeHistory.length > MAX_TRADE_HISTORY) {
+        tradeHistory.length = MAX_TRADE_HISTORY;
+    }
 }
 
 function handleTrade(trade) {
@@ -1018,10 +1042,8 @@ function handleTrade(trade) {
             isBigWhale: (symbol === 'BTCUSDT' && qty >= 3) || (symbol === 'ETHUSDT' && qty >= 20)
         };
 
-        tradeHistory.unshift(t);
-        if (tradeHistory.length > MAX_TRADE_HISTORY) {
-            tradeHistory = tradeHistory.slice(0, MAX_TRADE_HISTORY);
-        }
+        addToTradeHistory(t);
+        
         whaleTradeCount++;
 
         if (symbol === 'BTCUSDT' && qty >= 3) {
@@ -1032,8 +1054,11 @@ function handleTrade(trade) {
             if (ethWhales.length > 5) ethWhales = ethWhales.slice(0, 5);
         }
 
-        updateDashboard();
-        updateTradesTable(parseInt(document.getElementById('maxTrades').value));
+        clearTimeout(updateTimeout);
+        updateTimeout = setTimeout(function() {
+            updateDashboard();
+            updateTradesTable(parseInt(document.getElementById('maxTrades').value));
+        }, 100);
     }
 }
 
