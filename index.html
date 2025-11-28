@@ -282,20 +282,55 @@
         .whale-mini-row {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 8px;
             margin-bottom: 6px;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 11px;
             background: var(--bg-card);
             border: 1px solid var(--border);
+            gap: 8px;
+        }
+        
+        .whale-mini-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
         }
         
         .whale-mini-type {
             font-weight: 600;
+            min-width: 40px;
         }
         
         .whale-mini-type.buy { color: var(--green); }
         .whale-mini-type.sell { color: var(--red); }
+        
+        .whale-mini-amount {
+            font-weight: 600;
+            min-width: 60px;
+        }
+        
+        .whale-mini-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+            font-size: 9px;
+            color: var(--text-muted);
+        }
+        
+        .whale-mini-time {
+            font-weight: 600;
+        }
+        
+        .whale-mini-exchange {
+            background: var(--bg-elevated);
+            padding: 1px 4px;
+            border-radius: 3px;
+            border: 1px solid var(--border);
+        }
         
         .other-coins-summary {
             background: var(--bg-elevated);
@@ -666,6 +701,14 @@
             .coin-dashboard-grid {
                 grid-template-columns: 1fr;
             }
+            .whale-mini-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+            .whale-mini-right {
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -739,7 +782,7 @@
                     <span class="leader-coin-tag">ETHUSDT</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="leader-badge">Whale ≥50 ETH</div>
+                    <div class="leader-badge">Whale ≥20 ETH</div>
                     <div class="leader-percent neutral" id="ethPercent">0%</div>
                 </div>
             </div>
@@ -756,7 +799,7 @@
             <div class="top-whales">
                 <div class="top-whales-title">
                     <span>🔥 ETH Top 5 Whales</span>
-                    <span>Min: 50 ETH</span>
+                    <span>Min: 20 ETH</span>
                 </div>
                 <div id="ethTopWhales"></div>
             </div>
@@ -892,37 +935,37 @@
     const COIN_THRESHOLDS = {
         // Major Coins (yüksek değerli)
         'BTCUSDT': 3,      // 3 BTC
-        'ETHUSDT': 50,     // 20 ETH
-        'BNBUSDT': 500,    // 100 BNB
-        'SOLUSDT': 500,    // 100 SOL
-        'XRPUSDT': 90000,  // 50,000 XRP
-        'ADAUSDT': 90000,  // 50,000 ADA
-        'DOGEUSDT': 900000, // 500,000 DOGE
-        'AVAXUSDT': 2000,  // 1,000 AVAX
-        'DOTUSDT': 9000,   // 5,000 DOT
-        'MATICUSDT': 90000, // 50,000 MATIC
-        'LINKUSDT': 9000,  // 5,000 LINK
-        'TRXUSDT': 200000, // 100,000 TRX
-        'LTCUSDT': 2000,   // 1,000 LTC
-        'UNIUSDT': 9000,   // 5,000 UNI
-        'ATOMUSDT': 9000,  // 5,000 ATOM
+        'ETHUSDT': 20,     // 20 ETH
+        'BNBUSDT': 100,    // 100 BNB
+        'SOLUSDT': 100,    // 100 SOL
+        'XRPUSDT': 50000,  // 50,000 XRP
+        'ADAUSDT': 50000,  // 50,000 ADA
+        'DOGEUSDT': 500000, // 500,000 DOGE
+        'AVAXUSDT': 1000,  // 1,000 AVAX
+        'DOTUSDT': 5000,   // 5,000 DOT
+        'MATICUSDT': 50000, // 50,000 MATIC
+        'LINKUSDT': 5000,  // 5,000 LINK
+        'TRXUSDT': 100000, // 100,000 TRX
+        'LTCUSDT': 1000,   // 1,000 LTC
+        'UNIUSDT': 5000,   // 5,000 UNI
+        'ATOMUSDT': 5000,  // 5,000 ATOM
         
         // Popular Coins (düşük değerli)
-        'ETCUSDT': 9000,   // 5,000 ETC
-        'XLMUSDT': 90000,  // 50,000 XLM
-        'NEARUSDT': 9000,  // 5,000 NEAR
-        'ALGOUSDT': 90000, // 50,000 ALGO
-        'VETUSDT': 900000, // 500,000 VET
-        'ICPUSDT': 2000,   // 1,000 ICP
-        'FILUSDT': 9000,   // 5,000 FIL
-        'HBARUSDT': 90000, // 50,000 HBAR
-        'APTUSDT': 9000,   // 5,000 APT
+        'ETCUSDT': 5000,   // 5,000 ETC
+        'XLMUSDT': 50000,  // 50,000 XLM
+        'NEARUSDT': 5000,  // 5,000 NEAR
+        'ALGOUSDT': 50000, // 50,000 ALGO
+        'VETUSDT': 500000, // 500,000 VET
+        'ICPUSDT': 1000,   // 1,000 ICP
+        'FILUSDT': 5000,   // 5,000 FIL
+        'HBARUSDT': 50000, // 50,000 HBAR
+        'APTUSDT': 5000,   // 5,000 APT
         'ARBUSDT': 5000,   // 5,000 ARB
-        'OPUSDT': 20000,   // 10,000 OP
-        'INJUSDT': 2000,   // 1,000 INJ
-        'SUIUSDT': 20000,  // 10,000 SUI
-        'STXUSDT': 20000,  // 10,000 STX
-        'WLDUSDT': 9000    // 5,000 WLD
+        'OPUSDT': 10000,   // 10,000 OP
+        'INJUSDT': 1000,   // 1,000 INJ
+        'SUIUSDT': 10000,  // 10,000 SUI
+        'STXUSDT': 10000,  // 10,000 STX
+        'WLDUSDT': 5000    // 5,000 WLD
     };
 
     const MAJOR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','MATICUSDT','LINKUSDT','TRXUSDT','LTCUSDT','UNIUSDT','ATOMUSDT'];
@@ -1314,6 +1357,15 @@
         container.innerHTML = html;
     }
 
+    function formatTime(timestamp) {
+        return new Date(timestamp).toLocaleTimeString('tr-TR', {
+            timeZone: 'Europe/Istanbul',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+    }
+
     function formatNumber(num) {
         if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
         if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
@@ -1354,7 +1406,7 @@
             if (trade.isBigWhale) row.classList.add('highlight');
 
             row.innerHTML = `
-                <td>${new Date(trade.timestamp).toLocaleTimeString('tr-TR', { timeZone: 'Europe/Istanbul' })}</td>
+                <td>${formatTime(trade.timestamp)}</td>
                 <td class="coin-cell">${trade.symbol.replace('USDT', '')}</td>
                 <td class="trade-${trade.type.toLowerCase()}">${trade.type}</td>
                 <td>$${formatPrice(trade.price)}</td>
@@ -1409,10 +1461,16 @@
         document.getElementById('btcTopWhales').innerHTML = btc5.length
             ? btc5.map(w => `
                 <div class="whale-mini-row">
-                    <span class="whale-mini-type ${w.type.toLowerCase()}">
-                        ${w.type === 'BUY' ? '🟢 BUY' : '🔴 SELL'}
-                    </span>
-                    <span class="whale-mini-amount">${w.quantity.toFixed(2)} BTC</span>
+                    <div class="whale-mini-left">
+                        <span class="whale-mini-type ${w.type.toLowerCase()}">
+                            ${w.type === 'BUY' ? '🟢 BUY' : '🔴 SELL'}
+                        </span>
+                        <span class="whale-mini-amount">${w.quantity.toFixed(2)} BTC</span>
+                    </div>
+                    <div class="whale-mini-right">
+                        <div class="whale-mini-time">${formatTime(w.timestamp)}</div>
+                        <div class="whale-mini-exchange">${w.exchange}</div>
+                    </div>
                 </div>
             `).join('')
             : '<div class="empty-state">Waiting for 3+ BTC whales...</div>';
@@ -1420,10 +1478,16 @@
         document.getElementById('ethTopWhales').innerHTML = eth5.length
             ? eth5.map(w => `
                 <div class="whale-mini-row">
-                    <span class="whale-mini-type ${w.type.toLowerCase()}">
-                        ${w.type === 'BUY' ? '🟢 BUY' : '🔴 SELL'}
-                    </span>
-                    <span class="whale-mini-amount">${w.quantity.toFixed(2)} ETH</span>
+                    <div class="whale-mini-left">
+                        <span class="whale-mini-type ${w.type.toLowerCase()}">
+                            ${w.type === 'BUY' ? '🟢 BUY' : '🔴 SELL'}
+                        </span>
+                        <span class="whale-mini-amount">${w.quantity.toFixed(2)} ETH</span>
+                    </div>
+                    <div class="whale-mini-right">
+                        <div class="whale-mini-time">${formatTime(w.timestamp)}</div>
+                        <div class="whale-mini-exchange">${w.exchange}</div>
+                    </div>
                 </div>
             `).join('')
             : '<div class="empty-state">Waiting for 20+ ETH whales...</div>';
