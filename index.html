@@ -395,17 +395,6 @@
             align-items: center;
         }
 
-        .ratio-controls input {
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: var(--bg-card);
-            color: var(--text);
-            font-size: 12px;
-            outline: none;
-            min-width: 120px;
-        }
-
         .ratio-controls select {
             padding: 8px 12px;
             border-radius: 6px;
@@ -416,7 +405,6 @@
             outline: none;
         }
 
-        .ratio-controls input:focus,
         .ratio-controls select:focus {
             border-color: var(--accent);
         }
@@ -589,13 +577,6 @@
             border-radius: 8px;
             padding: 16px;
             text-align: center;
-        }
-
-        .fear-greed-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--text-muted);
         }
 
         .fear-greed-value {
@@ -990,6 +971,34 @@
                 align-items: stretch;
             }
         }
+
+        .api-settings {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .api-status {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+
+        .api-status.connected {
+            background: rgba(38, 166, 154, 0.1);
+            color: var(--green);
+            border: 1px solid var(--green);
+        }
+
+        .api-status.disconnected {
+            background: rgba(239, 83, 80, 0.1);
+            color: var(--red);
+            border: 1px solid var(--red);
+        }
     </style>
 </head>
 <body data-theme="dark">
@@ -1029,8 +1038,31 @@
             <div class="status-item">🎯 Tracked: <strong id="coinCount">0</strong></div>
             <div class="status-item">🐋 Whales: <strong id="whaleCount">0</strong></div>
             <div class="status-item">🏦 Exchanges: <strong id="exchangeCount">0</strong></div>
+            <div class="status-item">
+                CMC API: 
+                <span id="apiStatus" class="api-status disconnected">Not Connected</span>
+            </div>
         </div>
     </header>
+
+    <!-- API Settings Panel -->
+    <div class="api-settings">
+        <div class="settings-title">🔑 CoinMarketCap Pro API Settings</div>
+        <div class="settings-grid">
+            <div class="settings-row">
+                <label>API Key</label>
+                <input type="password" id="cmcApiKey" placeholder="0512624a9ab44bc3a9997507c8d0bff9">
+            </div>
+            <div class="settings-row">
+                <label>API Action</label>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary" onclick="saveApiKey()">💾 Save Key</button>
+                    <button class="btn" onclick="testApiKey()">🧪 Test API</button>
+                    <button class="btn" onclick="clearApiKey()">🗑️ Clear</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="dashboard">
         <div class="leader-card">
@@ -1094,23 +1126,9 @@
         </div>
     </div>
 
-    <div class="coin-dashboards">
-        <div class="summary-title">
-            <span>📊 Other Coins Whale Dashboards</span>
-            <span style="font-size: 10px; color: var(--text-muted);">Top 5 buys & sells per coin (BTC/ETH hariç)</span>
-        </div>
-        <div class="coin-dashboard-grid" id="coinDashboards">
-            <div class="empty-state">Monitoring başlatıldığında diğer coin dashboard'ları burada görünecek</div>
-        </div>
-    </div>
-
+    <!-- Fear & Greed Index - Sadeleştirilmiş -->
     <div class="fear-greed-container">
-        <div class="summary-title">
-            <span>😨 Fear & Greed Index</span>
-            <span style="font-size: 10px; color: var(--text-muted);">Crypto market sentiment</span>
-        </div>
         <div class="fear-greed-card">
-            <div class="fear-greed-title">Current Market Sentiment</div>
             <div class="fear-greed-value" id="fearGreedMainValue">--</div>
             <div class="fear-greed-label" id="fearGreedLabel">Loading...</div>
             <div class="fear-greed-bar">
@@ -1126,14 +1144,9 @@
         </div>
     </div>
 
+    <!-- Long/Short Ratio - Sadeleştirilmiş -->
     <div class="long-short-container">
-        <div class="summary-title">
-            <span>⚖️ Long/Short Ratios</span>
-            <span style="font-size: 10px; color: var(--text-muted);">Futures market positions</span>
-        </div>
-        
         <div class="ratio-controls">
-            <input type="text" id="ratioSymbol" placeholder="BTCUSDT.P" value="BTCUSDT.P">
             <select id="ratioPeriod">
                 <option value="5m">5m</option>
                 <option value="15m">15m</option>
@@ -1168,17 +1181,6 @@
                         <div class="ratio-bar-short" id="btcShortBar" style="width: 50%"></div>
                     </div>
                 </div>
-                <div class="ratio-exchanges" id="btcExchanges">
-                    <div class="exchange-row">
-                        <div class="exchange-name">Binance</div>
-                        <div class="exchange-ratio">
-                            <div class="exchange-bar">
-                                <div class="exchange-long" style="width: 50%"></div>
-                            </div>
-                            <div class="exchange-percent">-%</div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="ratio-card">
@@ -1200,17 +1202,6 @@
                     <div class="ratio-bar">
                         <div class="ratio-bar-long" id="ethLongBar" style="width: 50%"></div>
                         <div class="ratio-bar-short" id="ethShortBar" style="width: 50%"></div>
-                    </div>
-                </div>
-                <div class="ratio-exchanges" id="ethExchanges">
-                    <div class="exchange-row">
-                        <div class="exchange-name">Binance</div>
-                        <div class="exchange-ratio">
-                            <div class="exchange-bar">
-                                <div class="exchange-long" style="width: 50%"></div>
-                            </div>
-                            <div class="exchange-percent">-%</div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1278,8 +1269,48 @@
 </div>
 
 <script>
-    // Fear & Greed Index - Gerçek API
+    // Fear & Greed Index - CoinMarketCap Pro
     async function updateFearGreedIndex() {
+        const apiKey = localStorage.getItem('cmcApiKey');
+        
+        if (!apiKey) {
+            // API key yoksa ücretsiz API kullan
+            await updateFearGreedIndexFree();
+            return;
+        }
+
+        try {
+            const response = await fetch('https://pro-api.coinmarketcap.com/v3/fear-and-greed/historical?limit=1', {
+                headers: {
+                    'X-CMC_PRO_API_KEY': apiKey
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.data && data.data.length > 0) {
+                const fearGreedData = data.data[0];
+                const fearGreedValue = fearGreedData.value;
+                const classification = fearGreedData.value_classification;
+                
+                updateFearGreedDisplay(fearGreedValue, classification);
+                updateApiStatus(true);
+                console.log(`😨 Fear & Greed Index (CMC): ${fearGreedValue} - ${classification}`);
+            }
+        } catch (error) {
+            console.error('CMC API error:', error);
+            // Fallback: ücretsiz API
+            await updateFearGreedIndexFree();
+            updateApiStatus(false);
+        }
+    }
+
+    // Ücretsiz API (Fallback)
+    async function updateFearGreedIndexFree() {
         try {
             const response = await fetch('https://api.alternative.me/fng/');
             const data = await response.json();
@@ -1289,37 +1320,94 @@
                 const fearGreedValue = parseInt(fearGreedData.value);
                 const classification = fearGreedData.value_classification;
                 
-                const fearGreedElement = document.getElementById('fearGreedValue');
-                const fearGreedMainElement = document.getElementById('fearGreedMainValue');
-                const fearGreedLabelElement = document.getElementById('fearGreedLabel');
-                const fearGreedBarElement = document.getElementById('fearGreedBar');
-                
-                fearGreedElement.textContent = fearGreedValue;
-                fearGreedMainElement.textContent = fearGreedValue;
-                fearGreedLabelElement.textContent = classification;
-                
-                fearGreedBarElement.style.width = `${fearGreedValue}%`;
-                
-                let colorClass = '';
-                if (fearGreedValue <= 20) {
-                    colorClass = 'fear-greed-extreme';
-                } else if (fearGreedValue <= 40) {
-                    colorClass = 'fear-greed-fear';
-                } else if (fearGreedValue <= 60) {
-                    colorClass = 'fear-greed-neutral';
-                } else if (fearGreedValue <= 80) {
-                    colorClass = 'fear-greed-greed';
-                } else {
-                    colorClass = 'fear-greed-extreme-greed';
-                }
-                
-                fearGreedBarElement.className = `fear-greed-fill ${colorClass}`;
+                updateFearGreedDisplay(fearGreedValue, classification);
             }
         } catch (error) {
-            console.error('Fear & Greed Index error:', error);
+            console.error('Free API error:', error);
             const fearGreedValue = Math.floor(Math.random() * 100) + 1;
-            document.getElementById('fearGreedValue').textContent = fearGreedValue;
-            document.getElementById('fearGreedMainValue').textContent = fearGreedValue;
+            updateFearGreedDisplay(fearGreedValue, 'Neutral');
+        }
+    }
+
+    // Görüntüleme fonksiyonu
+    function updateFearGreedDisplay(value, classification) {
+        document.getElementById('fearGreedValue').textContent = value;
+        document.getElementById('fearGreedMainValue').textContent = value;
+        document.getElementById('fearGreedLabel').textContent = classification;
+        
+        const barElement = document.getElementById('fearGreedBar');
+        barElement.style.width = `${value}%`;
+        
+        let colorClass = '';
+        if (value <= 25) {
+            colorClass = 'fear-greed-extreme';
+        } else if (value <= 45) {
+            colorClass = 'fear-greed-fear';
+        } else if (value <= 55) {
+            colorClass = 'fear-greed-neutral';
+        } else if (value <= 75) {
+            colorClass = 'fear-greed-greed';
+        } else {
+            colorClass = 'fear-greed-extreme-greed';
+        }
+        
+        barElement.className = `fear-greed-fill ${colorClass}`;
+    }
+
+    // API Key Yönetimi
+    function saveApiKey() {
+        const apiKey = document.getElementById('cmcApiKey').value;
+        if (apiKey && apiKey.trim() !== '') {
+            localStorage.setItem('cmcApiKey', apiKey);
+            alert('✅ API Key kaydedildi! Fear & Greed Index güncelleniyor...');
+            updateFearGreedIndex();
+        } else {
+            alert('❌ Lütfen geçerli bir API Key girin!');
+        }
+    }
+
+    function testApiKey() {
+        const apiKey = localStorage.getItem('cmcApiKey') || document.getElementById('cmcApiKey').value;
+        if (!apiKey) {
+            alert('❌ Lütfen önce API Key girin!');
+            return;
+        }
+
+        fetch('https://pro-api.coinmarketcap.com/v3/fear-and-greed/historical?limit=1', {
+            headers: {
+                'X-CMC_PRO_API_KEY': apiKey
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('✅ API Key çalışıyor!');
+                updateApiStatus(true);
+            } else {
+                alert('❌ API Key geçersiz!');
+                updateApiStatus(false);
+            }
+        })
+        .catch(error => {
+            alert('❌ API bağlantı hatası!');
+            updateApiStatus(false);
+        });
+    }
+
+    function clearApiKey() {
+        localStorage.removeItem('cmcApiKey');
+        document.getElementById('cmcApiKey').value = '';
+        updateApiStatus(false);
+        alert('🗑️ API Key temizlendi!');
+    }
+
+    function updateApiStatus(isConnected) {
+        const statusElement = document.getElementById('apiStatus');
+        if (isConnected) {
+            statusElement.textContent = 'Connected';
+            statusElement.className = 'api-status connected';
+        } else {
+            statusElement.textContent = 'Not Connected';
+            statusElement.className = 'api-status disconnected';
         }
     }
 
@@ -1402,6 +1490,7 @@
         }
     }
 
+    // Diğer fonksiyonlar
     function toggleTheme() {
         const body = document.body;
         const currentTheme = body.getAttribute('data-theme');
@@ -1444,7 +1533,6 @@
         const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
         
         const nasdaqChange = (Math.random() * 6 - 3).toFixed(2);
-        const changeClass = parseFloat(nasdaqChange) >= 0 ? 'market-open' : 'market-closed';
         
         if (isWeekend) {
             countdownElement.innerHTML = `
@@ -1511,13 +1599,20 @@
         updateUSMarketsCountdown();
         setInterval(updateUSMarketsCountdown, 1000);
         
+        // API key kontrolü
+        const savedApiKey = localStorage.getItem('cmcApiKey');
+        if (savedApiKey) {
+            document.getElementById('cmcApiKey').value = savedApiKey;
+            updateApiStatus(true);
+        }
+        
         updateFearGreedIndex();
         setInterval(updateFearGreedIndex, 60000);
         
         updateLongShortRatios();
         startAutoRatioUpdate();
         
-        console.log('🐋 Whale Tracker PRO - Real Data Initialized!');
+        console.log('🐋 Whale Tracker PRO - CoinMarketCap Pro Ready!');
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -1527,8 +1622,6 @@
     window.addEventListener('beforeunload', () => {
         stopAutoRatioUpdate();
     });
-
-    console.log('🐋 Whale Tracker PRO - Multi Exchange Ready!');
 </script>
 </body>
 </html>
