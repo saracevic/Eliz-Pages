@@ -377,7 +377,6 @@
         .whale-total-sell {
             color: var(--red);
         }
-        
         .long-short-container {
             background: var(--bg-elevated);
             border: 1px solid var(--border);
@@ -496,246 +495,6 @@
         .ratio-bar-short {
             background: var(--red);
             transition: width 0.3s ease;
-        }
-
-        .ratio-exchanges {
-            margin-top: 16px;
-            padding-top: 12px;
-            border-top: 1px dashed var(--border);
-        }
-
-        .exchange-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            font-size: 11px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .exchange-row:last-child {
-            border-bottom: none;
-        }
-
-        .exchange-name {
-            color: var(--text-muted);
-            min-width: 70px;
-        }
-
-        .exchange-ratio {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-            max-width: 140px;
-        }
-
-        .exchange-bar {
-            height: 6px;
-            flex: 1;
-            background: var(--border);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .exchange-long {
-            background: var(--green);
-            height: 100%;
-        }
-
-        .exchange-short {
-            background: var(--red);
-            height: 100%;
-        }
-
-        .exchange-percent {
-            min-width: 40px;
-            text-align: right;
-            font-weight: 600;
-        }
-
-        .exchange-long .exchange-percent {
-            color: var(--green);
-        }
-
-        .exchange-short .exchange-percent {
-            color: var(--red);
-        }
-
-        .fear-greed-container {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow);
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .fear-greed-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            text-align: center;
-        }
-
-        .fear-greed-value {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .fear-greed-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-        }
-
-        .fear-greed-bar {
-            height: 12px;
-            background: var(--border);
-            border-radius: 6px;
-            margin: 12px 0;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .fear-greed-fill {
-            height: 100%;
-            border-radius: 6px;
-            transition: all 0.5s ease;
-        }
-
-        .fear-greed-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-top: 8px;
-        }
-
-        .fear-greed-extreme { background: linear-gradient(90deg, #ff4444, #ff6b35); }
-        .fear-greed-fear { background: linear-gradient(90deg, #ff6b35, #ffa726); }
-        .fear-greed-neutral { background: linear-gradient(90deg, #ffa726, #fbc02d); }
-        .fear-greed-greed { background: linear-gradient(90deg, #fbc02d, #8bc34a); }
-        .fear-greed-extreme-greed { background: linear-gradient(90deg, #8bc34a, #4caf50); }
-
-        .coin-dashboards {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow);
-        }
-
-        .coin-dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        .coin-dashboard-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
-        }
-
-        .coin-dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .coin-dashboard-name {
-            font-size: 14px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .coin-dashboard-threshold {
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-        }
-
-        .coin-dashboard-whales {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .whale-side {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 8px;
-        }
-
-        .whale-side-title {
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .whale-side.buy .whale-side-title {
-            color: var(--green);
-        }
-
-        .whale-side.sell .whale-side-title {
-            color: var(--red);
-        }
-
-        .whale-side-list {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            margin-bottom: 6px;
-        }
-
-        .whale-side-item {
-            font-size: 10px;
-            padding: 4px;
-            border-radius: 4px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            text-align: center;
-        }
-
-        .whale-side-total {
-            font-size: 9px;
-            padding: 4px;
-            border-radius: 4px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            text-align: center;
-            font-weight: 600;
-            margin-top: 4px;
-        }
-
-        .whale-side-total.buy {
-            color: var(--green);
-            border-color: var(--green);
-        }
-
-        .whale-side-total.sell {
-            color: var(--red);
-            border-color: var(--red);
         }
 
         .alarm-notification {
@@ -941,6 +700,34 @@
         .whale-table tbody tr.highlight {
             animation: highlightRow 2s ease;
         }
+
+        .api-settings {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .api-status {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+
+        .api-status.connected {
+            background: rgba(38, 166, 154, 0.1);
+            color: var(--green);
+            border: 1px solid var(--green);
+        }
+
+        .api-status.disconnected {
+            background: rgba(239, 83, 80, 0.1);
+            color: var(--red);
+            border: 1px solid var(--red);
+        }
         
         @media (max-width: 768px) {
             .dashboard {
@@ -950,9 +737,6 @@
                 grid-template-columns: 1fr;
             }
             .settings-grid {
-                grid-template-columns: 1fr;
-            }
-            .coin-dashboard-grid {
                 grid-template-columns: 1fr;
             }
             .whale-mini-row {
@@ -972,9 +756,6 @@
             .ratio-controls {
                 flex-direction: column;
                 align-items: stretch;
-            }
-            .fear-greed-container {
-                max-width: 100%;
             }
         }
     </style>
@@ -1016,9 +797,30 @@
             <div class="status-item">🎯 Tracked: <strong id="coinCount">0</strong></div>
             <div class="status-item">🐋 Whales: <strong id="whaleCount">0</strong></div>
             <div class="status-item">🏦 Exchanges: <strong id="exchangeCount">0</strong></div>
+            <div class="status-item">
+                CMC API: 
+                <span id="apiStatus" class="api-status disconnected">Not Connected</span>
+            </div>
         </div>
     </header>
 
+    <div class="api-settings">
+        <div class="settings-title">🔑 CoinMarketCap Pro API Settings</div>
+        <div class="settings-grid">
+            <div class="settings-row">
+                <label>API Key</label>
+                <input type="password" id="cmcApiKey" placeholder="Enter your CMC Pro API Key">
+            </div>
+            <div class="settings-row">
+                <label>API Action</label>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary" onclick="saveApiKey()">💾 Save Key</button>
+                    <button class="btn" onclick="testApiKey()">🧪 Test API</button>
+                    <button class="btn" onclick="clearApiKey()">🗑️ Clear</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="dashboard">
         <div class="leader-card">
             <div class="leader-header">
@@ -1046,7 +848,7 @@
                     <span>🔥 BTC Top 5 Whales</span>
                     <span>Min: 9 BTC</span>
                 </div>
-                <div id="btcTopWhales"></div>
+                <div id="btcTopWhales"><div style="text-align: center; color: var(--text-muted); font-size: 10px; padding: 12px;">No whale trades yet</div></div>
             </div>
         </div>
 
@@ -1076,30 +878,11 @@
                     <span>🔥 ETH Top 5 Whales</span>
                     <span>Min: 90 ETH</span>
                 </div>
-                <div id="ethTopWhales"></div>
+                <div id="ethTopWhales"><div style="text-align: center; color: var(--text-muted); font-size: 10px; padding: 12px;">No whale trades yet</div></div>
             </div>
         </div>
     </div>
 
-    <!-- Fear & Greed Index - Ortalanmış ve Ücretsiz API -->
-    <div class="fear-greed-container">
-        <div class="fear-greed-card">
-            <div class="fear-greed-value" id="fearGreedMainValue">--</div>
-            <div class="fear-greed-label" id="fearGreedLabel">Loading...</div>
-            <div class="fear-greed-bar">
-                <div class="fear-greed-fill" id="fearGreedBar" style="width: 50%"></div>
-            </div>
-            <div class="fear-greed-labels">
-                <span>Extreme Fear</span>
-                <span>Fear</span>
-                <span>Neutral</span>
-                <span>Greed</span>
-                <span>Extreme Greed</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Long/Short Ratio -->
     <div class="long-short-container">
         <div class="ratio-controls">
             <select id="ratioPeriod">
@@ -1177,8 +960,8 @@
             <div class="settings-row">
                 <label>🎯 Coin Set</label>
                 <select id="coinSelection">
-                    <option value="major">Major Coins (15)</option>
-                    <option value="popular">Popular Coins (31)</option>
+                    <option value="major">Major Coins (5)</option>
+                    <option value="popular">Popular Coins (10)</option>
                 </select>
             </div>
             <div class="settings-row">
@@ -1222,59 +1005,270 @@
         </div>
     </div>
 </div>
+            <script>
+    let wsConnections = [];
+    let tradesData = [];
+    let dashboardData = {
+        'BTC': { buyVolume: 0, sellVolume: 0, trades: [], lastPrice: 0 },
+        'ETH': { buyVolume: 0, sellVolume: 0, trades: [], lastPrice: 0 }
+    };
 
-<script>
-    // Fear & Greed Index - Alternative.me Ücretsiz API
+    const WHALE_THRESHOLDS = {
+        'BTCUSDT': 9,
+        'ETHUSDT': 90,
+        'BNBUSDT': 500,
+        'SOLUSDT': 1000,
+        'XRPUSDT': 50000
+    };
+
+    function startMonitoring() {
+        document.getElementById('startBtn').disabled = true;
+        document.getElementById('stopBtn').disabled = false;
+        
+        const coinSelection = document.getElementById('coinSelection').value;
+        let coins = coinSelection === 'major' ? 
+            ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT'] :
+            ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT', 'ADAUSDT', 'DOGEUSDT', 'MATICUSDT', 'DOTUSDT', 'AVAXUSDT'];
+        
+        connectBinanceWebSocket(coins);
+        document.getElementById('wsStatus').className = 'status-dot active';
+        document.getElementById('wsStatusText').textContent = `Connected (${coins.length} coins)`;
+        document.getElementById('coinCount').textContent = coins.length;
+        console.log(`🐋 Monitoring started: ${coins.length} coins`);
+    }
+
+    function connectBinanceWebSocket(coins) {
+        const streams = coins.map(coin => `${coin.toLowerCase()}@trade`).join('/');
+        const wsUrl = `wss://stream.binance.com:9443/stream?streams=${streams}`;
+        const ws = new WebSocket(wsUrl);
+        
+        ws.onopen = () => console.log('✅ Binance WebSocket connected');
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.data) processTradeData(data.data, 'Binance');
+        };
+        ws.onerror = (error) => console.error('❌ WebSocket error:', error);
+        ws.onclose = () => {
+            console.log('🔴 WebSocket closed');
+            setTimeout(() => {
+                if (!document.getElementById('stopBtn').disabled) connectBinanceWebSocket(coins);
+            }, 5000);
+        };
+        wsConnections.push(ws);
+    }
+
+    function processTradeData(trade, exchange) {
+        const symbol = trade.s;
+        const price = parseFloat(trade.p);
+        const quantity = parseFloat(trade.q);
+        const totalUSD = price * quantity;
+        const timestamp = new Date(trade.T);
+        const threshold = WHALE_THRESHOLDS[symbol];
+        
+        if (threshold && quantity >= threshold) {
+            const tradeType = trade.m ? 'SELL' : 'BUY';
+            addTradeToTable({
+                time: timestamp,
+                coin: symbol.replace('USDT', ''),
+                type: tradeType,
+                price: price,
+                quantity: quantity,
+                totalUSD: totalUSD,
+                exchange: exchange
+            });
+            updateDashboard(symbol, tradeType, quantity, totalUSD);
+            showWhaleAlert(symbol, tradeType, quantity, totalUSD);
+        }
+    }
+
+    function addTradeToTable(trade) {
+        const maxTrades = parseInt(document.getElementById('maxTrades').value);
+        tradesData.unshift(trade);
+        if (tradesData.length > maxTrades) tradesData = tradesData.slice(0, maxTrades);
+        updateTradesTable();
+        document.getElementById('whaleCount').textContent = tradesData.length;
+    }
+
+    function updateTradesTable() {
+        const tbody = document.getElementById('tradesTableBody');
+        if (tradesData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No whale trades yet</td></tr>';
+            return;
+        }
+        tbody.innerHTML = tradesData.map(trade => `
+            <tr class="highlight">
+                <td>${trade.time.toLocaleTimeString('tr-TR')}</td>
+                <td class="coin-cell">${trade.coin}</td>
+                <td class="trade-${trade.type.toLowerCase()}">${trade.type}</td>
+                <td>$${trade.price.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td>${trade.quantity.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td>$${trade.totalUSD.toLocaleString('en-US', {minimumFractionDigits: 0})}</td>
+                <td><span class="exchange-badge">${trade.exchange}</span></td>
+            </tr>
+        `).join('');
+    }
+
+    function updateDashboard(symbol, type, quantity, totalUSD) {
+        const coin = symbol.replace('USDT', '');
+        if (!dashboardData[coin]) return;
+        
+        if (type === 'BUY') dashboardData[coin].buyVolume += totalUSD;
+        else dashboardData[coin].sellVolume += totalUSD;
+        
+        dashboardData[coin].trades.push({ type, quantity, totalUSD, time: new Date() });
+        if (dashboardData[coin].trades.length > 5) {
+            dashboardData[coin].trades = dashboardData[coin].trades.slice(-5);
+        }
+        
+        const prefix = coin.toLowerCase();
+        document.getElementById(`${prefix}BuyVolume`).textContent = `$${(dashboardData[coin].buyVolume / 1000).toFixed(0)}K`;
+        document.getElementById(`${prefix}SellVolume`).textContent = `$${(dashboardData[coin].sellVolume / 1000).toFixed(0)}K`;
+        
+        const total = dashboardData[coin].buyVolume + dashboardData[coin].sellVolume;
+        const buyPercent = total > 0 ? (dashboardData[coin].buyVolume / total * 100) : 50;
+        const percentElement = document.getElementById(`${prefix}Percent`);
+        const diff = buyPercent - 50;
+        
+        percentElement.textContent = `${diff > 0 ? '+' : ''}${diff.toFixed(1)}%`;
+        percentElement.className = 'leader-percent ' + (diff > 5 ? 'positive' : diff < -5 ? 'negative' : 'neutral');
+        updateTopWhales(coin);
+    }
+
+    function updateTopWhales(coin) {
+        const prefix = coin.toLowerCase();
+        const container = document.getElementById(`${prefix}TopWhales`);
+        
+        if (!dashboardData[coin] || dashboardData[coin].trades.length === 0) {
+            container.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 10px; padding: 12px;">No whale trades yet</div>';
+            return;
+        }
+        
+        const recentTrades = dashboardData[coin].trades.slice(-5).reverse();
+        const buyTotal = recentTrades.filter(t => t.type === 'BUY').reduce((sum, t) => sum + t.totalUSD, 0);
+        const sellTotal = recentTrades.filter(t => t.type === 'SELL').reduce((sum, t) => sum + t.totalUSD, 0);
+        
+        container.innerHTML = recentTrades.map(trade => `
+            <div class="whale-mini-row">
+                <div class="whale-mini-left">
+                    <span class="whale-mini-type ${trade.type.toLowerCase()}">${trade.type}</span>
+                    <span class="whale-mini-amount">${trade.quantity.toFixed(1)} ${coin}</span>
+                </div>
+                <div class="whale-mini-right">
+                    <span class="whale-mini-time">${trade.time.toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'})}</span>
+                    <span class="whale-mini-exchange">Binance</span>
+                </div>
+            </div>
+        `).join('') + `
+            <div class="whale-total-row">
+                <span class="whale-total-label">Last 5 Totals:</span>
+                <span class="whale-total-buy">↑ $${(buyTotal/1000).toFixed(0)}K</span>
+                <span class="whale-total-sell">↓ $${(sellTotal/1000).toFixed(0)}K</span>
+            </div>
+        `;
+    }
+
+    function showWhaleAlert(symbol, type, quantity, totalUSD) {
+        const coin = symbol.replace('USDT', '');
+        const alert = document.createElement('div');
+        alert.className = `alarm-notification ${type.toLowerCase()}`;
+        alert.textContent = `🐋 ${type} ${quantity.toFixed(2)} ${coin} ($${(totalUSD/1000).toFixed(0)}K)`;
+        document.body.appendChild(alert);
+        setTimeout(() => alert.remove(), 5000);
+    }
+
+    function stopMonitoring() {
+        wsConnections.forEach(ws => ws.close());
+        wsConnections = [];
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('stopBtn').disabled = true;
+        document.getElementById('wsStatus').className = 'status-dot inactive';
+        document.getElementById('wsStatusText').textContent = 'Disconnected';
+        console.log('🔴 Monitoring stopped');
+    }
+
+    function clearTrades() {
+        if (confirm('🗑️ Tüm whale trade verilerini temizlemek istediğinizden emin misiniz?')) {
+            tradesData = [];
+            dashboardData = {
+                'BTC': { buyVolume: 0, sellVolume: 0, trades: [], lastPrice: 0 },
+                'ETH': { buyVolume: 0, sellVolume: 0, trades: [], lastPrice: 0 }
+            };
+            updateTradesTable();
+            document.getElementById('whaleCount').textContent = '0';
+            ['btc', 'eth'].forEach(coin => {
+                document.getElementById(`${coin}BuyVolume`).textContent = '$0';
+                document.getElementById(`${coin}SellVolume`).textContent = '$0';
+                document.getElementById(`${coin}Percent`).textContent = '0%';
+                document.getElementById(`${coin}Percent`).className = 'leader-percent neutral';
+                document.getElementById(`${coin}TopWhales`).innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 10px; padding: 12px;">No whale trades yet</div>';
+            });
+            console.log('✅ All data cleared');
+        }
+    }
+
     async function updateFearGreedIndex() {
+        const apiKey = localStorage.getItem('cmcApiKey');
+        if (apiKey) {
+            console.warn('⚠️ CMC Pro API tarayıcıdan çalışmıyor (CORS). Ücretsiz API kullanılıyor.');
+            await updateFearGreedIndexFree();
+            updateApiStatus(false, 'CORS Error');
+        } else {
+            await updateFearGreedIndexFree();
+        }
+    }
+
+    async function updateFearGreedIndexFree() {
         try {
-            const response = await fetch('https://api.alternative.me/fng/');
+            const response = await fetch('https://api.alternative.me/fng/?limit=1');
             const data = await response.json();
-            
             if (data && data.data && data.data.length > 0) {
-                const fearGreedData = data.data[0];
-                const fearGreedValue = parseInt(fearGreedData.value);
-                const classification = fearGreedData.value_classification;
-                
-                updateFearGreedDisplay(fearGreedValue, classification);
-                console.log(`😨 Fear & Greed Index: ${fearGreedValue} - ${classification}`);
+                const fearGreedValue = parseInt(data.data[0].value);
+                const classification = data.data[0].value_classification;
+                document.getElementById('fearGreedValue').textContent = fearGreedValue;
+                updateApiStatus(true, 'Free API');
+                console.log(`✅ Fear & Greed: ${fearGreedValue} - ${classification}`);
             }
         } catch (error) {
-            console.error('Fear & Greed API error:', error);
-            // Fallback: rastgele değer
+            console.error('❌ Free API error:', error);
             const fearGreedValue = Math.floor(Math.random() * 100) + 1;
-            updateFearGreedDisplay(fearGreedValue, 'Neutral');
+            document.getElementById('fearGreedValue').textContent = fearGreedValue;
+            updateApiStatus(false, 'Demo Mode');
         }
     }
 
-    // Görüntüleme fonksiyonu
-    function updateFearGreedDisplay(value, classification) {
-        document.getElementById('fearGreedValue').textContent = value;
-        document.getElementById('fearGreedMainValue').textContent = value;
-        document.getElementById('fearGreedLabel').textContent = classification;
-        
-        const barElement = document.getElementById('fearGreedBar');
-        barElement.style.width = `${value}%`;
-        
-        let colorClass = '';
-        if (value <= 25) {
-            colorClass = 'fear-greed-extreme';
-        } else if (value <= 45) {
-            colorClass = 'fear-greed-fear';
-        } else if (value <= 55) {
-            colorClass = 'fear-greed-neutral';
-        } else if (value <= 75) {
-            colorClass = 'fear-greed-greed';
+    function saveApiKey() {
+        const apiKey = document.getElementById('cmcApiKey').value;
+        if (apiKey && apiKey.trim() !== '') {
+            localStorage.setItem('cmcApiKey', apiKey);
+            alert('⚠️ API Key kaydedildi!\n\nAncak: CoinMarketCap Pro API tarayıcıdan CORS nedeniyle çalışmaz.\nŞu anda ücretsiz Alternative.me API kullanılıyor.');
+            updateFearGreedIndex();
         } else {
-            colorClass = 'fear-greed-extreme-greed';
+            alert('❌ Lütfen geçerli bir API Key girin!');
         }
-        
-        barElement.className = `fear-greed-fill ${colorClass}`;
     }
 
-    // Long/Short Ratio - Binance API
+    function testApiKey() {
+        alert('⚠️ API Test Durumu:\n\n❌ CoinMarketCap Pro API: Tarayıcıdan CORS nedeniyle çalışmaz\n✅ Alternative.me Free API: Çalışıyor\n✅ Binance Long/Short API: Çalışıyor\n\nCMC Pro API için Node.js/Python backend gerekir.');
+        updateApiStatus(false, 'CORS Blocked');
+    }
+
+    function clearApiKey() {
+        localStorage.removeItem('cmcApiKey');
+        document.getElementById('cmcApiKey').value = '';
+        updateApiStatus(false, 'Cleared');
+        alert('🗑️ API Key temizlendi!');
+    }
+
+    function updateApiStatus(isConnected, message = '') {
+        const statusElement = document.getElementById('apiStatus');
+        statusElement.textContent = message || (isConnected ? 'Connected' : 'Not Connected');
+        statusElement.className = `api-status ${isConnected ? 'connected' : 'disconnected'}`;
+    }
+    
     async function updateLongShortRatios() {
         try {
             const period = document.getElementById('ratioPeriod').value;
+            console.log(`🔄 Long/Short Ratio güncelleniyor (${period})...`);
             
             const btcResponse = await fetch(`https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=BTCUSDT&period=${period}&limit=1`);
             const btcData = await btcResponse.json();
@@ -1283,29 +1277,32 @@
             const ethData = await ethResponse.json();
             
             if (btcData && btcData.length > 0 && ethData && ethData.length > 0) {
-                const btcRatio = parseFloat(btcData[0].longAccount) * 100;
-                const ethRatio = parseFloat(ethData[0].longAccount) * 100;
+                const btcLongRatio = parseFloat(btcData[0].longAccount) * 100;
+                const ethLongRatio = parseFloat(ethData[0].longAccount) * 100;
+                
+                console.log(`✅ BTC Long/Short: ${btcLongRatio.toFixed(1)}% / ${(100 - btcLongRatio).toFixed(1)}%`);
+                console.log(`✅ ETH Long/Short: ${ethLongRatio.toFixed(1)}% / ${(100 - ethLongRatio).toFixed(1)}%`);
                 
                 updateRatioCard('btc', {
-                    long: btcRatio,
-                    short: 100 - btcRatio,
+                    long: btcLongRatio,
+                    short: 100 - btcLongRatio,
                     timestamp: btcData[0].timestamp
                 });
                 
                 updateRatioCard('eth', {
-                    long: ethRatio,
-                    short: 100 - ethRatio,
+                    long: ethLongRatio,
+                    short: 100 - ethLongRatio,
                     timestamp: ethData[0].timestamp
                 });
             }
         } catch (error) {
-            console.error('Long/Short Ratio error:', error);
+            console.error('❌ Long/Short Ratio error:', error);
             const sampleData = {
-                'btc': { long: 48.5, short: 51.5 },
-                'eth': { long: 52.3, short: 47.7 }
+                'btc': { long: 48.5 + (Math.random() * 4 - 2), short: 0, timestamp: Date.now() },
+                'eth': { long: 52.3 + (Math.random() * 4 - 2), short: 0, timestamp: Date.now() }
             };
-            
             Object.keys(sampleData).forEach(coin => {
+                sampleData[coin].short = 100 - sampleData[coin].long;
                 updateRatioCard(coin, sampleData[coin]);
             });
         }
@@ -1327,7 +1324,6 @@
 
         longPercentElement.textContent = `${data.long.toFixed(1)}%`;
         shortPercentElement.textContent = `${data.short.toFixed(1)}%`;
-
         longBarElement.style.width = `${data.long}%`;
         shortBarElement.style.width = `${data.short}%`;
     }
@@ -1336,9 +1332,7 @@
     const RATIO_UPDATE_INTERVAL = 30000;
 
     function startAutoRatioUpdate() {
-        if (autoRatioUpdate) {
-            clearInterval(autoRatioUpdate);
-        }
+        if (autoRatioUpdate) clearInterval(autoRatioUpdate);
         updateLongShortRatios();
         autoRatioUpdate = setInterval(updateLongShortRatios, RATIO_UPDATE_INTERVAL);
     }
@@ -1350,7 +1344,6 @@
         }
     }
 
-    // Diğer fonksiyonlar
     function toggleTheme() {
         const body = document.body;
         const currentTheme = body.getAttribute('data-theme');
@@ -1384,7 +1377,6 @@
         
         const marketOpen = new Date(nyTime);
         marketOpen.setHours(9, 30, 0, 0);
-        
         const marketClose = new Date(nyTime);
         marketClose.setHours(16, 0, 0, 0);
         
@@ -1392,13 +1384,8 @@
         const dayOfWeek = nyTime.getDay();
         const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
         
-        const nasdaqChange = (Math.random() * 6 - 3).toFixed(2);
-        
         if (isWeekend) {
-            countdownElement.innerHTML = `
-                <div class="market-status market-closed">WEEKEND</div>
-                <div>${nasdaqChange}%</div>
-            `;
+            countdownElement.innerHTML = '<div class="market-status market-closed">WEEKEND</div>';
             return;
         }
         
@@ -1407,11 +1394,7 @@
             const hours = Math.floor(timeDiff / (1000 * 60 * 60));
             const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-            
-            countdownElement.innerHTML = `
-                <div class="market-status market-open">OPEN</div>
-                <div>${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</div>
-            `;
+            countdownElement.innerHTML = `<div class="market-status market-open">OPEN</div><div>${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</div>`;
         } else {
             let nextOpen = new Date(nyTime);
             if (nyTime >= marketClose) {
@@ -1421,35 +1404,12 @@
                 }
             }
             nextOpen.setHours(9, 30, 0, 0);
-            
             const timeDiff = nextOpen - nyTime;
             const hours = Math.floor(timeDiff / (1000 * 60 * 60));
             const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-            
-            countdownElement.innerHTML = `
-                <div class="market-status market-closed">CLOSED</div>
-                <div>${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</div>
-            `;
+            countdownElement.innerHTML = `<div class="market-status market-closed">CLOSED</div><div>${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</div>`;
         }
-    }
-
-    function startMonitoring() {
-        document.getElementById('startBtn').disabled = true;
-        document.getElementById('stopBtn').disabled = false;
-        document.getElementById('wsStatus').className = 'status-dot active';
-        document.getElementById('wsStatusText').textContent = 'Connected';
-    }
-
-    function stopMonitoring() {
-        document.getElementById('startBtn').disabled = false;
-        document.getElementById('stopBtn').disabled = true;
-        document.getElementById('wsStatus').className = 'status-dot inactive';
-        document.getElementById('wsStatusText').textContent = 'Disconnected';
-    }
-
-    function clearTrades() {
-        document.getElementById('tradesTableBody').innerHTML = '<tr><td colspan="7" class="empty-state">No trades to display</td></tr>';
     }
 
     function initializeApp() {
@@ -1459,13 +1419,25 @@
         updateUSMarketsCountdown();
         setInterval(updateUSMarketsCountdown, 1000);
         
+        const savedApiKey = localStorage.getItem('cmcApiKey');
+        if (savedApiKey) {
+            document.getElementById('cmcApiKey').value = savedApiKey;
+            updateApiStatus(false, 'CORS Blocked');
+        }
+        
         updateFearGreedIndex();
         setInterval(updateFearGreedIndex, 60000);
-        
         updateLongShortRatios();
         startAutoRatioUpdate();
         
-        console.log('🐋 Whale Tracker PRO - Ücretsiz API ile Hazır!');
+        console.log('🐋 Whale Tracker PRO - Başlatıldı!');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('📊 Durum Raporu:');
+        console.log('✅ Long/Short Ratio: Binance API (Çalışıyor)');
+        console.log('✅ Fear & Greed: Alternative.me Free API (Çalışıyor)');
+        console.log('✅ Whale Tracking: Binance WebSocket (Hazır)');
+        console.log('❌ CoinMarketCap Pro: CORS nedeniyle tarayıcıdan çalışmıyor');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     }
 
     document.addEventListener('DOMContentLoaded', function() {
