@@ -1,169 +1,608 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>Whale Tracker PRO</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whale Tracker PRO - Multi Exchange</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         :root {
-            --bg-main: #050711; --bg-elevated: #0c101c; --bg-elevated-soft: #111827;
-            --accent: #38bdf8; --text-main: #e5e7eb; --text-muted: #6b7280;
-            --good: #22c55e; --bad: #f97373; --card-radius: 18px; --card-radius-lg: 22px;
-            --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.55);
+            --bg-main: #0B0E11;
+            --bg-elevated: #131722;
+            --bg-card: #1E222D;
+            --border: #2A2E39;
+            --accent: #2962FF;
+            --text: #D1D4DC;
+            --text-muted: #787B86;
+            --text-bright: #F8F9FD;
+            --green: #26A69A;
+            --red: #EF5350;
+            --shadow: 0 4px 16px rgba(0,0,0,0.4);
         }
+        
+        [data-theme="light"] {
+            --bg-main: #FFFFFF;
+            --bg-elevated: #F8F9FD;
+            --bg-card: #FFFFFF;
+            --border: #E0E3EB;
+            --text: #131722;
+            --text-muted: #787B86;
+            --text-bright: #131722;
+            --shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-            background: radial-gradient(circle at top, #020617 0, #020617 40%, #000 100%);
-            color: var(--text-main); min-height: 100vh; padding: 16px;
-            -webkit-font-smoothing: antialiased; touch-action: manipulation;
+            font-family: -apple-system, BlinkMacSystemFont, "Trebuchet MS", sans-serif;
+            background: var(--bg-main);
+            color: var(--text);
+            padding: 16px;
+            transition: all 0.3s;
         }
-        .container { max-width: 1200px; margin: 0 auto; }
-        header { position: sticky; top: 0; z-index: 20; margin-bottom: 18px; }
-        .header-card {
-            background: rgba(15, 23, 42, 0.92); border-radius: 24px; padding: 14px 16px;
-            border: 1px solid rgba(148, 163, 184, 0.35); box-shadow: 0 10px 35px rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(20px); display: flex; flex-direction: column; gap: 8px;
+        
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        header {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
         }
-        .header-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .app-title-block { display: flex; align-items: center; gap: 10px; }
-        .app-icon { width: 30px; height: 30px; border-radius: 12px; background: rgba(56, 189, 248, 0.16); display: flex; align-items: center; justify-content: center; font-size: 17px; }
-        h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.03em; }
-        .badge-pro { font-size: 10px; padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(244, 244, 245, 0.3); color: #e5e7eb; text-transform: uppercase; }
-        .tr-clock { display: inline-flex; flex-direction: column; align-items: flex-end; justify-content: center; padding: 6px 10px; border-radius: 12px; background: rgba(8, 47, 73, 0.7); border: 1px solid rgba(56, 189, 248, 0.4); }
-        .tr-clock-label { font-size: 10px; color: var(--text-muted); margin-bottom: 2px; }
-        .tr-clock-time { font-size: 15px; font-weight: 700; color: #e0f2fe; font-variant-numeric: tabular-nums; }
-        .subtitle { font-size: 11px; color: var(--text-muted); }
-        .status-bar { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 8px; }
-        .status-item { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; font-size: 11px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(148, 163, 184, 0.35); }
-        .status-dot { width: 9px; height: 9px; border-radius: 999px; animation: pulse 2s infinite; }
-        .status-dot.active { background: var(--good); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.2); }
-        .status-dot.inactive { background: #f97316; box-shadow: 0 0 0 4px rgba(248, 135, 60, 0.2); }
-        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.11); opacity: 0.6; } }
-        .section-gap { height: 14px; }
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 12px; margin-bottom: 10px; }
-        .leader-card { background: var(--bg-elevated); border-radius: var(--card-radius-lg); padding: 14px 14px 12px; border: 1px solid rgba(148, 163, 184, 0.35); box-shadow: var(--shadow-soft); }
-        .leader-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-        .leader-coin-name { font-size: 18px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; }
-        .leader-coin-tag { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(148, 163, 184, 0.5); color: var(--text-muted); }
-        .leader-badge-group { display: flex; align-items: center; gap: 6px; }
-        .leader-badge { font-size: 10px; padding: 4px 10px; border-radius: 999px; background: rgba(34, 197, 94, 0.1); color: #bbf7d0; border: 1px solid rgba(34, 197, 94, 0.4); text-transform: uppercase; }
-        .leader-percent { font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid; display: flex; align-items: center; gap: 4px; }
-        .leader-percent.positive { background: rgba(34, 197, 94, 0.12); color: #4ade80; border-color: rgba(34, 197, 94, 0.5); }
-        .leader-percent.negative { background: rgba(239, 68, 68, 0.12); color: #fb7185; border-color: rgba(239, 68, 68, 0.5); }
-        .leader-percent.neutral { background: rgba(148, 163, 184, 0.12); color: var(--text-muted); border-color: rgba(148, 163, 184, 0.4); }
-        .dashboard-volumes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 4px; }
-        .volume-box { background: var(--bg-elevated-soft); border-radius: 14px; padding: 10px 10px 9px; border: 1px solid rgba(148, 163, 184, 0.35); }
-        .volume-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-        .volume-value { font-size: 17px; font-weight: 700; }
-        .volume-buy { color: #4ade80; }
-        .volume-sell { color: #fb7185; }
-        .top-whales { margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(148, 163, 184, 0.35); }
-        .top-whales-title { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
-        .top-whales-title span { font-size: 10px; color: rgba(148, 163, 184, 0.9); }
-        .whale-mini-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 8px; margin-bottom: 4px; border-radius: 10px; font-size: 12px; transition: transform 0.12s ease, background 0.12s ease; }
-        .whale-mini-row:hover { transform: translateX(2px); }
-        .whale-mini-row.rank-1 { background: rgba(22, 163, 74, 0.15); border: 1px solid rgba(22, 163, 74, 0.6); }
-        .whale-mini-row.rank-2 { background: rgba(234, 179, 8, 0.14); border: 1px solid rgba(234, 179, 8, 0.5); }
-        .whale-mini-row.rank-3 { background: rgba(59, 130, 246, 0.14); border: 1px solid rgba(59, 130, 246, 0.45); }
-        .whale-mini-row.rank-4, .whale-mini-row.rank-5 { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(148, 163, 184, 0.45); }
-        .whale-mini-type { font-weight: 600; }
-        .whale-mini-type.buy { color: #4ade80; }
-        .whale-mini-type.sell { color: #fb7185; }
-        .whale-mini-amount { font-weight: 600; }
-        .other-coins-summary { background: var(--bg-elevated); border-radius: var(--card-radius-lg); padding: 12px 12px 10px; border: 1px solid rgba(148, 163, 184, 0.35); box-shadow: var(--shadow-soft); margin-bottom: 12px; }
-        .summary-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-        .summary-main-label { display: inline-flex; align-items: center; gap: 6px; }
-        .summary-main-label span { font-size: 18px; }
-        .sort-indicator { font-size: 10px; padding: 4px 9px; border-radius: 999px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(148, 163, 184, 0.5); color: var(--text-muted); }
-        .coins-split-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
-        .coin-section { background: var(--bg-elevated-soft); border-radius: var(--card-radius); padding: 8px 8px 6px; border: 1px solid rgba(148, 163, 184, 0.3); }
-        .section-header { text-align: center; font-weight: 600; margin-bottom: 6px; padding: 6px 8px; border-radius: 999px; font-size: 11px; }
-        .section-header.buy-section { background: rgba(22, 163, 74, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); }
-        .section-header.sell-section { background: rgba(220, 38, 38, 0.14); color: #fb7185; border: 1px solid rgba(239, 68, 68, 0.5); }
-        .summary-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-        .summary-table th { text-align: left; padding: 6px 6px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid rgba(148, 163, 184, 0.3); }
-        .summary-table td { padding: 7px 6px; border-bottom: 1px solid rgba(30, 41, 59, 0.9); }
-        .summary-table tbody tr:hover { background: rgba(15, 23, 42, 0.9); }
-        .coin-name-cell { display: flex; align-items: center; gap: 5px; font-weight: 600; }
-        .trend-arrow { font-size: 13px; }
-        .trend-arrow.up { color: #4ade80; }
-        .trend-arrow.down { color: #fb7185; }
-        .volume-buy { color: #4ade80; font-weight: 500; }
-        .volume-sell { color: #fb7185; font-weight: 500; }
-        .empty-state { text-align: center; padding: 14px 4px; color: var(--text-muted); font-size: 11px; }
-        .settings-panel { background: var(--bg-elevated); border-radius: var(--card-radius-lg); padding: 12px; border: 1px solid rgba(148, 163, 184, 0.35); box-shadow: var(--shadow-soft); margin-bottom: 12px; }
-        .settings-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; color: var(--text-muted); }
-        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
-        .settings-row { display: flex; flex-direction: column; gap: 4px; }
-        .settings-row label { font-size: 11px; color: var(--text-muted); font-weight: 500; }
-        .settings-row input, .settings-row select { padding: 12px 9px; border-radius: 12px; border: 1px solid var(--border-subtle); background: #020617; color: var(--text-main); font-size: 12px; outline: none; -webkit-appearance: none; min-height: 44px; }
-        .settings-row input:focus, .settings-row select:focus { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.6); }
-        .settings-row small { font-size: 10px; color: var(--text-muted); }
-        .controls { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; justify-content: center; }
-        .btn { border: none; border-radius: 999px; padding: 12px 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.1s ease, box-shadow 0.12s ease, background 0.12s ease, opacity 0.1s; background: #0f172a; color: var(--text-main); border: 1px solid rgba(148, 163, 184, 0.5); min-height: 44px; }
-        .btn-primary { background: #0369a1; border-color: #0ea5e9; color: #e0f2fe; box-shadow: 0 10px 25px rgba(56, 189, 248, 0.35); }
-        .btn-danger { background: #111827; border-color: rgba(239, 68, 68, 0.7); color: #fecaca; }
-        .btn:active { transform: scale(0.97); box-shadow: none; }
-        .btn:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
-        .table-container { background: var(--bg-elevated); border-radius: var(--card-radius-lg); border: 1px solid rgba(148, 163, 184, 0.35); box-shadow: var(--shadow-soft); overflow: hidden; }
-        .table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-        .table-scroll::-webkit-scrollbar { display: none; }
-        .whale-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 640px; }
-        .whale-table thead { background: #020617; }
-        .whale-table th { padding: 12px 10px; text-align: left; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid rgba(30, 64, 175, 0.8); }
-        .whale-table tbody tr { border-bottom: 1px solid rgba(30, 41, 59, 0.9); transition: background 0.1s ease, box-shadow 0.2s ease; }
-        .whale-table tbody tr:last-child { border-bottom: none; }
-        .whale-table tbody tr:hover { background: rgba(15, 23, 42, 0.95); }
-        .whale-table td { padding: 10px 10px; }
-        .coin-cell { font-weight: 600; color: var(--accent); }
-        .trade-buy { color: #4ade80; font-weight: 600; }
-        .trade-sell { color: #fb7185; font-weight: 600; }
-        .exchange-badge { display: inline-flex; margin-left: 6px; font-size: 9px; padding: 2px 6px; border-radius: 999px; border: 1px solid rgba(148, 163, 184, 0.6); color: var(--text-muted); }
-        @keyframes highlightRow { 0% { background: rgba(56, 189, 248, 0.4); box-shadow: 0 0 20px rgba(56, 189, 248, 0.6); } 50% { background: rgba(251, 191, 36, 0.4); box-shadow: 0 0 25px rgba(251, 191, 36, 0.7); } 100% { background: rgba(168, 85, 247, 0.4); box-shadow: 0 0 20px rgba(168, 85, 247, 0.6); } }
-        .whale-table tbody tr.highlight { animation: highlightRow 1.5s ease-in-out; }
-        @media (max-width: 600px) {
-            h1 { font-size: 18px; }
-            .header-card { padding: 12px; }
-            .leader-card, .other-coins-summary, .settings-panel, .table-container { border-radius: 18px; }
-            .dashboard { grid-template-columns: 1fr; }
-            .controls { flex-direction: column; }
-            .btn { width: 100%; justify-content: center; }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .app-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-bright);
+        }
+        
+        .subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .header-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+        
+        .theme-toggle:hover { transform: scale(1.05); }
+        
+        .tr-clock {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            text-align: right;
+        }
+        
+        .tr-clock-label {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+        
+        .tr-clock-time {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-bright);
+        }
+        
+        .status-bar {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .status-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-dot.active {
+            background: var(--green);
+            box-shadow: 0 0 0 4px rgba(38, 166, 154, 0.3);
+        }
+        
+        .status-dot.inactive {
+            background: var(--red);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .leader-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: var(--shadow);
+        }
+        
+        .leader-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .leader-coin-name {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .leader-coin-tag {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+        
+        .leader-badge {
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: rgba(38, 166, 154, 0.1);
+            color: var(--green);
+            border: 1px solid var(--green);
+        }
+        
+        .leader-percent {
+            font-size: 13px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid;
+        }
+        
+        .leader-percent.positive {
+            background: rgba(38, 166, 154, 0.1);
+            color: var(--green);
+            border-color: var(--green);
+        }
+        
+        .leader-percent.negative {
+            background: rgba(239, 83, 80, 0.1);
+            color: var(--red);
+            border-color: var(--red);
+        }
+        
+        .leader-percent.neutral {
+            background: var(--bg-card);
+            color: var(--text-muted);
+            border-color: var(--border);
+        }
+        
+        .dashboard-volumes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .volume-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+        }
+        
+        .volume-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        
+        .volume-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        .volume-buy { color: var(--green); }
+        .volume-sell { color: var(--red); }
+        
+        .top-whales {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border);
+        }
+        
+        .top-whales-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .whale-mini-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            font-size: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+        }
+        
+        .whale-mini-type {
+            font-weight: 600;
+        }
+        
+        .whale-mini-type.buy { color: var(--green); }
+        .whale-mini-type.sell { color: var(--red); }
+        
+        .other-coins-summary {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+        
+        .summary-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .coins-split-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+        
+        .coin-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+        }
+        
+        .section-header {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        
+        .section-header.buy-section {
+            background: rgba(38, 166, 154, 0.1);
+            color: var(--green);
+            border: 1px solid var(--green);
+        }
+        
+        .section-header.sell-section {
+            background: rgba(239, 83, 80, 0.1);
+            color: var(--red);
+            border: 1px solid var(--red);
+        }
+        
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        
+        .summary-table th {
+            text-align: left;
+            padding: 6px;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .summary-table td {
+            padding: 8px 6px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .summary-table tbody tr:hover {
+            background: var(--bg-elevated);
+        }
+        
+        .coin-name-cell {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+        }
+        
+        .settings-panel {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+        
+        .settings-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+        }
+        
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+        
+        .settings-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .settings-row label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        
+        .settings-row input,
+        .settings-row select {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+            font-size: 12px;
+            outline: none;
+        }
+        
+        .settings-row input:focus,
+        .settings-row select:focus {
+            border-color: var(--accent);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            border: none;
+            border-radius: 6px;
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-elevated);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .btn-danger {
+            background: var(--red);
+            color: white;
+            border-color: var(--red);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .table-container {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .table-scroll {
+            width: 100%;
+            overflow-x: auto;
+        }
+        
+        .whale-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            min-width: 700px;
+        }
+        
+        .whale-table thead {
+            background: var(--bg-card);
+        }
+        
+        .whale-table th {
+            padding: 12px;
+            text-align: left;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .whale-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+        
+        .whale-table tbody tr:hover {
+            background: var(--bg-card);
+        }
+        
+        .whale-table td {
+            padding: 12px;
+        }
+        
+        .coin-cell {
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .trade-buy {
+            color: var(--green);
+            font-weight: 600;
+        }
+        
+        .trade-sell {
+            color: var(--red);
+            font-weight: 600;
+        }
+        
+        .exchange-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+        }
+        
+        @keyframes highlightRow {
+            0% { background: rgba(41, 98, 255, 0.3); }
+            50% { background: rgba(38, 166, 154, 0.3); }
+            100% { background: transparent; }
+        }
+        
+        .whale-table tbody tr.highlight {
+            animation: highlightRow 2s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .coins-split-container {
+                grid-template-columns: 1fr;
+            }
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
 <div class="container">
     <header>
-        <div class="header-card">
-            <div class="header-top">
-                <div class="app-title-block">
-                    <div class="app-icon">🐋</div>
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <h1>Whale Tracker</h1>
-                            <span class="badge-pro">PRO</span>
-                        </div>
-                        <p class="subtitle">Gerçek zamanlı büyük emir / işlem takibi</p>
-                    </div>
+        <div class="header-top">
+            <div class="header-left">
+                <div class="app-icon">🐋</div>
+                <div>
+                    <h1>Whale Tracker PRO</h1>
+                    <p class="subtitle">Multi-Exchange Real-Time Whale Monitoring</p>
                 </div>
+            </div>
+            <div class="header-right">
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                    <span id="themeIcon">🌙</span>
+                </button>
                 <div class="tr-clock">
-                    <div class="tr-clock-label">🇹🇷 Türkiye Saati</div>
+                    <div class="tr-clock-label">🇹🇷 TR Time</div>
                     <div class="tr-clock-time" id="trTime">--:--:--</div>
                 </div>
             </div>
-            <div class="status-bar">
-                <div class="status-item">
-                    <div class="status-dot" id="wsStatus"></div>
-                    <span id="wsStatusText">Bağlantı bekleniyor</span>
-                </div>
-                <div class="status-item">🎯 <span>İzlenen:</span> <strong id="coinCount">0</strong></div>
-                <div class="status-item">🐋 <span>Whale:</span> <strong id="whaleCount">0</strong></div>
+        </div>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot" id="wsStatus"></div>
+                <span id="wsStatusText">Disconnected</span>
             </div>
+            <div class="status-item">🎯 Tracked: <strong id="coinCount">0</strong></div>
+            <div class="status-item">🐋 Whales: <strong id="whaleCount">0</strong></div>
+            <div class="status-item">🏦 Exchanges: <strong id="exchangeCount">0</strong></div>
         </div>
     </header>
-
-    <div class="section-gap"></div>
 
     <div class="dashboard">
         <div class="leader-card">
@@ -172,24 +611,24 @@
                     <span>₿ BTC</span>
                     <span class="leader-coin-tag">BTCUSDT</span>
                 </div>
-                <div class="leader-badge-group">
+                <div style="display: flex; align-items: center; gap: 8px;">
                     <div class="leader-badge">Whale ≥3 BTC</div>
                     <div class="leader-percent neutral" id="btcPercent">0%</div>
                 </div>
             </div>
             <div class="dashboard-volumes">
                 <div class="volume-box">
-                    <div class="volume-label">Alış Hacmi</div>
+                    <div class="volume-label">Buy Volume</div>
                     <div class="volume-value volume-buy" id="btcBuyVolume">$0</div>
                 </div>
                 <div class="volume-box">
-                    <div class="volume-label">Satış Hacmi</div>
+                    <div class="volume-label">Sell Volume</div>
                     <div class="volume-value volume-sell" id="btcSellVolume">$0</div>
                 </div>
             </div>
             <div class="top-whales">
                 <div class="top-whales-title">
-                    <span>🔥 BTC Whale Son 5</span>
+                    <span>🔥 BTC Top 5 Whales</span>
                     <span>Min: 3 BTC</span>
                 </div>
                 <div id="btcTopWhales"></div>
@@ -202,24 +641,24 @@
                     <span>◆ ETH</span>
                     <span class="leader-coin-tag">ETHUSDT</span>
                 </div>
-                <div class="leader-badge-group">
+                <div style="display: flex; align-items: center; gap: 8px;">
                     <div class="leader-badge">Whale ≥20 ETH</div>
                     <div class="leader-percent neutral" id="ethPercent">0%</div>
                 </div>
             </div>
             <div class="dashboard-volumes">
                 <div class="volume-box">
-                    <div class="volume-label">Alış Hacmi</div>
+                    <div class="volume-label">Buy Volume</div>
                     <div class="volume-value volume-buy" id="ethBuyVolume">$0</div>
                 </div>
                 <div class="volume-box">
-                    <div class="volume-label">Satış Hacmi</div>
+                    <div class="volume-label">Sell Volume</div>
                     <div class="volume-value volume-sell" id="ethSellVolume">$0</div>
                 </div>
             </div>
             <div class="top-whales">
                 <div class="top-whales-title">
-                    <span>🔥 ETH Whale Son 5</span>
+                    <span>🔥 ETH Top 5 Whales</span>
                     <span>Min: 20 ETH</span>
                 </div>
                 <div id="ethTopWhales"></div>
@@ -229,85 +668,101 @@
 
     <div class="other-coins-summary">
         <div class="summary-title">
-            <div class="summary-main-label">
-                <span>💰</span>
-                <span>Diğer Coinler - Özet</span>
-            </div>
-            <div class="sort-indicator">Otomatik sıralama (hacme göre)</div>
+            <span>💰 Other Coins Summary</span>
+            <span style="font-size: 10px; color: var(--text-muted);">Auto-sorted by volume</span>
         </div>
         <div class="coins-split-container">
             <div class="coin-section">
-                <div class="section-header buy-section">🟢 Alış Baskın</div>
+                <div class="section-header buy-section">🟢 Buy Dominant</div>
                 <table class="summary-table">
-                    <thead><tr><th>Coin</th><th>Alış</th><th>Satış</th></tr></thead>
-                    <tbody id="buyDominantCoins"><tr><td colspan="3" class="empty-state">Bekleniyor...</td></tr></tbody>
+                    <thead>
+                        <tr>
+                            <th>Coin</th>
+                            <th>Buy</th>
+                            <th>Sell</th>
+                        </tr>
+                    </thead>
+                    <tbody id="buyDominantCoins">
+                        <tr><td colspan="3" class="empty-state">Waiting...</td></tr>
+                    </tbody>
                 </table>
             </div>
             <div class="coin-section">
-                <div class="section-header sell-section">🔴 Satış Baskın</div>
+                <div class="section-header sell-section">🔴 Sell Dominant</div>
                 <table class="summary-table">
-                    <thead><tr><th>Coin</th><th>Alış</th><th>Satış</th></tr></thead>
-                    <tbody id="sellDominantCoins"><tr><td colspan="3" class="empty-state">Bekleniyor...</td></tr></tbody>
+                    <thead>
+                        <tr>
+                            <th>Coin</th>
+                            <th>Buy</th>
+                            <th>Sell</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sellDominantCoins">
+                        <tr><td colspan="3" class="empty-state">Waiting...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <div class="settings-panel">
-        <div class="settings-title">⚙️ İzleme Ayarları</div>
+        <div class="settings-title">⚙️ Monitoring Settings</div>
         <div class="settings-grid">
             <div class="settings-row">
-                <label>⚡ Minimum İşlem Tutarı (USD)</label>
-                <input type="text" id="minTradeAmount" value="100.000" placeholder="100.000">
-                <small>Örn: 100.000$ = tek işlemde minimum hacim</small>
+                <label>⚡ Min Trade Amount (USD)</label>
+                <input type="number" id="minTradeAmount" value="100000" placeholder="100000">
             </div>
             <div class="settings-row">
-                <label>📊 Maksimum Gösterilecek İşlem</label>
+                <label>📊 Max Displayed Trades</label>
                 <select id="maxTrades">
-                    <option value="50">Son 50 işlem</option>
-                    <option value="100" selected>Son 100 işlem</option>
-                    <option value="200">Son 200 işlem</option>
+                    <option value="50">Last 50 trades</option>
+                    <option value="100" selected>Last 100 trades</option>
+                    <option value="200">Last 200 trades</option>
                 </select>
             </div>
             <div class="settings-row">
-                <label>🎯 İzlenecek Coin Seti</label>
+                <label>🎯 Coin Set</label>
                 <select id="coinSelection">
                     <option value="major">Major Coins (15)</option>
-                    <option value="popular">Popüler Coins (30)</option>
+                    <option value="popular">Popular Coins (30)</option>
                 </select>
             </div>
             <div class="settings-row">
-                <label>🏦 Borsa Seçimi</label>
+                <label>🏦 Exchange</label>
                 <select id="exchangeSelection">
-                    <option value="binance" selected>Binance</option>
+                    <option value="all">All Exchanges (5)</option>
+                    <option value="binance">Binance</option>
                     <option value="bybit">Bybit</option>
+                    <option value="okx">OKX</option>
+                    <option value="kraken">Kraken</option>
+                    <option value="gateio">Gate.io</option>
                 </select>
             </div>
         </div>
     </div>
 
     <div class="controls">
-        <button class="btn btn-primary" id="startBtn" onclick="startMonitoring()">▶️ İzlemeyi Başlat</button>
-        <button class="btn" id="stopBtn" onclick="stopMonitoring()" disabled>⏸️ Durdur</button>
-        <button class="btn btn-danger" onclick="clearTrades()">🗑️ Temizle</button>
+        <button class="btn btn-primary" id="startBtn" onclick="startMonitoring()">▶️ Start Monitoring</button>
+        <button class="btn" id="stopBtn" onclick="stopMonitoring()" disabled>⏸️ Stop</button>
+        <button class="btn btn-danger" onclick="clearTrades()">🗑️ Clear</button>
     </div>
 
     <div class="table-container">
         <div class="table-scroll">
             <table class="whale-table">
                 <thead>
-                <tr>
-                    <th>Zaman</th>
-                    <th>Coin</th>
-                    <th>Tip</th>
-                    <th>Fiyat</th>
-                    <th>Miktar</th>
-                    <th>Toplam (USD)</th>
-                    <th>Borsa</th>
-                </tr>
+                    <tr>
+                        <th>Time</th>
+                        <th>Coin</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total (USD)</th>
+                        <th>Exchange</th>
+                    </tr>
                 </thead>
                 <tbody id="tradesTableBody">
-                <tr class="empty-state"><td colspan="7">İzleme başlatılmadı</td></tr>
+                    <tr><td colspan="7" class="empty-state">Monitoring not started</td></tr>
                 </tbody>
             </table>
         </div>
@@ -323,81 +778,70 @@
     let btcWhales = [];
     let ethWhales = [];
     let activeConnections = 0;
+    const MAX_TRADE_HISTORY = 1000;
 
     const MAJOR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','MATICUSDT','LINKUSDT','TRXUSDT','LTCUSDT','UNIUSDT','ATOMUSDT'];
     const POPULAR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','MATICUSDT','DOTUSDT','AVAXUSDT','LINKUSDT','UNIUSDT','LTCUSDT','ATOMUSDT','ETCUSDT','XLMUSDT','NEARUSDT','ALGOUSDT','VETUSDT','ICPUSDT','FILUSDT','TRXUSDT','HBARUSDT','APTUSDT','ARBUSDT','OPUSDT','INJUSDT','SUIUSDT','STXUSDT','WLDUSDT'];
 
-    function parseNumber(input) {
-        if (!input) return 0;
-        const cleaned = input.toString().replace(/\./g, '').replace(',', '.');
-        return parseFloat(cleaned) || 0;
+    function toggleTheme() {
+        const body = document.body;
+        const currentTheme = body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', newTheme);
+        document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '🌙' : '☀️';
+        localStorage.setItem('theme', newTheme);
+    }
+
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.body.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
     }
 
     function updateTRTime() {
         const now = new Date();
-        const el = document.getElementById('trTime');
-        if (el) {
-            el.textContent = now.toLocaleString('tr-TR', {
-                timeZone: 'Europe/Istanbul',
-                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-            });
-        }
+        document.getElementById('trTime').textContent = now.toLocaleString('tr-TR', {
+            timeZone: 'Europe/Istanbul',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
     }
-    setInterval(updateTRTime, 1000);
-    updateTRTime();
 
     function getSelectedCoins() {
-        const sel = document.getElementById('coinSelection').value;
-        return sel === 'popular' ? POPULAR_COINS : MAJOR_COINS;
+        return document.getElementById('coinSelection').value === 'popular' ? POPULAR_COINS : MAJOR_COINS;
     }
 
-    function initWebSocketForCoin(symbol) {
+    function initWebSocketForCoin(symbol, exchange) {
         try {
-            const exchange = document.getElementById('exchangeSelection').value;
-            
             if (exchange === 'binance') {
-                // aggr.trade gibi AGGREGATE TRADE stream kullanıyoruz
                 const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@aggTrade`);
-                
                 ws.onopen = () => {
-                    console.log(`Binance ${symbol} bağlandı`);
                     activeConnections++;
                     updateWSStatus(true);
                 };
-                
                 ws.onmessage = (ev) => {
-                    try {
-                        const t = JSON.parse(ev.data);
-                        // Aggregate trade verisi farklı yapıda
-                        handleTrade({ 
-                            s: t.s,           // symbol
-                            p: t.p,           // price
-                            q: t.q,           // quantity
-                            m: t.m,           // is buyer maker (true = satış, false = alış)
-                            exchange: 'Binance'
-                        });
-                    } catch (e) {
-                        console.error('Binance veri hatası', e);
-                    }
+                    const t = JSON.parse(ev.data);
+                    handleTrade({
+                        s: t.s,
+                        p: t.p,
+                        q: t.q,
+                        m: t.m,
+                        exchange: 'Binance'
+                    });
                 };
-                
-                ws.onerror = (e) => {
-                    console.error(`Binance ${symbol} hata:`, e);
-                };
-                
+                ws.onerror = () => console.error(`Binance ${symbol} error`);
                 ws.onclose = () => {
                     activeConnections--;
                     updateWSStatus(isMonitoring);
                 };
-                
-                return [ws];
+                return ws;
             }
             
             if (exchange === 'bybit') {
                 const ws = new WebSocket('wss://stream.bybit.com/v5/public/spot');
-                
                 ws.onopen = () => {
-                    console.log(`Bybit ${symbol} bağlandı`);
                     activeConnections++;
                     updateWSStatus(true);
                     ws.send(JSON.stringify({
@@ -405,396 +849,440 @@
                         args: [`publicTrade.${symbol}`]
                     }));
                 };
-                
                 ws.onmessage = (ev) => {
-                    try {
-                        const data = JSON.parse(ev.data);
-                        if (data.topic && data.data) {
-                            data.data.forEach(trade => {
-                                handleTrade({
-                                    s: symbol,
-                                    p: trade.p,
-                                    q: trade.v,
-                                    m: trade.S === 'Sell',
-                                    exchange: 'Bybit'
-                                });
+                    const data = JSON.parse(ev.data);
+                    if (data.topic && data.data) {
+                        data.data.forEach(trade => {
+                            handleTrade({
+                                s: symbol,
+                                p: trade.p,
+                                q: trade.v,
+                                m: trade.S === 'Sell',
+                                exchange: 'Bybit'
                             });
-                        }
-                    } catch (e) {
-                        console.error('Bybit veri hatası', e);
+                        });
                     }
                 };
-                
-                return [ws];
+                ws.onclose = () => {
+                    activeConnections--;
+                    updateWSStatus(isMonitoring);
+                };
+                return ws;
             }
-            
-            return [];
-        } catch (error) {
-            console.error('WebSocket bağlantı hatası:', error);
-            return [];
-        }
-    }
 
-    function handleTrade(trade) {
-        const symbol = trade.s;
-        const price = parseFloat(trade.p);
-        const qty = parseFloat(trade.q);
-        const total = price * qty;
-        const type = trade.m ? 'SELL' : 'BUY'; // m=true ise satış, false ise alış
-        
-        const minInput = document.getElementById('minTradeAmount').value;
-        const min = parseNumber(minInput);
-
-        if (!coinVolumes[symbol]) {
-            coinVolumes[symbol] = { buy: 0, sell: 0 };
-        }
-
-        if (type === 'BUY') {
-            coinVolumes[symbol].buy += total;
-        } else {
-            coinVolumes[symbol].sell += total;
-        }
-
-        let isWhaleTrade = false;
-        
-        if (symbol === 'BTCUSDT' && qty >= 3) {
-            isWhaleTrade = true;
-            playGongSound();
-        } else if (symbol === 'ETHUSDT' && qty >= 20) {
-            isWhaleTrade = true;
-            playGongSound();
-        } else if (total >= min) {
-            isWhaleTrade = true;
-            playCashSound();
-        }
-
-        if (isWhaleTrade) {
-            const t = {
-                symbol,
-                price,
-                quantity: qty,
-                totalUSD: total,
-                type,
-                timestamp: Date.now(),
-                exchange: trade.exchange,
-                isBigWhale: (symbol === 'BTCUSDT' && qty >= 3) || (symbol === 'ETHUSDT' && qty >= 20)
+            if (exchange === 'okx') {
+                const ws = new WebSocket('wss://ws.okx.com:8443/ws/v5/public');
+                ws.onopen = () => {
+                    activeConnections++;
+                    updateWSStatus(true);
+                    ws.send(JSON.stringify({
+                        op: 'subscribe',
+                        args: [{
+                            channel: 'trades',
+                            instId: symbol.replace('USDT', '-USDT')
+                        }]
+                    }));
+                };
+                ws.onm
+essage = (ev) => {
+const data = JSON.parse(ev.data);
+if (data.data) {
+data.data.forEach(trade => {
+handleTrade({
+s: symbol,
+p: trade.px,
+q: trade.sz,
+m: trade.side === 'sell',
+exchange: 'OKX'
+});
+});
+}
+};
+ws.onclose = () => {
+activeConnections--;
+updateWSStatus(isMonitoring);
+};
+return ws;
+}
+        if (exchange === 'kraken') {
+            const ws = new WebSocket('wss://ws.kraken.com');
+            ws.onopen = () => {
+                activeConnections++;
+                updateWSStatus(true);
+                const pair = symbol.replace('USDT', '/USDT');
+                ws.send(JSON.stringify({
+                    event: 'subscribe',
+                    pair: [pair],
+                    subscription: { name: 'trade' }
+                }));
             };
-
-            tradeHistory.unshift(t);
-            whaleTradeCount++;
-            
-            if (symbol === 'BTCUSDT' && qty >= 3) {
-                btcWhales.unshift(t);
-                if (btcWhales.length > 5) btcWhales = btcWhales.slice(0, 5);
-            } else if (symbol === 'ETHUSDT' && qty >= 20) {
-                ethWhales.unshift(t);
-                if (ethWhales.length > 5) ethWhales = ethWhales.slice(0, 5);
-            }
-            
-            updateDashboard();
-            updateTradesTable(parseInt(document.getElementById('maxTrades').value));
-        }
-    }
-
-    function playGongSound() {
-        try {
-            const gong = document.getElementById('gongSound');
-            if (gong) {
-                gong.currentTime = 0;
-                gong.volume = 0.7;
-                gong.play().catch(e => console.log('Gong ses hatası:', e));
-            }
-        } catch (e) {
-            console.log('Ses çalma hatası:', e);
-        }
-    }
-
-    function playCashSound() {
-        try {
-            const cash = document.getElementById('cashSound');
-            if (cash) {
-                cash.currentTime = 0;
-                cash.volume = 0.7;
-                cash.play().catch(e => console.log('Cash ses hatası:', e));
-            }
-        } catch (e) {
-            console.log('Ses çalma hatası:', e);
-        }
-    }
-
-    function updateDashboard() {
-        const symbols = ['BTCUSDT', 'ETHUSDT'];
-        
-        document.getElementById('coinCount').textContent = getSelectedCoins().length;
-        document.getElementById('whaleCount').textContent = whaleTradeCount;
-
-        symbols.forEach(symbol => {
-            const coinShort = symbol.substring(0, 3).toLowerCase();
-            const buyVolumeEl = document.getElementById(coinShort + 'BuyVolume');
-            const sellVolumeEl = document.getElementById(coinShort + 'SellVolume');
-            const percentEl = document.getElementById(coinShort + 'Percent');
-            
-            const volumes = coinVolumes[symbol] || { buy: 0, sell: 0 };
-            const total = volumes.buy + volumes.sell;
-            
-            if (buyVolumeEl) buyVolumeEl.textContent = formatVolume(volumes.buy);
-            if (sellVolumeEl) sellVolumeEl.textContent = formatVolume(volumes.sell);
-
-            let percent = 0;
-            let trendClass = 'neutral';
-            
-            if (total > 0) {
-                const netVolume = volumes.buy - volumes.sell;
-                percent = (netVolume / total) * 100;
-                
-                if (percent > 0) {
-                    trendClass = 'positive';
-                } else if (percent < 0) {
-                    trendClass = 'negative';
+            ws.onmessage = (ev) => {
+                const data = JSON.parse(ev.data);
+                if (Array.isArray(data) && data[2] === 'trade') {
+                    data[1].forEach(trade => {
+                        handleTrade({
+                            s: symbol,
+                            p: trade[0],
+                            q: trade[1],
+                            m: trade[3] === 's',
+                            exchange: 'Kraken'
+                        });
+                    });
                 }
-            }
-            
-            if (percentEl) {
-                percentEl.textContent = `${percent.toFixed(1)}%`;
-                percentEl.className = `leader-percent ${trendClass}`;
-            }
+            };
+            ws.onclose = () => {
+                activeConnections--;
+                updateWSStatus(isMonitoring);
+            };
+            return ws;
+        }
+
+        if (exchange === 'gateio') {
+            const ws = new WebSocket('wss://api.gateio.ws/ws/v4/');
+            ws.onopen = () => {
+                activeConnections++;
+                updateWSStatus(true);
+                ws.send(JSON.stringify({
+                    time: Math.floor(Date.now() / 1000),
+                    channel: 'spot.trades',
+                    event: 'subscribe',
+                    payload: [symbol.replace('USDT', '_USDT')]
+                }));
+            };
+            ws.onmessage = (ev) => {
+                const data = JSON.parse(ev.data);
+                if (data.event === 'update' && data.result) {
+                    handleTrade({
+                        s: symbol,
+                        p: data.result.price,
+                        q: data.result.amount,
+                        m: data.result.side === 'sell',
+                        exchange: 'Gate.io'
+                    });
+                }
+            };
+            ws.onclose = () => {
+                activeConnections--;
+                updateWSStatus(isMonitoring);
+            };
+            return ws;
+        }
+    } catch (error) {
+        console.error('WebSocket connection error:', error);
+    }
+    return null;
+}
+
+function handleTrade(trade) {
+    const symbol = trade.s;
+    const price = parseFloat(trade.p);
+    const qty = parseFloat(trade.q);
+    const total = price * qty;
+    const type = trade.m ? 'SELL' : 'BUY';
+    const minAmount = parseFloat(document.getElementById('minTradeAmount').value);
+
+    if (!coinVolumes[symbol]) {
+        coinVolumes[symbol] = { buy: 0, sell: 0 };
+    }
+
+    if (type === 'BUY') {
+        coinVolumes[symbol].buy += total;
+    } else {
+        coinVolumes[symbol].sell += total;
+    }
+
+    let isWhaleTrade = false;
+
+    if (symbol === 'BTCUSDT' && qty >= 3) {
+        isWhaleTrade = true;
+    } else if (symbol === 'ETHUSDT' && qty >= 20) {
+        isWhaleTrade = true;
+    } else if (total >= minAmount) {
+        isWhaleTrade = true;
+    }
+
+    if (isWhaleTrade) {
+        const t = {
+            symbol,
+            price,
+            quantity: qty,
+            totalUSD: total,
+            type,
+            timestamp: Date.now(),
+            exchange: trade.exchange,
+            isBigWhale: (symbol === 'BTCUSDT' && qty >= 3) || (symbol === 'ETHUSDT' && qty >= 20)
+        };
+
+        tradeHistory.unshift(t);
+        if (tradeHistory.length > MAX_TRADE_HISTORY) {
+            tradeHistory = tradeHistory.slice(0, MAX_TRADE_HISTORY);
+        }
+        whaleTradeCount++;
+
+        if (symbol === 'BTCUSDT' && qty >= 3) {
+            btcWhales.unshift(t);
+            if (btcWhales.length > 5) btcWhales = btcWhales.slice(0, 5);
+        } else if (symbol === 'ETHUSDT' && qty >= 20) {
+            ethWhales.unshift(t);
+            if (ethWhales.length > 5) ethWhales = ethWhales.slice(0, 5);
+        }
+
+        updateDashboard();
+        updateTradesTable(parseInt(document.getElementById('maxTrades').value));
+    }
+}
+
+function updateDashboard() {
+    document.getElementById('coinCount').textContent = getSelectedCoins().length;
+    document.getElementById('whaleCount').textContent = whaleTradeCount;
+
+    ['BTCUSDT', 'ETHUSDT'].forEach(symbol => {
+        const coinShort = symbol.substring(0, 3).toLowerCase();
+        const volumes = coinVolumes[symbol] || { buy: 0, sell: 0 };
+        const total = volumes.buy + volumes.sell;
+
+        document.getElementById(coinShort + 'BuyVolume').textContent = formatVolume(volumes.buy);
+        document.getElementById(coinShort + 'SellVolume').textContent = formatVolume(volumes.sell);
+
+        let percent = 0;
+        let trendClass = 'neutral';
+
+        if (total > 0) {
+            const netVolume = volumes.buy - volumes.sell;
+            percent = (netVolume / total) * 100;
+            trendClass = percent > 0 ? 'positive' : percent < 0 ? 'negative' : 'neutral';
+        }
+
+        const percentEl = document.getElementById(coinShort + 'Percent');
+        percentEl.textContent = `${percent.toFixed(1)}%`;
+        percentEl.className = `leader-percent ${trendClass}`;
+    });
+
+    updateOtherCoinsSummary();
+    updateTopWhales();
+}
+
+function formatVolume(num) {
+    if (!isFinite(num)) return '$0';
+    if (num >= 1000000) return '$' + (num / 1000000).toFixed(2) + 'M';
+    if (num >= 1000) return '$' + (num / 1000).toFixed(0) + 'K';
+    return '$' + num.toFixed(0);
+}
+
+function formatPrice(p) {
+    if (!isFinite(p)) return '-';
+    return p >= 1 ? p.toFixed(2) : p >= 0.01 ? p.toFixed(4) : p.toFixed(8);
+}
+
+function formatQuantity(q) {
+    if (!isFinite(q)) return '-';
+    return q.toFixed(4);
+}
+
+function updateTradesTable(maxTrades) {
+    const tableBody = document.getElementById('tradesTableBody');
+    tableBody.innerHTML = '';
+
+    if (tradeHistory.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="7" class="empty-state">Monitoring not started</td></tr>';
+        return;
+    }
+
+    const tradesToShow = tradeHistory.slice(0, maxTrades || 100);
+
+    tradesToShow.forEach(trade => {
+        const row = tableBody.insertRow();
+        if (trade.isBigWhale) row.classList.add('highlight');
+
+        row.innerHTML = `
+            <td>${new Date(trade.timestamp).toLocaleTimeString('tr-TR', { timeZone: 'Europe/Istanbul' })}</td>
+            <td class="coin-cell">${trade.symbol.replace('USDT', '')}</td>
+            <td class="trade-${trade.type.toLowerCase()}">${trade.type}</td>
+            <td>$${formatPrice(trade.price)}</td>
+            <td>${formatQuantity(trade.quantity)} ${trade.symbol.replace('USDT', '')}</td>
+            <td>${formatVolume(trade.totalUSD)}</td>
+            <td><span class="exchange-badge">${trade.exchange}</span></td>
+        `;
+    });
+}
+
+function updateOtherCoinsSummary() {
+    const buyTable = document.getElementById('buyDominantCoins');
+    const sellTable = document.getElementById('sellDominantCoins');
+    buyTable.innerHTML = '';
+    sellTable.innerHTML = '';
+
+    const otherCoins = Object.keys(coinVolumes)
+        .filter(coin => coin !== 'BTCUSDT' && coin !== 'ETHUSDT')
+        .map(coin => ({
+            symbol: coin.replace('USDT', ''),
+            buy: coinVolumes[coin].buy,
+            sell: coinVolumes[coin].sell,
+            total: coinVolumes[coin].buy + coinVolumes[coin].sell
+        }))
+        .filter(coin => coin.total > 0)
+        .sort((a, b) => b.total - a.total);
+
+    if (otherCoins.length === 0) {
+        buyTable.innerHTML = '<tr><td colspan="3" class="empty-state">No data yet</td></tr>';
+        sellTable.innerHTML = '<tr><td colspan="3" class="empty-state">No data yet</td></tr>';
+        return;
+    }
+
+    otherCoins.forEach(coin => {
+        const dominance = (coin.buy - coin.sell) / coin.total;
+        const targetTable = dominance > 0 ? buyTable : sellTable;
+        const arrowIcon = dominance > 0 ? '🔺' : '🔻';
+
+        const row = targetTable.insertRow();
+        row.innerHTML = `
+            <td class="coin-name-cell">${arrowIcon} ${coin.symbol}</td>
+            <td class="volume-buy">${formatVolume(coin.buy)}</td>
+            <td class="volume-sell">${formatVolume(coin.sell)}</td>
+        `;
+    });
+}
+
+function updateTopWhales() {
+    const btc5 = btcWhales.slice(0, 5);
+    const eth5 = ethWhales.slice(0, 5);
+
+    document.getElementById('btcTopWhales').innerHTML = btc5.length
+        ? btc5.map(w => `
+            <div class="whale-mini-row">
+                <span class="whale-mini-type ${w.type.toLowerCase()}">
+                    ${w.type === 'BUY' ? '🟢 BUY' : '🔴 SELL'}
+                </span>
+                <span class="whale-mini-amount">${w.quantity.toFixed(2)} BTC</span>
+            </div>
+        `).join('')
+        : '<div class="empty-state">Waiting for 3+ BTC whales...</div>';
+
+    document.getElementById('ethTopWhales').innerHTML = eth5.length
+        ? eth5.map(w => `
+            <div class="whale-mini-row">
+                <span class="whale-mini-type ${w.type.toLowerCase()}">
+                    ${w.type === 'BUY' ? '🟢 BUY' : '🔴 SELL'}
+                </span>
+                <span class="whale-mini-amount">${w.quantity.toFixed(2)} ETH</span>
+            </div>
+        `).join('')
+        : '<div class="empty-state">Waiting for 20+ ETH whales...</div>';
+}
+
+function updateWSStatus(isConnected) {
+    const dot = document.getElementById('wsStatus');
+    const text = document.getElementById('wsStatusText');
+    const exchanges = document.getElementById('exchangeCount');
+    
+    if (isConnected && activeConnections > 0) {
+        dot.className = 'status-dot active';
+        text.textContent = `${activeConnections} streams active`;
+        exchanges.textContent = getActiveExchanges();
+    } else {
+        dot.className = 'status-dot inactive';
+        text.textContent = 'Disconnected';
+        exchanges.textContent = '0';
+    }
+}
+
+function getActiveExchanges() {
+    const selection = document.getElementById('exchangeSelection').value;
+    return selection === 'all' ? '5' : '1';
+}
+
+function startMonitoring() {
+    if (isMonitoring) return;
+    isMonitoring = true;
+
+    tradeHistory = [];
+    whaleTradeCount = 0;
+    coinVolumes = {};
+    btcWhales = [];
+    ethWhales = [];
+    activeConnections = 0;
+
+    document.getElementById('startBtn').disabled = true;
+    document.getElementById('stopBtn').disabled = false;
+
+    const coins = getSelectedCoins();
+    const exchangeSelection = document.getElementById('exchangeSelection').value;
+    const exchanges = exchangeSelection === 'all' 
+        ? ['binance', 'bybit', 'okx', 'kraken', 'gateio']
+        : [exchangeSelection];
+
+    wsConnections = [];
+
+    coins.forEach(coin => {
+        exchanges.forEach(exchange => {
+            const ws = initWebSocketForCoin(coin, exchange);
+            if (ws) wsConnections.push(ws);
         });
+    });
 
-        updateOtherCoinsSummary();
-        updateTopWhales();
-    }
+    updateTradesTable(parseInt(document.getElementById('maxTrades').value));
+    console.log(`Monitoring started (${coins.length} coins, ${exchanges.length} exchanges)`);
+}
 
-    function formatVolume(num) {
-        if (!isFinite(num)) return '$0';
-        if (num >= 1000000) {
-            return '$' + (num / 1000000).toFixed(2) + 'M';
+function stopMonitoring() {
+    if (!isMonitoring) return;
+    isMonitoring = false;
+
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('stopBtn').disabled = true;
+
+    wsConnections.forEach(ws => {
+        try {
+            if (ws && ws.readyState === WebSocket.OPEN) ws.close();
+        } catch (e) {
+            console.error('WS close error', e);
         }
-        if (num >= 1000) {
-            return '$' + (num / 1000).toFixed(0) + 'K';
-        }
-        return '$' + num.toFixed(0);
-    }
+    });
 
-    function updateTradesTable(maxTrades) {
-        const tableBody = document.getElementById('tradesTableBody');
-        tableBody.innerHTML = '';
+    wsConnections = [];
+    activeConnections = 0;
+    updateWSStatus(false);
+    console.log('Monitoring stopped');
+}
 
-        if (tradeHistory.length === 0) {
-            tableBody.innerHTML = '<tr class="empty-state"><td colspan="7">İzleme başlatılmadı</td></tr>';
-            return;
-        }
-        
-        const tradesToShow = tradeHistory.slice(0, maxTrades || 100);
-        
-        tradesToShow.forEach(trade => {
-            const row = tableBody.insertRow();
-            
-            if (trade.isBigWhale) {
-                row.classList.add('highlight');
-            }
-           
-            row.innerHTML = `
-                <td>${new Date(trade.timestamp).toLocaleTimeString('tr-TR', { timeZone: 'Europe/Istanbul' })}</td>
-                <td class="coin-cell">${trade.symbol.replace('USDT', '')}</td>
-                <td class="trade-${trade.type.toLowerCase()}">${trade.type}</td>
-                <td>$${formatPrice(trade.price)}</td>
-                <td>${formatQuantity(trade.quantity)} ${trade.symbol.replace('USDT', '')}</td>
-                <td>${formatVolume(trade.totalUSD)}</td>
-                <td><span class="exchange-badge">${trade.exchange}</span></td>
-            `;
-        });
-    }
-
-    function formatPrice(p) {
-        if (!isFinite(p)) return '-';
-        return p >= 1 ? p.toFixed(2)
-             : p >= 0.01 ? p.toFixed(4)
-             : p.toFixed(8);
-    }
-
-    function formatQuantity(q) {
-        if (!isFinite(q)) return '-';
-        return q.toFixed(4);
-    }
-
-    function updateOtherCoinsSummary() {
-        const buyTable = document.getElementById('buyDominantCoins');
-        const sellTable = document.getElementById('sellDominantCoins');
-        buyTable.innerHTML = '';
-        sellTable.innerHTML = '';
-
-        const otherCoins = Object.keys(coinVolumes)
-            .filter(coin => coin !== 'BTCUSDT' && coin !== 'ETHUSDT')
-            .map(coin => ({
-                symbol: coin.replace('USDT', ''),
-                buy: coinVolumes[coin].buy,
-                sell: coinVolumes[coin].sell,
-                total: coinVolumes[coin].buy + coinVolumes[coin].sell
-            }))
-            .filter(coin => coin.total > 0)
-            .sort((a, b) => b.total - a.total);
-
-        if (otherCoins.length === 0) {
-            buyTable.innerHTML = '<tr><td colspan="3" class="empty-state">Henüz veri yok.</td></tr>';
-            sellTable.innerHTML = '<tr><td colspan="3" class="empty-state">Henüz veri yok.</td></tr>';
-            return;
-        }
-
-        otherCoins.forEach(coin => {
-            const dominance = (coin.buy - coin.sell) / coin.total;
-            const targetTable = dominance > 0 ? buyTable : sellTable;
-            
-            const arrowClass = dominance > 0 ? 'up' : 'down';
-            const arrowIcon = dominance > 0 ? '🔺' : '🔻';
-            
-            const row = targetTable.insertRow();
-            row.innerHTML = `
-                <td class="coin-name-cell">
-                    <span class="trend-arrow ${arrowClass}">${arrowIcon}</span> ${coin.symbol}
-                </td>
-                <td class="volume-buy">${formatVolume(coin.buy)}</td>
-                <td class="volume-sell">${formatVolume(coin.sell)}</td>
-            `;
-        });
-    }
-
-    function updateTopWhales() {
-        const btc5 = btcWhales.slice(0, 5);
-        const eth5 = ethWhales.slice(0, 5);
-
-        const btcEl = document.getElementById('btcTopWhales');
-        const ethEl = document.getElementById('ethTopWhales');
-
-        btcEl.innerHTML = btc5.length
-            ? btc5.map((w, i) => `
-                <div class="whale-mini-row rank-${i + 1}">
-                    <span class="whale-mini-type ${w.type.toLowerCase()}">
-                        ${w.type === 'BUY' ? '🟢 ALIŞ' : '🔴 SATIŞ'}
-                    </span>
-                    <span class="whale-mini-amount">${w.quantity} BTC</span>
-                </div>
-            `).join('')
-            : '<div class="empty-state" style="padding:8px 4px;font-size:10px;">3+ BTC whale bekleniyor...</div>';
-
-        ethEl.innerHTML = eth5.length
-            ? eth5.map((w, i) => `
-                <div class="whale-mini-row rank-${i + 1}">
-                    <span class="whale-mini-type ${w.type.toLowerCase()}">
-                        ${w.type === 'BUY' ? '🟢 ALIŞ' : '🔴 SATIŞ'}
-                    </span>
-                    <span class="whale-mini-amount">${w.quantity} ETH</span>
-                </div>
-            `).join('')
-            : '<div class="empty-state" style="padding:8px 4px;font-size:10px;">20+ ETH whale bekleniyor...</div>';
-    }
-
-    function updateWSStatus(isConnected) {
-        const dot = document.getElementById('wsStatus');
-        const text = document.getElementById('wsStatusText');
-        if (isConnected && activeConnections > 0) {
-            dot.className = 'status-dot active';
-            text.textContent = `${activeConnections} stream aktif`;
-        } else {
-            dot.className = 'status-dot inactive';
-            text.textContent = 'Bağlantı kapalı';
-        }
-    }
-
-    function startMonitoring() {
-        if (isMonitoring) return;
-        isMonitoring = true;
-
+function clearTrades() {
+    if (confirm('Are you sure you want to clear all trade history?')) {
         tradeHistory = [];
         whaleTradeCount = 0;
         coinVolumes = {};
         btcWhales = [];
         ethWhales = [];
-        activeConnections = 0;
 
-        document.getElementById('startBtn').disabled = true;
-        document.getElementById('stopBtn').disabled = false;
+        document.getElementById('btcBuyVolume').textContent = '$0';
+        document.getElementById('btcSellVolume').textContent = '$0';
+        document.getElementById('ethBuyVolume').textContent = '$0';
+        document.getElementById('ethSellVolume').textContent = '$0';
 
-        const coins = getSelectedCoins();
-        wsConnections = [];
+        document.getElementById('buyDominantCoins').innerHTML = '<tr><td colspan="3" class="empty-state">Waiting...</td></tr>';
+        document.getElementById('sellDominantCoins').innerHTML = '<tr><td colspan="3" class="empty-state">Waiting...</td></tr>';
+        document.getElementById('btcTopWhales').innerHTML = '';
+        document.getElementById('ethTopWhales').innerHTML = '';
 
-        coins.forEach(coin => {
-            const conns = initWebSocketForCoin(coin);
-            wsConnections.push(...conns);
-        });
-
-        updateTradesTable(parseInt(document.getElementById('maxTrades').value));
-        console.log(`İzleme başladı (${coins.length} coin)`);
+        updateTradesTable(0);
+        console.log('Cleared');
     }
+}
 
-    function stopMonitoring() {
-        if (!isMonitoring) return;
+// Initialize
+loadTheme();
+updateTRTime();
+setInterval(updateTRTime, 1000);
 
-        isMonitoring = false;
-        document.getElementById('startBtn').disabled = false;
-        document.getElementById('stopBtn').disabled = true;
-
-        wsConnections.forEach(ws => {
-            try {
-                if (ws.readyState === WebSocket.OPEN) ws.close();
-            } catch (e) {
-                console.error('WS close error', e);
-            }
-        });
-        wsConnections = [];
-        activeConnections = 0;
-
-        updateWSStatus(false);
-        console.log('İzleme durduruldu');
-    }
-
-    function clearTrades() {
-        if (confirm('Tüm işlem geçmişini temizlemek istediğinizden emin misiniz?')) {
-            tradeHistory = [];
-            whaleTradeCount = 0;
-            coinVolumes = {};
-            btcWhales = [];
-            ethWhales = [];
-
-            document.getElementById('btcBuyVolume').textContent = '$0';
-            document.getElementById('btcSellVolume').textContent = '$0';
-            document.getElementById('ethBuyVolume').textContent = '$0';
-            document.getElementById('ethSellVolume').textContent = '$0';
-
-            document.getElementById('buyDominantCoins').innerHTML =
-                '<tr><td colspan="3" class="empty-state">Bekleniyor...</td></tr>';
-            document.getElementById('sellDominantCoins').innerHTML =
-                '<tr><td colspan="3" class="empty-state">Bekleniyor...</td></tr>';
-
-            document.getElementById('btcTopWhales').innerHTML = '';
-            document.getElementById('ethTopWhales').innerHTML = '';
-
-            updateTradesTable(0);
-            console.log('Temizlendi');
-        }
-    }
-
-    // Sayfa yüklendiğinde
-    window.addEventListener('DOMContentLoaded', function() {
-        updateTRTime();
+window.addEventListener('beforeunload', () => {
+    wsConnections.forEach(ws => {
+        try {
+            if (ws && ws.readyState === WebSocket.OPEN) ws.close();
+        } catch (e) {}
     });
+});
 
-    window.addEventListener('beforeunload', () => {
-        wsConnections.forEach(ws => {
-            try {
-                if (ws.readyState === WebSocket.OPEN) ws.close();
-            } catch (e) {}
-        });
-    });
+console.log('🐋 Whale Tracker PRO - Multi Exchange Ready!');
 
-    console.log('Whale Tracker PRO (aggr.trade style) hazır!');
-</script>
-
-<!-- SES DOSYALARI -->
-<audio id="cashSound" preload="none">
-    <source src="https://www.soundjay.com/buttons/sounds/button-09.mp3" type="audio/mpeg">
-</audio>
-<audio id="gongSound" preload="none">
-    <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg">
-</audio>
-</body>
-</html>
+    </script>
+    </body>
+    </html>
