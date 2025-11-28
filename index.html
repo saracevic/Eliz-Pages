@@ -893,7 +893,7 @@
                     <span class="leader-coin-tag">ETHUSDT</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="leader-badge">Whale ≥60 ETH</div>
+                    <div class="leader-badge">Whale ≥90 ETH</div>
                     <div class="leader-percent neutral" id="ethPercent">0%</div>
                 </div>
             </div>
@@ -910,7 +910,7 @@
             <div class="top-whales">
                 <div class="top-whales-title">
                     <span>🔥 ETH Top 5 Whales</span>
-                    <span>Min: 60 ETH</span>
+                    <span>Min: 90 ETH</span>
                 </div>
                 <div id="ethTopWhales"></div>
             </div>
@@ -1046,9 +1046,9 @@
     const COIN_THRESHOLDS = {
         // Major Coins (yüksek değerli) - x3
         'BTCUSDT': 9,        // 9 BTC (eskiden 3 BTC)
-        'ETHUSDT': 60,       // 60 ETH (eskiden 30 ETH)
-        'BNBUSDT': 600,      // 600 BNB (eskiden 300 BNB)
-        'SOLUSDT': 600,      // 600 SOL (eskiden 300 SOL)
+        'ETHUSDT': 90,       // 60 ETH (eskiden 30 ETH)
+        'BNBUSDT': 900,      // 600 BNB (eskiden 300 BNB)
+        'SOLUSDT': 900,      // 600 SOL (eskiden 300 SOL)
         'XRPUSDT': 150000,   // 150,000 XRP (eskiden 50,000 XRP)
         'ADAUSDT': 150000,   // 150,000 ADA (eskiden 50,000 ADA)
         'DOGEUSDT': 1500000, // 1.5M DOGE (eskiden 500,000 DOGE)
@@ -1550,7 +1550,7 @@
                 type,
                 timestamp: Date.now(),
                 exchange: trade.exchange,
-                isBigWhale: (symbol === 'BTCUSDT' && qty >= 9) || (symbol === 'ETHUSDT' && qty >= 60)
+                isBigWhale: (symbol === 'BTCUSDT' && qty >= 9) || (symbol === 'ETHUSDT' && qty >= 90)
             };
 
             // 🎯 YENİ: MEGA WHALE ALARM (x2 miktar)
@@ -1567,7 +1567,7 @@
             if (symbol === 'BTCUSDT' && qty >= 9) {
                 btcWhales.unshift(t);
                 if (btcWhales.length > 5) btcWhales = btcWhales.slice(0, 5);
-            } else if (symbol === 'ETHUSDT' && qty >= 60) {
+            } else if (symbol === 'ETHUSDT' && qty >= 90) {
                 ethWhales.unshift(t);
                 if (ethWhales.length > 5) ethWhales = ethWhales.slice(0, 5);
             }
@@ -1866,7 +1866,7 @@
                     </div>
                 </div>
             `
-            : '<div class="empty-state">Waiting for 60+ ETH whales...</div>';
+            : '<div class="empty-state">Waiting for 90+ ETH whales...</div>';
     }
 
     function updateWSStatus(isConnected) {
