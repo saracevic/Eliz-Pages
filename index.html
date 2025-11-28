@@ -1123,28 +1123,35 @@
     }
 
     function showAlarmNotification(symbol, quantity, type) {
-        const alarmDiv = document.createElement('div');
-        alarmDiv.className = 'alarm-notification';
-        alarmDiv.innerHTML = `
-            🚨 MEGA WHALE ALARM!<br>
-            ${symbol.replace('USDT', '')}: ${quantity.toFixed(2)} ${type}
-        `;
-        
-        document.body.appendChild(alarmDiv);
-        
-        // Alarm sesi çal
-        playAlarmSound();
-        
-        // Titreşim (mobilde)
-        if (navigator.vibrate) {
-            navigator.vibrate([500, 200, 500]);
-        }
-        
-        // 5 saniye sonra kaldır
-        setTimeout(() => {
-            alarmDiv.remove();
-        }, 5000);
+    const alarmDiv = document.createElement('div');
+    alarmDiv.className = 'alarm-notification';
+    
+    // Basit renk değişimi
+    alarmDiv.style.background = type === 'BUY' ? '#00C853' : '#ff4444';
+    alarmDiv.style.boxShadow = type === 'BUY' 
+        ? '0 4px 12px rgba(0, 200, 83, 0.3)' 
+        : '0 4px 12px rgba(255, 68, 68, 0.3)';
+    
+    alarmDiv.innerHTML = `
+        🚨 MEGA WHALE ALARM!<br>
+        ${symbol.replace('USDT', '')}: ${quantity.toFixed(2)} ${type}
+    `;
+    
+    document.body.appendChild(alarmDiv);
+    
+    // Alarm sesi çal
+    playAlarmSound();
+    
+    // Titreşim (mobilde)
+    if (navigator.vibrate) {
+        navigator.vibrate([500, 200, 500]);
     }
+    
+    // 5 saniye sonra kaldır
+    setTimeout(() => {
+        alarmDiv.remove();
+    }, 5000);
+}
 
     // YENİ: Amerikan borsaları açılış geri sayımı (NASDAQ değişimi dahil)
     function updateUSMarketsCountdown() {
