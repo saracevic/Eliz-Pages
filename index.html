@@ -569,6 +569,9 @@
             padding: 16px;
             margin-bottom: 16px;
             box-shadow: var(--shadow);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .fear-greed-card {
@@ -970,34 +973,9 @@
                 flex-direction: column;
                 align-items: stretch;
             }
-        }
-
-        .api-settings {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow);
-        }
-
-        .api-status {
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            margin-left: 8px;
-        }
-
-        .api-status.connected {
-            background: rgba(38, 166, 154, 0.1);
-            color: var(--green);
-            border: 1px solid var(--green);
-        }
-
-        .api-status.disconnected {
-            background: rgba(239, 83, 80, 0.1);
-            color: var(--red);
-            border: 1px solid var(--red);
+            .fear-greed-container {
+                max-width: 100%;
+            }
         }
     </style>
 </head>
@@ -1038,31 +1016,8 @@
             <div class="status-item">🎯 Tracked: <strong id="coinCount">0</strong></div>
             <div class="status-item">🐋 Whales: <strong id="whaleCount">0</strong></div>
             <div class="status-item">🏦 Exchanges: <strong id="exchangeCount">0</strong></div>
-            <div class="status-item">
-                CMC API: 
-                <span id="apiStatus" class="api-status disconnected">Not Connected</span>
-            </div>
         </div>
     </header>
-
-    <!-- API Settings Panel -->
-    <div class="api-settings">
-        <div class="settings-title">🔑 CoinMarketCap Pro API Settings</div>
-        <div class="settings-grid">
-            <div class="settings-row">
-                <label>API Key</label>
-                <input type="password" id="cmcApiKey" placeholder="0512624a9ab44bc3a9997507c8d0bff9">
-            </div>
-            <div class="settings-row">
-                <label>API Action</label>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-primary" onclick="saveApiKey()">💾 Save Key</button>
-                    <button class="btn" onclick="testApiKey()">🧪 Test API</button>
-                    <button class="btn" onclick="clearApiKey()">🗑️ Clear</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <div class="dashboard">
         <div class="leader-card">
@@ -1126,7 +1081,25 @@
         </div>
     </div>
 
-    <!-- Long/Short Ratio - Sadeleştirilmiş -->
+    <!-- Fear & Greed Index - Ortalanmış ve Ücretsiz API -->
+    <div class="fear-greed-container">
+        <div class="fear-greed-card">
+            <div class="fear-greed-value" id="fearGreedMainValue">--</div>
+            <div class="fear-greed-label" id="fearGreedLabel">Loading...</div>
+            <div class="fear-greed-bar">
+                <div class="fear-greed-fill" id="fearGreedBar" style="width: 50%"></div>
+            </div>
+            <div class="fear-greed-labels">
+                <span>Extreme Fear</span>
+                <span>Fear</span>
+                <span>Neutral</span>
+                <span>Greed</span>
+                <span>Extreme Greed</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Long/Short Ratio -->
     <div class="long-short-container">
         <div class="ratio-controls">
             <select id="ratioPeriod">
@@ -1251,48 +1224,8 @@
 </div>
 
 <script>
-    // Fear & Greed Index - CoinMarketCap Pro
+    // Fear & Greed Index - Alternative.me Ücretsiz API
     async function updateFearGreedIndex() {
-        const apiKey = localStorage.getItem('cmcApiKey');
-        
-        if (!apiKey) {
-            // API key yoksa ücretsiz API kullan
-            await updateFearGreedIndexFree();
-            return;
-        }
-
-        try {
-            const response = await fetch('https://pro-api.coinmarketcap.com/v3/fear-and-greed/historical?limit=1', {
-                headers: {
-                    'X-CMC_PRO_API_KEY': apiKey
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`API error: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.data && data.data.length > 0) {
-                const fearGreedData = data.data[0];
-                const fearGreedValue = fearGreedData.value;
-                const classification = fearGreedData.value_classification;
-                
-                updateFearGreedDisplay(fearGreedValue, classification);
-                updateApiStatus(true);
-                console.log(`😨 Fear & Greed Index (CMC): ${fearGreedValue} - ${classification}`);
-            }
-        } catch (error) {
-            console.error('CMC API error:', error);
-            // Fallback: ücretsiz API
-            await updateFearGreedIndexFree();
-            updateApiStatus(false);
-        }
-    }
-
-    // Ücretsiz API (Fallback)
-    async function updateFearGreedIndexFree() {
         try {
             const response = await fetch('https://api.alternative.me/fng/');
             const data = await response.json();
@@ -1303,9 +1236,11 @@
                 const classification = fearGreedData.value_classification;
                 
                 updateFearGreedDisplay(fearGreedValue, classification);
+                console.log(`😨 Fear & Greed Index: ${fearGreedValue} - ${classification}`);
             }
         } catch (error) {
-            console.error('Free API error:', error);
+            console.error('Fear & Greed API error:', error);
+            // Fallback: rastgele değer
             const fearGreedValue = Math.floor(Math.random() * 100) + 1;
             updateFearGreedDisplay(fearGreedValue, 'Neutral');
         }
@@ -1334,63 +1269,6 @@
         }
         
         barElement.className = `fear-greed-fill ${colorClass}`;
-    }
-
-    // API Key Yönetimi
-    function saveApiKey() {
-        const apiKey = document.getElementById('cmcApiKey').value;
-        if (apiKey && apiKey.trim() !== '') {
-            localStorage.setItem('cmcApiKey', apiKey);
-            alert('✅ API Key kaydedildi! Fear & Greed Index güncelleniyor...');
-            updateFearGreedIndex();
-        } else {
-            alert('❌ Lütfen geçerli bir API Key girin!');
-        }
-    }
-
-    function testApiKey() {
-        const apiKey = localStorage.getItem('cmcApiKey') || document.getElementById('cmcApiKey').value;
-        if (!apiKey) {
-            alert('❌ Lütfen önce API Key girin!');
-            return;
-        }
-
-        fetch('https://pro-api.coinmarketcap.com/v3/fear-and-greed/historical?limit=1', {
-            headers: {
-                'X-CMC_PRO_API_KEY': apiKey
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                alert('✅ API Key çalışıyor!');
-                updateApiStatus(true);
-            } else {
-                alert('❌ API Key geçersiz!');
-                updateApiStatus(false);
-            }
-        })
-        .catch(error => {
-            alert('❌ API bağlantı hatası!');
-            updateApiStatus(false);
-        });
-    }
-
-    function clearApiKey() {
-        localStorage.removeItem('cmcApiKey');
-        document.getElementById('cmcApiKey').value = '';
-        updateApiStatus(false);
-        alert('🗑️ API Key temizlendi!');
-    }
-
-    function updateApiStatus(isConnected) {
-        const statusElement = document.getElementById('apiStatus');
-        if (isConnected) {
-            statusElement.textContent = 'Connected';
-            statusElement.className = 'api-status connected';
-        } else {
-            statusElement.textContent = 'Not Connected';
-            statusElement.className = 'api-status disconnected';
-        }
     }
 
     // Long/Short Ratio - Binance API
@@ -1581,20 +1459,13 @@
         updateUSMarketsCountdown();
         setInterval(updateUSMarketsCountdown, 1000);
         
-        // API key kontrolü
-        const savedApiKey = localStorage.getItem('cmcApiKey');
-        if (savedApiKey) {
-            document.getElementById('cmcApiKey').value = savedApiKey;
-            updateApiStatus(true);
-        }
-        
         updateFearGreedIndex();
         setInterval(updateFearGreedIndex, 60000);
         
         updateLongShortRatios();
         startAutoRatioUpdate();
         
-        console.log('🐋 Whale Tracker PRO - CoinMarketCap Pro Ready!');
+        console.log('🐋 Whale Tracker PRO - Ücretsiz API ile Hazır!');
     }
 
     document.addEventListener('DOMContentLoaded', function() {
