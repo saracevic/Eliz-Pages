@@ -763,20 +763,20 @@
         </div>
     </div>
 
-    <!-- YENİ: Coin Dashboards Bölümü -->
+    <!-- YENİ: Coin Dashboards Bölümü (BTC ve ETH hariç) -->
     <div class="coin-dashboards">
         <div class="summary-title">
-            <span>📊 Coin Whale Dashboards</span>
-            <span style="font-size: 10px; color: var(--text-muted);">Top 5 buys & sells per coin</span>
+            <span>📊 Other Coins Whale Dashboards</span>
+            <span style="font-size: 10px; color: var(--text-muted);">Top 5 buys & sells per coin (BTC/ETH hariç)</span>
         </div>
         <div class="coin-dashboard-grid" id="coinDashboards">
-            <div class="empty-state">Monitoring başlatıldığında coin dashboard'ları burada görünecek</div>
+            <div class="empty-state">Monitoring başlatıldığında diğer coin dashboard'ları burada görünecek</div>
         </div>
     </div>
 
     <div class="other-coins-summary">
         <div class="summary-title">
-            <span>💰 Other Coins Summary</span>
+            <span>💰 Volume Summary</span>
             <span style="font-size: 10px; color: var(--text-muted);">Auto-sorted by volume</span>
         </div>
         <div class="coins-split-container">
@@ -892,37 +892,37 @@
     const COIN_THRESHOLDS = {
         // Major Coins (yüksek değerli)
         'BTCUSDT': 3,      // 3 BTC
-        'ETHUSDT': 40,     // 40 ETH
-        'BNBUSDT': 200,    // 100 BNB
-        'SOLUSDT': 200,    // 100 SOL
-        'XRPUSDT': 100000,  // 50,000 XRP
-        'ADAUSDT': 100000,  // 50,000 ADA
-        'DOGEUSDT': 1000000, // 500,000 DOGE
+        'ETHUSDT': 50,     // 20 ETH
+        'BNBUSDT': 250,    // 100 BNB
+        'SOLUSDT': 400,    // 100 SOL
+        'XRPUSDT': 90000,  // 50,000 XRP
+        'ADAUSDT': 90000,  // 50,000 ADA
+        'DOGEUSDT': 900000, // 500,000 DOGE
         'AVAXUSDT': 2000,  // 1,000 AVAX
-        'DOTUSDT': 10000,   // 5,000 DOT
-        'MATICUSDT': 100000, // 50,000 MATIC
-        'LINKUSDT': 10000,  // 5,000 LINK
+        'DOTUSDT': 9000,   // 5,000 DOT
+        'MATICUSDT': 90000, // 50,000 MATIC
+        'LINKUSDT': 9000,  // 5,000 LINK
         'TRXUSDT': 200000, // 100,000 TRX
         'LTCUSDT': 2000,   // 1,000 LTC
-        'UNIUSDT': 10000,   // 5,000 UNI
-        'ATOMUSDT': 10000,  // 5,000 ATOM
+        'UNIUSDT': 9000,   // 5,000 UNI
+        'ATOMUSDT': 9000,  // 5,000 ATOM
         
         // Popular Coins (düşük değerli)
-        'ETCUSDT': 10000,   // 5,000 ETC
-        'XLMUSDT': 100000,  // 50,000 XLM
-        'NEARUSDT': 10000,  // 5,000 NEAR
-        'ALGOUSDT': 100000, // 50,000 ALGO
-        'VETUSDT': 1000000, // 500,000 VET
+        'ETCUSDT': 9000,   // 5,000 ETC
+        'XLMUSDT': 90000,  // 50,000 XLM
+        'NEARUSDT': 9000,  // 5,000 NEAR
+        'ALGOUSDT': 90000, // 50,000 ALGO
+        'VETUSDT': 900000, // 500,000 VET
         'ICPUSDT': 2000,   // 1,000 ICP
-        'FILUSDT': 10000,   // 5,000 FIL
-        'HBARUSDT': 100000, // 50,000 HBAR
-        'APTUSDT': 10000,   // 5,000 APT
-        'ARBUSDT': 10000,   // 5,000 ARB
+        'FILUSDT': 9000,   // 5,000 FIL
+        'HBARUSDT': 90000, // 50,000 HBAR
+        'APTUSDT': 9000,   // 5,000 APT
+        'ARBUSDT': 5000,   // 5,000 ARB
         'OPUSDT': 20000,   // 10,000 OP
         'INJUSDT': 2000,   // 1,000 INJ
         'SUIUSDT': 20000,  // 10,000 SUI
         'STXUSDT': 20000,  // 10,000 STX
-        'WLDUSDT': 10000    // 5,000 WLD
+        'WLDUSDT': 9000    // 5,000 WLD
     };
 
     const MAJOR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','MATICUSDT','LINKUSDT','TRXUSDT','LTCUSDT','UNIUSDT','ATOMUSDT'];
@@ -1142,6 +1142,12 @@
 
     function addToCoinWhales(trade) {
         const symbol = trade.symbol;
+        
+        // BTC ve ETH'yi coinWhales'a ekleme (zaten yukarıda ayrı dashboard'ları var)
+        if (symbol === 'BTCUSDT' || symbol === 'ETHUSDT') {
+            return;
+        }
+        
         if (!coinWhales[symbol]) {
             coinWhales[symbol] = { buy: [], sell: [] };
         }
@@ -1245,7 +1251,7 @@
         updateTopWhales();
     }
 
-    // YENİ: Coin Dashboard'larını güncelle
+    // YENİ: Coin Dashboard'larını güncelle (BTC ve ETH hariç)
     function updateCoinDashboards() {
         const container = document.getElementById('coinDashboards');
         const coins = getSelectedCoins();
@@ -1254,6 +1260,11 @@
         let html = '';
 
         coins.forEach(coin => {
+            // BTC ve ETH'yi atla
+            if (coin === 'BTCUSDT' || coin === 'ETHUSDT') {
+                return;
+            }
+            
             if (coinWhales[coin] && (coinWhales[coin].buy.length > 0 || coinWhales[coin].sell.length > 0)) {
                 hasData = true;
                 const threshold = COIN_THRESHOLDS[coin];
@@ -1297,7 +1308,7 @@
         });
 
         if (!hasData) {
-            html = '<div class="empty-state">Whale trade\'leri bekleniyor...</div>';
+            html = '<div class="empty-state">Diğer coin whale trade\'leri bekleniyor...</div>';
         }
 
         container.innerHTML = html;
