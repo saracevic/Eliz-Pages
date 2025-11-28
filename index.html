@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whale Tracker PRO - Multi Exchange</title>
     <style>
+        /* CSS kodu aynı kalacak, değişiklik yok */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
@@ -782,7 +783,7 @@
                     <span class="leader-coin-tag">ETHUSDT</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="leader-badge">Whale ≥50 ETH</div>
+                    <div class="leader-badge">Whale ≥20 ETH</div>
                     <div class="leader-percent neutral" id="ethPercent">0%</div>
                 </div>
             </div>
@@ -799,7 +800,7 @@
             <div class="top-whales">
                 <div class="top-whales-title">
                     <span>🔥 ETH Top 5 Whales</span>
-                    <span>Min: 50 ETH</span>
+                    <span>Min: 20 ETH</span>
                 </div>
                 <div id="ethTopWhales"></div>
             </div>
@@ -935,41 +936,42 @@
     const COIN_THRESHOLDS = {
         // Major Coins (yüksek değerli)
         'BTCUSDT': 3,      // 3 BTC
-        'ETHUSDT': 50,     // 20 ETH
-        'BNBUSDT': 500,    // 100 BNB
-        'SOLUSDT': 500,    // 100 SOL
-        'XRPUSDT': 80000,  // 50,000 XRP
-        'ADAUSDT': 80000,  // 50,000 ADA
-        'DOGEUSDT': 800000, // 500,000 DOGE
-        'AVAXUSDT': 2000,  // 1,000 AVAX
-        'DOTUSDT': 8000,   // 5,000 DOT
-        'MATICUSDT': 80000, // 50,000 MATIC
-        'LINKUSDT': 8000,  // 5,000 LINK
-        'TRXUSDT': 200000, // 100,000 TRX
-        'LTCUSDT': 2000,   // 1,000 LTC
-        'UNIUSDT': 8000,   // 5,000 UNI
-        'ATOMUSDT': 8000,  // 5,000 ATOM
+        'ETHUSDT': 20,     // 20 ETH
+        'BNBUSDT': 100,    // 100 BNB
+        'SOLUSDT': 100,    // 100 SOL
+        'XRPUSDT': 50000,  // 50,000 XRP
+        'ADAUSDT': 50000,  // 50,000 ADA
+        'DOGEUSDT': 500000, // 500,000 DOGE
+        'AVAXUSDT': 1000,  // 1,000 AVAX
+        'DOTUSDT': 5000,   // 5,000 DOT
+        'MATICUSDT': 50000, // 50,000 MATIC
+        'LINKUSDT': 5000,  // 5,000 LINK
+        'TRXUSDT': 100000, // 100,000 TRX
+        'LTCUSDT': 1000,   // 1,000 LTC
+        'UNIUSDT': 5000,   // 5,000 UNI
+        'ATOMUSDT': 5000,  // 5,000 ATOM
         
         // Popular Coins (düşük değerli)
-        'MMTUSDT': 800000,   // 5,000 MMT
-        'XLMUSDT': 80000,  // 50,000 XLM
-        'NEARUSDT': 8000,  // 5,000 NEAR
-        'ALGOUSDT': 80000, // 50,000 ALGO
-        'VETUSDT': 800000, // 500,000 VET
-        'ICPUSDT': 2000,   // 1,000 ICP
-        'FILUSDT': 8000,   // 5,000 FIL
-        'HBARUSDT': 80000, // 50,000 HBAR
-        'APTUSDT': 8000,   // 5,000 APT
-        'ARBUSDT': 8000,   // 5,000 ARB
-        'OPUSDT': 20000,   // 10,000 OP
-        'INJUSDT': 2000,   // 1,000 INJ
-        'SUIUSDT': 20000,  // 10,000 SUI
-        'STXUSDT': 20000,  // 10,000 STX
-        'WLDUSDT': 8000    // 5,000 WLD
+        'ETCUSDT': 5000,   // 5,000 ETC
+        'XLMUSDT': 50000,  // 50,000 XLM
+        'NEARUSDT': 5000,  // 5,000 NEAR
+        'ALGOUSDT': 50000, // 50,000 ALGO
+        'VETUSDT': 500000, // 500,000 VET
+        'ICPUSDT': 1000,   // 1,000 ICP
+        'FILUSDT': 5000,   // 5,000 FIL
+        'HBARUSDT': 50000, // 50,000 HBAR
+        'APTUSDT': 5000,   // 5,000 APT
+        'ARBUSDT': 5000,   // 5,000 ARB
+        'OPUSDT': 10000,   // 10,000 OP
+        'INJUSDT': 1000,   // 1,000 INJ
+        'SUIUSDT': 10000,  // 10,000 SUI
+        'STXUSDT': 10000,  // 10,000 STX
+        'WLDUSDT': 5000,   // 5,000 WLD
+        'MMTUSDT': 500000  // 500,000 MMT
     };
 
     const MAJOR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','MATICUSDT','LINKUSDT','TRXUSDT','LTCUSDT','UNIUSDT','ATOMUSDT'];
-    const POPULAR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','MATICUSDT','DOTUSDT','AVAXUSDT','LINKUSDT','UNIUSDT','LTCUSDT','ATOMUSDT','MMTUSDT','XLMUSDT','NEARUSDT','ALGOUSDT','VETUSDT','ICPUSDT','FILUSDT','TRXUSDT','HBARUSDT','APTUSDT','ARBUSDT','OPUSDT','INJUSDT','SUIUSDT','STXUSDT','WLDUSDT'];
+    const POPULAR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','MATICUSDT','DOTUSDT','AVAXUSDT','LINKUSDT','UNIUSDT','LTCUSDT','ATOMUSDT','ETCUSDT','XLMUSDT','NEARUSDT','ALGOUSDT','VETUSDT','ICPUSDT','FILUSDT','TRXUSDT','HBARUSDT','APTUSDT','ARBUSDT','OPUSDT','INJUSDT','SUIUSDT','STXUSDT','WLDUSDT','MMTUSDT'];
 
     function toggleTheme() {
         const body = document.body;
@@ -1007,15 +1009,29 @@
         console.log(`Reconnecting ${exchange}-${symbol}...`);
         setTimeout(() => {
             const ws = initWebSocketForCoin(symbol, exchange);
-            if (ws) wsConnections.push(ws);
-        }, 5000);
+            if (ws) {
+                // Eski bağlantıyı temizle
+                const index = wsConnections.findIndex(conn => 
+                    conn.symbol === symbol && conn.exchange === exchange
+                );
+                if (index > -1) {
+                    try { wsConnections[index].ws.close(); } catch(e) {}
+                    wsConnections.splice(index, 1);
+                }
+                
+                wsConnections.push({ ws, symbol, exchange });
+            }
+        }, 3000); // 3 saniye bekle
     }
 
     function initWebSocketForCoin(symbol, exchange) {
         try {
+            let ws;
+            
             if (exchange === 'binance') {
-                const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@aggTrade`);
+                ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@aggTrade`);
                 ws.onopen = () => {
+                    console.log(`✅ Binance ${symbol} connected`);
                     activeConnections++;
                     updateWSStatus(true);
                 };
@@ -1029,18 +1045,23 @@
                         exchange: 'Binance'
                     });
                 };
-                ws.onerror = () => console.error(`Binance ${symbol} error`);
-                ws.onclose = () => {
+                ws.onerror = (error) => {
+                    console.error(`❌ Binance ${symbol} error:`, error);
+                };
+                ws.onclose = (event) => {
+                    console.warn(`⚠️ Binance ${symbol} disconnected:`, event.code, event.reason);
                     activeConnections--;
                     updateWSStatus(isMonitoring);
-                    handleReconnect(symbol, exchange);
+                    if (isMonitoring) {
+                        handleReconnect(symbol, exchange);
+                    }
                 };
-                return ws;
             }
             
-            if (exchange === 'bybit') {
-                const ws = new WebSocket('wss://stream.bybit.com/v5/public/spot');
+            else if (exchange === 'bybit') {
+                ws = new WebSocket('wss://stream.bybit.com/v5/public/spot');
                 ws.onopen = () => {
+                    console.log(`✅ Bybit ${symbol} connected`);
                     activeConnections++;
                     updateWSStatus(true);
                     ws.send(JSON.stringify({
@@ -1062,17 +1083,20 @@
                         });
                     }
                 };
-                ws.onclose = () => {
+                ws.onclose = (event) => {
+                    console.warn(`⚠️ Bybit ${symbol} disconnected:`, event.code, event.reason);
                     activeConnections--;
                     updateWSStatus(isMonitoring);
-                    handleReconnect(symbol, exchange);
+                    if (isMonitoring) {
+                        handleReconnect(symbol, exchange);
+                    }
                 };
-                return ws;
             }
 
-            if (exchange === 'okx') {
-                const ws = new WebSocket('wss://ws.okx.com:8443/ws/v5/public');
+            else if (exchange === 'okx') {
+                ws = new WebSocket('wss://ws.okx.com:8443/ws/v5/public');
                 ws.onopen = () => {
+                    console.log(`✅ OKX ${symbol} connected`);
                     activeConnections++;
                     updateWSStatus(true);
                     ws.send(JSON.stringify({
@@ -1097,17 +1121,20 @@
                         });
                     }
                 };
-                ws.onclose = () => {
+                ws.onclose = (event) => {
+                    console.warn(`⚠️ OKX ${symbol} disconnected:`, event.code, event.reason);
                     activeConnections--;
                     updateWSStatus(isMonitoring);
-                    handleReconnect(symbol, exchange);
+                    if (isMonitoring) {
+                        handleReconnect(symbol, exchange);
+                    }
                 };
-                return ws;
             }
 
-            if (exchange === 'kraken') {
-                const ws = new WebSocket('wss://ws.kraken.com');
+            else if (exchange === 'kraken') {
+                ws = new WebSocket('wss://ws.kraken.com');
                 ws.onopen = () => {
+                    console.log(`✅ Kraken ${symbol} connected`);
                     activeConnections++;
                     updateWSStatus(true);
                     const pair = symbol.replace('USDT', '/USDT');
@@ -1131,17 +1158,20 @@
                         });
                     }
                 };
-                ws.onclose = () => {
+                ws.onclose = (event) => {
+                    console.warn(`⚠️ Kraken ${symbol} disconnected:`, event.code, event.reason);
                     activeConnections--;
                     updateWSStatus(isMonitoring);
-                    handleReconnect(symbol, exchange);
+                    if (isMonitoring) {
+                        handleReconnect(symbol, exchange);
+                    }
                 };
-                return ws;
             }
 
-            if (exchange === 'gateio') {
-                const ws = new WebSocket('wss://api.gateio.ws/ws/v4/');
+            else if (exchange === 'gateio') {
+                ws = new WebSocket('wss://api.gateio.ws/ws/v4/');
                 ws.onopen = () => {
+                    console.log(`✅ Gate.io ${symbol} connected`);
                     activeConnections++;
                     updateWSStatus(true);
                     ws.send(JSON.stringify({
@@ -1163,17 +1193,22 @@
                         });
                     }
                 };
-                ws.onclose = () => {
+                ws.onclose = (event) => {
+                    console.warn(`⚠️ Gate.io ${symbol} disconnected:`, event.code, event.reason);
                     activeConnections--;
                     updateWSStatus(isMonitoring);
-                    handleReconnect(symbol, exchange);
+                    if (isMonitoring) {
+                        handleReconnect(symbol, exchange);
+                    }
                 };
-                return ws;
             }
+
+            return { ws, symbol, exchange };
+            
         } catch (error) {
             console.error('WebSocket connection error:', error);
+            return null;
         }
-        return null;
     }
 
     function addToTradeHistory(trade) {
@@ -1537,16 +1572,19 @@
 
         wsConnections = [];
 
+        console.log(`🚀 Starting monitoring for ${coins.length} coins on ${exchanges.length} exchanges`);
+
         coins.forEach(coin => {
             exchanges.forEach(exchange => {
-                const ws = initWebSocketForCoin(coin, exchange);
-                if (ws) wsConnections.push(ws);
+                const connection = initWebSocketForCoin(coin, exchange);
+                if (connection) {
+                    wsConnections.push(connection);
+                }
             });
         });
 
         updateTradesTable(parseInt(document.getElementById('maxTrades').value));
         updateCoinDashboards();
-        console.log(`Monitoring started (${coins.length} coins, ${exchanges.length} exchanges)`);
     }
 
     function stopMonitoring() {
@@ -1556,9 +1594,13 @@
         document.getElementById('startBtn').disabled = false;
         document.getElementById('stopBtn').disabled = true;
 
-        wsConnections.forEach(ws => {
+        console.log('🛑 Stopping monitoring...');
+
+        wsConnections.forEach(connection => {
             try {
-                if (ws && ws.readyState === WebSocket.OPEN) ws.close();
+                if (connection.ws && connection.ws.readyState === WebSocket.OPEN) {
+                    connection.ws.close();
+                }
             } catch (e) {
                 console.error('WS close error', e);
             }
@@ -1567,7 +1609,6 @@
         wsConnections = [];
         activeConnections = 0;
         updateWSStatus(false);
-        console.log('Monitoring stopped');
     }
 
     function clearTrades() {
@@ -1591,7 +1632,7 @@
 
             updateTradesTable(0);
             updateCoinDashboards();
-            console.log('Cleared');
+            console.log('🧹 Cleared all trade history');
         }
     }
 
@@ -1601,9 +1642,11 @@
     setInterval(updateTRTime, 1000);
 
     window.addEventListener('beforeunload', () => {
-        wsConnections.forEach(ws => {
+        wsConnections.forEach(connection => {
             try {
-                if (ws && ws.readyState === WebSocket.OPEN) ws.close();
+                if (connection.ws && connection.ws.readyState === WebSocket.OPEN) {
+                    connection.ws.close();
+                }
             } catch (e) {}
         });
     });
