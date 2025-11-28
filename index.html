@@ -331,6 +331,32 @@
             border-radius: 3px;
             border: 1px solid var(--border);
         }
+
+        /* YENİ: Toplam satırı stilleri */
+        .whale-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 8px;
+            margin-top: 4px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+        }
+        
+        .whale-total-label {
+            color: var(--text-muted);
+        }
+        
+        .whale-total-buy {
+            color: var(--green);
+        }
+        
+        .whale-total-sell {
+            color: var(--red);
+        }
         
         .other-coins-summary {
             background: var(--bg-elevated);
@@ -506,6 +532,7 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
+            margin-bottom: 6px;
         }
 
         .whale-side-item {
@@ -515,6 +542,28 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             text-align: center;
+        }
+
+        /* YENİ: Dashboard toplam satırı */
+        .whale-side-total {
+            font-size: 9px;
+            padding: 4px;
+            border-radius: 4px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            text-align: center;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .whale-side-total.buy {
+            color: var(--green);
+            border-color: var(--green);
+        }
+
+        .whale-side-total.sell {
+            color: var(--red);
+            border-color: var(--red);
         }
         
         .settings-panel {
@@ -945,8 +994,8 @@
         // Major Coins (yüksek değerli) - x3
         'BTCUSDT': 9,        // 9 BTC (eskiden 3 BTC)
         'ETHUSDT': 60,       // 60 ETH (eskiden 20 ETH)
-        'BNBUSDT': 500,      // 500 BNB (eskiden 300 BNB)
-        'SOLUSDT': 500,      // 500 SOL (eskiden 300 SOL)
+        'BNBUSDT': 300,      // 300 BNB (eskiden 100 BNB)
+        'SOLUSDT': 300,      // 300 SOL (eskiden 100 SOL)
         'XRPUSDT': 150000,   // 150,000 XRP (eskiden 50,000 XRP)
         'ADAUSDT': 150000,   // 150,000 ADA (eskiden 50,000 ADA)
         'DOGEUSDT': 1500000, // 1.5M DOGE (eskiden 500,000 DOGE)
@@ -1337,7 +1386,7 @@
         updateTopWhales();
     }
 
-    // YENİ: Coin Dashboard'larını güncelle (BTC ve ETH hariç)
+    // YENİ: Coin Dashboard'larını güncelle (BTC ve ETH hariç) - TOPLAMLAR EKLENDİ
     function updateCoinDashboards() {
         const container = document.getElementById('coinDashboards');
         const coins = getSelectedCoins();
@@ -1355,6 +1404,10 @@
                 hasData = true;
                 const threshold = COIN_THRESHOLDS[coin];
                 const coinSymbol = coin.replace('USDT', '');
+                
+                // Toplamları hesapla
+                const totalBuy = coinWhales[coin].buy.reduce((sum, w) => sum + w.quantity, 0);
+                const totalSell = coinWhales[coin].sell.reduce((sum, w) => sum + w.quantity, 0);
                 
                 html += `
                     <div class="coin-dashboard-card">
@@ -1375,6 +1428,11 @@
                                         : '<div class="whale-side-item" style="color: var(--text-muted);">-</div>'
                                     }
                                 </div>
+                                ${coinWhales[coin].buy.length > 0 ? `
+                                    <div class="whale-side-total buy">
+                                        Total: ${formatQuantity(totalBuy)} ${coinSymbol}
+                                    </div>
+                                ` : ''}
                             </div>
                             <div class="whale-side sell">
                                 <div class="whale-side-title">🔴 SELL (Top 5)</div>
@@ -1386,6 +1444,11 @@
                                         : '<div class="whale-side-item" style="color: var(--text-muted);">-</div>'
                                     }
                                 </div>
+                                ${coinWhales[coin].sell.length > 0 ? `
+                                    <div class="whale-side-total sell">
+                                        Total: ${formatQuantity(totalSell)} ${coinSymbol}
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                     </div>
@@ -1497,7 +1560,7 @@
 
             const row = targetTable.insertRow();
             row.innerHTML = `
-                <td class="coin-name-cell">
+                <td class="coin-name-cell" style="color: green;">
                     ${arrowIcon} ${coin.symbol}
                     <span class="dominance-badge">${dominancePercent}%</span>
                 </td>
@@ -1515,9 +1578,18 @@
         }
     }
 
+    // YENİ: BTC ve ETH Top Whales'a toplam satırı eklendi
     function updateTopWhales() {
         const btc5 = btcWhales.slice(0, 5);
         const eth5 = ethWhales.slice(0, 5);
+
+        // BTC toplamlarını hesapla
+        const btcTotalBuy = btc5.filter(w => w.type === 'BUY').reduce((sum, w) => sum + w.quantity, 0);
+        const btcTotalSell = btc5.filter(w => w.type === 'SELL').reduce((sum, w) => sum + w.quantity, 0);
+
+        // ETH toplamlarını hesapla
+        const ethTotalBuy = eth5.filter(w => w.type === 'BUY').reduce((sum, w) => sum + w.quantity, 0);
+        const ethTotalSell = eth5.filter(w => w.type === 'SELL').reduce((sum, w) => sum + w.quantity, 0);
 
         document.getElementById('btcTopWhales').innerHTML = btc5.length
             ? btc5.map(w => `
@@ -1533,7 +1605,16 @@
                         <div class="whale-mini-exchange">${w.exchange}</div>
                     </div>
                 </div>
-            `).join('')
+            `).join('') + `
+                <div class="whale-total-row">
+                    <span class="whale-total-label">Toplam:</span>
+                    <div>
+                        <span class="whale-total-buy">${btcTotalBuy.toFixed(2)} BTC Alış</span>
+                        <span style="margin: 0 8px; color: var(--text-muted);">|</span>
+                        <span class="whale-total-sell">${btcTotalSell.toFixed(2)} BTC Satış</span>
+                    </div>
+                </div>
+            `
             : '<div class="empty-state">Waiting for 9+ BTC whales...</div>';
 
         document.getElementById('ethTopWhales').innerHTML = eth5.length
@@ -1550,7 +1631,16 @@
                         <div class="whale-mini-exchange">${w.exchange}</div>
                     </div>
                 </div>
-            `).join('')
+            `).join('') + `
+                <div class="whale-total-row">
+                    <span class="whale-total-label">Toplam:</span>
+                    <div>
+                        <span class="whale-total-buy">${ethTotalBuy.toFixed(2)} ETH Alış</span>
+                        <span style="margin: 0 8px; color: var(--text-muted);">|</span>
+                        <span class="whale-total-sell">${ethTotalSell.toFixed(2)} ETH Satış</span>
+                    </div>
+                </div>
+            `
             : '<div class="empty-state">Waiting for 60+ ETH whales...</div>';
     }
 
