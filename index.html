@@ -378,6 +378,100 @@
             gap: 5px;
             font-weight: 600;
         }
+
+        /* YENİ: Coin Dashboard Stilleri */
+        .coin-dashboards {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .coin-dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .coin-dashboard-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .coin-dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .coin-dashboard-name {
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .coin-dashboard-threshold {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .coin-dashboard-whales {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .whale-side {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px;
+        }
+
+        .whale-side-title {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .whale-side.buy .whale-side-title {
+            color: var(--green);
+        }
+
+        .whale-side.sell .whale-side-title {
+            color: var(--red);
+        }
+
+        .whale-side-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .whale-side-item {
+            font-size: 10px;
+            padding: 4px;
+            border-radius: 4px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
         
         .settings-panel {
             background: var(--bg-elevated);
@@ -569,6 +663,9 @@
             .settings-grid {
                 grid-template-columns: 1fr;
             }
+            .coin-dashboard-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -642,7 +739,7 @@
                     <span class="leader-coin-tag">ETHUSDT</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="leader-badge">Whale ≥20 ETH</div>
+                    <div class="leader-badge">Whale ≥40 ETH</div>
                     <div class="leader-percent neutral" id="ethPercent">0%</div>
                 </div>
             </div>
@@ -659,10 +756,21 @@
             <div class="top-whales">
                 <div class="top-whales-title">
                     <span>🔥 ETH Top 5 Whales</span>
-                    <span>Min: 20 ETH</span>
+                    <span>Min: 40 ETH</span>
                 </div>
                 <div id="ethTopWhales"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- YENİ: Coin Dashboards Bölümü -->
+    <div class="coin-dashboards">
+        <div class="summary-title">
+            <span>📊 Coin Whale Dashboards</span>
+            <span style="font-size: 10px; color: var(--text-muted);">Top 5 buys & sells per coin</span>
+        </div>
+        <div class="coin-dashboard-grid" id="coinDashboards">
+            <div class="empty-state">Monitoring başlatıldığında coin dashboard'ları burada görünecek</div>
         </div>
     </div>
 
@@ -777,41 +885,44 @@
     let updateTimeout;
     const MAX_TRADE_HISTORY = 1000;
 
+    // Her coin için whale trade'leri saklayacağımız obje
+    let coinWhales = {};
+
     // Her coin için özel whale threshold değerleri
     const COIN_THRESHOLDS = {
         // Major Coins (yüksek değerli)
         'BTCUSDT': 3,      // 3 BTC
-        'ETHUSDT': 20,     // 20 ETH
-        'BNBUSDT': 100,    // 100 BNB
-        'SOLUSDT': 100,    // 100 SOL
-        'XRPUSDT': 50000,  // 50,000 XRP
-        'ADAUSDT': 50000,  // 50,000 ADA
-        'DOGEUSDT': 500000, // 500,000 DOGE
-        'AVAXUSDT': 1000,  // 1,000 AVAX
-        'DOTUSDT': 5000,   // 5,000 DOT
-        'MATICUSDT': 50000, // 50,000 MATIC
-        'LINKUSDT': 5000,  // 5,000 LINK
-        'TRXUSDT': 100000, // 100,000 TRX
-        'LTCUSDT': 1000,   // 1,000 LTC
-        'UNIUSDT': 5000,   // 5,000 UNI
-        'ATOMUSDT': 5000,  // 5,000 ATOM
+        'ETHUSDT': 40,     // 40 ETH
+        'BNBUSDT': 200,    // 100 BNB
+        'SOLUSDT': 200,    // 100 SOL
+        'XRPUSDT': 100000,  // 50,000 XRP
+        'ADAUSDT': 100000,  // 50,000 ADA
+        'DOGEUSDT': 1000000, // 500,000 DOGE
+        'AVAXUSDT': 2000,  // 1,000 AVAX
+        'DOTUSDT': 10000,   // 5,000 DOT
+        'MATICUSDT': 100000, // 50,000 MATIC
+        'LINKUSDT': 10000,  // 5,000 LINK
+        'TRXUSDT': 200000, // 100,000 TRX
+        'LTCUSDT': 2000,   // 1,000 LTC
+        'UNIUSDT': 10000,   // 5,000 UNI
+        'ATOMUSDT': 10000,  // 5,000 ATOM
         
         // Popular Coins (düşük değerli)
-        'ETCUSDT': 5000,   // 5,000 ETC
-        'XLMUSDT': 50000,  // 50,000 XLM
-        'NEARUSDT': 5000,  // 5,000 NEAR
-        'ALGOUSDT': 50000, // 50,000 ALGO
-        'VETUSDT': 500000, // 500,000 VET
-        'ICPUSDT': 1000,   // 1,000 ICP
-        'FILUSDT': 5000,   // 5,000 FIL
-        'HBARUSDT': 50000, // 50,000 HBAR
-        'APTUSDT': 5000,   // 5,000 APT
-        'ARBUSDT': 5000,   // 5,000 ARB
-        'OPUSDT': 10000,   // 10,000 OP
-        'INJUSDT': 1000,   // 1,000 INJ
-        'SUIUSDT': 10000,  // 10,000 SUI
-        'STXUSDT': 10000,  // 10,000 STX
-        'WLDUSDT': 5000    // 5,000 WLD
+        'ETCUSDT': 10000,   // 5,000 ETC
+        'XLMUSDT': 100000,  // 50,000 XLM
+        'NEARUSDT': 10000,  // 5,000 NEAR
+        'ALGOUSDT': 100000, // 50,000 ALGO
+        'VETUSDT': 1000000, // 500,000 VET
+        'ICPUSDT': 2000,   // 1,000 ICP
+        'FILUSDT': 10000,   // 5,000 FIL
+        'HBARUSDT': 100000, // 50,000 HBAR
+        'APTUSDT': 10000,   // 5,000 APT
+        'ARBUSDT': 10000,   // 5,000 ARB
+        'OPUSDT': 20000,   // 10,000 OP
+        'INJUSDT': 2000,   // 1,000 INJ
+        'SUIUSDT': 20000,  // 10,000 SUI
+        'STXUSDT': 20000,  // 10,000 STX
+        'WLDUSDT': 10000    // 5,000 WLD
     };
 
     const MAJOR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','MATICUSDT','LINKUSDT','TRXUSDT','LTCUSDT','UNIUSDT','ATOMUSDT'];
@@ -1029,6 +1140,27 @@
         }
     }
 
+    function addToCoinWhales(trade) {
+        const symbol = trade.symbol;
+        if (!coinWhales[symbol]) {
+            coinWhales[symbol] = { buy: [], sell: [] };
+        }
+
+        if (trade.type === 'BUY') {
+            coinWhales[symbol].buy.unshift(trade);
+            // Sadece son 5 alışı tut
+            if (coinWhales[symbol].buy.length > 5) {
+                coinWhales[symbol].buy = coinWhales[symbol].buy.slice(0, 5);
+            }
+        } else {
+            coinWhales[symbol].sell.unshift(trade);
+            // Sadece son 5 satışı tut
+            if (coinWhales[symbol].sell.length > 5) {
+                coinWhales[symbol].sell = coinWhales[symbol].sell.slice(0, 5);
+            }
+        }
+    }
+
     function handleTrade(trade) {
         const symbol = trade.s;
         const price = parseFloat(trade.p);
@@ -1063,6 +1195,7 @@
             };
 
             addToTradeHistory(t);
+            addToCoinWhales(t);
             whaleTradeCount++;
 
             if (symbol === 'BTCUSDT' && qty >= 3) {
@@ -1077,6 +1210,7 @@
             updateTimeout = setTimeout(function() {
                 updateDashboard();
                 updateTradesTable(parseInt(document.getElementById('maxTrades').value));
+                updateCoinDashboards();
             }, 100);
         }
     }
@@ -1111,6 +1245,70 @@
         updateTopWhales();
     }
 
+    // YENİ: Coin Dashboard'larını güncelle
+    function updateCoinDashboards() {
+        const container = document.getElementById('coinDashboards');
+        const coins = getSelectedCoins();
+        
+        let hasData = false;
+        let html = '';
+
+        coins.forEach(coin => {
+            if (coinWhales[coin] && (coinWhales[coin].buy.length > 0 || coinWhales[coin].sell.length > 0)) {
+                hasData = true;
+                const threshold = COIN_THRESHOLDS[coin];
+                const coinSymbol = coin.replace('USDT', '');
+                
+                html += `
+                    <div class="coin-dashboard-card">
+                        <div class="coin-dashboard-header">
+                            <div class="coin-dashboard-name">
+                                ${coinSymbol}
+                                <span class="coin-dashboard-threshold">≥${formatNumber(threshold)}</span>
+                            </div>
+                        </div>
+                        <div class="coin-dashboard-whales">
+                            <div class="whale-side buy">
+                                <div class="whale-side-title">🟢 BUY (Top 5)</div>
+                                <div class="whale-side-list">
+                                    ${coinWhales[coin].buy.length > 0 
+                                        ? coinWhales[coin].buy.map(w => 
+                                            `<div class="whale-side-item">${formatQuantity(w.quantity)} ${coinSymbol}</div>`
+                                        ).join('')
+                                        : '<div class="whale-side-item" style="color: var(--text-muted);">-</div>'
+                                    }
+                                </div>
+                            </div>
+                            <div class="whale-side sell">
+                                <div class="whale-side-title">🔴 SELL (Top 5)</div>
+                                <div class="whale-side-list">
+                                    ${coinWhales[coin].sell.length > 0 
+                                        ? coinWhales[coin].sell.map(w => 
+                                            `<div class="whale-side-item">${formatQuantity(w.quantity)} ${coinSymbol}</div>`
+                                        ).join('')
+                                        : '<div class="whale-side-item" style="color: var(--text-muted);">-</div>'
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        if (!hasData) {
+            html = '<div class="empty-state">Whale trade\'leri bekleniyor...</div>';
+        }
+
+        container.innerHTML = html;
+    }
+
+    function formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
+        return num.toString();
+    }
+
     function formatVolume(num) {
         if (!isFinite(num)) return '$0';
         if (num >= 1000000) return '$' + (num / 1000000).toFixed(2) + 'M';
@@ -1125,7 +1323,8 @@
 
     function formatQuantity(q) {
         if (!isFinite(q)) return '-';
-        return q.toFixed(4);
+        if (q >= 1000) return (q / 1000).toFixed(1) + 'K';
+        return q.toFixed(2);
     }
 
     function updateTradesTable(maxTrades) {
@@ -1247,6 +1446,7 @@
         tradeHistory = [];
         whaleTradeCount = 0;
         coinVolumes = {};
+        coinWhales = {};
         btcWhales = [];
         ethWhales = [];
         activeConnections = 0;
@@ -1270,6 +1470,7 @@
         });
 
         updateTradesTable(parseInt(document.getElementById('maxTrades').value));
+        updateCoinDashboards();
         console.log(`Monitoring started (${coins.length} coins, ${exchanges.length} exchanges)`);
     }
 
@@ -1299,6 +1500,7 @@
             tradeHistory = [];
             whaleTradeCount = 0;
             coinVolumes = {};
+            coinWhales = {};
             btcWhales = [];
             ethWhales = [];
 
@@ -1313,6 +1515,7 @@
             document.getElementById('ethTopWhales').innerHTML = '';
 
             updateTradesTable(0);
+            updateCoinDashboards();
             console.log('Cleared');
         }
     }
