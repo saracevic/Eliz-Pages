@@ -141,6 +141,11 @@
             color: var(--red);
         }
         
+        .market-status span {
+            margin-left: 4px;
+            font-weight: 600;
+        }
+        
         .status-bar {
             display: flex;
             gap: 12px;
@@ -832,14 +837,10 @@
                     <div class="tr-clock-label">🇹🇷 TR Time</div>
                     <div class="tr-clock-time" id="trTime">--:--:--</div>
                 </div>
-                <!-- YENİ: Amerikan Borsaları Geri Sayım -->
+                <!-- YENİ: Amerikan Borsaları Geri Sayım (NASDAQ değişimi dahil) -->
                 <div class="tr-clock">
                     <div class="tr-clock-label">🇺🇸 US Markets</div>
                     <div class="tr-clock-time" id="usMarketsCountdown">--:--:--</div>
-                </div>
-                <div class="tr-clock">
-                    <div class="tr-clock-label">📈 NASDAQ</div>
-                    <div class="tr-clock-time" id="nasdaqChange">%0.00</div>
                 </div>
             </div>
         </div>
@@ -1145,7 +1146,7 @@
         }, 5000);
     }
 
-    // YENİ: Amerikan borsaları açılış geri sayımı
+    // YENİ: Amerikan borsaları açılış geri sayımı (NASDAQ değişimi dahil)
     function updateUSMarketsCountdown() {
         const now = new Date();
         const trTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Istanbul"}));
@@ -1162,15 +1163,19 @@
         marketClose.setHours(16, 0, 0, 0);
         
         const countdownElement = document.getElementById('usMarketsCountdown');
-        const nasdaqElement = document.getElementById('nasdaqChange');
         
         // Haftasonu kontrolü
         const dayOfWeek = nyTime.getDay();
         const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
         
+        // Nasdaq değişim simülasyonu
+        const nasdaqChange = getNasdaqChange();
+        
         if (isWeekend) {
-            countdownElement.innerHTML = `<div class="market-status market-closed">WEEKEND</div>`;
-            nasdaqElement.innerHTML = `<div class="market-status market-closed">CLOSED</div>`;
+            countdownElement.innerHTML = `
+                <div class="market-status market-closed">WEEKEND</div>
+                <div>${nasdaqChange}</div>
+            `;
             return;
         }
         
@@ -1183,7 +1188,7 @@
             const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
             
             countdownElement.innerHTML = `
-                <div class="market-status market-open">OPEN</div>
+                <div class="market-status market-open">OPEN ${nasdaqChange}</div>
                 <div>${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</div>
             `;
         } else {
@@ -1207,20 +1212,15 @@
             const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
             
             countdownElement.innerHTML = `
-                <div class="market-status market-closed">CLOSED</div>
+                <div class="market-status market-closed">CLOSED ${nasdaqChange}</div>
                 <div>${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</div>
             `;
         }
-        
-        // Nasdaq değişim simülasyonu (gerçek veri için API entegrasyonu yapılabilir)
-        updateNasdaqChange();
     }
 
     // Nasdaq değişim verisi (simülasyon - gerçek uygulamada API'den alınmalı)
-    function updateNasdaqChange() {
-        const nasdaqElement = document.getElementById('nasdaqChange');
-        
-        // Rastgele değişim simülasyonu (%90 ihtimalle pozitif/negatif, %10 ihtimalle nötr)
+    function getNasdaqChange() {
+        // Rastgele değişim simülasyonu
         const random = Math.random();
         let change, className;
         
@@ -1238,22 +1238,7 @@
             className = '';
         }
         
-        nasdaqElement.innerHTML = `
-            <div class="market-status ${className}">${change}%</div>
-        `;
-    }
-
-    // Gerçek Nasdaq verisi almak için fonksiyon (opsiyonel)
-    async function getRealNasdaqData() {
-        try {
-            // Örnek API endpoint - gerçek uygulamada finans API'si kullanılmalı
-            const response = await fetch('https://api.example.com/nasdaq');
-            const data = await response.json();
-            return data.changePercent;
-        } catch (error) {
-            console.log('Nasdaq verisi alınamadı:', error);
-            return null;
-        }
+        return `<span class="${className}">${change}%</span>`;
     }
 
     function toggleTheme() {
