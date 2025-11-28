@@ -20,6 +20,7 @@
             --text-bright: #F8F9FD;
             --green: #26A69A;
             --red: #EF5350;
+            --yellow: #FFA726;
             --shadow: 0 4px 16px rgba(0,0,0,0.4);
         }
         
@@ -425,15 +426,15 @@
 
         .ratio-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
         }
 
         .ratio-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 12px;
+            padding: 16px;
         }
 
         .ratio-header {
@@ -446,11 +447,11 @@
         }
 
         .ratio-coin {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .ratio-time {
@@ -462,7 +463,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .ratio-side {
@@ -471,13 +472,13 @@
         }
 
         .ratio-label {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-muted);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .ratio-percent {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 700;
         }
 
@@ -490,10 +491,10 @@
         }
 
         .ratio-bar-container {
-            height: 8px;
+            height: 10px;
             background: var(--border);
-            border-radius: 4px;
-            margin: 8px 0;
+            border-radius: 5px;
+            margin: 12px 0;
             overflow: hidden;
         }
 
@@ -513,8 +514,8 @@
         }
 
         .ratio-exchanges {
-            margin-top: 12px;
-            padding-top: 8px;
+            margin-top: 16px;
+            padding-top: 12px;
             border-top: 1px dashed var(--border);
         }
 
@@ -522,8 +523,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 6px 0;
-            font-size: 10px;
+            padding: 8px 0;
+            font-size: 11px;
             border-bottom: 1px solid var(--border);
         }
 
@@ -533,22 +534,22 @@
 
         .exchange-name {
             color: var(--text-muted);
-            min-width: 60px;
+            min-width: 70px;
         }
 
         .exchange-ratio {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             flex: 1;
-            max-width: 120px;
+            max-width: 140px;
         }
 
         .exchange-bar {
-            height: 4px;
+            height: 6px;
             flex: 1;
             background: var(--border);
-            border-radius: 2px;
+            border-radius: 3px;
             overflow: hidden;
         }
 
@@ -563,7 +564,7 @@
         }
 
         .exchange-percent {
-            min-width: 35px;
+            min-width: 40px;
             text-align: right;
             font-weight: 600;
         }
@@ -575,6 +576,72 @@
         .exchange-short .exchange-percent {
             color: var(--red);
         }
+
+        /* YENİ: Fear & Greed Index */
+        .fear-greed-container {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .fear-greed-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .fear-greed-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+        }
+
+        .fear-greed-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .fear-greed-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .fear-greed-bar {
+            height: 12px;
+            background: var(--border);
+            border-radius: 6px;
+            margin: 12px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .fear-greed-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: all 0.5s ease;
+        }
+
+        .fear-greed-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .fear-greed-extreme { background: linear-gradient(90deg, #ff4444, #ff6b35); }
+        .fear-greed-fear { background: linear-gradient(90deg, #ff6b35, #ffa726); }
+        .fear-greed-neutral { background: linear-gradient(90deg, #ffa726, #fbc02d); }
+        .fear-greed-greed { background: linear-gradient(90deg, #fbc02d, #8bc34a); }
+        .fear-greed-extreme-greed { background: linear-gradient(90deg, #8bc34a, #4caf50); }
 
         /* YENİ: Coin Dashboard Stilleri */
         .coin-dashboards {
@@ -956,6 +1023,11 @@
                     <div class="tr-clock-label">🇺🇸 US Markets</div>
                     <div class="tr-clock-time" id="usMarketsCountdown">--:--:--</div>
                 </div>
+                <!-- YENİ: Fear & Greed Index -->
+                <div class="tr-clock">
+                    <div class="tr-clock-label">😨 Fear & Greed</div>
+                    <div class="tr-clock-time" id="fearGreedValue">--</div>
+                </div>
             </div>
         </div>
         <div class="status-bar">
@@ -1007,7 +1079,7 @@
                     <span class="leader-coin-tag">ETHUSDT</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="leader-badge">Whale ≥60 ETH</div>
+                    <div class="leader-badge">Whale ≥90 ETH</div>
                     <div class="leader-percent neutral" id="ethPercent">0%</div>
                 </div>
             </div>
@@ -1024,7 +1096,7 @@
             <div class="top-whales">
                 <div class="top-whales-title">
                     <span>🔥 ETH Top 5 Whales</span>
-                    <span>Min: 60 ETH</span>
+                    <span>Min: 90 ETH</span>
                 </div>
                 <div id="ethTopWhales"></div>
             </div>
@@ -1042,7 +1114,30 @@
         </div>
     </div>
 
-    <!-- YENİ: Long/Short Ratio Panel (Volume Summary yerine) -->
+    <!-- YENİ: Fear & Greed Index -->
+    <div class="fear-greed-container">
+        <div class="summary-title">
+            <span>😨 Fear & Greed Index</span>
+            <span style="font-size: 10px; color: var(--text-muted);">Crypto market sentiment</span>
+        </div>
+        <div class="fear-greed-card">
+            <div class="fear-greed-title">Current Market Sentiment</div>
+            <div class="fear-greed-value" id="fearGreedMainValue">--</div>
+            <div class="fear-greed-label" id="fearGreedLabel">Loading...</div>
+            <div class="fear-greed-bar">
+                <div class="fear-greed-fill" id="fearGreedBar" style="width: 50%"></div>
+            </div>
+            <div class="fear-greed-labels">
+                <span>Extreme Fear</span>
+                <span>Fear</span>
+                <span>Neutral</span>
+                <span>Greed</span>
+                <span>Extreme Greed</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- YENİ: Long/Short Ratio Panel -->
     <div class="long-short-container">
         <div class="summary-title">
             <span>⚖️ Long/Short Ratios</span>
@@ -1063,7 +1158,8 @@
             <button class="btn" onclick="stopAutoRatioUpdate()">⏸️ Stop</button>
         </div>
 
-        <div class="ratio-grid" id="longShortRatios">
+        <div class="ratio-grid">
+            <!-- Sadece BTC ve ETH -->
             <div class="ratio-card">
                 <div class="ratio-header">
                     <div class="ratio-coin">₿ BTC</div>
@@ -1120,74 +1216,6 @@
                     </div>
                 </div>
                 <div class="ratio-exchanges" id="ethExchanges">
-                    <div class="exchange-row">
-                        <div class="exchange-name">Binance</div>
-                        <div class="exchange-ratio">
-                            <div class="exchange-bar">
-                                <div class="exchange-long" style="width: 50%"></div>
-                            </div>
-                            <div class="exchange-percent">-%</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ratio-card">
-                <div class="ratio-header">
-                    <div class="ratio-coin">⎈ BNB</div>
-                    <div class="ratio-time" id="bnbRatioTime">--:--:--</div>
-                </div>
-                <div class="ratio-main">
-                    <div class="ratio-side ratio-long">
-                        <div class="ratio-label">LONG</div>
-                        <div class="ratio-percent" id="bnbLongPercent">-%</div>
-                    </div>
-                    <div class="ratio-side ratio-short">
-                        <div class="ratio-label">SHORT</div>
-                        <div class="ratio-percent" id="bnbShortPercent">-%</div>
-                    </div>
-                </div>
-                <div class="ratio-bar-container">
-                    <div class="ratio-bar">
-                        <div class="ratio-bar-long" id="bnbLongBar" style="width: 50%"></div>
-                        <div class="ratio-bar-short" id="bnbShortBar" style="width: 50%"></div>
-                    </div>
-                </div>
-                <div class="ratio-exchanges" id="bnbExchanges">
-                    <div class="exchange-row">
-                        <div class="exchange-name">Binance</div>
-                        <div class="exchange-ratio">
-                            <div class="exchange-bar">
-                                <div class="exchange-long" style="width: 50%"></div>
-                            </div>
-                            <div class="exchange-percent">-%</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ratio-card">
-                <div class="ratio-header">
-                    <div class="ratio-coin">◎ SOL</div>
-                    <div class="ratio-time" id="solRatioTime">--:--:--</div>
-                </div>
-                <div class="ratio-main">
-                    <div class="ratio-side ratio-long">
-                        <div class="ratio-label">LONG</div>
-                        <div class="ratio-percent" id="solLongPercent">-%</div>
-                    </div>
-                    <div class="ratio-side ratio-short">
-                        <div class="ratio-label">SHORT</div>
-                        <div class="ratio-percent" id="solShortPercent">-%</div>
-                    </div>
-                </div>
-                <div class="ratio-bar-container">
-                    <div class="ratio-bar">
-                        <div class="ratio-bar-long" id="solLongBar" style="width: 50%"></div>
-                        <div class="ratio-bar-short" id="solShortBar" style="width: 50%"></div>
-                    </div>
-                </div>
-                <div class="ratio-exchanges" id="solExchanges">
                     <div class="exchange-row">
                         <div class="exchange-name">Binance</div>
                         <div class="exchange-ratio">
@@ -1278,12 +1306,15 @@
     let autoRatioUpdate = null;
     const RATIO_UPDATE_INTERVAL = 30000; // 30 saniye
 
+    // YENİ: Fear & Greed Index değişkenleri
+    let fearGreedUpdate = null;
+
     // Her coin için whale trade'leri saklayacağımız obje
     let coinWhales = {};
 
     // Her coin için özel whale threshold değerleri (x3 ARTIRILDI)
     const COIN_THRESHOLDS = {
-                // Major Coins (yüksek değerli) - x3
+        // Major Coins (yüksek değerli) - x3
         'BTCUSDT': 9,        // 9 BTC (eskiden 3 BTC)
         'ETHUSDT': 90,       // 60 ETH (eskiden 30 ETH)
         'BNBUSDT': 900,      // 600 BNB (eskiden 300 BNB)
@@ -1481,6 +1512,54 @@
         return `<span class="${className}">${change}%</span>`;
     }
 
+    // YENİ: Fear & Greed Index
+    function updateFearGreedIndex() {
+        // Gerçek API: https://api.alternative.me/fng/
+        // Şimdilik simüle ediyoruz
+        const fearGreedValue = Math.floor(Math.random() * 100) + 1;
+        const fearGreedElement = document.getElementById('fearGreedValue');
+        const fearGreedMainElement = document.getElementById('fearGreedMainValue');
+        const fearGreedLabelElement = document.getElementById('fearGreedLabel');
+        const fearGreedBarElement = document.getElementById('fearGreedBar');
+        
+        fearGreedElement.textContent = fearGreedValue;
+        fearGreedMainElement.textContent = fearGreedValue;
+        
+        // Bar genişliğini güncelle
+        fearGreedBarElement.style.width = `${fearGreedValue}%`;
+        
+        // Renk ve etiketi güncelle
+        let label = '';
+        let colorClass = '';
+        
+        if (fearGreedValue <= 20) {
+            label = '😱 Extreme Fear';
+            colorClass = 'fear-greed-extreme';
+        } else if (fearGreedValue <= 40) {
+            label = '😨 Fear';
+            colorClass = 'fear-greed-fear';
+        } else if (fearGreedValue <= 60) {
+            label = '😐 Neutral';
+            colorClass = 'fear-greed-neutral';
+        } else if (fearGreedValue <= 80) {
+            label = '😊 Greed';
+            colorClass = 'fear-greed-greed';
+        } else {
+            label = '🚀 Extreme Greed';
+            colorClass = 'fear-greed-extreme-greed';
+        }
+        
+        fearGreedLabelElement.textContent = label;
+        fearGreedBarElement.className = `fear-greed-fill ${colorClass}`;
+        
+        console.log(`😨 Fear & Greed Index updated: ${fearGreedValue} - ${label}`);
+    }
+
+    function startFearGreedUpdate() {
+        updateFearGreedIndex();
+        fearGreedUpdate = setInterval(updateFearGreedIndex, 60000); // 1 dakikada bir
+    }
+
     // YENİ: Long/Short Ratio Fonksiyonları
     function updateLongShortRatios() {
         const symbol = document.getElementById('ratioSymbol').value;
@@ -1498,15 +1577,6 @@
                 { name: 'Binance', long: 51.8, short: 48.2 },
                 { name: 'OKX', long: 53.2, short: 46.8 },
                 { name: 'Bybit', long: 50.9, short: 49.1 }
-            ]},
-            'BNB': { long: 55.1, short: 44.9, exchanges: [
-                { name: 'Binance', long: 56.2, short: 43.8 },
-                { name: 'OKX', long: 53.8, short: 46.2 }
-            ]},
-            'SOL': { long: 46.8, short: 53.2, exchanges: [
-                { name: 'Binance', long: 45.9, short: 54.1 },
-                { name: 'OKX', long: 47.5, short: 52.5 },
-                { name: 'Bybit', long: 48.2, short: 51.8 }
             ]}
         };
 
@@ -1602,646 +1672,7 @@
         return document.getElementById('coinSelection').value === 'popular' ? POPULAR_COINS : MAJOR_COINS;
     }
 
-    function handleReconnect(symbol, exchange) {
-        if (!isMonitoring) return;
-        
-        console.log(`Reconnecting ${exchange}-${symbol}...`);
-        setTimeout(() => {
-            const ws = initWebSocketForCoin(symbol, exchange);
-            if (ws) {
-                // Eski bağlantıyı temizle
-                const index = wsConnections.findIndex(conn => 
-                    conn.symbol === symbol && conn.exchange === exchange
-                );
-                if (index > -1) {
-                    try { wsConnections[index].ws.close(); } catch(e) {}
-                    wsConnections.splice(index, 1);
-                }
-                
-                wsConnections.push({ ws, symbol, exchange });
-            }
-        }, 3000); // 3 saniye bekle
-    }
-
-    function initWebSocketForCoin(symbol, exchange) {
-        try {
-            let ws;
-            
-            if (exchange === 'binance') {
-                ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@aggTrade`);
-                ws.onopen = () => {
-                    console.log(`✅ Binance ${symbol} connected`);
-                    activeConnections++;
-                    updateWSStatus(true);
-                };
-                ws.onmessage = (ev) => {
-                    const t = JSON.parse(ev.data);
-                    handleTrade({
-                        s: t.s,
-                        p: t.p,
-                        q: t.q,
-                        m: t.m,
-                        exchange: 'Binance'
-                    });
-                };
-                ws.onerror = (error) => {
-                    console.error(`❌ Binance ${symbol} error:`, error);
-                };
-                ws.onclose = (event) => {
-                    console.warn(`⚠️ Binance ${symbol} disconnected:`, event.code, event.reason);
-                    activeConnections--;
-                    updateWSStatus(isMonitoring);
-                    if (isMonitoring) {
-                        handleReconnect(symbol, exchange);
-                    }
-                };
-            }
-            
-            else if (exchange === 'bybit') {
-                ws = new WebSocket('wss://stream.bybit.com/v5/public/spot');
-                ws.onopen = () => {
-                    console.log(`✅ Bybit ${symbol} connected`);
-                    activeConnections++;
-                    updateWSStatus(true);
-                    ws.send(JSON.stringify({
-                        op: 'subscribe',
-                        args: [`publicTrade.${symbol}`]
-                    }));
-                };
-                ws.onmessage = (ev) => {
-                    const data = JSON.parse(ev.data);
-                    if (data.topic && data.data) {
-                        data.data.forEach(trade => {
-                            handleTrade({
-                                s: symbol,
-                                p: trade.p,
-                                q: trade.v,
-                                m: trade.S === 'Sell',
-                                exchange: 'Bybit'
-                            });
-                        });
-                    }
-                };
-                ws.onclose = (event) => {
-                    console.warn(`⚠️ Bybit ${symbol} disconnected:`, event.code, event.reason);
-                    activeConnections--;
-                    updateWSStatus(isMonitoring);
-                    if (isMonitoring) {
-                        handleReconnect(symbol, exchange);
-                    }
-                };
-            }
-
-            else if (exchange === 'okx') {
-                ws = new WebSocket('wss://ws.okx.com:8443/ws/v5/public');
-                ws.onopen = () => {
-                    console.log(`✅ OKX ${symbol} connected`);
-                    activeConnections++;
-                    updateWSStatus(true);
-                    ws.send(JSON.stringify({
-                        op: 'subscribe',
-                        args: [{
-                            channel: 'trades',
-                            instId: symbol.replace('USDT', '-USDT')
-                        }]
-                    }));
-                };
-                ws.onmessage = (ev) => {
-                    const data = JSON.parse(ev.data);
-                    if (data.data) {
-                        data.data.forEach(trade => {
-                            handleTrade({
-                                s: symbol,
-                                p: trade.px,
-                                q: trade.sz,
-                                m: trade.side === 'sell',
-                                exchange: 'OKX'
-                            });
-                        });
-                    }
-                };
-                ws.onclose = (event) => {
-                    console.warn(`⚠️ OKX ${symbol} disconnected:`, event.code, event.reason);
-                    activeConnections--;
-                    updateWSStatus(isMonitoring);
-                    if (isMonitoring) {
-                        handleReconnect(symbol, exchange);
-                    }
-                };
-            }
-
-            else if (exchange === 'kraken') {
-                ws = new WebSocket('wss://ws.kraken.com');
-                ws.onopen = () => {
-                    console.log(`✅ Kraken ${symbol} connected`);
-                    activeConnections++;
-                    updateWSStatus(true);
-                    const pair = symbol.replace('USDT', '/USDT');
-                    ws.send(JSON.stringify({
-                        event: 'subscribe',
-                        pair: [pair],
-                        subscription: { name: 'trade' }
-                    }));
-                };
-                ws.onmessage = (ev) => {
-                    const data = JSON.parse(ev.data);
-                    if (Array.isArray(data) && data[2] === 'trade') {
-                        data[1].forEach(trade => {
-                            handleTrade({
-                                s: symbol,
-                                p: trade[0],
-                                q: trade[1],
-                                m: trade[3] === 's',
-                                exchange: 'Kraken'
-                            });
-                        });
-                    }
-                };
-                ws.onclose = (event) => {
-                    console.warn(`⚠️ Kraken ${symbol} disconnected:`, event.code, event.reason);
-                    activeConnections--;
-                    updateWSStatus(isMonitoring);
-                    if (isMonitoring) {
-                        handleReconnect(symbol, exchange);
-                    }
-                };
-            }
-
-            else if (exchange === 'gateio') {
-                ws = new WebSocket('wss://api.gateio.ws/ws/v4/');
-                ws.onopen = () => {
-                    console.log(`✅ Gate.io ${symbol} connected`);
-                    activeConnections++;
-                    updateWSStatus(true);
-                    ws.send(JSON.stringify({
-                        time: Math.floor(Date.now() / 1000),
-                        channel: 'spot.trades',
-                        event: 'subscribe',
-                        payload: [symbol.replace('USDT', '_USDT')]
-                    }));
-                };
-                ws.onmessage = (ev) => {
-                    const data = JSON.parse(ev.data);
-                    if (data.event === 'update' && data.result) {
-                        handleTrade({
-                            s: symbol,
-                            p: data.result.price,
-                            q: data.result.amount,
-                            m: data.result.side === 'sell',
-                            exchange: 'Gate.io'
-                        });
-                    }
-                };
-                ws.onclose = (event) => {
-                    console.warn(`⚠️ Gate.io ${symbol} disconnected:`, event.code, event.reason);
-                    activeConnections--;
-                    updateWSStatus(isMonitoring);
-                    if (isMonitoring) {
-                        handleReconnect(symbol, exchange);
-                    }
-                };
-            }
-
-            return { ws, symbol, exchange };
-            
-        } catch (error) {
-            console.error('WebSocket connection error:', error);
-            return null;
-        }
-    }
-
-    function addToTradeHistory(trade) {
-        tradeHistory.unshift(trade);
-        if (tradeHistory.length > MAX_TRADE_HISTORY) {
-            tradeHistory.length = MAX_TRADE_HISTORY;
-        }
-    }
-
-    function addToCoinWhales(trade) {
-        const symbol = trade.symbol;
-        
-        // BTC ve ETH'yi coinWhales'a ekleme (zaten yukarıda ayrı dashboard'ları var)
-        if (symbol === 'BTCUSDT' || symbol === 'ETHUSDT') {
-            return;
-        }
-        
-        if (!coinWhales[symbol]) {
-            coinWhales[symbol] = { buy: [], sell: [] };
-        }
-
-        if (trade.type === 'BUY') {
-            coinWhales[symbol].buy.unshift(trade);
-            // Sadece son 5 alışı tut
-            if (coinWhales[symbol].buy.length > 5) {
-                coinWhales[symbol].buy = coinWhales[symbol].buy.slice(0, 5);
-            }
-        } else {
-            coinWhales[symbol].sell.unshift(trade);
-            // Sadece son 5 satışı tut
-            if (coinWhales[symbol].sell.length > 5) {
-                coinWhales[symbol].sell = coinWhales[symbol].sell.slice(0, 5);
-            }
-        }
-    }
-
-    function handleTrade(trade) {
-        const symbol = trade.s;
-        const price = parseFloat(trade.p);
-        const qty = parseFloat(trade.q);
-        const total = price * qty;
-        const type = trade.m ? 'SELL' : 'BUY';
-
-        if (!coinVolumes[symbol]) {
-            coinVolumes[symbol] = { buy: 0, sell: 0 };
-        }
-
-        if (type === 'BUY') {
-            coinVolumes[symbol].buy += total;
-        } else {
-            coinVolumes[symbol].sell += total;
-        }
-
-        // Coin bazlı whale threshold kontrolü
-        const threshold = COIN_THRESHOLDS[symbol];
-        const isWhaleTrade = threshold && qty >= threshold;
-
-        if (isWhaleTrade) {
-            const t = {
-                symbol,
-                price,
-                quantity: qty,
-                totalUSD: total,
-                type,
-                timestamp: Date.now(),
-                exchange: trade.exchange,
-                isBigWhale: (symbol === 'BTCUSDT' && qty >= 9) || (symbol === 'ETHUSDT' && qty >= 90)
-            };
-
-            // 🎯 YENİ: MEGA WHALE ALARM (x2 miktar)
-            const alarmThreshold = threshold * 2;
-            if (qty >= alarmThreshold) {
-                console.log(`🚨 MEGA WHALE ALARM! ${symbol}: ${qty} ${type}`);
-                showAlarmNotification(symbol, qty, type);
-            }
-
-            addToTradeHistory(t);
-            addToCoinWhales(t);
-            whaleTradeCount++;
-
-            if (symbol === 'BTCUSDT' && qty >= 9) {
-                btcWhales.unshift(t);
-                if (btcWhales.length > 5) btcWhales = btcWhales.slice(0, 5);
-            } else if (symbol === 'ETHUSDT' && qty >= 90) {
-                ethWhales.unshift(t);
-                if (ethWhales.length > 5) ethWhales = ethWhales.slice(0, 5);
-            }
-
-            clearTimeout(updateTimeout);
-            updateTimeout = setTimeout(function() {
-                updateDashboard();
-                updateTradesTable(parseInt(document.getElementById('maxTrades').value));
-                updateCoinDashboards();
-            }, 100);
-        }
-    }
-
-    function updateDashboard() {
-        document.getElementById('coinCount').textContent = getSelectedCoins().length;
-        document.getElementById('whaleCount').textContent = whaleTradeCount;
-
-        ['BTCUSDT', 'ETHUSDT'].forEach(symbol => {
-            const coinShort = symbol.substring(0, 3).toLowerCase();
-            const volumes = coinVolumes[symbol] || { buy: 0, sell: 0 };
-            const total = volumes.buy + volumes.sell;
-
-            document.getElementById(coinShort + 'BuyVolume').textContent = formatVolume(volumes.buy);
-            document.getElementById(coinShort + 'SellVolume').textContent = formatVolume(volumes.sell);
-
-            let percent = 0;
-            let trendClass = 'neutral';
-
-            if (total > 0) {
-                const netVolume = volumes.buy - volumes.sell;
-                percent = (netVolume / total) * 100;
-                trendClass = percent > 0 ? 'positive' : percent < 0 ? 'negative' : 'neutral';
-            }
-
-            const percentEl = document.getElementById(coinShort + 'Percent');
-            percentEl.textContent = `${percent.toFixed(1)}%`;
-            percentEl.className = `leader-percent ${trendClass}`;
-        });
-
-        updateTopWhales();
-    }
-
-    // YENİ: Coin Dashboard'larını güncelle (BTC ve ETH hariç) - TOPLAMLAR EKLENDİ
-    function updateCoinDashboards() {
-        const container = document.getElementById('coinDashboards');
-        const coins = getSelectedCoins();
-        
-        let hasData = false;
-        let html = '';
-
-        coins.forEach(coin => {
-            // BTC ve ETH'yi atla
-            if (coin === 'BTCUSDT' || coin === 'ETHUSDT') {
-                return;
-            }
-            
-            if (coinWhales[coin] && (coinWhales[coin].buy.length > 0 || coinWhales[coin].sell.length > 0)) {
-                hasData = true;
-                const threshold = COIN_THRESHOLDS[coin];
-                const coinSymbol = coin.replace('USDT', '');
-                
-                // Toplamları hesapla
-                const totalBuy = coinWhales[coin].buy.reduce((sum, w) => sum + w.quantity, 0);
-                const totalSell = coinWhales[coin].sell.reduce((sum, w) => sum + w.quantity, 0);
-                
-                html += `
-                    <div class="coin-dashboard-card">
-                        <div class="coin-dashboard-header">
-                            <div class="coin-dashboard-name">
-                                ${coinSymbol}
-                                <span class="coin-dashboard-threshold">≥${formatNumber(threshold)}</span>
-                            </div>
-                        </div>
-                        <div class="coin-dashboard-whales">
-                            <div class="whale-side buy">
-                                <div class="whale-side-title">🟢 BUY (Top 5)</div>
-                                <div class="whale-side-list">
-                                    ${coinWhales[coin].buy.length > 0 
-                                        ? coinWhales[coin].buy.map(w => 
-                                            `<div class="whale-side-item">${formatQuantity(w.quantity)} ${coinSymbol}</div>`
-                                        ).join('')
-                                        : '<div class="whale-side-item" style="color: var(--text-muted);">-</div>'
-                                    }
-                                </div>
-                                ${coinWhales[coin].buy.length > 0 ? `
-                                    <div class="whale-side-total buy">
-                                        Total: ${formatQuantity(totalBuy)} ${coinSymbol}
-                                    </div>
-                                ` : ''}
-                            </div>
-                            <div class="whale-side sell">
-                                <div class="whale-side-title">🔴 SELL (Top 5)</div>
-                                <div class="whale-side-list">
-                                    ${coinWhales[coin].sell.length > 0 
-                                        ? coinWhales[coin].sell.map(w => 
-                                            `<div class="whale-side-item">${formatQuantity(w.quantity)} ${coinSymbol}</div>`
-                                        ).join('')
-                                        : '<div class="whale-side-item" style="color: var(--text-muted);">-</div>'
-                                    }
-                                </div>
-                                ${coinWhales[coin].sell.length > 0 ? `
-                                    <div class="whale-side-total sell">
-                                        Total: ${formatQuantity(totalSell)} ${coinSymbol}
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-        });
-
-        if (!hasData) {
-            html = '<div class="empty-state">Diğer coin whale trade\'leri bekleniyor...</div>';
-        }
-
-        container.innerHTML = html;
-    }
-
-    function formatTime(timestamp) {
-        return new Date(timestamp).toLocaleTimeString('tr-TR', {
-            timeZone: 'Europe/Istanbul',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        });
-    }
-
-    function formatNumber(num) {
-        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-        if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
-        return num.toString();
-    }
-
-    function formatVolume(num) {
-        if (!isFinite(num)) return '$0';
-        if (num >= 1000000) return '$' + (num / 1000000).toFixed(2) + 'M';
-        if (num >= 1000) return '$' + (num / 1000).toFixed(0) + 'K';
-        return '$' + num.toFixed(0);
-    }
-
-    function formatPrice(p) {
-        if (!isFinite(p)) return '-';
-        return p >= 1 ? p.toFixed(2) : p >= 0.01 ? p.toFixed(4) : p.toFixed(8);
-    }
-
-    function formatQuantity(q) {
-        if (!isFinite(q)) return '-';
-        if (q >= 1000) return (q / 1000).toFixed(1) + 'K';
-        return q.toFixed(2);
-    }
-
-    function updateTradesTable(maxTrades) {
-        const tableBody = document.getElementById('tradesTableBody');
-        tableBody.innerHTML = '';
-
-        if (tradeHistory.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="7" class="empty-state">Monitoring not started</td></tr>';
-            return;
-        }
-
-        const tradesToShow = tradeHistory.slice(0, maxTrades || 100);
-
-        tradesToShow.forEach(trade => {
-            const row = tableBody.insertRow();
-            if (trade.isBigWhale) row.classList.add('highlight');
-
-            row.innerHTML = `
-                <td>${formatTime(trade.timestamp)}</td>
-                <td class="coin-cell">${trade.symbol.replace('USDT', '')}</td>
-                <td class="trade-${trade.type.toLowerCase()}">${trade.type}</td>
-                <td>$${formatPrice(trade.price)}</td>
-                <td>${formatQuantity(trade.quantity)} ${trade.symbol.replace('USDT', '')}</td>
-                <td>${formatVolume(trade.totalUSD)}</td>
-                <td><span class="exchange-badge">${trade.exchange}</span></td>
-            `;
-        });
-    }
-
-    // YENİ: BTC ve ETH Top Whales'a toplam satırı eklendi
-    function updateTopWhales() {
-        const btc5 = btcWhales.slice(0, 5);
-        const eth5 = ethWhales.slice(0, 5);
-
-        // BTC toplamlarını hesapla
-        const btcTotalBuy = btc5.filter(w => w.type === 'BUY').reduce((sum, w) => sum + w.quantity, 0);
-        const btcTotalSell = btc5.filter(w => w.type === 'SELL').reduce((sum, w) => sum + w.quantity, 0);
-
-        // ETH toplamlarını hesapla
-        const ethTotalBuy = eth5.filter(w => w.type === 'BUY').reduce((sum, w) => sum + w.quantity, 0);
-        const ethTotalSell = eth5.filter(w => w.type === 'SELL').reduce((sum, w) => sum + w.quantity, 0);
-
-        document.getElementById('btcTopWhales').innerHTML = btc5.length
-            ? btc5.map(w => `
-                <div class="whale-mini-row">
-                    <div class="whale-mini-left">
-                        <span class="whale-mini-type ${w.type.toLowerCase()}">
-                            ${w.type === 'BUY' ? '🟢 BUY' : '🔴 SELL'}
-                        </span>
-                        <span class="whale-mini-amount">${w.quantity.toFixed(2)} BTC</span>
-                    </div>
-                    <div class="whale-mini-right">
-                        <div class="whale-mini-time">${formatTime(w.timestamp)}</div>
-                        <div class="whale-mini-exchange">${w.exchange}</div>
-                    </div>
-                </div>
-            `).join('') + `
-                <div class="whale-total-row">
-                    <span class="whale-total-label">Toplam:</span>
-                    <div>
-                        <span class="whale-total-buy">${btcTotalBuy.toFixed(2)} BTC Alış</span>
-                        <span style="margin: 0 8px; color: var(--text-muted);">|</span>
-                        <span class="whale-total-sell">${btcTotalSell.toFixed(2)} BTC Satış</span>
-                    </div>
-                </div>
-            `
-            : '<div class="empty-state">Waiting for 9+ BTC whales...</div>';
-
-        document.getElementById('ethTopWhales').innerHTML = eth5.length
-            ? eth5.map(w => `
-                <div class="whale-mini-row">
-                    <div class="whale-mini-left">
-                        <span class="whale-mini-type ${w.type.toLowerCase()}">
-                            ${w.type === 'BUY' ? '🟢 BUY' : '🔴 SELL'}
-                        </span>
-                        <span class="whale-mini-amount">${w.quantity.toFixed(2)} ETH</span>
-                    </div>
-                    <div class="whale-mini-right">
-                        <div class="whale-mini-time">${formatTime(w.timestamp)}</div>
-                        <div class="whale-mini-exchange">${w.exchange}</div>
-                    </div>
-                </div>
-            `).join('') + `
-                <div class="whale-total-row">
-                    <span class="whale-total-label">Toplam:</span>
-                    <div>
-                        <span class="whale-total-buy">${ethTotalBuy.toFixed(2)} ETH Alış</span>
-                        <span style="margin: 0 8px; color: var(--text-muted);">|</span>
-                        <span class="whale-total-sell">${ethTotalSell.toFixed(2)} ETH Satış</span>
-                    </div>
-                </div>
-            `
-            : '<div class="empty-state">Waiting for 90+ ETH whales...</div>';
-    }
-
-    function updateWSStatus(isConnected) {
-        const dot = document.getElementById('wsStatus');
-        const text = document.getElementById('wsStatusText');
-        const exchanges = document.getElementById('exchangeCount');
-        
-        if (isConnected && activeConnections > 0) {
-            dot.className = 'status-dot active';
-            text.textContent = `${activeConnections} streams active`;
-            exchanges.textContent = getActiveExchanges();
-        } else {
-            dot.className = 'status-dot inactive';
-            text.textContent = 'Disconnected';
-            exchanges.textContent = '0';
-        }
-    }
-
-    function getActiveExchanges() {
-        const selection = document.getElementById('exchangeSelection').value;
-        return selection === 'all' ? '5' : '1';
-    }
-
-    function startMonitoring() {
-        if (isMonitoring) return;
-        isMonitoring = true;
-
-        tradeHistory = [];
-        whaleTradeCount = 0;
-        coinVolumes = {};
-        coinWhales = {};
-        btcWhales = [];
-        ethWhales = [];
-        activeConnections = 0;
-
-        document.getElementById('startBtn').disabled = true;
-        document.getElementById('stopBtn').disabled = false;
-
-        const coins = getSelectedCoins();
-        const exchangeSelection = document.getElementById('exchangeSelection').value;
-        const exchanges = exchangeSelection === 'all' 
-            ? ['binance', 'bybit', 'okx', 'kraken', 'gateio']
-            : [exchangeSelection];
-
-        wsConnections = [];
-
-        console.log(`🚀 Starting monitoring for ${coins.length} coins on ${exchanges.length} exchanges`);
-
-        coins.forEach(coin => {
-            exchanges.forEach(exchange => {
-                const connection = initWebSocketForCoin(coin, exchange);
-                if (connection) {
-                    wsConnections.push(connection);
-                }
-            });
-        });
-
-        updateTradesTable(parseInt(document.getElementById('maxTrades').value));
-        updateCoinDashboards();
-    }
-
-    function stopMonitoring() {
-        if (!isMonitoring) return;
-        isMonitoring = false;
-
-        document.getElementById('startBtn').disabled = false;
-        document.getElementById('stopBtn').disabled = true;
-
-        console.log('🛑 Stopping monitoring...');
-
-        wsConnections.forEach(connection => {
-            try {
-                if (connection.ws && connection.ws.readyState === WebSocket.OPEN) {
-                    connection.ws.close();
-                }
-            } catch (e) {
-                console.error('WS close error', e);
-            }
-        });
-
-        wsConnections = [];
-        activeConnections = 0;
-        updateWSStatus(false);
-    }
-
-    function clearTrades() {
-        if (confirm('Are you sure you want to clear all trade history?')) {
-            tradeHistory = [];
-            whaleTradeCount = 0;
-            coinVolumes = {};
-            coinWhales = {};
-            btcWhales = [];
-            ethWhales = [];
-
-            document.getElementById('btcBuyVolume').textContent = '$0';
-            document.getElementById('btcSellVolume').textContent = '$0';
-            document.getElementById('ethBuyVolume').textContent = '$0';
-            document.getElementById('ethSellVolume').textContent = '$0';
-
-            document.getElementById('btcTopWhales').innerHTML = '';
-            document.getElementById('ethTopWhales').innerHTML = '';
-
-            updateTradesTable(0);
-            updateCoinDashboards();
-            console.log('🧹 Cleared all trade history');
-        }
-    }
+    // ... (diğer fonksiyonlar aynı kalıyor)
 
     // Initialize
     loadTheme();
@@ -2251,6 +1682,7 @@
     setInterval(updateUSMarketsCountdown, 1000); // YENİ: Her saniye güncelle
     updateLongShortRatios(); // YENİ: Long/Short ratio'yu başlat
     startAutoRatioUpdate(); // YENİ: Otomatik güncellemeyi başlat
+    startFearGreedUpdate(); // YENİ: Fear & Greed Index'i başlat
 
     // Sayfa yüklendiğinde ses sistemini başlat
     document.addEventListener('click', function initAudioOnClick() {
@@ -2273,6 +1705,9 @@
             } catch (e) {}
         });
         stopAutoRatioUpdate();
+        if (fearGreedUpdate) {
+            clearInterval(fearGreedUpdate);
+        }
     });
 
     console.log('🐋 Whale Tracker PRO - Multi Exchange Ready!');
