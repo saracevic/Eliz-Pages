@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whale Tracker PRO - Multi Exchange</title>
     <style>
-        /* CSS kodu aynı kalacak, değişiklik yok */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
@@ -415,6 +414,15 @@
             font-weight: 600;
         }
 
+        .dominance-badge {
+            font-size: 9px;
+            padding: 1px 4px;
+            border-radius: 3px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
         /* YENİ: Coin Dashboard Stilleri */
         .coin-dashboards {
             background: var(--bg-elevated);
@@ -753,7 +761,7 @@
                     <span class="leader-coin-tag">BTCUSDT</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="leader-badge">Whale ≥6 BTC</div>
+                    <div class="leader-badge">Whale ≥9 BTC</div>
                     <div class="leader-percent neutral" id="btcPercent">0%</div>
                 </div>
             </div>
@@ -770,7 +778,7 @@
             <div class="top-whales">
                 <div class="top-whales-title">
                     <span>🔥 BTC Top 5 Whales</span>
-                    <span>Min: 6 BTC</span>
+                    <span>Min: 9 BTC</span>
                 </div>
                 <div id="btcTopWhales"></div>
             </div>
@@ -821,7 +829,7 @@
     <div class="other-coins-summary">
         <div class="summary-title">
             <span>💰 Volume Summary</span>
-            <span style="font-size: 10px; color: var(--text-muted);">Auto-sorted by volume</span>
+            <span style="font-size: 10px; color: var(--text-muted);">Min $1K volume & 30% dominance</span>
         </div>
         <div class="coins-split-container">
             <div class="coin-section">
@@ -872,7 +880,7 @@
                 <label>🎯 Coin Set</label>
                 <select id="coinSelection">
                     <option value="major">Major Coins (15)</option>
-                    <option value="popular">Popular Coins (30)</option>
+                    <option value="popular">Popular Coins (31)</option>
                 </select>
             </div>
             <div class="settings-row">
@@ -932,46 +940,46 @@
     // Her coin için whale trade'leri saklayacağımız obje
     let coinWhales = {};
 
-    // Her coin için özel whale threshold değerleri
-const COIN_THRESHOLDS = {
-    // Major Coins (yüksek değerli) - x3
-    'BTCUSDT': 6,        // 6 BTC (eskiden 3 BTC)
-    'ETHUSDT': 60,       // 60 ETH (eskiden 20 ETH)
-    'BNBUSDT': 300,      // 300 BNB (eskiden 100 BNB)
-    'SOLUSDT': 300,      // 300 SOL (eskiden 100 SOL)
-    'XRPUSDT': 150000,   // 150,000 XRP (eskiden 50,000 XRP)
-    'ADAUSDT': 150000,   // 150,000 ADA (eskiden 50,000 ADA)
-    'DOGEUSDT': 1500000, // 1.5M DOGE (eskiden 500,000 DOGE)
-    'AVAXUSDT': 3000,    // 3,000 AVAX (eskiden 1,000 AVAX)
-    'DOTUSDT': 15000,    // 15,000 DOT (eskiden 5,000 DOT)
-    'MATICUSDT': 150000, // 150,000 MATIC (eskiden 50,000 MATIC)
-    'LINKUSDT': 15000,   // 15,000 LINK (eskiden 5,000 LINK)
-    'TRXUSDT': 300000,   // 300,000 TRX (eskiden 100,000 TRX)
-    'LTCUSDT': 3000,     // 3,000 LTC (eskiden 1,000 LTC)
-    'UNIUSDT': 15000,    // 15,000 UNI (eskiden 5,000 UNI)
-    'ATOMUSDT': 15000,   // 15,000 ATOM (eskiden 5,000 ATOM)
-    
-    // Popular Coins (düşük değerli) - x3
-    'ETCUSDT': 15000,    // 15,000 ETC (eskiden 5,000 ETC)
-    'XLMUSDT': 150000,   // 150,000 XLM (eskiden 50,000 XLM)
-    'NEARUSDT': 15000,   // 15,000 NEAR (eskiden 5,000 NEAR)
-    'ALGOUSDT': 150000,  // 150,000 ALGO (eskiden 50,000 ALGO)
-    'VETUSDT': 1500000,  // 1.5M VET (eskiden 500,000 VET)
-    'ICPUSDT': 3000,     // 3,000 ICP (eskiden 1,000 ICP)
-    'FILUSDT': 15000,    // 15,000 FIL (eskiden 5,000 FIL)
-    'HBARUSDT': 150000,  // 150,000 HBAR (eskiden 50,000 HBAR)
-    'APTUSDT': 15000,    // 15,000 APT (eskiden 5,000 APT)
-    'ARBUSDT': 15000,    // 15,000 ARB (eskiden 5,000 ARB)
-    'OPUSDT': 30000,     // 30,000 OP (eskiden 10,000 OP)
-    'INJUSDT': 3000,     // 3,000 INJ (eskiden 1,000 INJ)
-    'SUIUSDT': 30000,    // 30,000 SUI (eskiden 10,000 SUI)
-    'STXUSDT': 30000,    // 30,000 STX (eskiden 10,000 STX)
-    'WLDUSDT': 15000,    // 15,000 WLD (eskiden 5,000 WLD)
-    'MMTUSDT': 1500000   // 1.5M MMT (eskiden 500,000 MMT)
-};
+    // Her coin için özel whale threshold değerleri (x3 ARTIRILDI)
+    const COIN_THRESHOLDS = {
+        // Major Coins (yüksek değerli) - x3
+        'BTCUSDT': 9,        // 9 BTC (eskiden 3 BTC)
+        'ETHUSDT': 60,       // 60 ETH (eskiden 20 ETH)
+        'BNBUSDT': 300,      // 300 BNB (eskiden 100 BNB)
+        'SOLUSDT': 300,      // 300 SOL (eskiden 100 SOL)
+        'XRPUSDT': 150000,   // 150,000 XRP (eskiden 50,000 XRP)
+        'ADAUSDT': 150000,   // 150,000 ADA (eskiden 50,000 ADA)
+        'DOGEUSDT': 1500000, // 1.5M DOGE (eskiden 500,000 DOGE)
+        'AVAXUSDT': 3000,    // 3,000 AVAX (eskiden 1,000 AVAX)
+        'DOTUSDT': 15000,    // 15,000 DOT (eskiden 5,000 DOT)
+        'MATICUSDT': 150000, // 150,000 MATIC (eskiden 50,000 MATIC)
+        'LINKUSDT': 15000,   // 15,000 LINK (eskiden 5,000 LINK)
+        'TRXUSDT': 300000,   // 300,000 TRX (eskiden 100,000 TRX)
+        'LTCUSDT': 3000,     // 3,000 LTC (eskiden 1,000 LTC)
+        'UNIUSDT': 15000,    // 15,000 UNI (eskiden 5,000 UNI)
+        'ATOMUSDT': 15000,   // 15,000 ATOM (eskiden 5,000 ATOM)
+        
+        // Popular Coins (düşük değerli) - x3
+        'ETCUSDT': 15000,    // 15,000 ETC (eskiden 5,000 ETC)
+        'XLMUSDT': 150000,   // 150,000 XLM (eskiden 50,000 XLM)
+        'NEARUSDT': 15000,   // 15,000 NEAR (eskiden 5,000 NEAR)
+        'ALGOUSDT': 150000,  // 150,000 ALGO (eskiden 50,000 ALGO)
+        'VETUSDT': 1500000,  // 1.5M VET (eskiden 500,000 VET)
+        'ICPUSDT': 3000,     // 3,000 ICP (eskiden 1,000 ICP)
+        'FILUSDT': 15000,    // 15,000 FIL (eskiden 5,000 FIL)
+        'HBARUSDT': 150000,  // 150,000 HBAR (eskiden 50,000 HBAR)
+        'APTUSDT': 15000,    // 15,000 APT (eskiden 5,000 APT)
+        'ARBUSDT': 15000,    // 15,000 ARB (eskiden 5,000 ARB)
+        'OPUSDT': 30000,     // 30,000 OP (eskiden 10,000 OP)
+        'INJUSDT': 3000,     // 3,000 INJ (eskiden 1,000 INJ)
+        'SUIUSDT': 30000,    // 30,000 SUI (eskiden 10,000 SUI)
+        'STXUSDT': 30000,    // 30,000 STX (eskiden 10,000 STX)
+        'WLDUSDT': 15000,    // 15,000 WLD (eskiden 5,000 WLD)
+        'MMTUSDT': 1500000   // 1.5M MMT (eskiden 500,000 MMT)
+    };
 
     const MAJOR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','MATICUSDT','LINKUSDT','TRXUSDT','LTCUSDT','UNIUSDT','ATOMUSDT'];
-    const POPULAR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','MATICUSDT','DOTUSDT','AVAXUSDT','LINKUSDT','UNIUSDT','LTCUSDT','ATOMUSDT','MMTUSDT','XLMUSDT','NEARUSDT','ALGOUSDT','VETUSDT','ICPUSDT','FILUSDT','TRXUSDT','HBARUSDT','APTUSDT','ARBUSDT','OPUSDT','INJUSDT','SUIUSDT','STXUSDT','WLDUSDT'];
+    const POPULAR_COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','MATICUSDT','DOTUSDT','AVAXUSDT','LINKUSDT','UNIUSDT','LTCUSDT','ATOMUSDT','ETCUSDT','XLMUSDT','NEARUSDT','ALGOUSDT','VETUSDT','ICPUSDT','FILUSDT','TRXUSDT','HBARUSDT','APTUSDT','ARBUSDT','OPUSDT','INJUSDT','SUIUSDT','STXUSDT','WLDUSDT','MMTUSDT'];
 
     function toggleTheme() {
         const body = document.body;
@@ -1275,17 +1283,17 @@ const COIN_THRESHOLDS = {
                 type,
                 timestamp: Date.now(),
                 exchange: trade.exchange,
-                isBigWhale: (symbol === 'BTCUSDT' && qty >= 6) || (symbol === 'ETHUSDT' && qty >= 60)
+                isBigWhale: (symbol === 'BTCUSDT' && qty >= 9) || (symbol === 'ETHUSDT' && qty >= 60)
             };
 
             addToTradeHistory(t);
             addToCoinWhales(t);
             whaleTradeCount++;
 
-            if (symbol === 'BTCUSDT' && qty >= 3) {
+            if (symbol === 'BTCUSDT' && qty >= 9) {
                 btcWhales.unshift(t);
                 if (btcWhales.length > 5) btcWhales = btcWhales.slice(0, 5);
-            } else if (symbol === 'ETHUSDT' && qty >= 20) {
+            } else if (symbol === 'ETHUSDT' && qty >= 60) {
                 ethWhales.unshift(t);
                 if (ethWhales.length > 5) ethWhales = ethWhales.slice(0, 5);
             }
@@ -1464,29 +1472,47 @@ const COIN_THRESHOLDS = {
                 symbol: coin.replace('USDT', ''),
                 buy: coinVolumes[coin].buy,
                 sell: coinVolumes[coin].sell,
-                total: coinVolumes[coin].buy + coinVolumes[coin].sell
+                total: coinVolumes[coin].buy + coinVolumes[coin].sell,
+                dominance: 0
             }))
-            .filter(coin => coin.total > 0)
-            .sort((a, b) => b.total - a.total);
+            .filter(coin => coin.total > 1000) // EN AZ $1000 volume şartı
+            .map(coin => {
+                // Dominance hesaplama: (buy - sell) / total
+                coin.dominance = (coin.buy - coin.sell) / coin.total;
+                return coin;
+            })
+            .filter(coin => Math.abs(coin.dominance) > 0.3) // %30'dan fazla dominance şartı
+            .sort((a, b) => Math.abs(b.dominance) - Math.abs(a.dominance)); // Dominance'a göre sırala
 
         if (otherCoins.length === 0) {
-            buyTable.innerHTML = '<tr><td colspan="3" class="empty-state">No data yet</td></tr>';
-            sellTable.innerHTML = '<tr><td colspan="3" class="empty-state">No data yet</td></tr>';
+            buyTable.innerHTML = '<tr><td colspan="3" class="empty-state">No significant volume dominance</td></tr>';
+            sellTable.innerHTML = '<tr><td colspan="3" class="empty-state">No significant volume dominance</td></tr>';
             return;
         }
 
         otherCoins.forEach(coin => {
-            const dominance = (coin.buy - coin.sell) / coin.total;
-            const targetTable = dominance > 0 ? buyTable : sellTable;
-            const arrowIcon = dominance > 0 ? '🔺' : '🔻';
+            const targetTable = coin.dominance > 0 ? buyTable : sellTable;
+            const arrowIcon = coin.dominance > 0 ? '🔺' : '🔻';
+            const dominancePercent = (Math.abs(coin.dominance) * 100).toFixed(1);
 
             const row = targetTable.insertRow();
             row.innerHTML = `
-                <td class="coin-name-cell">${arrowIcon} ${coin.symbol}</td>
+                <td class="coin-name-cell">
+                    ${arrowIcon} ${coin.symbol}
+                    <span class="dominance-badge">${dominancePercent}%</span>
+                </td>
                 <td class="volume-buy">${formatVolume(coin.buy)}</td>
                 <td class="volume-sell">${formatVolume(coin.sell)}</td>
             `;
         });
+
+        // Eğer bir tarafta hiç coin yoksa boş state göster
+        if (buyTable.rows.length === 0) {
+            buyTable.innerHTML = '<tr><td colspan="3" class="empty-state">No buy dominant coins</td></tr>';
+        }
+        if (sellTable.rows.length === 0) {
+            sellTable.innerHTML = '<tr><td colspan="3" class="empty-state">No sell dominant coins</td></tr>';
+        }
     }
 
     function updateTopWhales() {
@@ -1508,7 +1534,7 @@ const COIN_THRESHOLDS = {
                     </div>
                 </div>
             `).join('')
-            : '<div class="empty-state">Waiting for 3+ BTC whales...</div>';
+            : '<div class="empty-state">Waiting for 9+ BTC whales...</div>';
 
         document.getElementById('ethTopWhales').innerHTML = eth5.length
             ? eth5.map(w => `
@@ -1525,7 +1551,7 @@ const COIN_THRESHOLDS = {
                     </div>
                 </div>
             `).join('')
-            : '<div class="empty-state">Waiting for 20+ ETH whales...</div>';
+            : '<div class="empty-state">Waiting for 60+ ETH whales...</div>';
     }
 
     function updateWSStatus(isConnected) {
