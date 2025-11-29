@@ -395,40 +395,2200 @@
     
     function updateTopLists() {
         var buyArray = Object.keys(buyVolumes).map(function(coin) {
-            return { coin: coin, amount: buyVolumes[coin] };
+            return { coin: coin, amount: buyVolumes[coin], usd: buyVolumes[coin] * (buyPrices[coin] || 0) };
         });
         buyArray.sort(function(a, b) { return b.amount - a.amount; });
         var topBuy = buyArray.slice(0, 5);
         
         var buyTotal = 0;
+        var buyTotalUSD = 0;
         var buyHTML = '';
         topBuy.forEach(function(item) {
             buyTotal += item.amount;
+            buyTotalUSD += item.usd;
             buyHTML += '<div class="top-item">' +
                 '<span class="top-coin">' + item.coin + '</span>' +
-                '<span class="top-amount">' + formatNumber(item.amount) + '</span>' +
+                '<span class="top-amount">' + formatNumber(item.amount) + '<br><small style="color:#888;font-size:0.85em;">
+    
+    function updateUI() {
+        totalTradesEl.textContent = totalCount;
+        
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        var recentTrades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        hourlyTradesEl.textContent = recentTrades.length;
+        
+        tradesContainer.innerHTML = '';
+        
+        if (trades.length === 0) {
+            tradesContainer.innerHTML = '<div class="loading">🐋 Büyük işlemler bekleniyor...<br><small style="color:#666;font-size:0.85em;">(' + connectedCount + '/60 stream aktif)</small></div>';
+            return;
+        }
+        
+        trades.forEach(function(trade, index) {
+            var div = document.createElement('div');
+            div.className = 'trade-item';
+            if (index === 0) div.className += ' new';
+            
+            var sideClass = trade.side === 'BUY' ? 'buy' : 'sell';
+            
+            div.innerHTML = 
+                '<div class="trade-header">' +
+                    '<span class="trade-coin">' + trade.coin + '</span>' +
+                    '<span class="trade-exchange">Futures</span>' +
+                '</div>' +
+                '<div class="trade-details">' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">İşlem:</span>' +
+                        '<span class="' + sideClass + '">' + trade.side + '</span>' +
+                    '</div>' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">Miktar:</span>' +
+                        '<span>' + trade.amount + '</span>' +
+                    '</div>' +
+                    '<div class="trade-detail" style="grid-column: span 2; text-align: center; color: #00d4ff; font-weight: bold; font-size: 1.1em;">' +
+                        '💵 
+            
+            tradesContainer.appendChild(div);
+        });
+    }
+    
+    function addTrade(coin, side, amount, price) {
+        var numAmount = parseFloat(amount);
+        var numPrice = parseFloat(price);
+        var totalUSD = numAmount * numPrice;
+        
+        var trade = {
+            coin: coin,
+            side: side,
+            amount: formatNumber(numAmount),
+            price: formatNumber(numPrice),
+            totalUSD: formatNumber(totalUSD),
+            time: new Date().toLocaleTimeString('tr-TR'),
+            timestamp: Date.now()
+        };
+        
+        trades.unshift(trade);
+        if (trades.length > MAX_TRADES) {
+            trades.pop();
+        }
+        
+        if (side === 'BUY') {
+            buyVolumes[coin] = (buyVolumes[coin] || 0) + numAmount;
+        } else {
+            sellVolumes[coin] = (sellVolumes[coin] || 0) + numAmount;
+        }
+        
+        totalCount++;
+        updateUI();
+        updateTopLists();
+    }
+    
+    function connectWebSocket(symbol, threshold) {
+        // FUTURES stream
+        var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
+        
+        ws.onopen = function() {
+            connectedCount++;
+            if (connectedCount >= 1) {
+                wsDot.classList.add('on');
+            }
+            console.log('Futures bağlandı (' + connectedCount + '/60): ' + symbol);
+            updateUI();
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
+                
+                var quantity = parseFloat(data.q);
+                var price = parseFloat(data.p);
+                
+                if (quantity >= threshold) {
+                    var coin = symbol.replace('usdt', '').toUpperCase();
+                    var side = data.m ? 'SELL' : 'BUY';
+                    
+                    addTrade(coin, side, quantity, price);
+                }
+            } catch (e) {
+                console.error('Parse error:', e);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket error ' + symbol + ':', error);
+        };
+        
+        ws.onclose = function() {
+            connectedCount--;
+            if (connectedCount === 0) {
+                wsDot.classList.remove('on');
+            }
+            console.log('Futures kapandı: ' + symbol + ', yeniden bağlanılıyor...');
+            
+            setTimeout(function() {
+                connectWebSocket(symbol, threshold);
+            }, 3000);
+        };
+        
+        websockets.push(ws);
+    }
+    
+    function fetchFearIndex() {
+        fetch('https://api.alternative.me/fng/?limit=1')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Fear API error');
+                return response.json();
+            })
+            .then(function(data) {
+                apiDot.classList.add('on');
+                if (data && data.data && data.data[0]) {
+                    var value = parseInt(data.data[0].value);
+                    var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
+                    var label = value < 25 ? 'Korku' : value < 45 ? 'Kaygı' : value < 55 ? 'Nötr' : value < 75 ? 'Açgözlü' : 'Çok Açgözlü';
+                    fearValueEl.innerHTML = '<span class="' + className + '">' + value + '</span><br><small style="font-size:0.7em">' + label + '</small>';
+                }
+            })
+            .catch(function(error) {
+                apiDot.classList.remove('on');
+                console.error('Fear index error:', error);
+            });
+    }
+    
+    function cleanOldTrades() {
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        trades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        
+        buyVolumes = {};
+        sellVolumes = {};
+        trades.forEach(function(trade) {
+            var coin = trade.coin;
+            var amount = parseFloat(trade.amount.replace(/\./g, '').replace(',', '.'));
+            if (trade.side === 'BUY') {
+                buyVolumes[coin] = (buyVolumes[coin] || 0) + amount;
+            } else {
+                sellVolumes[coin] = (sellVolumes[coin] || 0) + amount;
+            }
+        });
+        
+        updateUI();
+        updateTopLists();
+    }
+    
+    function init() {
+        console.log('🐋 Whale Tracker FUTURES başlatılıyor - 60 coin');
+        
+        Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
+            connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
+        });
+        
+        fetchFearIndex();
+        setInterval(fetchFearIndex, 300000);
+        setInterval(cleanOldTrades, 60000);
+        
+        console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
+        console.log('📊 Futures stream aktif - Balina işlemleri bekleniyor...');
+    }
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            websockets.forEach(function(ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            websockets = [];
+            connectedCount = 0;
+        } else {
+            init();
+        }
+    });
+    
+    init();
+    
+})();
+</script>
+
+</body>
+</html> + trade.totalUSD +
+                    '</div>' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">Fiyat:</span>' +
+                        '<span>
+            
+            tradesContainer.appendChild(div);
+        });
+    }
+    
+    function addTrade(coin, side, amount, price) {
+        var numAmount = parseFloat(amount);
+        
+        var trade = {
+            coin: coin,
+            side: side,
+            amount: formatNumber(numAmount),
+            price: formatNumber(parseFloat(price)),
+            time: new Date().toLocaleTimeString('tr-TR'),
+            timestamp: Date.now()
+        };
+        
+        trades.unshift(trade);
+        if (trades.length > MAX_TRADES) {
+            trades.pop();
+        }
+        
+        if (side === 'BUY') {
+            buyVolumes[coin] = (buyVolumes[coin] || 0) + numAmount;
+        } else {
+            sellVolumes[coin] = (sellVolumes[coin] || 0) + numAmount;
+        }
+        
+        totalCount++;
+        updateUI();
+        updateTopLists();
+    }
+    
+    function connectWebSocket(symbol, threshold) {
+        // FUTURES stream
+        var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
+        
+        ws.onopen = function() {
+            connectedCount++;
+            if (connectedCount >= 1) {
+                wsDot.classList.add('on');
+            }
+            console.log('Futures bağlandı (' + connectedCount + '/60): ' + symbol);
+            updateUI();
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
+                
+                var quantity = parseFloat(data.q);
+                var price = parseFloat(data.p);
+                
+                if (quantity >= threshold) {
+                    var coin = symbol.replace('usdt', '').toUpperCase();
+                    var side = data.m ? 'SELL' : 'BUY';
+                    
+                    addTrade(coin, side, quantity, price);
+                }
+            } catch (e) {
+                console.error('Parse error:', e);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket error ' + symbol + ':', error);
+        };
+        
+        ws.onclose = function() {
+            connectedCount--;
+            if (connectedCount === 0) {
+                wsDot.classList.remove('on');
+            }
+            console.log('Futures kapandı: ' + symbol + ', yeniden bağlanılıyor...');
+            
+            setTimeout(function() {
+                connectWebSocket(symbol, threshold);
+            }, 3000);
+        };
+        
+        websockets.push(ws);
+    }
+    
+    function fetchFearIndex() {
+        fetch('https://api.alternative.me/fng/?limit=1')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Fear API error');
+                return response.json();
+            })
+            .then(function(data) {
+                apiDot.classList.add('on');
+                if (data && data.data && data.data[0]) {
+                    var value = parseInt(data.data[0].value);
+                    var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
+                    var label = value < 25 ? 'Korku' : value < 45 ? 'Kaygı' : value < 55 ? 'Nötr' : value < 75 ? 'Açgözlü' : 'Çok Açgözlü';
+                    fearValueEl.innerHTML = '<span class="' + className + '">' + value + '</span><br><small style="font-size:0.7em">' + label + '</small>';
+                }
+            })
+            .catch(function(error) {
+                apiDot.classList.remove('on');
+                console.error('Fear index error:', error);
+            });
+    }
+    
+    function cleanOldTrades() {
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        trades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        
+        buyVolumes = {};
+        sellVolumes = {};
+        trades.forEach(function(trade) {
+            var coin = trade.coin;
+            var amount = parseFloat(trade.amount.replace(/\./g, '').replace(',', '.'));
+            if (trade.side === 'BUY') {
+                buyVolumes[coin] = (buyVolumes[coin] || 0) + amount;
+            } else {
+                sellVolumes[coin] = (sellVolumes[coin] || 0) + amount;
+            }
+        });
+        
+        updateUI();
+        updateTopLists();
+    }
+    
+    function init() {
+        console.log('🐋 Whale Tracker FUTURES başlatılıyor - 60 coin');
+        
+        Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
+            connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
+        });
+        
+        fetchFearIndex();
+        setInterval(fetchFearIndex, 300000);
+        setInterval(cleanOldTrades, 60000);
+        
+        console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
+        console.log('📊 Futures stream aktif - Balina işlemleri bekleniyor...');
+    }
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            websockets.forEach(function(ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            websockets = [];
+            connectedCount = 0;
+        } else {
+            init();
+        }
+    });
+    
+    init();
+    
+})();
+</script>
+
+</body>
+</html> + trade.price + '</span>' +
+                    '</div>' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">Zaman:</span>' +
+                        '<span>' + trade.time + '</span>' +
+                    '</div>' +
+                '</div>';
+            
+            tradesContainer.appendChild(div);
+        });
+    }
+    
+    function addTrade(coin, side, amount, price) {
+        var numAmount = parseFloat(amount);
+        
+        var trade = {
+            coin: coin,
+            side: side,
+            amount: formatNumber(numAmount),
+            price: formatNumber(parseFloat(price)),
+            time: new Date().toLocaleTimeString('tr-TR'),
+            timestamp: Date.now()
+        };
+        
+        trades.unshift(trade);
+        if (trades.length > MAX_TRADES) {
+            trades.pop();
+        }
+        
+        if (side === 'BUY') {
+            buyVolumes[coin] = (buyVolumes[coin] || 0) + numAmount;
+        } else {
+            sellVolumes[coin] = (sellVolumes[coin] || 0) + numAmount;
+        }
+        
+        totalCount++;
+        updateUI();
+        updateTopLists();
+    }
+    
+    function connectWebSocket(symbol, threshold) {
+        // FUTURES stream
+        var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
+        
+        ws.onopen = function() {
+            connectedCount++;
+            if (connectedCount >= 1) {
+                wsDot.classList.add('on');
+            }
+            console.log('Futures bağlandı (' + connectedCount + '/60): ' + symbol);
+            updateUI();
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
+                
+                var quantity = parseFloat(data.q);
+                var price = parseFloat(data.p);
+                
+                if (quantity >= threshold) {
+                    var coin = symbol.replace('usdt', '').toUpperCase();
+                    var side = data.m ? 'SELL' : 'BUY';
+                    
+                    addTrade(coin, side, quantity, price);
+                }
+            } catch (e) {
+                console.error('Parse error:', e);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket error ' + symbol + ':', error);
+        };
+        
+        ws.onclose = function() {
+            connectedCount--;
+            if (connectedCount === 0) {
+                wsDot.classList.remove('on');
+            }
+            console.log('Futures kapandı: ' + symbol + ', yeniden bağlanılıyor...');
+            
+            setTimeout(function() {
+                connectWebSocket(symbol, threshold);
+            }, 3000);
+        };
+        
+        websockets.push(ws);
+    }
+    
+    function fetchFearIndex() {
+        fetch('https://api.alternative.me/fng/?limit=1')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Fear API error');
+                return response.json();
+            })
+            .then(function(data) {
+                apiDot.classList.add('on');
+                if (data && data.data && data.data[0]) {
+                    var value = parseInt(data.data[0].value);
+                    var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
+                    var label = value < 25 ? 'Korku' : value < 45 ? 'Kaygı' : value < 55 ? 'Nötr' : value < 75 ? 'Açgözlü' : 'Çok Açgözlü';
+                    fearValueEl.innerHTML = '<span class="' + className + '">' + value + '</span><br><small style="font-size:0.7em">' + label + '</small>';
+                }
+            })
+            .catch(function(error) {
+                apiDot.classList.remove('on');
+                console.error('Fear index error:', error);
+            });
+    }
+    
+    function cleanOldTrades() {
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        trades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        
+        buyVolumes = {};
+        sellVolumes = {};
+        trades.forEach(function(trade) {
+            var coin = trade.coin;
+            var amount = parseFloat(trade.amount.replace(/\./g, '').replace(',', '.'));
+            if (trade.side === 'BUY') {
+                buyVolumes[coin] = (buyVolumes[coin] || 0) + amount;
+            } else {
+                sellVolumes[coin] = (sellVolumes[coin] || 0) + amount;
+            }
+        });
+        
+        updateUI();
+        updateTopLists();
+    }
+    
+    function init() {
+        console.log('🐋 Whale Tracker FUTURES başlatılıyor - 60 coin');
+        
+        Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
+            connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
+        });
+        
+        fetchFearIndex();
+        setInterval(fetchFearIndex, 300000);
+        setInterval(cleanOldTrades, 60000);
+        
+        console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
+        console.log('📊 Futures stream aktif - Balina işlemleri bekleniyor...');
+    }
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            websockets.forEach(function(ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            websockets = [];
+            connectedCount = 0;
+        } else {
+            init();
+        }
+    });
+    
+    init();
+    
+})();
+</script>
+
+</body>
+</html> + formatNumber(item.usd) + '</small></span>' +
                 '</div>';
         });
         topBuyList.innerHTML = buyHTML || '<div class="top-item" style="justify-content:center;color:#666;">Balina bekleniyor...</div>';
-        totalBuyEl.textContent = formatNumber(buyTotal);
+        totalBuyEl.innerHTML = formatNumber(buyTotal) + '<br><small style="color:#888;font-size:0.85em;">
+    
+    function updateUI() {
+        totalTradesEl.textContent = totalCount;
+        
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        var recentTrades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        hourlyTradesEl.textContent = recentTrades.length;
+        
+        tradesContainer.innerHTML = '';
+        
+        if (trades.length === 0) {
+            tradesContainer.innerHTML = '<div class="loading">🐋 Büyük işlemler bekleniyor...<br><small style="color:#666;font-size:0.85em;">(' + connectedCount + '/60 stream aktif)</small></div>';
+            return;
+        }
+        
+        trades.forEach(function(trade, index) {
+            var div = document.createElement('div');
+            div.className = 'trade-item';
+            if (index === 0) div.className += ' new';
+            
+            var sideClass = trade.side === 'BUY' ? 'buy' : 'sell';
+            
+            div.innerHTML = 
+                '<div class="trade-header">' +
+                    '<span class="trade-coin">' + trade.coin + '</span>' +
+                    '<span class="trade-exchange">Futures</span>' +
+                '</div>' +
+                '<div class="trade-details">' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">İşlem:</span>' +
+                        '<span class="' + sideClass + '">' + trade.side + '</span>' +
+                    '</div>' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">Miktar:</span>' +
+                        '<span>' + trade.amount + '</span>' +
+                    '</div>' +
+                    '<div class="trade-detail" style="grid-column: span 2; text-align: center; color: #00d4ff; font-weight: bold; font-size: 1.1em;">' +
+                        '💵 
+            
+            tradesContainer.appendChild(div);
+        });
+    }
+    
+    function addTrade(coin, side, amount, price) {
+        var numAmount = parseFloat(amount);
+        var numPrice = parseFloat(price);
+        var totalUSD = numAmount * numPrice;
+        
+        var trade = {
+            coin: coin,
+            side: side,
+            amount: formatNumber(numAmount),
+            price: formatNumber(numPrice),
+            totalUSD: formatNumber(totalUSD),
+            time: new Date().toLocaleTimeString('tr-TR'),
+            timestamp: Date.now()
+        };
+        
+        trades.unshift(trade);
+        if (trades.length > MAX_TRADES) {
+            trades.pop();
+        }
+        
+        if (side === 'BUY') {
+            buyVolumes[coin] = (buyVolumes[coin] || 0) + numAmount;
+        } else {
+            sellVolumes[coin] = (sellVolumes[coin] || 0) + numAmount;
+        }
+        
+        totalCount++;
+        updateUI();
+        updateTopLists();
+    }
+    
+    function connectWebSocket(symbol, threshold) {
+        // FUTURES stream
+        var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
+        
+        ws.onopen = function() {
+            connectedCount++;
+            if (connectedCount >= 1) {
+                wsDot.classList.add('on');
+            }
+            console.log('Futures bağlandı (' + connectedCount + '/60): ' + symbol);
+            updateUI();
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
+                
+                var quantity = parseFloat(data.q);
+                var price = parseFloat(data.p);
+                
+                if (quantity >= threshold) {
+                    var coin = symbol.replace('usdt', '').toUpperCase();
+                    var side = data.m ? 'SELL' : 'BUY';
+                    
+                    addTrade(coin, side, quantity, price);
+                }
+            } catch (e) {
+                console.error('Parse error:', e);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket error ' + symbol + ':', error);
+        };
+        
+        ws.onclose = function() {
+            connectedCount--;
+            if (connectedCount === 0) {
+                wsDot.classList.remove('on');
+            }
+            console.log('Futures kapandı: ' + symbol + ', yeniden bağlanılıyor...');
+            
+            setTimeout(function() {
+                connectWebSocket(symbol, threshold);
+            }, 3000);
+        };
+        
+        websockets.push(ws);
+    }
+    
+    function fetchFearIndex() {
+        fetch('https://api.alternative.me/fng/?limit=1')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Fear API error');
+                return response.json();
+            })
+            .then(function(data) {
+                apiDot.classList.add('on');
+                if (data && data.data && data.data[0]) {
+                    var value = parseInt(data.data[0].value);
+                    var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
+                    var label = value < 25 ? 'Korku' : value < 45 ? 'Kaygı' : value < 55 ? 'Nötr' : value < 75 ? 'Açgözlü' : 'Çok Açgözlü';
+                    fearValueEl.innerHTML = '<span class="' + className + '">' + value + '</span><br><small style="font-size:0.7em">' + label + '</small>';
+                }
+            })
+            .catch(function(error) {
+                apiDot.classList.remove('on');
+                console.error('Fear index error:', error);
+            });
+    }
+    
+    function cleanOldTrades() {
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        trades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        
+        buyVolumes = {};
+        sellVolumes = {};
+        trades.forEach(function(trade) {
+            var coin = trade.coin;
+            var amount = parseFloat(trade.amount.replace(/\./g, '').replace(',', '.'));
+            if (trade.side === 'BUY') {
+                buyVolumes[coin] = (buyVolumes[coin] || 0) + amount;
+            } else {
+                sellVolumes[coin] = (sellVolumes[coin] || 0) + amount;
+            }
+        });
+        
+        updateUI();
+        updateTopLists();
+    }
+    
+    function init() {
+        console.log('🐋 Whale Tracker FUTURES başlatılıyor - 60 coin');
+        
+        Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
+            connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
+        });
+        
+        fetchFearIndex();
+        setInterval(fetchFearIndex, 300000);
+        setInterval(cleanOldTrades, 60000);
+        
+        console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
+        console.log('📊 Futures stream aktif - Balina işlemleri bekleniyor...');
+    }
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            websockets.forEach(function(ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            websockets = [];
+            connectedCount = 0;
+        } else {
+            init();
+        }
+    });
+    
+    init();
+    
+})();
+</script>
+
+</body>
+</html> + trade.totalUSD +
+                    '</div>' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">Fiyat:</span>' +
+                        '<span>
+            
+            tradesContainer.appendChild(div);
+        });
+    }
+    
+    function addTrade(coin, side, amount, price) {
+        var numAmount = parseFloat(amount);
+        
+        var trade = {
+            coin: coin,
+            side: side,
+            amount: formatNumber(numAmount),
+            price: formatNumber(parseFloat(price)),
+            time: new Date().toLocaleTimeString('tr-TR'),
+            timestamp: Date.now()
+        };
+        
+        trades.unshift(trade);
+        if (trades.length > MAX_TRADES) {
+            trades.pop();
+        }
+        
+        if (side === 'BUY') {
+            buyVolumes[coin] = (buyVolumes[coin] || 0) + numAmount;
+        } else {
+            sellVolumes[coin] = (sellVolumes[coin] || 0) + numAmount;
+        }
+        
+        totalCount++;
+        updateUI();
+        updateTopLists();
+    }
+    
+    function connectWebSocket(symbol, threshold) {
+        // FUTURES stream
+        var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
+        
+        ws.onopen = function() {
+            connectedCount++;
+            if (connectedCount >= 1) {
+                wsDot.classList.add('on');
+            }
+            console.log('Futures bağlandı (' + connectedCount + '/60): ' + symbol);
+            updateUI();
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
+                
+                var quantity = parseFloat(data.q);
+                var price = parseFloat(data.p);
+                
+                if (quantity >= threshold) {
+                    var coin = symbol.replace('usdt', '').toUpperCase();
+                    var side = data.m ? 'SELL' : 'BUY';
+                    
+                    addTrade(coin, side, quantity, price);
+                }
+            } catch (e) {
+                console.error('Parse error:', e);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket error ' + symbol + ':', error);
+        };
+        
+        ws.onclose = function() {
+            connectedCount--;
+            if (connectedCount === 0) {
+                wsDot.classList.remove('on');
+            }
+            console.log('Futures kapandı: ' + symbol + ', yeniden bağlanılıyor...');
+            
+            setTimeout(function() {
+                connectWebSocket(symbol, threshold);
+            }, 3000);
+        };
+        
+        websockets.push(ws);
+    }
+    
+    function fetchFearIndex() {
+        fetch('https://api.alternative.me/fng/?limit=1')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Fear API error');
+                return response.json();
+            })
+            .then(function(data) {
+                apiDot.classList.add('on');
+                if (data && data.data && data.data[0]) {
+                    var value = parseInt(data.data[0].value);
+                    var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
+                    var label = value < 25 ? 'Korku' : value < 45 ? 'Kaygı' : value < 55 ? 'Nötr' : value < 75 ? 'Açgözlü' : 'Çok Açgözlü';
+                    fearValueEl.innerHTML = '<span class="' + className + '">' + value + '</span><br><small style="font-size:0.7em">' + label + '</small>';
+                }
+            })
+            .catch(function(error) {
+                apiDot.classList.remove('on');
+                console.error('Fear index error:', error);
+            });
+    }
+    
+    function cleanOldTrades() {
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        trades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        
+        buyVolumes = {};
+        sellVolumes = {};
+        trades.forEach(function(trade) {
+            var coin = trade.coin;
+            var amount = parseFloat(trade.amount.replace(/\./g, '').replace(',', '.'));
+            if (trade.side === 'BUY') {
+                buyVolumes[coin] = (buyVolumes[coin] || 0) + amount;
+            } else {
+                sellVolumes[coin] = (sellVolumes[coin] || 0) + amount;
+            }
+        });
+        
+        updateUI();
+        updateTopLists();
+    }
+    
+    function init() {
+        console.log('🐋 Whale Tracker FUTURES başlatılıyor - 60 coin');
+        
+        Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
+            connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
+        });
+        
+        fetchFearIndex();
+        setInterval(fetchFearIndex, 300000);
+        setInterval(cleanOldTrades, 60000);
+        
+        console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
+        console.log('📊 Futures stream aktif - Balina işlemleri bekleniyor...');
+    }
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            websockets.forEach(function(ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            websockets = [];
+            connectedCount = 0;
+        } else {
+            init();
+        }
+    });
+    
+    init();
+    
+})();
+</script>
+
+</body>
+</html> + trade.price + '</span>' +
+                    '</div>' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">Zaman:</span>' +
+                        '<span>' + trade.time + '</span>' +
+                    '</div>' +
+                '</div>';
+            
+            tradesContainer.appendChild(div);
+        });
+    }
+    
+    function addTrade(coin, side, amount, price) {
+        var numAmount = parseFloat(amount);
+        
+        var trade = {
+            coin: coin,
+            side: side,
+            amount: formatNumber(numAmount),
+            price: formatNumber(parseFloat(price)),
+            time: new Date().toLocaleTimeString('tr-TR'),
+            timestamp: Date.now()
+        };
+        
+        trades.unshift(trade);
+        if (trades.length > MAX_TRADES) {
+            trades.pop();
+        }
+        
+        if (side === 'BUY') {
+            buyVolumes[coin] = (buyVolumes[coin] || 0) + numAmount;
+        } else {
+            sellVolumes[coin] = (sellVolumes[coin] || 0) + numAmount;
+        }
+        
+        totalCount++;
+        updateUI();
+        updateTopLists();
+    }
+    
+    function connectWebSocket(symbol, threshold) {
+        // FUTURES stream
+        var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
+        
+        ws.onopen = function() {
+            connectedCount++;
+            if (connectedCount >= 1) {
+                wsDot.classList.add('on');
+            }
+            console.log('Futures bağlandı (' + connectedCount + '/60): ' + symbol);
+            updateUI();
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
+                
+                var quantity = parseFloat(data.q);
+                var price = parseFloat(data.p);
+                
+                if (quantity >= threshold) {
+                    var coin = symbol.replace('usdt', '').toUpperCase();
+                    var side = data.m ? 'SELL' : 'BUY';
+                    
+                    addTrade(coin, side, quantity, price);
+                }
+            } catch (e) {
+                console.error('Parse error:', e);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket error ' + symbol + ':', error);
+        };
+        
+        ws.onclose = function() {
+            connectedCount--;
+            if (connectedCount === 0) {
+                wsDot.classList.remove('on');
+            }
+            console.log('Futures kapandı: ' + symbol + ', yeniden bağlanılıyor...');
+            
+            setTimeout(function() {
+                connectWebSocket(symbol, threshold);
+            }, 3000);
+        };
+        
+        websockets.push(ws);
+    }
+    
+    function fetchFearIndex() {
+        fetch('https://api.alternative.me/fng/?limit=1')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Fear API error');
+                return response.json();
+            })
+            .then(function(data) {
+                apiDot.classList.add('on');
+                if (data && data.data && data.data[0]) {
+                    var value = parseInt(data.data[0].value);
+                    var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
+                    var label = value < 25 ? 'Korku' : value < 45 ? 'Kaygı' : value < 55 ? 'Nötr' : value < 75 ? 'Açgözlü' : 'Çok Açgözlü';
+                    fearValueEl.innerHTML = '<span class="' + className + '">' + value + '</span><br><small style="font-size:0.7em">' + label + '</small>';
+                }
+            })
+            .catch(function(error) {
+                apiDot.classList.remove('on');
+                console.error('Fear index error:', error);
+            });
+    }
+    
+    function cleanOldTrades() {
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        trades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        
+        buyVolumes = {};
+        sellVolumes = {};
+        trades.forEach(function(trade) {
+            var coin = trade.coin;
+            var amount = parseFloat(trade.amount.replace(/\./g, '').replace(',', '.'));
+            if (trade.side === 'BUY') {
+                buyVolumes[coin] = (buyVolumes[coin] || 0) + amount;
+            } else {
+                sellVolumes[coin] = (sellVolumes[coin] || 0) + amount;
+            }
+        });
+        
+        updateUI();
+        updateTopLists();
+    }
+    
+    function init() {
+        console.log('🐋 Whale Tracker FUTURES başlatılıyor - 60 coin');
+        
+        Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
+            connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
+        });
+        
+        fetchFearIndex();
+        setInterval(fetchFearIndex, 300000);
+        setInterval(cleanOldTrades, 60000);
+        
+        console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
+        console.log('📊 Futures stream aktif - Balina işlemleri bekleniyor...');
+    }
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            websockets.forEach(function(ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            websockets = [];
+            connectedCount = 0;
+        } else {
+            init();
+        }
+    });
+    
+    init();
+    
+})();
+</script>
+
+</body>
+</html> + formatNumber(buyTotalUSD) + '</small>';
         
         var sellArray = Object.keys(sellVolumes).map(function(coin) {
-            return { coin: coin, amount: sellVolumes[coin] };
+            return { coin: coin, amount: sellVolumes[coin], usd: sellVolumes[coin] * (sellPrices[coin] || 0) };
         });
         sellArray.sort(function(a, b) { return b.amount - a.amount; });
         var topSell = sellArray.slice(0, 5);
         
         var sellTotal = 0;
+        var sellTotalUSD = 0;
         var sellHTML = '';
         topSell.forEach(function(item) {
             sellTotal += item.amount;
+            sellTotalUSD += item.usd;
             sellHTML += '<div class="top-item">' +
                 '<span class="top-coin">' + item.coin + '</span>' +
-                '<span class="top-amount">' + formatNumber(item.amount) + '</span>' +
+                '<span class="top-amount">' + formatNumber(item.amount) + '<br><small style="color:#888;font-size:0.85em;">
+    
+    function updateUI() {
+        totalTradesEl.textContent = totalCount;
+        
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        var recentTrades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        hourlyTradesEl.textContent = recentTrades.length;
+        
+        tradesContainer.innerHTML = '';
+        
+        if (trades.length === 0) {
+            tradesContainer.innerHTML = '<div class="loading">🐋 Büyük işlemler bekleniyor...<br><small style="color:#666;font-size:0.85em;">(' + connectedCount + '/60 stream aktif)</small></div>';
+            return;
+        }
+        
+        trades.forEach(function(trade, index) {
+            var div = document.createElement('div');
+            div.className = 'trade-item';
+            if (index === 0) div.className += ' new';
+            
+            var sideClass = trade.side === 'BUY' ? 'buy' : 'sell';
+            
+            div.innerHTML = 
+                '<div class="trade-header">' +
+                    '<span class="trade-coin">' + trade.coin + '</span>' +
+                    '<span class="trade-exchange">Futures</span>' +
+                '</div>' +
+                '<div class="trade-details">' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">İşlem:</span>' +
+                        '<span class="' + sideClass + '">' + trade.side + '</span>' +
+                    '</div>' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">Miktar:</span>' +
+                        '<span>' + trade.amount + '</span>' +
+                    '</div>' +
+                    '<div class="trade-detail" style="grid-column: span 2; text-align: center; color: #00d4ff; font-weight: bold; font-size: 1.1em;">' +
+                        '💵 
+            
+            tradesContainer.appendChild(div);
+        });
+    }
+    
+    function addTrade(coin, side, amount, price) {
+        var numAmount = parseFloat(amount);
+        var numPrice = parseFloat(price);
+        var totalUSD = numAmount * numPrice;
+        
+        var trade = {
+            coin: coin,
+            side: side,
+            amount: formatNumber(numAmount),
+            price: formatNumber(numPrice),
+            totalUSD: formatNumber(totalUSD),
+            time: new Date().toLocaleTimeString('tr-TR'),
+            timestamp: Date.now()
+        };
+        
+        trades.unshift(trade);
+        if (trades.length > MAX_TRADES) {
+            trades.pop();
+        }
+        
+        if (side === 'BUY') {
+            buyVolumes[coin] = (buyVolumes[coin] || 0) + numAmount;
+        } else {
+            sellVolumes[coin] = (sellVolumes[coin] || 0) + numAmount;
+        }
+        
+        totalCount++;
+        updateUI();
+        updateTopLists();
+    }
+    
+    function connectWebSocket(symbol, threshold) {
+        // FUTURES stream
+        var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
+        
+        ws.onopen = function() {
+            connectedCount++;
+            if (connectedCount >= 1) {
+                wsDot.classList.add('on');
+            }
+            console.log('Futures bağlandı (' + connectedCount + '/60): ' + symbol);
+            updateUI();
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
+                
+                var quantity = parseFloat(data.q);
+                var price = parseFloat(data.p);
+                
+                if (quantity >= threshold) {
+                    var coin = symbol.replace('usdt', '').toUpperCase();
+                    var side = data.m ? 'SELL' : 'BUY';
+                    
+                    addTrade(coin, side, quantity, price);
+                }
+            } catch (e) {
+                console.error('Parse error:', e);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket error ' + symbol + ':', error);
+        };
+        
+        ws.onclose = function() {
+            connectedCount--;
+            if (connectedCount === 0) {
+                wsDot.classList.remove('on');
+            }
+            console.log('Futures kapandı: ' + symbol + ', yeniden bağlanılıyor...');
+            
+            setTimeout(function() {
+                connectWebSocket(symbol, threshold);
+            }, 3000);
+        };
+        
+        websockets.push(ws);
+    }
+    
+    function fetchFearIndex() {
+        fetch('https://api.alternative.me/fng/?limit=1')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Fear API error');
+                return response.json();
+            })
+            .then(function(data) {
+                apiDot.classList.add('on');
+                if (data && data.data && data.data[0]) {
+                    var value = parseInt(data.data[0].value);
+                    var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
+                    var label = value < 25 ? 'Korku' : value < 45 ? 'Kaygı' : value < 55 ? 'Nötr' : value < 75 ? 'Açgözlü' : 'Çok Açgözlü';
+                    fearValueEl.innerHTML = '<span class="' + className + '">' + value + '</span><br><small style="font-size:0.7em">' + label + '</small>';
+                }
+            })
+            .catch(function(error) {
+                apiDot.classList.remove('on');
+                console.error('Fear index error:', error);
+            });
+    }
+    
+    function cleanOldTrades() {
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        trades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        
+        buyVolumes = {};
+        sellVolumes = {};
+        trades.forEach(function(trade) {
+            var coin = trade.coin;
+            var amount = parseFloat(trade.amount.replace(/\./g, '').replace(',', '.'));
+            if (trade.side === 'BUY') {
+                buyVolumes[coin] = (buyVolumes[coin] || 0) + amount;
+            } else {
+                sellVolumes[coin] = (sellVolumes[coin] || 0) + amount;
+            }
+        });
+        
+        updateUI();
+        updateTopLists();
+    }
+    
+    function init() {
+        console.log('🐋 Whale Tracker FUTURES başlatılıyor - 60 coin');
+        
+        Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
+            connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
+        });
+        
+        fetchFearIndex();
+        setInterval(fetchFearIndex, 300000);
+        setInterval(cleanOldTrades, 60000);
+        
+        console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
+        console.log('📊 Futures stream aktif - Balina işlemleri bekleniyor...');
+    }
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            websockets.forEach(function(ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            websockets = [];
+            connectedCount = 0;
+        } else {
+            init();
+        }
+    });
+    
+    init();
+    
+})();
+</script>
+
+</body>
+</html> + trade.totalUSD +
+                    '</div>' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">Fiyat:</span>' +
+                        '<span>
+            
+            tradesContainer.appendChild(div);
+        });
+    }
+    
+    function addTrade(coin, side, amount, price) {
+        var numAmount = parseFloat(amount);
+        
+        var trade = {
+            coin: coin,
+            side: side,
+            amount: formatNumber(numAmount),
+            price: formatNumber(parseFloat(price)),
+            time: new Date().toLocaleTimeString('tr-TR'),
+            timestamp: Date.now()
+        };
+        
+        trades.unshift(trade);
+        if (trades.length > MAX_TRADES) {
+            trades.pop();
+        }
+        
+        if (side === 'BUY') {
+            buyVolumes[coin] = (buyVolumes[coin] || 0) + numAmount;
+        } else {
+            sellVolumes[coin] = (sellVolumes[coin] || 0) + numAmount;
+        }
+        
+        totalCount++;
+        updateUI();
+        updateTopLists();
+    }
+    
+    function connectWebSocket(symbol, threshold) {
+        // FUTURES stream
+        var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
+        
+        ws.onopen = function() {
+            connectedCount++;
+            if (connectedCount >= 1) {
+                wsDot.classList.add('on');
+            }
+            console.log('Futures bağlandı (' + connectedCount + '/60): ' + symbol);
+            updateUI();
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
+                
+                var quantity = parseFloat(data.q);
+                var price = parseFloat(data.p);
+                
+                if (quantity >= threshold) {
+                    var coin = symbol.replace('usdt', '').toUpperCase();
+                    var side = data.m ? 'SELL' : 'BUY';
+                    
+                    addTrade(coin, side, quantity, price);
+                }
+            } catch (e) {
+                console.error('Parse error:', e);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket error ' + symbol + ':', error);
+        };
+        
+        ws.onclose = function() {
+            connectedCount--;
+            if (connectedCount === 0) {
+                wsDot.classList.remove('on');
+            }
+            console.log('Futures kapandı: ' + symbol + ', yeniden bağlanılıyor...');
+            
+            setTimeout(function() {
+                connectWebSocket(symbol, threshold);
+            }, 3000);
+        };
+        
+        websockets.push(ws);
+    }
+    
+    function fetchFearIndex() {
+        fetch('https://api.alternative.me/fng/?limit=1')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Fear API error');
+                return response.json();
+            })
+            .then(function(data) {
+                apiDot.classList.add('on');
+                if (data && data.data && data.data[0]) {
+                    var value = parseInt(data.data[0].value);
+                    var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
+                    var label = value < 25 ? 'Korku' : value < 45 ? 'Kaygı' : value < 55 ? 'Nötr' : value < 75 ? 'Açgözlü' : 'Çok Açgözlü';
+                    fearValueEl.innerHTML = '<span class="' + className + '">' + value + '</span><br><small style="font-size:0.7em">' + label + '</small>';
+                }
+            })
+            .catch(function(error) {
+                apiDot.classList.remove('on');
+                console.error('Fear index error:', error);
+            });
+    }
+    
+    function cleanOldTrades() {
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        trades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        
+        buyVolumes = {};
+        sellVolumes = {};
+        trades.forEach(function(trade) {
+            var coin = trade.coin;
+            var amount = parseFloat(trade.amount.replace(/\./g, '').replace(',', '.'));
+            if (trade.side === 'BUY') {
+                buyVolumes[coin] = (buyVolumes[coin] || 0) + amount;
+            } else {
+                sellVolumes[coin] = (sellVolumes[coin] || 0) + amount;
+            }
+        });
+        
+        updateUI();
+        updateTopLists();
+    }
+    
+    function init() {
+        console.log('🐋 Whale Tracker FUTURES başlatılıyor - 60 coin');
+        
+        Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
+            connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
+        });
+        
+        fetchFearIndex();
+        setInterval(fetchFearIndex, 300000);
+        setInterval(cleanOldTrades, 60000);
+        
+        console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
+        console.log('📊 Futures stream aktif - Balina işlemleri bekleniyor...');
+    }
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            websockets.forEach(function(ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            websockets = [];
+            connectedCount = 0;
+        } else {
+            init();
+        }
+    });
+    
+    init();
+    
+})();
+</script>
+
+</body>
+</html> + trade.price + '</span>' +
+                    '</div>' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">Zaman:</span>' +
+                        '<span>' + trade.time + '</span>' +
+                    '</div>' +
+                '</div>';
+            
+            tradesContainer.appendChild(div);
+        });
+    }
+    
+    function addTrade(coin, side, amount, price) {
+        var numAmount = parseFloat(amount);
+        
+        var trade = {
+            coin: coin,
+            side: side,
+            amount: formatNumber(numAmount),
+            price: formatNumber(parseFloat(price)),
+            time: new Date().toLocaleTimeString('tr-TR'),
+            timestamp: Date.now()
+        };
+        
+        trades.unshift(trade);
+        if (trades.length > MAX_TRADES) {
+            trades.pop();
+        }
+        
+        if (side === 'BUY') {
+            buyVolumes[coin] = (buyVolumes[coin] || 0) + numAmount;
+        } else {
+            sellVolumes[coin] = (sellVolumes[coin] || 0) + numAmount;
+        }
+        
+        totalCount++;
+        updateUI();
+        updateTopLists();
+    }
+    
+    function connectWebSocket(symbol, threshold) {
+        // FUTURES stream
+        var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
+        
+        ws.onopen = function() {
+            connectedCount++;
+            if (connectedCount >= 1) {
+                wsDot.classList.add('on');
+            }
+            console.log('Futures bağlandı (' + connectedCount + '/60): ' + symbol);
+            updateUI();
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
+                
+                var quantity = parseFloat(data.q);
+                var price = parseFloat(data.p);
+                
+                if (quantity >= threshold) {
+                    var coin = symbol.replace('usdt', '').toUpperCase();
+                    var side = data.m ? 'SELL' : 'BUY';
+                    
+                    addTrade(coin, side, quantity, price);
+                }
+            } catch (e) {
+                console.error('Parse error:', e);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket error ' + symbol + ':', error);
+        };
+        
+        ws.onclose = function() {
+            connectedCount--;
+            if (connectedCount === 0) {
+                wsDot.classList.remove('on');
+            }
+            console.log('Futures kapandı: ' + symbol + ', yeniden bağlanılıyor...');
+            
+            setTimeout(function() {
+                connectWebSocket(symbol, threshold);
+            }, 3000);
+        };
+        
+        websockets.push(ws);
+    }
+    
+    function fetchFearIndex() {
+        fetch('https://api.alternative.me/fng/?limit=1')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Fear API error');
+                return response.json();
+            })
+            .then(function(data) {
+                apiDot.classList.add('on');
+                if (data && data.data && data.data[0]) {
+                    var value = parseInt(data.data[0].value);
+                    var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
+                    var label = value < 25 ? 'Korku' : value < 45 ? 'Kaygı' : value < 55 ? 'Nötr' : value < 75 ? 'Açgözlü' : 'Çok Açgözlü';
+                    fearValueEl.innerHTML = '<span class="' + className + '">' + value + '</span><br><small style="font-size:0.7em">' + label + '</small>';
+                }
+            })
+            .catch(function(error) {
+                apiDot.classList.remove('on');
+                console.error('Fear index error:', error);
+            });
+    }
+    
+    function cleanOldTrades() {
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        trades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        
+        buyVolumes = {};
+        sellVolumes = {};
+        trades.forEach(function(trade) {
+            var coin = trade.coin;
+            var amount = parseFloat(trade.amount.replace(/\./g, '').replace(',', '.'));
+            if (trade.side === 'BUY') {
+                buyVolumes[coin] = (buyVolumes[coin] || 0) + amount;
+            } else {
+                sellVolumes[coin] = (sellVolumes[coin] || 0) + amount;
+            }
+        });
+        
+        updateUI();
+        updateTopLists();
+    }
+    
+    function init() {
+        console.log('🐋 Whale Tracker FUTURES başlatılıyor - 60 coin');
+        
+        Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
+            connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
+        });
+        
+        fetchFearIndex();
+        setInterval(fetchFearIndex, 300000);
+        setInterval(cleanOldTrades, 60000);
+        
+        console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
+        console.log('📊 Futures stream aktif - Balina işlemleri bekleniyor...');
+    }
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            websockets.forEach(function(ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            websockets = [];
+            connectedCount = 0;
+        } else {
+            init();
+        }
+    });
+    
+    init();
+    
+})();
+</script>
+
+</body>
+</html> + formatNumber(item.usd) + '</small></span>' +
                 '</div>';
         });
         topSellList.innerHTML = sellHTML || '<div class="top-item" style="justify-content:center;color:#666;">Balina bekleniyor...</div>';
-        totalSellEl.textContent = formatNumber(sellTotal);
+        totalSellEl.innerHTML = formatNumber(sellTotal) + '<br><small style="color:#888;font-size:0.85em;">
+    
+    function updateUI() {
+        totalTradesEl.textContent = totalCount;
+        
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        var recentTrades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        hourlyTradesEl.textContent = recentTrades.length;
+        
+        tradesContainer.innerHTML = '';
+        
+        if (trades.length === 0) {
+            tradesContainer.innerHTML = '<div class="loading">🐋 Büyük işlemler bekleniyor...<br><small style="color:#666;font-size:0.85em;">(' + connectedCount + '/60 stream aktif)</small></div>';
+            return;
+        }
+        
+        trades.forEach(function(trade, index) {
+            var div = document.createElement('div');
+            div.className = 'trade-item';
+            if (index === 0) div.className += ' new';
+            
+            var sideClass = trade.side === 'BUY' ? 'buy' : 'sell';
+            
+            div.innerHTML = 
+                '<div class="trade-header">' +
+                    '<span class="trade-coin">' + trade.coin + '</span>' +
+                    '<span class="trade-exchange">Futures</span>' +
+                '</div>' +
+                '<div class="trade-details">' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">İşlem:</span>' +
+                        '<span class="' + sideClass + '">' + trade.side + '</span>' +
+                    '</div>' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">Miktar:</span>' +
+                        '<span>' + trade.amount + '</span>' +
+                    '</div>' +
+                    '<div class="trade-detail" style="grid-column: span 2; text-align: center; color: #00d4ff; font-weight: bold; font-size: 1.1em;">' +
+                        '💵 
+            
+            tradesContainer.appendChild(div);
+        });
+    }
+    
+    function addTrade(coin, side, amount, price) {
+        var numAmount = parseFloat(amount);
+        var numPrice = parseFloat(price);
+        var totalUSD = numAmount * numPrice;
+        
+        var trade = {
+            coin: coin,
+            side: side,
+            amount: formatNumber(numAmount),
+            price: formatNumber(numPrice),
+            totalUSD: formatNumber(totalUSD),
+            time: new Date().toLocaleTimeString('tr-TR'),
+            timestamp: Date.now()
+        };
+        
+        trades.unshift(trade);
+        if (trades.length > MAX_TRADES) {
+            trades.pop();
+        }
+        
+        if (side === 'BUY') {
+            buyVolumes[coin] = (buyVolumes[coin] || 0) + numAmount;
+        } else {
+            sellVolumes[coin] = (sellVolumes[coin] || 0) + numAmount;
+        }
+        
+        totalCount++;
+        updateUI();
+        updateTopLists();
+    }
+    
+    function connectWebSocket(symbol, threshold) {
+        // FUTURES stream
+        var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
+        
+        ws.onopen = function() {
+            connectedCount++;
+            if (connectedCount >= 1) {
+                wsDot.classList.add('on');
+            }
+            console.log('Futures bağlandı (' + connectedCount + '/60): ' + symbol);
+            updateUI();
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
+                
+                var quantity = parseFloat(data.q);
+                var price = parseFloat(data.p);
+                
+                if (quantity >= threshold) {
+                    var coin = symbol.replace('usdt', '').toUpperCase();
+                    var side = data.m ? 'SELL' : 'BUY';
+                    
+                    addTrade(coin, side, quantity, price);
+                }
+            } catch (e) {
+                console.error('Parse error:', e);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket error ' + symbol + ':', error);
+        };
+        
+        ws.onclose = function() {
+            connectedCount--;
+            if (connectedCount === 0) {
+                wsDot.classList.remove('on');
+            }
+            console.log('Futures kapandı: ' + symbol + ', yeniden bağlanılıyor...');
+            
+            setTimeout(function() {
+                connectWebSocket(symbol, threshold);
+            }, 3000);
+        };
+        
+        websockets.push(ws);
+    }
+    
+    function fetchFearIndex() {
+        fetch('https://api.alternative.me/fng/?limit=1')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Fear API error');
+                return response.json();
+            })
+            .then(function(data) {
+                apiDot.classList.add('on');
+                if (data && data.data && data.data[0]) {
+                    var value = parseInt(data.data[0].value);
+                    var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
+                    var label = value < 25 ? 'Korku' : value < 45 ? 'Kaygı' : value < 55 ? 'Nötr' : value < 75 ? 'Açgözlü' : 'Çok Açgözlü';
+                    fearValueEl.innerHTML = '<span class="' + className + '">' + value + '</span><br><small style="font-size:0.7em">' + label + '</small>';
+                }
+            })
+            .catch(function(error) {
+                apiDot.classList.remove('on');
+                console.error('Fear index error:', error);
+            });
+    }
+    
+    function cleanOldTrades() {
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        trades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        
+        buyVolumes = {};
+        sellVolumes = {};
+        trades.forEach(function(trade) {
+            var coin = trade.coin;
+            var amount = parseFloat(trade.amount.replace(/\./g, '').replace(',', '.'));
+            if (trade.side === 'BUY') {
+                buyVolumes[coin] = (buyVolumes[coin] || 0) + amount;
+            } else {
+                sellVolumes[coin] = (sellVolumes[coin] || 0) + amount;
+            }
+        });
+        
+        updateUI();
+        updateTopLists();
+    }
+    
+    function init() {
+        console.log('🐋 Whale Tracker FUTURES başlatılıyor - 60 coin');
+        
+        Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
+            connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
+        });
+        
+        fetchFearIndex();
+        setInterval(fetchFearIndex, 300000);
+        setInterval(cleanOldTrades, 60000);
+        
+        console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
+        console.log('📊 Futures stream aktif - Balina işlemleri bekleniyor...');
+    }
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            websockets.forEach(function(ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            websockets = [];
+            connectedCount = 0;
+        } else {
+            init();
+        }
+    });
+    
+    init();
+    
+})();
+</script>
+
+</body>
+</html> + trade.totalUSD +
+                    '</div>' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">Fiyat:</span>' +
+                        '<span>
+            
+            tradesContainer.appendChild(div);
+        });
+    }
+    
+    function addTrade(coin, side, amount, price) {
+        var numAmount = parseFloat(amount);
+        
+        var trade = {
+            coin: coin,
+            side: side,
+            amount: formatNumber(numAmount),
+            price: formatNumber(parseFloat(price)),
+            time: new Date().toLocaleTimeString('tr-TR'),
+            timestamp: Date.now()
+        };
+        
+        trades.unshift(trade);
+        if (trades.length > MAX_TRADES) {
+            trades.pop();
+        }
+        
+        if (side === 'BUY') {
+            buyVolumes[coin] = (buyVolumes[coin] || 0) + numAmount;
+        } else {
+            sellVolumes[coin] = (sellVolumes[coin] || 0) + numAmount;
+        }
+        
+        totalCount++;
+        updateUI();
+        updateTopLists();
+    }
+    
+    function connectWebSocket(symbol, threshold) {
+        // FUTURES stream
+        var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
+        
+        ws.onopen = function() {
+            connectedCount++;
+            if (connectedCount >= 1) {
+                wsDot.classList.add('on');
+            }
+            console.log('Futures bağlandı (' + connectedCount + '/60): ' + symbol);
+            updateUI();
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
+                
+                var quantity = parseFloat(data.q);
+                var price = parseFloat(data.p);
+                
+                if (quantity >= threshold) {
+                    var coin = symbol.replace('usdt', '').toUpperCase();
+                    var side = data.m ? 'SELL' : 'BUY';
+                    
+                    addTrade(coin, side, quantity, price);
+                }
+            } catch (e) {
+                console.error('Parse error:', e);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket error ' + symbol + ':', error);
+        };
+        
+        ws.onclose = function() {
+            connectedCount--;
+            if (connectedCount === 0) {
+                wsDot.classList.remove('on');
+            }
+            console.log('Futures kapandı: ' + symbol + ', yeniden bağlanılıyor...');
+            
+            setTimeout(function() {
+                connectWebSocket(symbol, threshold);
+            }, 3000);
+        };
+        
+        websockets.push(ws);
+    }
+    
+    function fetchFearIndex() {
+        fetch('https://api.alternative.me/fng/?limit=1')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Fear API error');
+                return response.json();
+            })
+            .then(function(data) {
+                apiDot.classList.add('on');
+                if (data && data.data && data.data[0]) {
+                    var value = parseInt(data.data[0].value);
+                    var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
+                    var label = value < 25 ? 'Korku' : value < 45 ? 'Kaygı' : value < 55 ? 'Nötr' : value < 75 ? 'Açgözlü' : 'Çok Açgözlü';
+                    fearValueEl.innerHTML = '<span class="' + className + '">' + value + '</span><br><small style="font-size:0.7em">' + label + '</small>';
+                }
+            })
+            .catch(function(error) {
+                apiDot.classList.remove('on');
+                console.error('Fear index error:', error);
+            });
+    }
+    
+    function cleanOldTrades() {
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        trades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        
+        buyVolumes = {};
+        sellVolumes = {};
+        trades.forEach(function(trade) {
+            var coin = trade.coin;
+            var amount = parseFloat(trade.amount.replace(/\./g, '').replace(',', '.'));
+            if (trade.side === 'BUY') {
+                buyVolumes[coin] = (buyVolumes[coin] || 0) + amount;
+            } else {
+                sellVolumes[coin] = (sellVolumes[coin] || 0) + amount;
+            }
+        });
+        
+        updateUI();
+        updateTopLists();
+    }
+    
+    function init() {
+        console.log('🐋 Whale Tracker FUTURES başlatılıyor - 60 coin');
+        
+        Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
+            connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
+        });
+        
+        fetchFearIndex();
+        setInterval(fetchFearIndex, 300000);
+        setInterval(cleanOldTrades, 60000);
+        
+        console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
+        console.log('📊 Futures stream aktif - Balina işlemleri bekleniyor...');
+    }
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            websockets.forEach(function(ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            websockets = [];
+            connectedCount = 0;
+        } else {
+            init();
+        }
+    });
+    
+    init();
+    
+})();
+</script>
+
+</body>
+</html> + trade.price + '</span>' +
+                    '</div>' +
+                    '<div class="trade-detail">' +
+                        '<span class="trade-detail-label">Zaman:</span>' +
+                        '<span>' + trade.time + '</span>' +
+                    '</div>' +
+                '</div>';
+            
+            tradesContainer.appendChild(div);
+        });
+    }
+    
+    function addTrade(coin, side, amount, price) {
+        var numAmount = parseFloat(amount);
+        
+        var trade = {
+            coin: coin,
+            side: side,
+            amount: formatNumber(numAmount),
+            price: formatNumber(parseFloat(price)),
+            time: new Date().toLocaleTimeString('tr-TR'),
+            timestamp: Date.now()
+        };
+        
+        trades.unshift(trade);
+        if (trades.length > MAX_TRADES) {
+            trades.pop();
+        }
+        
+        if (side === 'BUY') {
+            buyVolumes[coin] = (buyVolumes[coin] || 0) + numAmount;
+        } else {
+            sellVolumes[coin] = (sellVolumes[coin] || 0) + numAmount;
+        }
+        
+        totalCount++;
+        updateUI();
+        updateTopLists();
+    }
+    
+    function connectWebSocket(symbol, threshold) {
+        // FUTURES stream
+        var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
+        
+        ws.onopen = function() {
+            connectedCount++;
+            if (connectedCount >= 1) {
+                wsDot.classList.add('on');
+            }
+            console.log('Futures bağlandı (' + connectedCount + '/60): ' + symbol);
+            updateUI();
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
+                
+                var quantity = parseFloat(data.q);
+                var price = parseFloat(data.p);
+                
+                if (quantity >= threshold) {
+                    var coin = symbol.replace('usdt', '').toUpperCase();
+                    var side = data.m ? 'SELL' : 'BUY';
+                    
+                    addTrade(coin, side, quantity, price);
+                }
+            } catch (e) {
+                console.error('Parse error:', e);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket error ' + symbol + ':', error);
+        };
+        
+        ws.onclose = function() {
+            connectedCount--;
+            if (connectedCount === 0) {
+                wsDot.classList.remove('on');
+            }
+            console.log('Futures kapandı: ' + symbol + ', yeniden bağlanılıyor...');
+            
+            setTimeout(function() {
+                connectWebSocket(symbol, threshold);
+            }, 3000);
+        };
+        
+        websockets.push(ws);
+    }
+    
+    function fetchFearIndex() {
+        fetch('https://api.alternative.me/fng/?limit=1')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Fear API error');
+                return response.json();
+            })
+            .then(function(data) {
+                apiDot.classList.add('on');
+                if (data && data.data && data.data[0]) {
+                    var value = parseInt(data.data[0].value);
+                    var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
+                    var label = value < 25 ? 'Korku' : value < 45 ? 'Kaygı' : value < 55 ? 'Nötr' : value < 75 ? 'Açgözlü' : 'Çok Açgözlü';
+                    fearValueEl.innerHTML = '<span class="' + className + '">' + value + '</span><br><small style="font-size:0.7em">' + label + '</small>';
+                }
+            })
+            .catch(function(error) {
+                apiDot.classList.remove('on');
+                console.error('Fear index error:', error);
+            });
+    }
+    
+    function cleanOldTrades() {
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        trades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        
+        buyVolumes = {};
+        sellVolumes = {};
+        trades.forEach(function(trade) {
+            var coin = trade.coin;
+            var amount = parseFloat(trade.amount.replace(/\./g, '').replace(',', '.'));
+            if (trade.side === 'BUY') {
+                buyVolumes[coin] = (buyVolumes[coin] || 0) + amount;
+            } else {
+                sellVolumes[coin] = (sellVolumes[coin] || 0) + amount;
+            }
+        });
+        
+        updateUI();
+        updateTopLists();
+    }
+    
+    function init() {
+        console.log('🐋 Whale Tracker FUTURES başlatılıyor - 60 coin');
+        
+        Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
+            connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
+        });
+        
+        fetchFearIndex();
+        setInterval(fetchFearIndex, 300000);
+        setInterval(cleanOldTrades, 60000);
+        
+        console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
+        console.log('📊 Futures stream aktif - Balina işlemleri bekleniyor...');
+    }
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            websockets.forEach(function(ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            websockets = [];
+            connectedCount = 0;
+        } else {
+            init();
+        }
+    });
+    
+    init();
+    
+})();
+</script>
+
+</body>
+</html> + formatNumber(sellTotalUSD) + '</small>';
     }
     
     function updateUI() {
@@ -468,9 +2628,339 @@
                         '<span class="trade-detail-label">Miktar:</span>' +
                         '<span>' + trade.amount + '</span>' +
                     '</div>' +
+                    '<div class="trade-detail" style="grid-column: span 2; text-align: center; color: #00d4ff; font-weight: bold; font-size: 1.1em;">' +
+                        '💵 
+            
+            tradesContainer.appendChild(div);
+        });
+    }
+    
+    function addTrade(coin, side, amount, price) {
+        var numAmount = parseFloat(amount);
+        var numPrice = parseFloat(price);
+        var totalUSD = numAmount * numPrice;
+        
+        var trade = {
+            coin: coin,
+            side: side,
+            amount: formatNumber(numAmount),
+            price: formatNumber(numPrice),
+            totalUSD: formatNumber(totalUSD),
+            time: new Date().toLocaleTimeString('tr-TR'),
+            timestamp: Date.now()
+        };
+        
+        trades.unshift(trade);
+        if (trades.length > MAX_TRADES) {
+            trades.pop();
+        }
+        
+        if (side === 'BUY') {
+            buyVolumes[coin] = (buyVolumes[coin] || 0) + numAmount;
+        } else {
+            sellVolumes[coin] = (sellVolumes[coin] || 0) + numAmount;
+        }
+        
+        totalCount++;
+        updateUI();
+        updateTopLists();
+    }
+    
+    function connectWebSocket(symbol, threshold) {
+        // FUTURES stream
+        var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
+        
+        ws.onopen = function() {
+            connectedCount++;
+            if (connectedCount >= 1) {
+                wsDot.classList.add('on');
+            }
+            console.log('Futures bağlandı (' + connectedCount + '/60): ' + symbol);
+            updateUI();
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
+                
+                var quantity = parseFloat(data.q);
+                var price = parseFloat(data.p);
+                
+                if (quantity >= threshold) {
+                    var coin = symbol.replace('usdt', '').toUpperCase();
+                    var side = data.m ? 'SELL' : 'BUY';
+                    
+                    addTrade(coin, side, quantity, price);
+                }
+            } catch (e) {
+                console.error('Parse error:', e);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket error ' + symbol + ':', error);
+        };
+        
+        ws.onclose = function() {
+            connectedCount--;
+            if (connectedCount === 0) {
+                wsDot.classList.remove('on');
+            }
+            console.log('Futures kapandı: ' + symbol + ', yeniden bağlanılıyor...');
+            
+            setTimeout(function() {
+                connectWebSocket(symbol, threshold);
+            }, 3000);
+        };
+        
+        websockets.push(ws);
+    }
+    
+    function fetchFearIndex() {
+        fetch('https://api.alternative.me/fng/?limit=1')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Fear API error');
+                return response.json();
+            })
+            .then(function(data) {
+                apiDot.classList.add('on');
+                if (data && data.data && data.data[0]) {
+                    var value = parseInt(data.data[0].value);
+                    var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
+                    var label = value < 25 ? 'Korku' : value < 45 ? 'Kaygı' : value < 55 ? 'Nötr' : value < 75 ? 'Açgözlü' : 'Çok Açgözlü';
+                    fearValueEl.innerHTML = '<span class="' + className + '">' + value + '</span><br><small style="font-size:0.7em">' + label + '</small>';
+                }
+            })
+            .catch(function(error) {
+                apiDot.classList.remove('on');
+                console.error('Fear index error:', error);
+            });
+    }
+    
+    function cleanOldTrades() {
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        trades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        
+        buyVolumes = {};
+        sellVolumes = {};
+        trades.forEach(function(trade) {
+            var coin = trade.coin;
+            var amount = parseFloat(trade.amount.replace(/\./g, '').replace(',', '.'));
+            if (trade.side === 'BUY') {
+                buyVolumes[coin] = (buyVolumes[coin] || 0) + amount;
+            } else {
+                sellVolumes[coin] = (sellVolumes[coin] || 0) + amount;
+            }
+        });
+        
+        updateUI();
+        updateTopLists();
+    }
+    
+    function init() {
+        console.log('🐋 Whale Tracker FUTURES başlatılıyor - 60 coin');
+        
+        Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
+            connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
+        });
+        
+        fetchFearIndex();
+        setInterval(fetchFearIndex, 300000);
+        setInterval(cleanOldTrades, 60000);
+        
+        console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
+        console.log('📊 Futures stream aktif - Balina işlemleri bekleniyor...');
+    }
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            websockets.forEach(function(ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            websockets = [];
+            connectedCount = 0;
+        } else {
+            init();
+        }
+    });
+    
+    init();
+    
+})();
+</script>
+
+</body>
+</html> + trade.totalUSD +
+                    '</div>' +
                     '<div class="trade-detail">' +
                         '<span class="trade-detail-label">Fiyat:</span>' +
-                        '<span>$' + trade.price + '</span>' +
+                        '<span>
+            
+            tradesContainer.appendChild(div);
+        });
+    }
+    
+    function addTrade(coin, side, amount, price) {
+        var numAmount = parseFloat(amount);
+        
+        var trade = {
+            coin: coin,
+            side: side,
+            amount: formatNumber(numAmount),
+            price: formatNumber(parseFloat(price)),
+            time: new Date().toLocaleTimeString('tr-TR'),
+            timestamp: Date.now()
+        };
+        
+        trades.unshift(trade);
+        if (trades.length > MAX_TRADES) {
+            trades.pop();
+        }
+        
+        if (side === 'BUY') {
+            buyVolumes[coin] = (buyVolumes[coin] || 0) + numAmount;
+        } else {
+            sellVolumes[coin] = (sellVolumes[coin] || 0) + numAmount;
+        }
+        
+        totalCount++;
+        updateUI();
+        updateTopLists();
+    }
+    
+    function connectWebSocket(symbol, threshold) {
+        // FUTURES stream
+        var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
+        
+        ws.onopen = function() {
+            connectedCount++;
+            if (connectedCount >= 1) {
+                wsDot.classList.add('on');
+            }
+            console.log('Futures bağlandı (' + connectedCount + '/60): ' + symbol);
+            updateUI();
+        };
+        
+        ws.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
+                
+                var quantity = parseFloat(data.q);
+                var price = parseFloat(data.p);
+                
+                if (quantity >= threshold) {
+                    var coin = symbol.replace('usdt', '').toUpperCase();
+                    var side = data.m ? 'SELL' : 'BUY';
+                    
+                    addTrade(coin, side, quantity, price);
+                }
+            } catch (e) {
+                console.error('Parse error:', e);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket error ' + symbol + ':', error);
+        };
+        
+        ws.onclose = function() {
+            connectedCount--;
+            if (connectedCount === 0) {
+                wsDot.classList.remove('on');
+            }
+            console.log('Futures kapandı: ' + symbol + ', yeniden bağlanılıyor...');
+            
+            setTimeout(function() {
+                connectWebSocket(symbol, threshold);
+            }, 3000);
+        };
+        
+        websockets.push(ws);
+    }
+    
+    function fetchFearIndex() {
+        fetch('https://api.alternative.me/fng/?limit=1')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Fear API error');
+                return response.json();
+            })
+            .then(function(data) {
+                apiDot.classList.add('on');
+                if (data && data.data && data.data[0]) {
+                    var value = parseInt(data.data[0].value);
+                    var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
+                    var label = value < 25 ? 'Korku' : value < 45 ? 'Kaygı' : value < 55 ? 'Nötr' : value < 75 ? 'Açgözlü' : 'Çok Açgözlü';
+                    fearValueEl.innerHTML = '<span class="' + className + '">' + value + '</span><br><small style="font-size:0.7em">' + label + '</small>';
+                }
+            })
+            .catch(function(error) {
+                apiDot.classList.remove('on');
+                console.error('Fear index error:', error);
+            });
+    }
+    
+    function cleanOldTrades() {
+        var fourHoursAgo = Date.now() - FOUR_HOURS;
+        trades = trades.filter(function(t) {
+            return t.timestamp > fourHoursAgo;
+        });
+        
+        buyVolumes = {};
+        sellVolumes = {};
+        trades.forEach(function(trade) {
+            var coin = trade.coin;
+            var amount = parseFloat(trade.amount.replace(/\./g, '').replace(',', '.'));
+            if (trade.side === 'BUY') {
+                buyVolumes[coin] = (buyVolumes[coin] || 0) + amount;
+            } else {
+                sellVolumes[coin] = (sellVolumes[coin] || 0) + amount;
+            }
+        });
+        
+        updateUI();
+        updateTopLists();
+    }
+    
+    function init() {
+        console.log('🐋 Whale Tracker FUTURES başlatılıyor - 60 coin');
+        
+        Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
+            connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
+        });
+        
+        fetchFearIndex();
+        setInterval(fetchFearIndex, 300000);
+        setInterval(cleanOldTrades, 60000);
+        
+        console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
+        console.log('📊 Futures stream aktif - Balina işlemleri bekleniyor...');
+    }
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            websockets.forEach(function(ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            websockets = [];
+            connectedCount = 0;
+        } else {
+            init();
+        }
+    });
+    
+    init();
+    
+})();
+</script>
+
+</body>
+</html> + trade.price + '</span>' +
                     '</div>' +
                     '<div class="trade-detail">' +
                         '<span class="trade-detail-label">Zaman:</span>' +
