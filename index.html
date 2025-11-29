@@ -7,81 +7,101 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { 
-    font-family: Arial, sans-serif;
+    font-family: 'Courier New', monospace;
     background: #000;
-    color: #fff; 
+    color: #0f0; 
     padding: 10px;
     font-size: 12px;
+    line-height: 1.2;
 }
 .header {
-    border: 1px solid #444;
+    border: 2px solid #333;
     padding: 8px;
     margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: #111;
+    box-shadow: 0 0 10px #0f0;
 }
 .header span {
     margin-right: 15px;
 }
-.status { color: #888; }
-.status.on { color: #0f0; }
+.status { color: #333; }
+.status.on { color: #0f0; text-shadow: 0 0 5px #0f0; }
 
 input { 
     width: 100%;
-    background: #111;
-    border: 1px solid #444;
-    color: #fff;
+    background: #000;
+    border: 2px solid #333;
+    color: #0f0;
     padding: 6px;
-    font-family: Arial, sans-serif;
+    font-family: 'Courier New', monospace;
     font-size: 12px;
     margin-bottom: 10px;
 }
 input:focus {
     outline: none;
-    border-color: #666;
+    border-color: #0f0;
+    box-shadow: 0 0 5px #0f0;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    border: 1px solid #444;
-    background: #111;
+    border: 2px solid #333;
+    background: #000;
     margin-bottom: 15px;
+    box-shadow: 0 0 10px rgba(0,255,0,0.1);
 }
 th {
-    background: #222;
-    color: #fff;
+    background: #111;
+    color: #0f0;
     padding: 8px;
     text-align: left;
-    border: 1px solid #444;
+    border: 1px solid #333;
     font-weight: bold;
+    border-bottom: 2px solid #333;
 }
 td {
     padding: 6px 8px;
-    border: 1px solid #444;
-    color: #fff;
+    border: 1px solid #222;
+    color: #0f0;
 }
 tr:hover td {
     background: #1a1a1a;
 }
-.buy { color: #0f0; font-weight: bold; }
-.sell { color: #f00; font-weight: bold; }
+.buy { color: #0f0; font-weight: bold; text-shadow: 0 0 3px #0f0; }
+.sell { color: #f00; font-weight: bold; text-shadow: 0 0 3px #f00; }
 .total-row {
-    background: #1a1a1a;
+    background: #111;
     font-weight: bold;
+    border-top: 2px solid #333;
 }
 .total-row td {
-    border-top: 2px solid #666;
+    border-top: 2px solid #333;
 }
-.gray { color: #888; }
+.gray { color: #333; }
 .new-row {
-    animation: highlight 0.5s ease;
+    animation: highlight 1s ease;
 }
 @keyframes highlight {
-    0% { background: #2a2a2a; }
+    0% { background: #1a2a1a; }
     100% { background: transparent; }
+}
+
+/* Retro çizgiler */
+table { position: relative; }
+table::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid #0f0;
+    pointer-events: none;
+    opacity: 0.1;
 }
 </style>
 </head>
@@ -138,18 +158,67 @@ tr:hover td {
 (function() {
 'use strict';
 
+// Eşik değerleri önemli ölçüde artırıldı (3-5x)
 var THRESHOLDS = {
-    btcusdt:6,ethusdt:90,bnbusdt:600,solusdt:2400,xrpusdt:120000,adausdt:240000,
-    dogeusdt:2400000,dotusdt:24000,maticusdt:240000,linkusdt:24000,avaxusdt:12000,
-    ltcusdt:6000,bchusdt:3600,uniusdt:12000,atomusdt:12000,etcusdt:60000,nearusdt:24000,
-    aptusdt:12000,arbusdt:120000,opusdt:36000,ldousdt:60000,injusdt:6000,stxusdt:60000,
-    filusdt:12000,suiusdt:36000,imxusdt:36000,tiausdt:12000,seiusdt:60000,hbarusdt:240000,
-    rndrusdt:12000,fetusdt:60000,taousdt:1200,arusdt:24000,wldusdt:36000,flokiusdt:2400000,
-    pepeusdt:12000000000,shibusdt:360000000,wifusdt:60000,bonkusdt:2400000000,jupusdt:60000,
-    pythusdt:120000,trbusdt:2400,icpusdt:12000,runeusdt:12000,aaveusdt:1200,mkrusdt:240,
-    grtusdt:240000,ftmusdt:60000,algousdt:120000,qntusdt:600,sandusdt:120000,manausdt:120000,
-    axsusdt:24000,galausdt:240000,chzusdt:240000,apeusdt:36000,gmxusdt:2400,blurusdt:36000,
-    pendleusdt:24000
+    btcusdt: 20,          // 6 → 20
+    ethusdt: 300,         // 90 → 300
+    bnbusdt: 2000,        // 600 → 2000
+    solusdt: 8000,        // 2400 → 8000
+    xrpusdt: 400000,      // 120K → 400K
+    adausdt: 800000,      // 240K → 800K
+    dogeusdt: 8000000,    // 2.4M → 8M
+    dotusdt: 80000,       // 24K → 80K
+    maticusdt: 800000,    // 240K → 800K
+    linkusdt: 80000,      // 24K → 80K
+    avaxusdt: 40000,      // 12K → 40K
+    ltcusdt: 20000,       // 6K → 20K
+    bchusdt: 12000,       // 3.6K → 12K
+    uniusdt: 40000,       // 12K → 40K
+    atomusdt: 40000,      // 12K → 40K
+    etcusdt: 200000,      // 60K → 200K
+    nearusdt: 80000,      // 24K → 80K
+    aptusdt: 40000,       // 12K → 40K
+    arbusdt: 400000,      // 120K → 400K
+    opusdt: 120000,       // 36K → 120K
+    ldousdt: 200000,      // 60K → 200K
+    injusdt: 20000,       // 6K → 20K
+    stxusdt: 200000,      // 60K → 200K
+    filusdt: 40000,       // 12K → 40K
+    suiusdt: 120000,      // 36K → 120K
+    imxusdt: 120000,      // 36K → 120K
+    tiausdt: 40000,       // 12K → 40K
+    seiusdt: 200000,      // 60K → 200K
+    hbarusdt: 800000,     // 240K → 800K
+    rndrusdt: 40000,      // 12K → 40K
+    fetusdt: 200000,      // 60K → 200K
+    taousdt: 4000,        // 1.2K → 4K
+    arusdt: 80000,        // 24K → 80K
+    wldusdt: 120000,      // 36K → 120K
+    flokiusdt: 8000000,   // 2.4M → 8M
+    pepeusdt: 40000000000, // 12B → 40B
+    shibusdt: 1200000000, // 360M → 1.2B
+    wifusdt: 200000,      // 60K → 200K
+    bonkusdt: 8000000000, // 2.4B → 8B
+    jupusdt: 200000,      // 60K → 200K
+    pythusdt: 400000,     // 120K → 400K
+    trbusdt: 8000,        // 2.4K → 8K
+    icpusdt: 40000,       // 12K → 40K
+    runeusdt: 40000,      // 12K → 40K
+    aaveusdt: 4000,       // 1.2K → 4K
+    mkrusdt: 800,         // 240 → 800
+    grtusdt: 800000,      // 240K → 800K
+    ftmusdt: 200000,      // 60K → 200K
+    algousdt: 400000,     // 120K → 400K
+    qntusdt: 2000,        // 600 → 2000
+    sandusdt: 400000,     // 120K → 400K
+    manausdt: 400000,     // 120K → 400K
+    axsusdt: 80000,       // 24K → 80K
+    galausdt: 800000,     // 240K → 800K
+    chzusdt: 800000,      // 240K → 800K
+    apeusdt: 120000,      // 36K → 120K
+    gmxusdt: 8000,        // 2.4K → 8K
+    blurusdt: 120000,     // 36K → 120K
+    pendleusdt: 80000     // 24K → 80K
 };
 
 var trades = [];
