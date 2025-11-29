@@ -132,18 +132,24 @@
     .dot.active { background: var(--green); box-shadow: 0 0 8px var(--green); }
 
     /* FIBO PANEL - Sağ Üst Köşe */
-    .fibo-panel {
+    .fibo-container {
         position: fixed;
         top: 10px;
         right: 10px;
-        width: 280px;
+        width: 300px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .fibo-panel {
         background: var(--card-bg);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid var(--border);
         border-radius: 12px;
         padding: 12px;
-        z-index: 1000;
         box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         max-height: 80vh;
         overflow-y: auto;
@@ -187,11 +193,31 @@
         pointer-events: none;
     }
 
+    .fibo-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .fibo-section {
+        background: rgba(0,0,0,0.2);
+        border-radius: 8px;
+        padding: 8px;
+    }
+
+    .fibo-section-title {
+        font-size: 10px;
+        color: var(--text-dim);
+        text-align: center;
+        margin-bottom: 6px;
+        font-weight: 600;
+    }
+
     .fibo-coin {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 8px 0;
+        padding: 6px 0;
         border-bottom: 1px solid rgba(255,255,255,0.05);
         font-family: 'JetBrains Mono', monospace;
         font-size: 11px;
@@ -204,27 +230,24 @@
     .fibo-symbol {
         font-weight: 600;
         color: var(--text);
-        font-size: 12px;
+        font-size: 11px;
     }
 
     .fibo-details {
         display: flex;
         flex-direction: column;
         align-items: flex-end;
-        gap: 2px;
+        gap: 1px;
     }
 
     .fibo-percent {
         font-weight: 700;
-        font-size: 11px;
+        font-size: 10px;
     }
 
     .fibo-timeframe {
-        font-size: 9px;
+        font-size: 8px;
         color: var(--text-dim);
-        background: rgba(0,0,0,0.3);
-        padding: 1px 4px;
-        border-radius: 3px;
     }
 
     .fibo-percent.close { color: var(--green); }
@@ -236,6 +259,7 @@
         color: var(--text-dim);
         font-size: 11px;
         padding: 15px 0;
+        grid-column: 1 / -1;
     }
 
     .fibo-error {
@@ -243,6 +267,7 @@
         color: var(--red);
         font-size: 11px;
         padding: 10px 0;
+        grid-column: 1 / -1;
     }
 
     .fibo-stats {
@@ -252,6 +277,7 @@
         margin-top: 8px;
         padding-top: 8px;
         border-top: 1px solid var(--border);
+        grid-column: 1 / -1;
     }
 
     /* CONTROLS */
@@ -289,7 +315,7 @@
     .toast-container {
         position: fixed;
         top: 10px;
-        right: 300px; /* Fibo panel için yer aç */
+        right: 320px; /* Fibo panel için yer aç */
         z-index: 9999;
         display: flex;
         flex-direction: column;
@@ -322,7 +348,7 @@
 
     /* Responsive */
     @media (max-width: 1200px) {
-        .fibo-panel {
+        .fibo-container {
             position: relative;
             width: 100%;
             max-width: 800px;
@@ -333,10 +359,16 @@
         .toast-container {
             right: 10px;
         }
+    }
+
+    @media (max-width: 768px) {
         .top-bar {
             flex-direction: column;
             gap: 8px;
             text-align: center;
+        }
+        .fibo-grid {
+            grid-template-columns: 1fr;
         }
     }
 
@@ -345,18 +377,19 @@
 <body>
 
 <!-- Fibonacci Panel -->
-<div class="fibo-panel" id="fiboPanel">
-    <div class="fibo-header">
-        <div class="fibo-title">
-            <span>📊 FIBO 0.72</span>
-            <span style="color:var(--text-dim); font-size:10px;">1 Aylık ATH - En Yakın 5 Coin</span>
+<div class="fibo-container">
+    <div class="fibo-panel">
+        <div class="fibo-header">
+            <div class="fibo-title">
+                <span>📊 FIBO 0.72</span>
+            </div>
+            <div class="fibo-refresh" id="fiboRefresh">🔄</div>
         </div>
-        <div class="fibo-refresh" id="fiboRefresh">🔄</div>
+        <div class="fibo-grid" id="fiboContent">
+            <div class="fibo-loading">100 coin analiz ediliyor...</div>
+        </div>
+        <div class="fibo-stats" id="fiboStats"></div>
     </div>
-    <div id="fiboContent">
-        <div class="fibo-loading">100 coin analiz ediliyor...</div>
-    </div>
-    <div class="fibo-stats" id="fiboStats"></div>
 </div>
 
 <div class="toast-container" id="toastContainer"></div>
@@ -553,12 +586,13 @@
         fiboContent.innerHTML = '<div class="fibo-loading">100 coin analiz ediliyor...<br><small>Bu biraz zaman alabilir</small></div>';
 
         try {
-            const results = [];
+            const monthlyResults = [];
+            const weeklyResults = [];
             let analyzedCount = 0;
             let errorCount = 0;
 
-            for (let i = 0; i < COINS.length; i += 10) {
-                const coinGroup = COINS.slice(i, i + 10);
+            for (let i = 0; i < COINS.length; i += 5) {
+                const coinGroup = COINS.slice(i, i + 5);
                 
                 const promises = coinGroup.map(async (symbol) => {
                     try {
@@ -566,30 +600,51 @@
                         const monthlyResponse = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol.toUpperCase()}&interval=1d&limit=30`);
                         const monthlyKlines = await monthlyResponse.json();
                         
-                        if (monthlyKlines.length > 0) {
+                        // 1 haftalık veri (7 gün)
+                        const weeklyResponse = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol.toUpperCase()}&interval=1d&limit=7`);
+                        const weeklyKlines = await weeklyResponse.json();
+
+                        if (monthlyKlines.length > 0 && weeklyKlines.length > 0) {
+                            // 1 AYLIK FIBO HESAPLAMA
                             const monthlyHighs = monthlyKlines.map(k => parseFloat(k[2]));
                             const monthlyLows = monthlyKlines.map(k => parseFloat(k[3]));
-                            const currentPrice = parseFloat(monthlyKlines[monthlyKlines.length - 1][4]);
+                            const monthlyCurrentPrice = parseFloat(monthlyKlines[monthlyKlines.length - 1][4]);
                             
-                            const ath = Math.max(...monthlyHighs);
-                            const lowest = Math.min(...monthlyLows);
+                            const monthlyAth = Math.max(...monthlyHighs);
+                            const monthlyLowest = Math.min(...monthlyLows);
                             
-                            // Fibo 0.72 hesapla
-                            const fibo72 = lowest + (ath - lowest) * 0.72;
+                            const monthlyFibo72 = monthlyLowest + (monthlyAth - monthlyLowest) * 0.72;
+                            const monthlyDistancePercent = Math.abs((monthlyCurrentPrice - monthlyFibo72) / monthlyFibo72) * 100;
                             
-                            // Mevcut fiyatın Fibo 0.72'ye yakınlık yüzdesi
-                            const distancePercent = Math.abs((currentPrice - fibo72) / fibo72) * 100;
+                            // 1 HAFTALIK FIBO HESAPLAMA
+                            const weeklyHighs = weeklyKlines.map(k => parseFloat(k[2]));
+                            const weeklyLows = weeklyKlines.map(k => parseFloat(k[3]));
+                            const weeklyCurrentPrice = parseFloat(weeklyKlines[weeklyKlines.length - 1][4]);
+                            
+                            const weeklyAth = Math.max(...weeklyHighs);
+                            const weeklyLowest = Math.min(...weeklyLows);
+                            
+                            const weeklyFibo72 = weeklyLowest + (weeklyAth - weeklyLowest) * 0.72;
+                            const weeklyDistancePercent = Math.abs((weeklyCurrentPrice - weeklyFibo72) / weeklyFibo72) * 100;
                             
                             analyzedCount++;
                             
                             return {
                                 symbol: symbol.replace('usdt', '').toUpperCase(),
-                                currentPrice,
-                                fibo72,
-                                distancePercent,
-                                ath,
-                                lowest,
-                                timeframe: '1Aylık'
+                                monthly: {
+                                    currentPrice: monthlyCurrentPrice,
+                                    fibo72: monthlyFibo72,
+                                    distancePercent: monthlyDistancePercent,
+                                    ath: monthlyAth,
+                                    lowest: monthlyLowest
+                                },
+                                weekly: {
+                                    currentPrice: weeklyCurrentPrice,
+                                    fibo72: weeklyFibo72,
+                                    distancePercent: weeklyDistancePercent,
+                                    ath: weeklyAth,
+                                    lowest: weeklyLowest
+                                }
                             };
                         }
                     } catch (error) {
@@ -600,33 +655,92 @@
                 });
 
                 const groupResults = await Promise.all(promises);
-                results.push(...groupResults.filter(result => result !== null));
+                const validResults = groupResults.filter(result => result !== null);
+                
+                validResults.forEach(result => {
+                    monthlyResults.push({
+                        symbol: result.symbol,
+                        ...result.monthly,
+                        timeframe: '1Aylık'
+                    });
+                    weeklyResults.push({
+                        symbol: result.symbol,
+                        ...result.weekly,
+                        timeframe: '1Haftalık'
+                    });
+                });
                 
                 fiboContent.innerHTML = `<div class="fibo-loading">${analyzedCount}/${COINS.length} coin analiz edildi...<br><small>Lütfen bekleyin</small></div>`;
                 
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 800));
             }
 
-            results.sort((a, b) => a.distancePercent - b.distancePercent);
-            const topCoins = results.slice(0, 5);
+            // Aylık ve haftalık sonuçları ayrı ayrı sırala
+            monthlyResults.sort((a, b) => a.distancePercent - b.distancePercent);
+            weeklyResults.sort((a, b) => a.distancePercent - b.distancePercent);
             
-            if (topCoins.length > 0) {
+            // En yakın 5 coin'i al
+            const topMonthly = monthlyResults.slice(0, 5);
+            const topWeekly = weeklyResults.slice(0, 5);
+            
+            if (topMonthly.length > 0 || topWeekly.length > 0) {
                 let html = '';
-                topCoins.forEach(coin => {
-                    let percentClass = 'far';
-                    if (coin.distancePercent <= 2) percentClass = 'close';
-                    else if (coin.distancePercent <= 5) percentClass = 'medium';
-                    
-                    html += `
-                        <div class="fibo-coin">
-                            <span class="fibo-symbol">${coin.symbol}</span>
-                            <div class="fibo-details">
-                                <span class="fibo-percent ${percentClass}">%${coin.distancePercent.toFixed(2)}</span>
-                                <span class="fibo-timeframe">${coin.timeframe}</span>
+                
+                // Aylık Fibo Bölümü
+                html += `
+                    <div class="fibo-section">
+                        <div class="fibo-section-title">1 AYLIK</div>
+                `;
+                
+                if (topMonthly.length > 0) {
+                    topMonthly.forEach(coin => {
+                        let percentClass = 'far';
+                        if (coin.distancePercent <= 2) percentClass = 'close';
+                        else if (coin.distancePercent <= 5) percentClass = 'medium';
+                        
+                        html += `
+                            <div class="fibo-coin">
+                                <span class="fibo-symbol">${coin.symbol}</span>
+                                <div class="fibo-details">
+                                    <span class="fibo-percent ${percentClass}">%${coin.distancePercent.toFixed(2)}</span>
+                                    <span class="fibo-timeframe">${coin.timeframe}</span>
+                                </div>
                             </div>
-                        </div>
-                    `;
-                });
+                        `;
+                    });
+                } else {
+                    html += `<div style="text-align:center; color:var(--text-dim); font-size:10px; padding:10px 0;">Veri yok</div>`;
+                }
+                
+                html += `</div>`;
+                
+                // Haftalık Fibo Bölümü
+                html += `
+                    <div class="fibo-section">
+                        <div class="fibo-section-title">1 HAFTALIK</div>
+                `;
+                
+                if (topWeekly.length > 0) {
+                    topWeekly.forEach(coin => {
+                        let percentClass = 'far';
+                        if (coin.distancePercent <= 2) percentClass = 'close';
+                        else if (coin.distancePercent <= 5) percentClass = 'medium';
+                        
+                        html += `
+                            <div class="fibo-coin">
+                                <span class="fibo-symbol">${coin.symbol}</span>
+                                <div class="fibo-details">
+                                    <span class="fibo-percent ${percentClass}">%${coin.distancePercent.toFixed(2)}</span>
+                                    <span class="fibo-timeframe">${coin.timeframe}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += `<div style="text-align:center; color:var(--text-dim); font-size:10px; padding:10px 0;">Veri yok</div>`;
+                }
+                
+                html += `</div>`;
                 
                 fiboContent.innerHTML = html;
                 fiboStats.innerHTML = `${analyzedCount} coin tarandı • ${errorCount} hata`;
