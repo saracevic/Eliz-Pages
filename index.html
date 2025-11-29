@@ -3,314 +3,190 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Whale Tracker Pro</title>
+<title>Whale Hunter Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
     :root {
-        --bg-color: #0f172a;
-        --card-bg: rgba(30, 41, 59, 0.6);
-        --card-border: rgba(148, 163, 184, 0.1);
-        --text-primary: #e2e8f0;
-        --text-secondary: #94a3b8;
-        --accent-green: #10b981;
-        --accent-red: #ef4444;
-        --accent-blue: #3b82f6;
-        --glow-green: rgba(16, 185, 129, 0.2);
-        --glow-red: rgba(239, 68, 68, 0.2);
+        --bg: #0b1120;
+        --card-bg: rgba(30, 41, 59, 0.7);
+        --border: rgba(255, 255, 255, 0.08);
+        --green: #10b981;
+        --red: #ef4444;
+        --blue: #3b82f6;
+        --text: #f1f5f9;
+        --text-dim: #94a3b8;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
+        background: var(--bg);
+        color: var(--text);
         font-family: 'Inter', sans-serif;
-        background-color: var(--bg-color);
-        background-image: 
-            radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 20%),
-            radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 20%);
-        color: var(--text-primary);
         font-size: 13px;
-        padding-bottom: 20px;
-        min-height: 100vh;
+        padding-bottom: 30px;
+        overflow-x: hidden; /* Sağa sola kaymayı engelle */
     }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 10px;
+    /* Arkaplan Efekti */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.15), transparent 40%);
+        pointer-events: none;
+        z-index: -1;
     }
 
-    /* Header & Stats */
-    .header-card {
+    .container { max-width: 800px; margin: 0 auto; padding: 10px; }
+
+    /* HEADER */
+    .header {
         background: var(--card-bg);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        border: 1px solid var(--card-border);
-        border-radius: 12px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
         padding: 15px;
         margin-bottom: 15px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        flex-wrap: wrap;
-        gap: 10px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
 
-    .app-title {
-        font-weight: 800;
-        font-size: 18px;
-        background: linear-gradient(45deg, #fff, #94a3b8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -0.5px;
-    }
-
-    .connection-status {
-        display: flex;
-        gap: 8px;
+    .brand { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
+    .status-badge {
         font-family: 'JetBrains Mono', monospace;
         font-size: 10px;
-    }
-    
-    .status-dot {
-        display: inline-block;
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #475569;
-        margin-right: 4px;
-        transition: all 0.3s ease;
-    }
-    .status-dot.active { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
-
-    .stat-badge {
-        background: rgba(15, 23, 42, 0.5);
-        padding: 4px 10px;
+        padding: 4px 8px;
         border-radius: 6px;
-        font-size: 11px;
-        border: 1px solid var(--card-border);
-    }
-
-    /* Controls */
-    .controls {
+        background: rgba(0,0,0,0.3);
+        border: 1px solid var(--border);
         display: flex;
-        gap: 8px;
-        overflow-x: auto;
-        padding-bottom: 5px;
-        margin-bottom: 15px;
-        -webkit-overflow-scrolling: touch;
+        align-items: center;
+        gap: 6px;
     }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: #475569; transition: 0.3s; }
+    .dot.active { background: var(--green); box-shadow: 0 0 8px var(--green); }
 
-    .control-btn {
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        color: var(--text-secondary);
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-size: 11px;
-        font-weight: 500;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: all 0.2s;
-        user-select: none;
+    /* CONTROLS */
+    .controls { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+    .btn {
+        background: var(--card-bg); border: 1px solid var(--border); color: var(--text-dim);
+        padding: 8px 14px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer;
+        transition: 0.2s; white-space: nowrap;
     }
+    .btn.active { background: rgba(59, 130, 246, 0.15); color: var(--blue); border-color: rgba(59, 130, 246, 0.4); }
 
-    .control-btn.active {
-        background: rgba(59, 130, 246, 0.2);
-        border-color: rgba(59, 130, 246, 0.4);
-        color: #60a5fa;
+    /* MARKET GRID */
+    .market-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+    .ticker-card {
+        background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; text-align: center;
     }
+    .t-symbol { font-size: 10px; color: var(--text-dim); margin-bottom: 2px; }
+    .t-price { font-family: 'JetBrains Mono'; font-weight: 700; font-size: 12px; }
 
-    input[type="text"] {
-        width: 100%;
-        background: rgba(15, 23, 42, 0.6);
-        border: 1px solid var(--card-border);
-        color: white;
-        padding: 10px 15px;
-        border-radius: 8px;
-        font-family: 'Inter', sans-serif;
-        margin-bottom: 15px;
-        transition: all 0.3s;
-    }
-    input[type="text"]:focus {
-        outline: none;
-        border-color: var(--accent-blue);
-        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
-    }
-
-    /* Grid Layouts */
-    .market-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-
-    .market-card {
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 8px;
-        padding: 10px;
-        transition: transform 0.2s;
-    }
+    /* TABLES */
+    .section-title { font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; margin-left: 4px; letter-spacing: 0.5px; }
     
-    .market-card h4 {
-        color: var(--text-secondary);
-        font-size: 10px;
-        text-transform: uppercase;
-        margin-bottom: 4px;
-    }
-    .market-card .price {
-        font-family: 'JetBrains Mono', monospace;
-        font-weight: 700;
-        font-size: 13px;
-    }
-    
-    /* Tables */
-    .table-container {
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 12px;
-        overflow: hidden;
-        margin-bottom: 20px;
-        backdrop-filter: blur(10px);
+    .table-card {
+        background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px;
     }
 
-    .table-header {
-        padding: 12px 15px;
-        border-bottom: 1px solid var(--card-border);
-        font-weight: 600;
-        color: var(--text-primary);
-        display: flex;
-        justify-content: space-between;
-        background: rgba(255,255,255,0.02);
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    th {
-        text-align: left;
-        padding: 10px 12px;
-        color: var(--text-secondary);
-        font-size: 10px;
-        font-weight: 600;
-        text-transform: uppercase;
-        border-bottom: 1px solid var(--card-border);
-        background: rgba(15, 23, 42, 0.3);
-    }
-
-    td {
-        padding: 8px 12px;
-        border-bottom: 1px solid var(--card-border);
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
-    }
-
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 10px 12px; font-size: 10px; color: var(--text-dim); background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border); }
+    td { padding: 8px 12px; font-family: 'JetBrains Mono'; font-size: 11px; border-bottom: 1px solid var(--border); color: #e2e8f0; }
     tr:last-child td { border-bottom: none; }
-
-    /* Colors & Animations */
-    .text-green { color: var(--accent-green); }
-    .text-red { color: var(--accent-red); }
-    .bg-green-glow { background-color: var(--glow-green); }
-    .bg-red-glow { background-color: var(--glow-red); }
-
-    .new-trade-anim {
-        animation: flashRow 1s ease-out;
-    }
-
-    @keyframes flashRow {
-        0% { background-color: rgba(255, 255, 255, 0.1); }
-        100% { background-color: transparent; }
-    }
-
-    .price-cell { font-weight: 700; }
-    .coin-cell { font-family: 'Inter', sans-serif; font-weight: 600; color: #fff; }
     
-    /* Mobile Responsive Adjustments */
-    @media (max-width: 600px) {
-        .hide-mobile { display: none; }
-        .header-card { flex-direction: column; align-items: stretch; text-align: center; }
-        .connection-status { justify-content: center; margin-top: 5px; }
-        .stats-row { justify-content: space-between; display: flex; margin-top: 10px; }
-        th, td { padding: 8px; }
-        .market-grid { grid-template-columns: repeat(2, 1fr); }
+    .col-coin { font-family: 'Inter'; font-weight: 600; color: #fff; }
+    .text-green { color: var(--green); }
+    .text-red { color: var(--red); }
+    
+    .flash-green { animation: flashG 0.8s; }
+    .flash-red { animation: flashR 0.8s; }
+    
+    @keyframes flashG { 0% { background: rgba(16, 185, 129, 0.2); } 100% { background: transparent; } }
+    @keyframes flashR { 0% { background: rgba(239, 68, 68, 0.2); } 100% { background: transparent; } }
+
+    /* 🔔 NOTIFICATION TOASTS (Sağ Üst) */
+    .toast-container {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        pointer-events: none; /* Tıklamaları engellemesin */
     }
+
+    .toast {
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--border);
+        border-left: 4px solid;
+        padding: 10px 14px;
+        border-radius: 8px;
+        width: 220px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        transform: translateX(120%);
+        transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .toast.show { transform: translateX(0); }
+    .toast.buy { border-left-color: var(--green); }
+    .toast.sell { border-left-color: var(--red); }
+
+    .toast-header { display: flex; justify-content: space-between; margin-bottom: 2px; font-size: 11px; font-weight: 700; }
+    .toast-body { display: flex; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 12px; }
+
 </style>
 </head>
 <body>
 
+<div class="toast-container" id="toastContainer"></div>
+
 <div class="container">
-    <div class="header-card">
+    <div class="header">
         <div>
-            <div class="app-title">WHALE TRACKER PRO</div>
-            <div class="connection-status">
-                <span><span class="status-dot" id="wsDot"></span>STREAM</span>
-                <span><span class="status-dot" id="apiDot"></span>API</span>
-            </div>
+            <div class="brand">WHALE HUNTER</div>
+            <div style="font-size:10px; color: var(--text-dim); margin-top:2px;">Threshold: >$50,000</div>
         </div>
-        <div class="stats-row">
-            <span class="stat-badge">F&G: <span id="fearValue" class="text-green">--</span></span>
-            <span class="stat-badge">Total: <span id="totalCount">0</span></span>
+        <div class="status-badge">
+            <div class="dot" id="wsDot"></div> LIVE
         </div>
     </div>
 
     <div class="controls">
-        <div class="control-btn active" id="btnSound">🔔 Ses</div>
-        <div class="control-btn active" id="btnVibrate">📳 Titreşim</div>
-        <div class="control-btn active" id="btnMarket">📊 Market</div>
+        <div class="btn active" id="btnSound">🔔 Ses</div>
+        <div class="btn active" id="btnVib">📳 Titreşim</div>
+        <div class="btn active" id="btnNotify">💬 Bildirim</div>
     </div>
 
-    <div id="marketSection">
-        <div class="market-grid" id="marketGrid">
-            </div>
-    </div>
-
-    <input type="text" id="filterInput" placeholder="Filtrele: BTC, ETH, SOL..." autocomplete="off">
-
-    <div class="table-container">
-        <div class="table-header">Özet Tablosu</div>
-        <div style="overflow-x: auto;">
-            <table id="summaryTable">
-                <thead>
-                    <tr>
-                        <th>Coin</th>
-                        <th>Alım (Adet)</th>
-                        <th>Satım (Adet)</th>
-                        <th>Net Hacim ($)</th>
-                    </tr>
-                </thead>
-                <tbody id="summaryBody">
-                    <tr><td colspan="4" style="text-align:center; color:#64748b; padding:20px;">Veri bekleniyor...</td></tr>
-                </tbody>
-            </table>
+    <div class="market-row" id="marketGrid">
         </div>
+
+    <div class="section-title">En Çok Hacim (Son 1 Saat)</div>
+    <div class="table-card">
+        <table>
+            <thead><tr><th>Coin</th><th>Alış</th><th>Satış</th><th>Net ($)</th></tr></thead>
+            <tbody id="summaryBody"></tbody>
+        </table>
     </div>
 
-    <div class="table-container">
-        <div class="table-header">Canlı İşlemler</div>
-        <div style="overflow-x: auto;">
-            <table id="tradesTable">
-                <thead>
-                    <tr>
-                        <th>Saat</th>
-                        <th>Coin</th>
-                        <th>Yön</th>
-                        <th>Fiyat</th>
-                        <th>Tutar ($)</th>
-                    </tr>
-                </thead>
+    <div class="section-title">Canlı Akış (Whales Only)</div>
+    <div class="table-card">
+        <div style="overflow-x:auto;">
+            <table>
+                <thead><tr><th>Saat</th><th>Coin</th><th>Yön</th><th>Fiyat</th><th>Değer ($)</th></tr></thead>
                 <tbody id="tradesBody">
-                    <tr><td colspan="5" style="text-align:center; color:#64748b; padding:20px;">Bağlantı kuruluyor...</td></tr>
+                    <tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-dim)">Balinalar bekleniyor...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -321,263 +197,254 @@
 (function() {
     'use strict';
 
-    // Konfigürasyon
-    const THRESHOLDS = {
-        btcusdt: 20, ethusdt: 300, bnbusdt: 2000, solusdt: 8000, xrpusdt: 400000,
-        adausdt: 800000, dogeusdt: 8000000, avaxusdt: 40000, dotusdt: 80000,
-        maticusdt: 800000, linkusdt: 80000, shibusdt: 1200000000, pepeusdt: 40000000000,
-        bonkusdt: 8000000000, wifusdt: 200000, fetusdt: 200000, rndrusdt: 40000,
-        nearusdt: 80000, filusdt: 40000, injusdt: 20000, imxusdt: 120000,
-        flokiusdt: 8000000, fantomusdt: 200000, arbusdt: 400000, opusdt: 120000,
-        suiusdt: 120000, aptusdt: 40000, tiausdt: 40000, seiusdt: 200000
-    };
-
-    // State
-    let trades = [];
-    let summaryData = {};
-    let marketInfo = {};
-    let settings = { sound: true, vibrate: true, market: true };
-    let totalTrades = 0;
-    let filterText = '';
-    let wsConnection = null;
-    let audioCtx = null;
+    // --- AYARLAR ---
+    const MIN_USD = 50000; // Sadece 50.000$ ve üzeri işlemleri göster
     
-    // DOM Elements
+    // Takip Edilecek Coinler (En hacimliler seçildi)
+    const COINS = [
+        'btcusdt','ethusdt','bnbusdt','solusdt','xrpusdt','adausdt','dogeusdt','avaxusdt',
+        'linkusdt','dotusdt','maticusdt','ltcusdt','shibusdt','pepeusdt','bonkusdt',
+        'wifusdt','fetusdt','rndrusdt','nearusdt','filusdt','aptusdt','suiusdt','arbust',
+        'opusdt','tiausdt','injusdt','imxusdt','fantomusdt','flokiusdt'
+    ];
+
+    // --- STATE ---
+    let trades = [];
+    let summary = {};
+    let settings = { sound: true, vib: true, notify: true };
+    let audioCtx = null;
+    let ws = null;
+    
+    // DOM Cache
     const els = {
-        tradesBody: document.getElementById('tradesBody'),
-        summaryBody: document.getElementById('summaryBody'),
-        marketGrid: document.getElementById('marketGrid'),
+        trades: document.getElementById('tradesBody'),
+        summary: document.getElementById('summaryBody'),
+        toasts: document.getElementById('toastContainer'),
         wsDot: document.getElementById('wsDot'),
-        totalCount: document.getElementById('totalCount'),
-        fearValue: document.getElementById('fearValue'),
-        filterInput: document.getElementById('filterInput')
+        market: document.getElementById('marketGrid')
     };
 
-    // --- SES ve TİTREŞİM ---
+    // --- SES MOTORU ---
     function initAudio() {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
+        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if(audioCtx.state === 'suspended') audioCtx.resume();
     }
 
-    function playTone(type) {
-        if (!settings.sound || !audioCtx) return;
+    function playSound(type) {
+        if(!settings.sound || !audioCtx) return;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         
-        osc.frequency.value = type === 'BUY' ? 600 : 300;
         osc.type = 'sine';
-        gain.gain.setValueAtTime(0.05, audioCtx.currentTime); // Ses seviyesi düşürüldü
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+        // Buy: Yüksek ton, Sell: Düşük ton
+        osc.frequency.setValueAtTime(type === 'BUY' ? 550 : 250, audioCtx.currentTime);
+        
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
         
         osc.start();
-        osc.stop(audioCtx.currentTime + 0.1);
+        osc.stop(audioCtx.currentTime + 0.15);
     }
 
-    function triggerVibrate(type) {
-        if (settings.vibrate && navigator.vibrate) {
-            navigator.vibrate(type === 'BUY' ? 50 : [30, 30]);
+    // --- BİLDİRİM SİSTEMİ (TOAST) ---
+    function showToast(coin, side, usd, amount) {
+        if(!settings.notify) return;
+
+        const el = document.createElement('div');
+        el.className = `toast ${side.toLowerCase()}`;
+        
+        const icon = side === 'BUY' ? '🟢' : '🔴';
+        const formattedUSD = (usd/1000).toFixed(0) + 'K';
+        
+        el.innerHTML = `
+            <div class="toast-header">
+                <span>${icon} ${coin}</span>
+                <span style="color:var(--text-dim)">${side}</span>
+            </div>
+            <div class="toast-body">
+                <span>${amount} Adet</span>
+                <span style="font-weight:700">$${formattedUSD}</span>
+            </div>
+        `;
+
+        els.toasts.appendChild(el);
+
+        // Animasyon için frame bekle
+        requestAnimationFrame(() => {
+            el.classList.add('show');
+        });
+
+        // 3 saniye sonra sil
+        setTimeout(() => {
+            el.classList.remove('show');
+            setTimeout(() => el.remove(), 300); // CSS transition bitince DOM'dan sil
+        }, 3000);
+
+        // Ekranda çok birikmesin (Max 3 tane)
+        if(els.toasts.children.length > 3) {
+            els.toasts.removeChild(els.toasts.firstChild);
         }
     }
 
-    // --- FORMATLAMA ---
-    const fmtNum = (n) => {
-        if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
-        if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
-        return n.toFixed(0);
-    };
-    
-    const fmtUSD = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
-
-    // --- LOGIC ---
+    // --- İŞLEM MANTIĞI ---
     function processTrade(data) {
-        // Data format: {s: symbol, q: quantity, p: price, m: isBuyerMaker (true=SELL, false=BUY)}
-        const symbol = data.s.toLowerCase();
-        // Combined stream'den gelen veri yapısı farklı olabilir, kontrol edelim
-        const coin = symbol.replace('usdt', '').toUpperCase();
-        
-        if (!THRESHOLDS[symbol]) return; // Takip listemizde yoksa geç
-        
-        const qty = parseFloat(data.q);
+        // Data: {s: Symbol, p: Price, q: Quantity, m: Maker(Sell)}
         const price = parseFloat(data.p);
-        
-        if (qty < THRESHOLDS[symbol]) return; // Eşik altıysa geç
+        const qty = parseFloat(data.q);
+        const usd = price * qty;
 
+        // FİLTRE: Min USD kontrolü
+        if (usd < MIN_USD) return;
+
+        const symbol = data.s.replace('USDT','');
         const side = data.m ? 'SELL' : 'BUY';
-        const usd = qty * price;
-        const timeStr = new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+        const time = new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
 
-        // Trade Ekle
-        const trade = { coin, side, price, qty, usd, time: timeStr, id: Date.now() + Math.random() };
-        trades.unshift(trade);
-        if (trades.length > 50) trades.pop();
-        
-        // Özet Güncelle
-        if (!summaryData[coin]) summaryData[coin] = { buy:0, sell:0, net:0 };
-        if (side === 'BUY') {
-            summaryData[coin].buy += qty;
-            summaryData[coin].net += usd;
+        // Veriyi Ekle
+        trades.unshift({ symbol, side, price, qty, usd, time, id: Date.now() });
+        if(trades.length > 40) trades.pop();
+
+        // Özet Tabloyu Güncelle
+        if(!summary[symbol]) summary[symbol] = { buy:0, sell:0, net:0 };
+        if(side === 'BUY') {
+            summary[symbol].buy += qty;
+            summary[symbol].net += usd;
         } else {
-            summaryData[coin].sell += qty;
-            summaryData[coin].net -= usd;
+            summary[symbol].sell += qty;
+            summary[symbol].net -= usd;
         }
 
-        totalTrades++;
-        playTone(side);
-        triggerVibrate(side);
+        // Efektler
+        playSound(side);
+        if(settings.vib && navigator.vibrate) navigator.vibrate(side === 'BUY' ? 40 : [30,30]);
         
-        // Render işlemlerini hemen yapmıyoruz, throttle fonksiyonu yapacak
-        requestAnimationFrame(renderUI);
+        // Sadece 100k$ üzeri ise Bildirim Göster (Ekran dolmasın diye limiti artırdım)
+        if(usd > MIN_USD) {
+            showToast(symbol, side, usd, qty < 10 ? qty.toFixed(2) : qty.toFixed(0));
+        }
+
+        requestRender();
     }
 
-    // --- RENDER ---
-    let lastRender = 0;
-    function renderUI() {
-        const now = Date.now();
-        if (now - lastRender < 250) return; // 250ms Throttle (iPhone kasmaması için çok önemli)
-        lastRender = now;
-
-        els.totalCount.textContent = totalTrades;
-
-        // 1. Trades Table
-        let displayTrades = trades;
-        if (filterText) {
-            displayTrades = trades.filter(t => t.coin.includes(filterText));
+    // --- RENDER (THROTTLE) ---
+    let tick = false;
+    function requestRender() {
+        if(!tick) {
+            requestAnimationFrame(() => {
+                render();
+                tick = false;
+            });
+            tick = true;
         }
+    }
 
+    const fmt = n => new Intl.NumberFormat('en-US', {notation: "compact", maximumFractionDigits: 1}).format(n);
+
+    function render() {
+        // 1. Trades
         let html = '';
-        displayTrades.slice(0, 20).forEach((t, i) => {
-            const colorClass = t.side === 'BUY' ? 'text-green' : 'text-red';
-            const animClass = i === 0 ? 'new-trade-anim' : '';
-            html += `<tr class="${animClass}">
-                <td style="color:#64748b">${t.time}</td>
-                <td class="coin-cell">${t.coin}</td>
-                <td class="${colorClass}" style="font-weight:700">${t.side}</td>
-                <td class="price-cell">$${t.price < 1 ? t.price.toFixed(4) : t.price.toFixed(2)}</td>
-                <td style="color:#e2e8f0">$${fmtNum(t.usd)}</td>
+        trades.slice(0, 15).forEach((t, i) => {
+            const color = t.side === 'BUY' ? 'text-green' : 'text-red';
+            const anim = i === 0 ? (t.side === 'BUY' ? 'flash-green' : 'flash-red') : '';
+            html += `<tr class="${anim}">
+                <td style="color:var(--text-dim)">${t.time}</td>
+                <td class="col-coin">${t.symbol}</td>
+                <td class="${color}" style="font-weight:700">${t.side}</td>
+                <td>${t.price < 1 ? t.price.toFixed(4) : t.price.toFixed(2)}</td>
+                <td>$${fmt(t.usd)}</td>
             </tr>`;
         });
-        els.tradesBody.innerHTML = html || '<tr><td colspan="5" style="text-align:center; padding:10px;">İşlem yok</td></tr>';
+        els.trades.innerHTML = html;
 
-        // 2. Summary Table
-        const summaryArr = Object.entries(summaryData)
-            .map(([k, v]) => ({ coin: k, ...v }))
-            .sort((a, b) => Math.abs(b.net) - Math.abs(a.net)); // En yüksek hacme göre sırala
-
+        // 2. Summary
+        const sorted = Object.entries(summary)
+            .sort((a,b) => Math.abs(b[1].net) - Math.abs(a[1].net))
+            .slice(0, 8); // En aktif 8 coin
+        
         let sumHtml = '';
-        summaryArr.filter(i => i.coin.includes(filterText)).slice(0, 10).forEach(item => {
-            const netColor = item.net > 0 ? 'text-green' : 'text-red';
-            const netPrefix = item.net > 0 ? '+' : '';
+        sorted.forEach(([sym, data]) => {
+            const netColor = data.net > 0 ? 'text-green' : 'text-red';
             sumHtml += `<tr>
-                <td class="coin-cell">${item.coin}</td>
-                <td class="text-green">${fmtNum(item.buy)}</td>
-                <td class="text-red">${fmtNum(item.sell)}</td>
-                <td class="${netColor}" style="font-weight:700">${netPrefix}${fmtNum(item.net)} $</td>
+                <td class="col-coin">${sym}</td>
+                <td class="text-green">${fmt(data.buy)}</td>
+                <td class="text-red">${fmt(data.sell)}</td>
+                <td class="${netColor}" style="font-weight:700">$${fmt(data.net)}</td>
             </tr>`;
         });
-        els.summaryBody.innerHTML = sumHtml || '<tr><td colspan="4" style="text-align:center;">Veri yok</td></tr>';
+        els.summary.innerHTML = sumHtml;
     }
 
-    // --- SOCKET MANAGEMENT ---
-    function connectSocket() {
-        // PERFORMANS ÇÖZÜMÜ: Tek bir socket stringi oluşturuyoruz
-        const streams = Object.keys(THRESHOLDS).map(s => `${s}@aggTrade`).join('/');
-        // Market ticker için ana coinleri ekleyelim
-        const tickerStreams = 'btcusdt@ticker/ethusdt@ticker/solusdt@ticker/bnbusdt@ticker';
+    // --- SOCKET BAĞLANTISI ---
+    function connect() {
+        const streams = COINS.map(c => c + '@aggTrade').join('/');
+        // Market Ticker (Sadece BTC, ETH, SOL)
+        const tickers = 'btcusdt@ticker/ethusdt@ticker/solusdt@ticker';
         
-        const url = `wss://fstream.binance.com/stream?streams=${streams}/${tickerStreams}`;
-        
-        wsConnection = new WebSocket(url);
+        ws = new WebSocket('wss://fstream.binance.com/stream?streams=' + streams + '/' + tickers);
 
-        wsConnection.onopen = () => {
+        ws.onopen = () => {
             els.wsDot.classList.add('active');
-            console.log('Socket Connected');
+            console.log('Connected');
         };
 
-        wsConnection.onmessage = (e) => {
+        ws.onmessage = (e) => {
             const msg = JSON.parse(e.data);
-            // msg.data asıl veriyi içerir, msg.stream stream adını içerir
-            
-            if (msg.stream.includes('@aggTrade')) {
+            if(msg.stream.includes('@aggTrade')) {
                 processTrade(msg.data);
-            } else if (msg.stream.includes('@ticker')) {
-                updateMarketTicker(msg.data);
+            } else if(msg.stream.includes('@ticker')) {
+                updateTicker(msg.data);
             }
         };
 
-        wsConnection.onclose = () => {
+        ws.onclose = () => {
             els.wsDot.classList.remove('active');
-            setTimeout(connectSocket, 5000);
+            setTimeout(connect, 3000);
         };
     }
 
-    function updateMarketTicker(data) {
-        if (!settings.market) return;
+    let tickerData = {};
+    function updateTicker(data) {
+        // CPU korumak için sadece %5 ihtimalle DOM güncelle
+        const sym = data.s.replace('USDT','');
+        tickerData[sym] = { p: parseFloat(data.c), P: parseFloat(data.P) };
         
-        const symbol = data.s.replace('USDT','');
-        const change = parseFloat(data.P);
-        const price = parseFloat(data.c);
-        
-        marketInfo[symbol] = { price, change };
-        
-        // Market grid render
-        if (Math.random() > 0.7) { // Her tick'te render etme, CPU koru
+        if(Math.random() > 0.9) {
             let html = '';
-            Object.keys(marketInfo).forEach(sym => {
-                const info = marketInfo[sym];
-                const color = info.change >= 0 ? 'text-green' : 'text-red';
-                const sign = info.change >= 0 ? '+' : '';
-                html += `<div class="market-card">
-                    <h4>${sym}</h4>
-                    <div class="price">$${info.price < 10 ? info.price.toFixed(3) : info.price.toFixed(1)}</div>
-                    <div class="${color}" style="font-size:11px;">${sign}${info.change}%</div>
+            Object.keys(tickerData).forEach(k => {
+                const d = tickerData[k];
+                const c = d.P >= 0 ? 'text-green' : 'text-red';
+                html += `<div class="ticker-card">
+                    <div class="t-symbol">${k}</div>
+                    <div class="t-price">$${d.p}</div>
+                    <div class="${c}" style="font-size:10px">${d.P}%</div>
                 </div>`;
             });
-            els.marketGrid.innerHTML = html;
+            els.market.innerHTML = html;
         }
     }
 
-    // --- INIT & EVENTS ---
-    
-    // Buton Kontrolleri
+    // --- BAŞLATMA ---
     document.getElementById('btnSound').onclick = function() {
         settings.sound = !settings.sound;
         this.classList.toggle('active');
-        initAudio(); // iOS için ilk tıklamada ses bağlamını aç
+        initAudio();
     };
-    document.getElementById('btnVibrate').onclick = function() {
-        settings.vibrate = !settings.vibrate;
+    document.getElementById('btnVib').onclick = function() {
+        settings.vib = !settings.vib;
         this.classList.toggle('active');
     };
-    document.getElementById('btnMarket').onclick = function() {
-        settings.market = !settings.market;
+    document.getElementById('btnNotify').onclick = function() {
+        settings.notify = !settings.notify;
         this.classList.toggle('active');
-        document.getElementById('marketSection').style.display = settings.market ? 'block' : 'none';
     };
 
-    els.filterInput.addEventListener('input', (e) => {
-        filterText = e.target.value.toUpperCase();
-        renderUI();
-    });
+    connect();
 
-    // Korku & Açgözlülük Verisi
-    fetch('https://api.alternative.me/fng/?limit=1')
-        .then(r => r.json())
-        .then(d => {
-            const val = d.data[0].value;
-            els.fearValue.textContent = val;
-            els.fearValue.className = val > 50 ? 'text-green' : 'text-red';
-            document.getElementById('apiDot').classList.add('active');
-        });
-
-    // Başlat
-    connectSocket();
-
-    // Otomatik Temizlik (Bellek Sızıntısını Önler)
+    // Bellek Temizliği (Her 1 dk)
     setInterval(() => {
-        if (trades.length > 200) trades = trades.slice(0, 100);
-        // Çok eski özet verileri silinebilir
+        if(trades.length > 100) trades = trades.slice(0, 50);
     }, 60000);
 
 })();
