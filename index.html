@@ -7,91 +7,121 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { 
-    font-family: 'Courier New', monospace;
-    background: #000;
-    color: #0f0; 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Arial', sans-serif;
+    background: #0a0a0a;
+    color: #d1d4dc; 
     padding: 10px;
     font-size: 12px;
     line-height: 1.2;
 }
 .header {
-    border: 2px solid #333;
+    border: 1px solid #1e222d;
     padding: 8px;
     margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #111;
-    box-shadow: 0 0 10px #0f0;
+    background: #131722;
+    box-shadow: none;
 }
 .header span {
     margin-right: 15px;
 }
-.status { color: #333; }
-.status.on { color: #0f0; text-shadow: 0 0 5px #0f0; }
+.status { color: #434651; }
+.status.on { color: #2962ff; text-shadow: none; }
+
+.controls {
+    background: #131722;
+    border: 1px solid #1e222d;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.controls label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #d1d4dc;
+    cursor: pointer;
+}
+
+.controls input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
 
 input { 
     width: 100%;
-    background: #000;
-    border: 2px solid #333;
-    color: #0f0;
+    background: #131722;
+    border: 1px solid #2a2e39;
+    color: #d1d4dc;
     padding: 6px;
-    font-family: 'Courier New', monospace;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Arial', sans-serif;
     font-size: 12px;
     margin-bottom: 10px;
+    border-radius: 4px;
 }
 input:focus {
     outline: none;
-    border-color: #0f0;
-    box-shadow: 0 0 5px #0f0;
+    border-color: #2962ff;
+    box-shadow: none;
 }
 
 table {
     width: 100%;
-    border-collapse: collapse;
-    border: 2px solid #333;
-    background: #000;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #1e222d;
+    background: #131722;
     margin-bottom: 15px;
-    box-shadow: 0 0 10px rgba(0,255,0,0.1);
+    box-shadow: none;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
 }
 th {
-    background: #111;
-    color: #0f0;
+    background: #1e222d;
+    color: #787b86;
     padding: 8px;
     text-align: left;
-    border: 1px solid #333;
-    font-weight: bold;
-    border-bottom: 2px solid #333;
+    border-bottom: 1px solid #2a2e39;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.5px;
 }
 td {
     padding: 6px 8px;
-    border: 1px solid #222;
-    color: #0f0;
+    border-bottom: 1px solid #1e222d;
+    color: #d1d4dc;
 }
 tr:hover td {
-    background: #1a1a1a;
+    background: #1a1e27;
 }
-.buy { color: #0f0; font-weight: bold; text-shadow: 0 0 3px #0f0; }
-.sell { color: #f00; font-weight: bold; text-shadow: 0 0 3px #f00; }
+.buy { color: #089981; font-weight: 600; text-shadow: none; }
+.sell { color: #f23645; font-weight: 600; text-shadow: none; }
 .total-row {
-    background: #111;
+    background: #1a1e27;
     font-weight: bold;
-    border-top: 2px solid #333;
+    border-top: 1px solid #2a2e39;
 }
 .total-row td {
-    border-top: 2px solid #333;
+    border-top: 1px solid #2a2e39;
 }
-.gray { color: #333; }
+.gray { color: #787b86; }
 .new-row {
     animation: highlight 1s ease;
 }
 @keyframes highlight {
-    0% { background: #1a2a1a; }
+    0% { background: #1a2e27; }
     100% { background: transparent; }
 }
 
-/* Retro çizgiler */
-table { position: relative; }
 table::before {
     content: '';
     position: absolute;
@@ -99,9 +129,10 @@ table::before {
     left: 0;
     right: 0;
     bottom: 0;
-    border: 1px solid #0f0;
+    border: 1px solid #2a2e39;
     pointer-events: none;
-    opacity: 0.1;
+    opacity: 0.3;
+    border-radius: 4px;
 }
 </style>
 </head>
@@ -118,6 +149,17 @@ table::before {
         <span>Total: <span id="total">0</span></span>
         <span>4H: <span id="hourly">0</span></span>
     </div>
+</div>
+
+<div class="controls">
+    <label>
+        <input type="checkbox" id="soundToggle" checked>
+        <span>🔔 Ses Bildirimleri</span>
+    </label>
+    <label>
+        <input type="checkbox" id="vibrationToggle" checked>
+        <span>📳 Titreşim</span>
+    </label>
 </div>
 
 <input type="text" id="filter" placeholder="Filter: BTC, ETH, SOL...">
@@ -158,67 +200,66 @@ table::before {
 (function() {
 'use strict';
 
-// Eşik değerleri önemli ölçüde artırıldı (3-5x)
 var THRESHOLDS = {
-    btcusdt: 20,          // 6 → 20
-    ethusdt: 300,         // 90 → 300
-    bnbusdt: 2000,        // 600 → 2000
-    solusdt: 8000,        // 2400 → 8000
-    xrpusdt: 400000,      // 120K → 400K
-    adausdt: 800000,      // 240K → 800K
-    dogeusdt: 8000000,    // 2.4M → 8M
-    dotusdt: 80000,       // 24K → 80K
-    maticusdt: 800000,    // 240K → 800K
-    linkusdt: 80000,      // 24K → 80K
-    avaxusdt: 40000,      // 12K → 40K
-    ltcusdt: 20000,       // 6K → 20K
-    bchusdt: 12000,       // 3.6K → 12K
-    uniusdt: 40000,       // 12K → 40K
-    atomusdt: 40000,      // 12K → 40K
-    etcusdt: 200000,      // 60K → 200K
-    nearusdt: 80000,      // 24K → 80K
-    aptusdt: 40000,       // 12K → 40K
-    arbusdt: 400000,      // 120K → 400K
-    opusdt: 120000,       // 36K → 120K
-    ldousdt: 200000,      // 60K → 200K
-    injusdt: 20000,       // 6K → 20K
-    stxusdt: 200000,      // 60K → 200K
-    filusdt: 40000,       // 12K → 40K
-    suiusdt: 120000,      // 36K → 120K
-    imxusdt: 120000,      // 36K → 120K
-    tiausdt: 40000,       // 12K → 40K
-    seiusdt: 200000,      // 60K → 200K
-    hbarusdt: 800000,     // 240K → 800K
-    rndrusdt: 40000,      // 12K → 40K
-    fetusdt: 200000,      // 60K → 200K
-    taousdt: 4000,        // 1.2K → 4K
-    arusdt: 80000,        // 24K → 80K
-    wldusdt: 120000,      // 36K → 120K
-    flokiusdt: 8000000,   // 2.4M → 8M
-    pepeusdt: 40000000000, // 12B → 40B
-    shibusdt: 1200000000, // 360M → 1.2B
-    wifusdt: 200000,      // 60K → 200K
-    bonkusdt: 8000000000, // 2.4B → 8B
-    jupusdt: 200000,      // 60K → 200K
-    pythusdt: 400000,     // 120K → 400K
-    trbusdt: 8000,        // 2.4K → 8K
-    icpusdt: 40000,       // 12K → 40K
-    runeusdt: 40000,      // 12K → 40K
-    aaveusdt: 4000,       // 1.2K → 4K
-    mkrusdt: 800,         // 240 → 800
-    grtusdt: 800000,      // 240K → 800K
-    ftmusdt: 200000,      // 60K → 200K
-    algousdt: 400000,     // 120K → 400K
-    qntusdt: 2000,        // 600 → 2000
-    sandusdt: 400000,     // 120K → 400K
-    manausdt: 400000,     // 120K → 400K
-    axsusdt: 80000,       // 24K → 80K
-    galausdt: 800000,     // 240K → 800K
-    chzusdt: 800000,      // 240K → 800K
-    apeusdt: 120000,      // 36K → 120K
-    gmxusdt: 8000,        // 2.4K → 8K
-    blurusdt: 120000,     // 36K → 120K
-    pendleusdt: 80000     // 24K → 80K
+    btcusdt: 20,
+    ethusdt: 300,
+    bnbusdt: 2000,
+    solusdt: 8000,
+    xrpusdt: 400000,
+    adausdt: 800000,
+    dogeusdt: 8000000,
+    dotusdt: 80000,
+    maticusdt: 800000,
+    linkusdt: 80000,
+    avaxusdt: 40000,
+    ltcusdt: 20000,
+    bchusdt: 12000,
+    uniusdt: 40000,
+    atomusdt: 40000,
+    etcusdt: 200000,
+    nearusdt: 80000,
+    aptusdt: 40000,
+    arbusdt: 400000,
+    opusdt: 120000,
+    ldousdt: 200000,
+    injusdt: 20000,
+    stxusdt: 200000,
+    filusdt: 40000,
+    suiusdt: 120000,
+    imxusdt: 120000,
+    tiausdt: 40000,
+    seiusdt: 200000,
+    hbarusdt: 800000,
+    rndrusdt: 40000,
+    fetusdt: 200000,
+    taousdt: 4000,
+    arusdt: 80000,
+    wldusdt: 120000,
+    flokiusdt: 8000000,
+    pepeusdt: 40000000000,
+    shibusdt: 1200000000,
+    wifusdt: 200000,
+    bonkusdt: 8000000000,
+    jupusdt: 200000,
+    pythusdt: 400000,
+    trbusdt: 8000,
+    icpusdt: 40000,
+    runeusdt: 40000,
+    aaveusdt: 4000,
+    mkrusdt: 800,
+    grtusdt: 800000,
+    ftmusdt: 200000,
+    algousdt: 400000,
+    qntusdt: 2000,
+    sandusdt: 400000,
+    manausdt: 400000,
+    axsusdt: 80000,
+    galausdt: 800000,
+    chzusdt: 800000,
+    apeusdt: 120000,
+    gmxusdt: 8000,
+    blurusdt: 120000,
+    pendleusdt: 80000
 };
 
 var trades = [];
@@ -226,6 +267,9 @@ var totalCount = 0;
 var connectedWS = 0;
 var filterText = '';
 var websockets = [];
+var audioContext;
+var soundEnabled = true;
+var vibrationEnabled = true;
 
 var summaryBody = document.getElementById('summaryBody');
 var tradesBody = document.getElementById('tradesBody');
@@ -235,6 +279,64 @@ var fearEl = document.getElementById('fear');
 var wsStatus = document.getElementById('wsStatus');
 var apiStatus = document.getElementById('apiStatus');
 var filterEl = document.getElementById('filter');
+var soundToggle = document.getElementById('soundToggle');
+var vibrationToggle = document.getElementById('vibrationToggle');
+
+// Ses ve titreşim ayarları
+soundToggle.addEventListener('change', function(e) {
+    soundEnabled = e.target.checked;
+});
+
+vibrationToggle.addEventListener('change', function(e) {
+    vibrationEnabled = e.target.checked;
+});
+
+// Ses çalma fonksiyonu (Web Audio API)
+function playSound(type) {
+    if (!soundEnabled) return;
+    
+    try {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        
+        var oscillator = audioContext.createOscillator();
+        var gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // BUY için yüksek, SELL için düşük ton
+        oscillator.frequency.value = type === 'BUY' ? 800 : 400;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+    } catch(err) {
+        console.log('Ses çalınamadı:', err);
+    }
+}
+
+// Titreşim fonksiyonu
+function vibrate(pattern) {
+    if (!vibrationEnabled) return;
+    
+    if ('vibrate' in navigator) {
+        navigator.vibrate(pattern);
+    }
+}
+
+// Bildirim fonksiyonu
+function notifyTrade(side) {
+    // Ses çal
+    playSound(side);
+    
+    // Titret (BUY: kısa, SELL: uzun)
+    vibrate(side === 'BUY' ? [100] : [200]);
+}
 
 function formatNum(n) {
     if (n >= 1000000) return (n/1000000).toFixed(2) + 'M';
@@ -341,6 +443,9 @@ function addTrade(coin, side, amount, price) {
         timestamp: Date.now()
     });
     
+    // Bildirim gönder
+    notifyTrade(side);
+    
     if (trades.length > 100) trades.pop();
     totalCount++;
     updateTrades();
@@ -401,6 +506,14 @@ filterEl.addEventListener('input', function(e) {
     updateSummary();
     updateTrades();
 });
+
+// İlk tıklamada ses için AudioContext başlat
+document.addEventListener('click', function initAudio() {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    document.removeEventListener('click', initAudio);
+}, { once: true });
 
 Object.keys(THRESHOLDS).forEach(function(s) { connectWS(s, THRESHOLDS[s]); });
 fetchFear();
