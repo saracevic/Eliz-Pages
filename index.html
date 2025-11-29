@@ -108,68 +108,80 @@
     .neutral { color: #ffaa00; }
     .greed { color: #55ff55; }
     
-    .top-section {
-        margin-top: 20px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-    .top-box {
+    .filter-section {
+        margin: 15px 0;
+        padding: 12px;
         background: #1a1a1a;
-        border: 1px solid #333;
         border-radius: 8px;
-        padding: 15px;
+        border: 1px solid #333;
     }
-    .top-box.buy-box {
-        border-top: 3px solid #55ff55;
-    }
-    .top-box.sell-box {
-        border-top: 3px solid #ff5555;
-    }
-    .top-title {
-        font-size: 1em;
-        font-weight: bold;
-        margin-bottom: 12px;
-        text-align: center;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    .top-title.buy { color: #55ff55; }
-    .top-title.sell { color: #ff5555; }
-    
-    .top-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px solid #2a2a2a;
-        font-size: 0.9em;
-    }
-    .top-item:last-child {
-        border-bottom: none;
-    }
-    .top-coin {
-        font-weight: bold;
-        color: #00d4ff;
-    }
-    .top-amount {
+    .filter-input {
+        width: 100%;
+        padding: 10px;
+        background: #0a0a0a;
+        border: 1px solid #333;
+        border-radius: 6px;
         color: #f1f1f1;
-        font-weight: 500;
+        font-size: 1em;
+        text-transform: uppercase;
     }
-    .top-total {
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 2px solid #333;
+    .filter-input:focus {
+        outline: none;
+        border-color: #00d4ff;
+    }
+    .filter-input::placeholder {
+        color: #666;
+    }
+    
+    .summary-section {
+        margin: 15px 0;
+        padding: 15px;
+        background: #1a1a1a;
+        border-radius: 8px;
+        border: 1px solid #333;
+    }
+    .summary-row {
         display: flex;
         justify-content: space-between;
-        font-weight: bold;
-        font-size: 1em;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #2a2a2a;
+        font-size: 0.95em;
     }
-    .top-total-label {
+    .summary-row:last-child {
+        border-bottom: none;
+        padding-top: 15px;
+        margin-top: 10px;
+        border-top: 2px solid #333;
+        font-weight: bold;
+    }
+    .summary-label {
         color: #888;
     }
-    .top-total-value.buy { color: #55ff55; }
-    .top-total-value.sell { color: #ff5555; }
+    .summary-coin {
+        font-weight: bold;
+        color: #00d4ff;
+        min-width: 60px;
+    }
+    .summary-amounts {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+    .summary-buy, .summary-sell {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        min-width: 80px;
+    }
+    .summary-buy .main { color: #55ff55; font-weight: bold; }
+    .summary-sell .main { color: #ff5555; font-weight: bold; }
+    .summary-amounts small {
+        color: #888;
+        font-size: 0.85em;
+    }
     
     .trades-container {
         margin-top: 15px;
@@ -270,23 +282,13 @@
     </div>
 </div>
 
-<div class="top-section">
-    <div class="top-box buy-box">
-        <div class="top-title buy">📈 TOP 5 ALIŞ</div>
-        <div id="topBuyList"></div>
-        <div class="top-total">
-            <span class="top-total-label">TOPLAM:</span>
-            <span class="top-total-value buy" id="totalBuy">0</span>
-        </div>
-    </div>
-    
-    <div class="top-box sell-box">
-        <div class="top-title sell">📉 TOP 5 SATIŞ</div>
-        <div id="topSellList"></div>
-        <div class="top-total">
-            <span class="top-total-label">TOPLAM:</span>
-            <span class="top-total-value sell" id="totalSell">0</span>
-        </div>
+<div class="filter-section">
+    <input type="text" id="coinFilter" class="filter-input" placeholder="🔍 Coin filtrele (örn: BTC, ETH, SOL...)">
+</div>
+
+<div class="summary-section" id="summarySection">
+    <div style="text-align:center; color:#666; padding:20px;">
+        📊 İşlem verileri yükleniyor...
     </div>
 </div>
 
