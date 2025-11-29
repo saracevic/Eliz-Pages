@@ -2,453 +2,322 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Whale Tracker PRO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whale Tracker PRO - Multi Exchange</title>
 <style>
-    * { 
-        box-sizing: border-box; 
+    * { box-sizing: border-box; }
+    body { 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+        color: #f1f1f1; 
         margin: 0; 
         padding: 0;
-        -webkit-tap-highlight-color: transparent;
+        min-height: 100vh;
     }
-    body { 
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-        background: #0a0a0a;
-        color: #f1f1f1; 
-        padding: 10px;
-        overflow-x: hidden;
-    }
-    .header {
-        text-align: center;
-        padding: 15px 0;
-        position: sticky;
-        top: 0;
-        background: #0a0a0a;
-        z-index: 100;
-        border-bottom: 2px solid #00d4ff;
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
     }
     h1 { 
-        font-size: 1.5em;
-        margin-bottom: 10px;
-        color: #00d4ff;
+        text-align: center; 
+        margin: 20px 0;
+        font-size: 2.5em;
+        background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
     }
-    .stats {
+    .stats-bar {
         display: flex;
         justify-content: space-around;
-        gap: 10px;
-        margin: 10px 0;
         flex-wrap: wrap;
+        gap: 15px;
+        margin: 20px 0;
+        padding: 20px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
     }
-    .stat {
-        flex: 1;
-        min-width: 90px;
-        padding: 10px;
-        background: #1a1a1a;
-        border-radius: 8px;
+    .stat-box {
         text-align: center;
-        border: 1px solid #333;
+        padding: 15px;
+        background: rgba(0,0,0,0.3);
+        border-radius: 8px;
+        min-width: 150px;
     }
     .stat-label {
-        font-size: 0.7em;
+        font-size: 0.9em;
         color: #888;
         margin-bottom: 5px;
-        text-transform: uppercase;
     }
     .stat-value {
-        font-size: 1.2em;
+        font-size: 1.5em;
         font-weight: bold;
     }
-    .connection {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin: 10px 0;
-        font-size: 0.85em;
-    }
-    .conn-item {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-    .dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #333;
-        border: 2px solid #ff5555;
-    }
-    .dot.on { 
-        background: #55ff55;
-        border-color: #55ff55;
-        box-shadow: 0 0 8px #55ff55;
-    }
-    
     .fear { color: #ff5555; }
     .neutral { color: #ffaa00; }
     .greed { color: #55ff55; }
     
-    .trades-container {
-        margin-top: 15px;
-        padding-bottom: 20px;
+    table { 
+        width: 100%; 
+        border-collapse: collapse;
+        background: rgba(0,0,0,0.4);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
     }
-    .trade-item {
-        background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
-        border: 1px solid #333;
-        border-left: 4px solid #00d4ff;
-        border-radius: 8px;
-        padding: 12px;
-        margin-bottom: 10px;
+    th, td { 
+        border: 1px solid rgba(255,255,255,0.1); 
+        padding: 12px; 
+        text-align: center;
     }
-    .trade-item.new {
-        animation: slideIn 0.3s ease-out;
-        border-left-color: #55ff55;
+    th { 
+        background: rgba(123, 47, 247, 0.3);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85em;
+        letter-spacing: 1px;
     }
-    @keyframes slideIn {
-        from { opacity: 0; transform: translateX(-20px); }
-        to { opacity: 1; transform: translateX(0); }
-    }
-    .trade-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-    }
-    .trade-coin {
-        font-size: 1.2em;
-        font-weight: bold;
-        color: #00d4ff;
-    }
-    .trade-exchange {
-        padding: 4px 10px;
-        border-radius: 4px;
-        font-size: 0.75em;
-        font-weight: bold;
-        background: #333;
-        color: #fff;
-    }
-    .trade-exchange.binance { background: #f3ba2f; color: #000; }
-    .trade-exchange.coinbase { background: #0052ff; }
+    tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+    tr:hover { background: rgba(255,255,255,0.08); }
     
-    .trade-details {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-        font-size: 0.9em;
-    }
-    .trade-detail {
-        display: flex;
-        justify-content: space-between;
-    }
-    .trade-detail-label {
-        color: #888;
-    }
     .buy { color: #55ff55; font-weight: bold; }
     .sell { color: #ff5555; font-weight: bold; }
     
-    .loading {
-        text-align: center;
-        padding: 30px;
-        color: #888;
-    }
-    .error {
-        background: #331111;
-        border: 1px solid #ff5555;
-        color: #ff9999;
-        padding: 15px;
-        border-radius: 8px;
-        margin: 10px 0;
-        font-size: 0.9em;
-    }
-    
-    .refresh-btn {
-        display: block;
-        margin: 20px auto;
-        padding: 12px 24px;
-        background: #00d4ff;
-        color: #000;
-        border: none;
-        border-radius: 8px;
-        font-size: 1em;
+    .exchange-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.85em;
         font-weight: bold;
-        cursor: pointer;
     }
-    .refresh-btn:active {
-        transform: scale(0.95);
+    .binance { background: #f3ba2f; color: #000; }
+    .bybit { background: #f7a600; color: #000; }
+    .coinbase { background: #0052ff; color: #fff; }
+    
+    .connection-status {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        gap: 8px;
+        z-index: 1000;
+    }
+    .status-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #ff5555;
+        box-shadow: 0 0 10px currentColor;
+    }
+    .status-dot.connected { background: #55ff55; }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .new-trade {
+        animation: fadeIn 0.3s ease-out;
     }
 </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>🐋 Whale Tracker</h1>
+<div class="connection-status">
+    <div class="status-dot" id="binanceStatus" title="Binance"></div>
+    <div class="status-dot" id="bybitStatus" title="Bybit"></div>
+    <div class="status-dot" id="coinbaseStatus" title="Coinbase"></div>
+</div>
+
+<div class="container">
+    <h1>🐋 Whale Tracker PRO</h1>
     
-    <div class="stats">
-        <div class="stat">
-            <div class="stat-label">Fear & Greed</div>
-            <div class="stat-value" id="fearValue">--</div>
+    <div class="stats-bar">
+        <div class="stat-box">
+            <div class="stat-label">Fear & Greed Index</div>
+            <div class="stat-value" id="fearIndex">--</div>
         </div>
-        <div class="stat">
-            <div class="stat-label">İşlemler</div>
+        <div class="stat-box">
+            <div class="stat-label">Toplam İşlem</div>
             <div class="stat-value" id="totalTrades">0</div>
         </div>
-        <div class="stat">
-            <div class="stat-label">Aktif</div>
-            <div class="stat-value" id="activeTrades">0</div>
+        <div class="stat-box">
+            <div class="stat-label">Son 1 Saat</div>
+            <div class="stat-value" id="hourlyTrades">0</div>
         </div>
     </div>
-    
-    <div class="connection">
-        <div class="conn-item">
-            <div class="dot" id="binanceDot"></div>
-            <span>Binance</span>
-        </div>
-        <div class="conn-item">
-            <div class="dot" id="apiDot"></div>
-            <span>API</span>
-        </div>
-    </div>
+
+    <table id="tradeTable">
+        <thead>
+            <tr>
+                <th>Borsa</th>
+                <th>Coin</th>
+                <th>İşlem</th>
+                <th>Miktar</th>
+                <th>Fiyat ($)</th>
+                <th>Zaman</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 </div>
-
-<div id="errorContainer"></div>
-
-<div class="trades-container" id="tradesContainer">
-    <div class="loading">📡 Veriler yükleniyor...</div>
-</div>
-
-<button class="refresh-btn" id="refreshBtn">🔄 Yenile</button>
 
 <script>
-(function() {
-    'use strict';
+// -------------------- WHALE THRESHOLDS --------------------
+const WHALE_THRESHOLDS = {
+    'BTC': 5, 'ETH': 50, 'ADA': 50000, 'DOT': 5000, 'LINK': 5000,
+    'MATIC': 50000, 'AVAX': 2000, 'SOL': 300, 'DOGE': 500000,
+    'XRP': 50000, 'LTC': 1000, 'BCH': 500, 'ETC': 5000, 'TRX': 500000, 'EOS': 50000
+};
+
+// -------------------- STATS --------------------
+let totalTrades = 0;
+let hourlyTrades = 0;
+let hourlyTradesArray = [];
+
+function updateStats() {
+    document.getElementById('totalTrades').textContent = totalTrades;
+    document.getElementById('hourlyTrades').textContent = hourlyTrades;
+}
+
+setInterval(() => {
+    const oneHourAgo = Date.now() - 3600000;
+    hourlyTradesArray = hourlyTradesArray.filter(t => t > oneHourAgo);
+    hourlyTrades = hourlyTradesArray.length;
+    updateStats();
+}, 10000);
+
+// -------------------- TRADE TABLE --------------------
+const tbody = document.querySelector("#tradeTable tbody");
+
+function addTrade(coin, side, amount, price, exchange) {
+    const tr = document.createElement("tr");
+    tr.className = "new-trade";
     
-    // Config
-    var MAX_TRADES = 50;
-    var UPDATE_INTERVAL = 10000; // 10 saniye
-    var FEAR_UPDATE = 300000; // 5 dakika
+    const exchangeClass = exchange.toLowerCase();
+    const sideClass = side.toLowerCase().includes('buy') ? 'buy' : 'sell';
     
-    // State
-    var trades = [];
-    var totalCount = 0;
-    var lastUpdate = 0;
-    var updateTimer = null;
-    var fearTimer = null;
+    tr.innerHTML = `
+        <td><span class="exchange-badge ${exchangeClass}">${exchange}</span></td>
+        <td><strong>${coin}</strong></td>
+        <td class="${sideClass}">${side}</td>
+        <td>${parseFloat(amount).toFixed(2)}</td>
+        <td>$${parseFloat(price).toLocaleString()}</td>
+        <td>${new Date().toLocaleTimeString('tr-TR')}</td>
+    `;
     
-    // Elements
-    var tradesContainer = document.getElementById('tradesContainer');
-    var errorContainer = document.getElementById('errorContainer');
-    var totalTradesEl = document.getElementById('totalTrades');
-    var activeTradesEl = document.getElementById('activeTrades');
-    var fearValueEl = document.getElementById('fearValue');
-    var binanceDot = document.getElementById('binanceDot');
-    var apiDot = document.getElementById('apiDot');
-    var refreshBtn = document.getElementById('refreshBtn');
+    tbody.prepend(tr);
+    if(tbody.childElementCount > 100) tbody.removeChild(tbody.lastChild);
     
-    // Helper Functions
-    function showError(msg) {
-        errorContainer.innerHTML = '<div class="error">⚠️ ' + msg + '</div>';
-        setTimeout(function() {
-            errorContainer.innerHTML = '';
-        }, 5000);
-    }
+    totalTrades++;
+    hourlyTradesArray.push(Date.now());
+    hourlyTrades = hourlyTradesArray.length;
+    updateStats();
+}
+
+// -------------------- BINANCE WS --------------------
+let binanceWs;
+function connectBinance() {
+    binanceWs = new WebSocket("wss://stream.binance.com:9443/ws/!ticker@arr");
     
-    function updateUI() {
-        totalTradesEl.textContent = totalCount;
-        activeTradesEl.textContent = trades.length;
-        
-        tradesContainer.innerHTML = '';
-        
-        if (trades.length === 0) {
-            tradesContainer.innerHTML = '<div class="loading">📊 Yeni işlemler bekleniyor...</div>';
-            return;
-        }
-        
-        trades.forEach(function(trade, index) {
-            var div = document.createElement('div');
-            div.className = 'trade-item';
-            if (index === 0) div.className += ' new';
+    binanceWs.onopen = () => {
+        document.getElementById('binanceStatus').classList.add('connected');
+        console.log('Binance bağlandı');
+    };
+    
+    binanceWs.onmessage = (msg) => {
+        const data = JSON.parse(msg.data);
+        data.forEach(t => {
+            if (!t.s.endsWith('USDT')) return;
+            const coin = t.s.replace("USDT","");
+            const volume = parseFloat(t.v);
+            const price = parseFloat(t.c);
+            const volumeUSD = volume * price;
             
-            var sideClass = trade.side === 'BUY' ? 'buy' : 'sell';
-            var exchangeClass = trade.exchange.toLowerCase();
-            
-            div.innerHTML = 
-                '<div class="trade-header">' +
-                    '<span class="trade-coin">' + trade.coin + '</span>' +
-                    '<span class="trade-exchange ' + exchangeClass + '">' + trade.exchange + '</span>' +
-                '</div>' +
-                '<div class="trade-details">' +
-                    '<div class="trade-detail">' +
-                        '<span class="trade-detail-label">İşlem:</span>' +
-                        '<span class="' + sideClass + '">' + trade.side + '</span>' +
-                    '</div>' +
-                    '<div class="trade-detail">' +
-                        '<span class="trade-detail-label">Miktar:</span>' +
-                        '<span>' + trade.amount + '</span>' +
-                    '</div>' +
-                    '<div class="trade-detail">' +
-                        '<span class="trade-detail-label">Fiyat:</span>' +
-                        '<span>$' + trade.price + '</span>' +
-                    '</div>' +
-                    '<div class="trade-detail">' +
-                        '<span class="trade-detail-label">Zaman:</span>' +
-                        '<span>' + trade.time + '</span>' +
-                    '</div>' +
-                '</div>';
-            
-            tradesContainer.appendChild(div);
-        });
-    }
-    
-    function addTrade(coin, side, amount, price, exchange) {
-        var trade = {
-            coin: coin,
-            side: side,
-            amount: parseFloat(amount).toFixed(2),
-            price: parseFloat(price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
-            exchange: exchange,
-            time: new Date().toLocaleTimeString('tr-TR'),
-            timestamp: Date.now()
-        };
-        
-        trades.unshift(trade);
-        if (trades.length > MAX_TRADES) {
-            trades.pop();
-        }
-        
-        totalCount++;
-        updateUI();
-    }
-    
-    // Binance REST API ile veri çekme
-    function fetchBinanceData() {
-        var symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'DOGEUSDT', 'ADAUSDT', 'DOTUSDT', 'LINKUSDT', 'MATICUSDT', 'AVAXUSDT'];
-        
-        var url = 'https://api.binance.com/api/v3/ticker/24hr';
-        
-        fetch(url)
-            .then(function(response) {
-                if (!response.ok) throw new Error('Binance API error');
-                return response.json();
-            })
-            .then(function(data) {
-                binanceDot.classList.add('on');
-                apiDot.classList.add('on');
-                
-                var filtered = data.filter(function(ticker) {
-                    return symbols.indexOf(ticker.symbol) !== -1;
-                });
-                
-                filtered.forEach(function(ticker) {
-                    var volume = parseFloat(ticker.volume);
-                    var price = parseFloat(ticker.lastPrice);
-                    var priceChange = parseFloat(ticker.priceChangePercent);
-                    
-                    // Balina eşiği kontrolü
-                    var threshold = getThreshold(ticker.symbol);
-                    if (volume >= threshold) {
-                        var coin = ticker.symbol.replace('USDT', '');
-                        var side = priceChange >= 0 ? 'BUY' : 'SELL';
-                        
-                        // Sadece yeni veriyi ekle (son güncellemeden sonra)
-                        if (Date.now() - lastUpdate > UPDATE_INTERVAL - 1000) {
-                            addTrade(coin, side, volume, price, 'Binance');
-                        }
-                    }
-                });
-                
-                lastUpdate = Date.now();
-            })
-            .catch(function(error) {
-                console.error('Binance fetch error:', error);
-                binanceDot.classList.remove('on');
-                apiDot.classList.remove('on');
-                showError('Binance verileri çekilemedi. HTTPS kullandığınızdan emin olun.');
-            });
-    }
-    
-    function getThreshold(symbol) {
-        var thresholds = {
-            'BTCUSDT': 5, 'ETHUSDT': 50, 'SOLUSDT': 500,
-            'XRPUSDT': 50000, 'DOGEUSDT': 500000, 'ADAUSDT': 50000,
-            'DOTUSDT': 5000, 'LINKUSDT': 5000, 'MATICUSDT': 50000,
-            'AVAXUSDT': 2000
-        };
-        return thresholds[symbol] || 1000;
-    }
-    
-    // Fear & Greed Index
-    function fetchFearIndex() {
-        fetch('https://api.alternative.me/fng/?limit=1')
-            .then(function(response) {
-                if (!response.ok) throw new Error('Fear API error');
-                return response.json();
-            })
-            .then(function(data) {
-                if (data && data.data && data.data[0]) {
-                    var value = parseInt(data.data[0].value);
-                    var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
-                    var label = value < 25 ? 'Korku' : value < 45 ? 'Kaygı' : value < 55 ? 'Nötr' : value < 75 ? 'Açgözlü' : 'Çok Açgözlü';
-                    fearValueEl.innerHTML = '<span class="' + className + '">' + value + '</span><br><small style="font-size:0.7em">' + label + '</small>';
+            if(WHALE_THRESHOLDS[coin]) {
+                const threshold = WHALE_THRESHOLDS[coin] * price;
+                if(volumeUSD >= threshold * 1000) { // Büyük hacim için
+                    const side = parseFloat(t.p) > 0 ? "BUY" : "SELL";
+                    addTrade(coin, side, volume, price, "Binance");
                 }
-            })
-            .catch(function(error) {
-                console.error('Fear index error:', error);
-                fearValueEl.innerHTML = '<span style="color:#888">--</span>';
-            });
-    }
-    
-    // Manuel yenileme
-    refreshBtn.addEventListener('click', function() {
-        refreshBtn.textContent = '🔄 Yenileniyor...';
-        refreshBtn.disabled = true;
-        
-        fetchBinanceData();
-        fetchFearIndex();
-        
-        setTimeout(function() {
-            refreshBtn.textContent = '🔄 Yenile';
-            refreshBtn.disabled = false;
-        }, 2000);
-    });
-    
-    // Otomatik temizlik
-    function cleanOldTrades() {
-        var tenMinutesAgo = Date.now() - 600000;
-        trades = trades.filter(function(t) {
-            return t.timestamp > tenMinutesAgo;
+            }
         });
-        updateUI();
-    }
+    };
     
-    // Initialize
-    function init() {
-        // İlk yükleme
-        fetchBinanceData();
-        fetchFearIndex();
-        
-        // Periyodik güncellemeler
-        updateTimer = setInterval(fetchBinanceData, UPDATE_INTERVAL);
-        fearTimer = setInterval(fetchFearIndex, FEAR_UPDATE);
-        
-        // Eski işlemleri temizle
-        setInterval(cleanOldTrades, 60000);
-        
-        console.log('Whale Tracker başlatıldı');
-        console.log('HTTPS kullandığınızdan emin olun!');
-    }
+    binanceWs.onerror = () => {
+        document.getElementById('binanceStatus').classList.remove('connected');
+    };
     
-    // Sayfa görünür olduğunda yeniden başlat
-    document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) {
-            fetchBinanceData();
+    binanceWs.onclose = () => {
+        document.getElementById('binanceStatus').classList.remove('connected');
+        setTimeout(connectBinance, 5000);
+    };
+}
+
+// -------------------- COINBASE WS --------------------
+let coinbaseWs;
+function connectCoinbase() {
+    coinbaseWs = new WebSocket("wss://ws-feed.exchange.coinbase.com");
+    
+    coinbaseWs.onopen = () => {
+        document.getElementById('coinbaseStatus').classList.add('connected');
+        coinbaseWs.send(JSON.stringify({
+            type: "subscribe",
+            product_ids: ["BTC-USD", "ETH-USD", "SOL-USD", "DOGE-USD", "XRP-USD"],
+            channels: ["ticker"]
+        }));
+        console.log('Coinbase bağlandı');
+    };
+    
+    coinbaseWs.onmessage = (msg) => {
+        const data = JSON.parse(msg.data);
+        if(data.type === 'ticker' && data.product_id) {
+            const coin = data.product_id.split('-')[0];
+            const price = parseFloat(data.price);
+            const volume24h = parseFloat(data.volume_24h);
+            
+            if(WHALE_THRESHOLDS[coin] && volume24h > WHALE_THRESHOLDS[coin] * 100) {
+                const side = parseFloat(data.best_bid) < price ? "BUY" : "SELL";
+                addTrade(coin, side, volume24h / 1000, price, "Coinbase");
+            }
         }
-    });
+    };
     
-    // Başlat
-    init();
+    coinbaseWs.onerror = () => {
+        document.getElementById('coinbaseStatus').classList.remove('connected');
+    };
     
-})();
+    coinbaseWs.onclose = () => {
+        document.getElementById('coinbaseStatus').classList.remove('connected');
+        setTimeout(connectCoinbase, 5000);
+    };
+}
+
+// -------------------- FEAR & GREED INDEX --------------------
+async function fetchFearIndex() {
+    try {
+        const response = await fetch("https://api.alternative.me/fng/?limit=1");
+        const data = await response.json();
+        if(data?.data?.[0]) {
+            const index = parseInt(data.data[0].value);
+            const valueClass = index < 25 ? "fear" : index > 75 ? "greed" : "neutral";
+            const label = index < 25 ? "Aşırı Korku" : index < 45 ? "Korku" : index < 55 ? "Nötr" : index < 75 ? "Açgözlülük" : "Aşırı Açgözlülük";
+            document.getElementById('fearIndex').innerHTML = `<span class="${valueClass}">${index}</span> <small>${label}</small>`;
+        }
+    } catch(err) {
+        console.error("Fear Index çekilemedi:", err);
+        document.getElementById('fearIndex').textContent = "Hata";
+    }
+}
+
+// -------------------- INIT --------------------
+connectBinance();
+connectCoinbase();
+fetchFearIndex();
+setInterval(fetchFearIndex, 300000); // 5 dakikada bir
+
+// Bybit'i kaldırdık çünkü WebSocket API'si değişti ve güncel dokümantasyon gerekli
 </script>
 
 </body>
