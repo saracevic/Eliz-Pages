@@ -131,19 +131,19 @@
     .dot { width: 6px; height: 6px; border-radius: 50%; background: #475569; transition: 0.3s; }
     .dot.active { background: var(--green); box-shadow: 0 0 8px var(--green); }
 
-    /* FIBO PANEL - Sağ Üst Köşe */
-    .fibo-container {
+    /* RIGHT SIDEBAR - Fibo ve Hacim Panelleri */
+    .right-sidebar {
         position: fixed;
         top: 10px;
         right: 10px;
-        width: 280px;
+        width: 600px;
         z-index: 1000;
         display: flex;
         flex-direction: column;
         gap: 10px;
     }
 
-    .fibo-panel {
+    .sidebar-panel {
         background: var(--card-bg);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
@@ -155,7 +155,7 @@
         overflow-y: auto;
     }
 
-    .fibo-header {
+    .panel-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -164,7 +164,7 @@
         border-bottom: 1px solid var(--border);
     }
 
-    .fibo-title {
+    .panel-title {
         font-size: 11px;
         font-weight: 700;
         color: var(--text);
@@ -173,7 +173,7 @@
         gap: 4px;
     }
 
-    .fibo-refresh {
+    .panel-refresh {
         background: rgba(59, 130, 246, 0.2);
         border: 1px solid rgba(59, 130, 246, 0.4);
         color: var(--blue);
@@ -184,24 +184,48 @@
         transition: 0.2s;
     }
 
-    .fibo-refresh:hover {
+    .panel-refresh:hover {
         background: rgba(59, 130, 246, 0.3);
     }
 
-    .fibo-refresh.loading {
+    .panel-refresh.loading {
         opacity: 0.6;
         pointer-events: none;
+    }
+
+    /* FIBO GRID */
+    .fibo-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .fibo-section {
+        background: rgba(0,0,0,0.2);
+        border-radius: 6px;
+        padding: 6px;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .fibo-section-title {
+        font-size: 9px;
+        color: var(--text-dim);
+        text-align: center;
+        margin-bottom: 4px;
+        font-weight: 600;
+        padding-bottom: 2px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
     .fibo-coin {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 4px 0;
+        padding: 3px 0;
         border-bottom: 1px solid rgba(255,255,255,0.03);
         font-family: 'JetBrains Mono', monospace;
-        font-size: 10px;
-        min-height: 20px;
+        font-size: 9px;
+        min-height: 18px;
     }
 
     .fibo-coin:last-child {
@@ -211,48 +235,50 @@
     .fibo-symbol {
         font-weight: 600;
         color: var(--text);
-        font-size: 10px;
-        min-width: 40px;
+        font-size: 9px;
+        min-width: 35px;
     }
 
     .fibo-details {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 4px;
         flex-wrap: nowrap;
     }
 
     .fibo-percent {
         font-weight: 700;
-        font-size: 9px;
-        min-width: 35px;
+        font-size: 8px;
+        min-width: 30px;
         text-align: right;
     }
 
     .fibo-position {
-        font-size: 8px;
-        padding: 1px 3px;
+        font-size: 7px;
+        padding: 1px 2px;
         border-radius: 2px;
         font-weight: 600;
-        min-width: 45px;
+        min-width: 40px;
         text-align: center;
     }
 
     .fibo-position.support {
         background: rgba(16, 185, 129, 0.2);
         color: var(--green);
+        border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
     .fibo-position.resistance {
         background: rgba(239, 68, 68, 0.2);
         color: var(--red);
+        border: 1px solid rgba(239, 68, 68, 0.3);
     }
 
     .fibo-type {
-        font-size: 7px;
+        font-size: 6px;
         color: var(--text-dim);
         background: rgba(59, 130, 246, 0.1);
-        padding: 1px 3px;
+        padding: 1px 2px;
         border-radius: 2px;
         border: 1px solid rgba(59, 130, 246, 0.3);
     }
@@ -264,24 +290,79 @@
     .fibo-loading {
         text-align: center;
         color: var(--text-dim);
-        font-size: 10px;
-        padding: 10px 0;
+        font-size: 9px;
+        padding: 8px 0;
+        grid-column: 1 / -1;
     }
 
     .fibo-error {
         text-align: center;
         color: var(--red);
-        font-size: 10px;
-        padding: 8px 0;
+        font-size: 9px;
+        padding: 6px 0;
+        grid-column: 1 / -1;
     }
 
     .fibo-stats {
-        font-size: 9px;
+        font-size: 8px;
         color: var(--text-dim);
         text-align: center;
-        margin-top: 6px;
-        padding-top: 6px;
+        margin-top: 4px;
+        padding-top: 4px;
         border-top: 1px solid var(--border);
+        grid-column: 1 / -1;
+    }
+
+    /* VOLUME TABLE */
+    .volume-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 9px;
+    }
+
+    .volume-table th {
+        background: rgba(0,0,0,0.3);
+        padding: 4px 6px;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-dim);
+        border-bottom: 1px solid var(--border);
+        font-size: 8px;
+    }
+
+    .volume-table td {
+        padding: 3px 6px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        color: var(--text);
+    }
+
+    .volume-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .volume-coin {
+        font-family: 'Inter';
+        font-weight: 600;
+        color: #fff;
+        font-size: 9px;
+    }
+
+    .volume-positive {
+        color: var(--green);
+        font-weight: 700;
+    }
+
+    .volume-negative {
+        color: var(--red);
+        font-weight: 700;
+    }
+
+    .volume-loading {
+        text-align: center;
+        color: var(--text-dim);
+        font-size: 9px;
+        padding: 20px 0;
     }
 
     /* CONTROLS */
@@ -319,7 +400,7 @@
     .toast-container {
         position: fixed;
         top: 10px;
-        right: 300px; /* Fibo panel için yer aç */
+        right: 620px; /* Sidebar için yer aç */
         z-index: 9999;
         display: flex;
         flex-direction: column;
@@ -352,7 +433,7 @@
 
     /* Responsive */
     @media (max-width: 1200px) {
-        .fibo-container {
+        .right-sidebar {
             position: relative;
             width: 100%;
             max-width: 800px;
@@ -371,26 +452,43 @@
             gap: 8px;
             text-align: center;
         }
+        .fibo-grid {
+            grid-template-columns: 1fr;
+        }
     }
 
 </style>
 </head>
 <body>
 
-<!-- Fibonacci Panel -->
-<div class="fibo-container">
-    <div class="fibo-panel">
-        <div class="fibo-header">
-            <div class="fibo-title">
+<!-- Right Sidebar - Fibo ve Hacim Panelleri -->
+<div class="right-sidebar">
+    <!-- Fibo Panel -->
+    <div class="sidebar-panel">
+        <div class="panel-header">
+            <div class="panel-title">
                 <span>📊 FIBO 0.72</span>
                 <span style="color:var(--text-dim); font-size:9px;">1 Aylık</span>
             </div>
-            <div class="fibo-refresh" id="fiboRefresh">🔄</div>
+            <div class="panel-refresh" id="fiboRefresh">🔄</div>
         </div>
-        <div id="fiboContent">
+        <div class="fibo-grid" id="fiboContent">
             <div class="fibo-loading">100 coin analiz ediliyor...</div>
         </div>
         <div class="fibo-stats" id="fiboStats"></div>
+    </div>
+
+    <!-- Hacim Panel -->
+    <div class="sidebar-panel">
+        <div class="panel-header">
+            <div class="panel-title">
+                <span>📈 En Çok Hacim</span>
+                <span style="color:var(--text-dim); font-size:9px;">Son 1 Saat</span>
+            </div>
+        </div>
+        <div id="volumeContent">
+            <div class="volume-loading">Hacim verileri bekleniyor...</div>
+        </div>
     </div>
 </div>
 
@@ -425,14 +523,6 @@
         <div class="btn active" id="btnSound">🔔 Ses</div>
         <div class="btn active" id="btnVib">📳 Titreşim</div>
         <div class="btn active" id="btnNotify">💬 Bildirim</div>
-    </div>
-
-    <div class="section-title">En Çok Hacim (Son 1 Saat)</div>
-    <div class="table-card">
-        <table>
-            <thead><tr><th>Coin</th><th>Alış</th><th>Satış</th><th>Net ($)</th></tr></thead>
-            <tbody id="summaryBody"></tbody>
-        </table>
     </div>
 
     <div class="section-title">Canlı Akış (Whales Only)</div>
@@ -675,44 +765,65 @@
             if (topNormal.length > 0 || topReverse.length > 0) {
                 let html = '';
                 
-                // Normal Fibo Coinler
-                topNormal.forEach(coin => {
-                    let percentClass = 'far';
-                    if (coin.distancePercent <= 2) percentClass = 'close';
-                    else if (coin.distancePercent <= 5) percentClass = 'medium';
-                    
-                    html += `
-                        <div class="fibo-coin">
-                            <span class="fibo-symbol">${coin.symbol}</span>
-                            <div class="fibo-details">
-                                <span class="fibo-percent ${percentClass}">%${coin.distancePercent.toFixed(2)}</span>
-                                <span class="fibo-position ${coin.position}">
-                                    ${coin.position === 'support' ? 'DESTEK' : 'DİRENÇ'}
-                                </span>
+                // Normal Fibo Bölümü
+                html += `
+                    <div class="fibo-section">
+                        <div class="fibo-section-title">NORMAL FIBO</div>
+                `;
+                
+                if (topNormal.length > 0) {
+                    topNormal.forEach(coin => {
+                        let percentClass = 'far';
+                        if (coin.distancePercent <= 2) percentClass = 'close';
+                        else if (coin.distancePercent <= 5) percentClass = 'medium';
+                        
+                        html += `
+                            <div class="fibo-coin">
+                                <span class="fibo-symbol">${coin.symbol}</span>
+                                <div class="fibo-details">
+                                    <span class="fibo-percent ${percentClass}">%${coin.distancePercent.toFixed(2)}</span>
+                                    <span class="fibo-position ${coin.position}">
+                                        ${coin.position === 'support' ? 'DESTEK' : 'DİRENÇ'}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    `;
-                });
-
-                // Reverse Fibo Coinler
-                topReverse.forEach(coin => {
-                    let percentClass = 'far';
-                    if (coin.distancePercent <= 2) percentClass = 'close';
-                    else if (coin.distancePercent <= 5) percentClass = 'medium';
-                    
-                    html += `
-                        <div class="fibo-coin">
-                            <span class="fibo-symbol">${coin.symbol}</span>
-                            <div class="fibo-details">
-                                <span class="fibo-percent ${percentClass}">%${coin.distancePercent.toFixed(2)}</span>
-                                <span class="fibo-position ${coin.position}">
-                                    ${coin.position === 'support' ? 'DESTEK' : 'DİRENÇ'}
-                                </span>
-                                <span class="fibo-type">KARŞIT</span>
+                        `;
+                    });
+                } else {
+                    html += `<div style="text-align:center; color:var(--text-dim); font-size:8px; padding:6px 0;">Veri yok</div>`;
+                }
+                
+                html += `</div>`;
+                
+                // Reverse Fibo Bölümü
+                html += `
+                    <div class="fibo-section">
+                        <div class="fibo-section-title">KARŞIT FIBO</div>
+                `;
+                
+                if (topReverse.length > 0) {
+                    topReverse.forEach(coin => {
+                        let percentClass = 'far';
+                        if (coin.distancePercent <= 2) percentClass = 'close';
+                        else if (coin.distancePercent <= 5) percentClass = 'medium';
+                        
+                        html += `
+                            <div class="fibo-coin">
+                                <span class="fibo-symbol">${coin.symbol}</span>
+                                <div class="fibo-details">
+                                    <span class="fibo-percent ${percentClass}">%${coin.distancePercent.toFixed(2)}</span>
+                                    <span class="fibo-position ${coin.position}">
+                                        ${coin.position === 'support' ? 'DESTEK' : 'DİRENÇ'}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    `;
-                });
+                        `;
+                    });
+                } else {
+                    html += `<div style="text-align:center; color:var(--text-dim); font-size:8px; padding:6px 0;">Veri yok</div>`;
+                }
+                
+                html += `</div>`;
                 
                 fiboContent.innerHTML = html;
                 fiboStats.innerHTML = `${analyzedCount} coin tarandı • ${errorCount} hata`;
@@ -732,6 +843,36 @@
     // Fibonacci panelini yenile
     document.getElementById('fiboRefresh').addEventListener('click', fetchFiboData);
 
+    // --- HACİM TABLOSU GÜNCELLEME ---
+    function updateVolumeTable() {
+        const volumeContent = document.getElementById('volumeContent');
+        
+        if (Object.keys(summary).length === 0) {
+            volumeContent.innerHTML = '<div class="volume-loading">İşlem bekleniyor...</div>';
+            return;
+        }
+
+        const sorted = Object.entries(summary)
+            .sort((a, b) => Math.abs(b[1].net) - Math.abs(a[1].net))
+            .slice(0, 8);
+
+        let html = '<table class="volume-table">';
+        html += '<thead><tr><th>Coin</th><th>Net ($)</th></tr></thead><tbody>';
+        
+        sorted.forEach(([sym, data]) => {
+            const netColor = data.net > 0 ? 'volume-positive' : 'volume-negative';
+            const netValue = data.net > 0 ? `+$${fmt(data.net)}` : `-$${fmt(Math.abs(data.net))}`;
+            
+            html += `<tr>
+                <td class="volume-coin">${sym}</td>
+                <td class="${netColor}">${netValue}</td>
+            </tr>`;
+        });
+        
+        html += '</tbody></table>';
+        volumeContent.innerHTML = html;
+    }
+
     // --- STATE ---
     let trades = [];
     let summary = {};
@@ -742,7 +883,6 @@
     // DOM Cache
     const els = {
         trades: document.getElementById('tradesBody'),
-        summary: document.getElementById('summaryBody'),
         toasts: document.getElementById('toastContainer'),
         wsDot: document.getElementById('wsDot')
     };
@@ -871,22 +1011,8 @@
         });
         els.trades.innerHTML = html;
 
-        // 2. Summary
-        const sorted = Object.entries(summary)
-            .sort((a,b) => Math.abs(b[1].net) - Math.abs(a[1].net))
-            .slice(0, 8);
-        
-        let sumHtml = '';
-        sorted.forEach(([sym, data]) => {
-            const netColor = data.net > 0 ? 'text-green' : 'text-red';
-            sumHtml += `<tr>
-                <td class="col-coin">${sym}</td>
-                <td class="text-green">${fmt(data.buy)}</td>
-                <td class="text-red">${fmt(data.sell)}</td>
-                <td class="${netColor}" style="font-weight:700">$${fmt(data.net)}</td>
-            </tr>`;
-        });
-        els.summary.innerHTML = sumHtml;
+        // 2. Hacim tablosunu güncelle
+        updateVolumeTable();
     }
 
     // --- SOCKET BAĞLANTISI ---
