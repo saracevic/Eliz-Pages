@@ -41,65 +41,6 @@
 
     .container { max-width: 800px; margin: 0 auto; padding: 10px; }
 
-    /* TOP BAR - Nasdaq, Fear Index, TR Saati */
-    .top-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: var(--card-bg);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 10px 15px;
-        margin-bottom: 15px;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
-    }
-
-    .nasdaq-info {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .nasdaq-status {
-        padding: 3px 8px;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 10px;
-    }
-
-    .nasdaq-status.open { background: var(--green); color: #000; }
-    .nasdaq-status.closed { background: var(--red); color: #fff; }
-    .nasdaq-status.weekend { background: #f59e0b; color: #000; }
-
-    .fear-index {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 4px 10px;
-        border-radius: 8px;
-        background: rgba(0,0,0,0.3);
-        border: 1px solid var(--border);
-    }
-
-    .fear-value {
-        font-weight: 700;
-        font-size: 12px;
-    }
-
-    .fear-value.extreme-fear { color: var(--red); }
-    .fear-value.fear { color: #f59e0b; }
-    .fear-value.neutral { color: #94a3b8; }
-    .fear-value.greed { color: #10b981; }
-    .fear-value.extreme-greed { color: #22c55e; }
-
-    .tr-time {
-        color: var(--text);
-        font-weight: 600;
-    }
-
     /* HEADER */
     .header {
         background: var(--card-bg);
@@ -141,6 +82,71 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
+    }
+
+    /* TOP INFO BAR - Fibo Panelinin Üstünde */
+    .top-info-bar {
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 8px 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+    }
+
+    .market-status {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .nasdaq-info {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .nasdaq-status {
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 9px;
+    }
+
+    .nasdaq-status.open { background: var(--green); color: #000; }
+    .nasdaq-status.closed { background: var(--red); color: #fff; }
+    .nasdaq-status.weekend { background: #f59e0b; color: #000; }
+
+    .fear-greed {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 2px 8px;
+        border-radius: 6px;
+        background: rgba(0,0,0,0.3);
+        border: 1px solid var(--border);
+    }
+
+    .fear-value {
+        font-weight: 700;
+        font-size: 11px;
+    }
+
+    .fear-value.extreme-fear { color: var(--red); }
+    .fear-value.fear { color: #f59e0b; }
+    .fear-value.neutral { color: #94a3b8; }
+    .fear-value.greed { color: #10b981; }
+    .fear-value.extreme-greed { color: #22c55e; }
+
+    .tr-time {
+        color: var(--text);
+        font-weight: 600;
+        font-size: 11px;
     }
 
     .sidebar-panel {
@@ -447,7 +453,7 @@
     }
 
     @media (max-width: 768px) {
-        .top-bar {
+        .top-info-bar {
             flex-direction: column;
             gap: 8px;
             text-align: center;
@@ -463,6 +469,22 @@
 
 <!-- Right Sidebar - Fibo ve Hacim Panelleri -->
 <div class="right-sidebar">
+    <!-- Top Info Bar - Fibo Panelinin Üstünde -->
+    <div class="top-info-bar">
+        <div class="market-status">
+            <div class="nasdaq-info">
+                <span>NASDAQ:</span>
+                <div class="nasdaq-status" id="nasdaqStatus">Yükleniyor...</div>
+                <span id="nasdaqCountdown"></span>
+            </div>
+            <div class="fear-greed">
+                <span>Fear & Greed:</span>
+                <span class="fear-value" id="fearIndex">-</span>
+            </div>
+        </div>
+        <div class="tr-time" id="trTime">--:--:--</div>
+    </div>
+
     <!-- Fibo Panel -->
     <div class="sidebar-panel">
         <div class="panel-header">
@@ -495,27 +517,14 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <div class="container">
-    <!-- TOP BAR: Nasdaq, Fear Index, TR Saati -->
-    <div class="top-bar" id="topBar">
-        <div class="nasdaq-info">
-            <span>NASDAQ:</span>
-            <div class="nasdaq-status" id="nasdaqStatus">Yükleniyor...</div>
-            <span id="nasdaqCountdown"></span>
-        </div>
-        <div class="fear-index">
-            <span>Korku & Açgözlülük:</span>
-            <span class="fear-value" id="fearIndex">-</span>
-        </div>
-        <div class="tr-time" id="trTime">--:--:--</div>
-    </div>
-
     <div class="header">
         <div>
             <div class="brand">WHALE HUNTER</div>
             <div style="font-size:10px; color: var(--text-dim); margin-top:2px;">Threshold: >$200.000</div>
         </div>
         <div class="status-badge">
-            <div class="dot" id="wsDot"></div> LIVE
+            <div class="dot" id="wsDot"></div>
+            <!-- LIVE yazısı kaldırıldı -->
         </div>
     </div>
 
@@ -560,7 +569,7 @@
         'kncusdt','ksmusdt','litusdt','loomusdt','lptusdt','lunausdt','manskusdt','mirust'
     ].slice(0, 100); // İlk 100 coin
 
-    // --- TOP BAR SİSTEMİ ---
+    // --- TOP INFO BAR SİSTEMİ ---
     
     // TR Saati Güncelleme
     function updateTRTime() {
@@ -588,9 +597,9 @@
         // Açılış: 09:30 PST (19:30 TR) - Kapanış: 16:00 PST (02:00 TR ertesi gün)
         let trHour = hour;
         
-        // Haftasonu kontrolü
+        // Haftasonu kontrolü - Sadece "Tatil" yaz
         if (day === 0 || day === 6) {
-            statusEl.textContent = 'HAFTA SONU TATİL';
+            statusEl.textContent = 'TATİL';
             statusEl.className = 'nasdaq-status weekend';
             countdownEl.textContent = '';
             return;
