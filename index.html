@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Whale Tracker PRO</title>
+<title>Whale Tracker PRO - CANLI</title>
 <style>
     * { 
         box-sizing: border-box; 
@@ -31,8 +31,27 @@
     }
     h1 { 
         font-size: 1.5em;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
         color: #00d4ff;
+    }
+    .live-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.8em;
+        color: #55ff55;
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    .live-dot {
+        width: 8px;
+        height: 8px;
+        background: #55ff55;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #55ff55;
     }
     .stats {
         display: flex;
@@ -89,65 +108,6 @@
     .neutral { color: #ffaa00; }
     .greed { color: #55ff55; }
     
-    .trades-container {
-        margin-top: 15px;
-        padding-bottom: 10px;
-    }
-    .trade-item {
-        background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
-        border: 1px solid #333;
-        border-left: 4px solid #00d4ff;
-        border-radius: 8px;
-        padding: 12px;
-        margin-bottom: 10px;
-    }
-    .trade-item.new {
-        animation: slideIn 0.3s ease-out;
-        border-left-color: #55ff55;
-    }
-    @keyframes slideIn {
-        from { opacity: 0; transform: translateX(-20px); }
-        to { opacity: 1; transform: translateX(0); }
-    }
-    .trade-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-    }
-    .trade-coin {
-        font-size: 1.2em;
-        font-weight: bold;
-        color: #00d4ff;
-    }
-    .trade-exchange {
-        padding: 4px 10px;
-        border-radius: 4px;
-        font-size: 0.75em;
-        font-weight: bold;
-        background: #333;
-        color: #fff;
-    }
-    .trade-exchange.binance { background: #f3ba2f; color: #000; }
-    .trade-exchange.coinbase { background: #0052ff; }
-    
-    .trade-details {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-        font-size: 0.9em;
-    }
-    .trade-detail {
-        display: flex;
-        justify-content: space-between;
-    }
-    .trade-detail-label {
-        color: #888;
-    }
-    .buy { color: #55ff55; font-weight: bold; }
-    .sell { color: #ff5555; font-weight: bold; }
-    
-    /* TOP 5 STYLES */
     .top-section {
         margin-top: 20px;
         display: grid;
@@ -211,42 +171,77 @@
     .top-total-value.buy { color: #55ff55; }
     .top-total-value.sell { color: #ff5555; }
     
+    .trades-container {
+        margin-top: 15px;
+        padding-bottom: 10px;
+    }
+    .trade-item {
+        background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+        border: 1px solid #333;
+        border-left: 4px solid #00d4ff;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+    }
+    .trade-item.new {
+        animation: slideIn 0.3s ease-out;
+        border-left-color: #55ff55;
+    }
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    .trade-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .trade-coin {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #00d4ff;
+    }
+    .trade-exchange {
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 0.75em;
+        font-weight: bold;
+        background: #f3ba2f;
+        color: #000;
+    }
+    
+    .trade-details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        font-size: 0.9em;
+    }
+    .trade-detail {
+        display: flex;
+        justify-content: space-between;
+    }
+    .trade-detail-label {
+        color: #888;
+    }
+    .buy { color: #55ff55; font-weight: bold; }
+    .sell { color: #ff5555; font-weight: bold; }
+    
     .loading {
         text-align: center;
         padding: 30px;
         color: #888;
-    }
-    .error {
-        background: #331111;
-        border: 1px solid #ff5555;
-        color: #ff9999;
-        padding: 15px;
-        border-radius: 8px;
-        margin: 10px 0;
-        font-size: 0.9em;
-    }
-    
-    .refresh-btn {
-        display: block;
-        margin: 20px auto;
-        padding: 12px 24px;
-        background: #00d4ff;
-        color: #000;
-        border: none;
-        border-radius: 8px;
-        font-size: 1em;
-        font-weight: bold;
-        cursor: pointer;
-    }
-    .refresh-btn:active {
-        transform: scale(0.95);
     }
 </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>🐋 Whale Tracker</h1>
+    <h1>🐋 Whale Tracker PRO</h1>
+    <div class="live-indicator">
+        <div class="live-dot"></div>
+        <span>CANLI YAYIN</span>
+    </div>
     
     <div class="stats">
         <div class="stat">
@@ -265,17 +260,15 @@
     
     <div class="connection">
         <div class="conn-item">
-            <div class="dot" id="binanceDot"></div>
-            <span>Binance</span>
+            <div class="dot" id="wsDot"></div>
+            <span>WebSocket</span>
         </div>
         <div class="conn-item">
             <div class="dot" id="apiDot"></div>
-            <span>API</span>
+            <span>Binance</span>
         </div>
     </div>
 </div>
-
-<div id="errorContainer"></div>
 
 <div class="top-section">
     <div class="top-box buy-box">
@@ -298,10 +291,8 @@
 </div>
 
 <div class="trades-container" id="tradesContainer">
-    <div class="loading">📡 Veriler yükleniyor...</div>
+    <div class="loading">📡 Canlı verilere bağlanıyor...</div>
 </div>
-
-<button class="refresh-btn" id="refreshBtn">🔄 Yenile</button>
 
 <script>
 (function() {
@@ -309,36 +300,41 @@
     
     // Config
     var MAX_TRADES = 50;
-    var UPDATE_INTERVAL = 10000;
-    var FEAR_UPDATE = 300000;
-    var FOUR_HOURS = 14400000; // 4 saat
+    var FOUR_HOURS = 14400000;
+    var WHALE_THRESHOLDS = {
+        'btcusdt': 2,
+        'ethusdt': 20,
+        'solusdt': 200,
+        'xrpusdt': 10000,
+        'dogeusdt': 200000,
+        'adausdt': 20000,
+        'dotusdt': 2000,
+        'linkusdt': 2000,
+        'maticusdt': 20000,
+        'avaxusdt': 1000,
+        'ltcusdt': 500,
+        'bchusdt': 300
+    };
     
     // State
     var trades = [];
     var totalCount = 0;
-    var lastUpdate = 0;
-    var updateTimer = null;
-    var fearTimer = null;
-    
-    // Top 5 tracking
     var buyVolumes = {};
     var sellVolumes = {};
+    var websockets = [];
     
     // Elements
     var tradesContainer = document.getElementById('tradesContainer');
-    var errorContainer = document.getElementById('errorContainer');
     var totalTradesEl = document.getElementById('totalTrades');
     var hourlyTradesEl = document.getElementById('hourlyTrades');
     var fearValueEl = document.getElementById('fearValue');
-    var binanceDot = document.getElementById('binanceDot');
+    var wsDot = document.getElementById('wsDot');
     var apiDot = document.getElementById('apiDot');
-    var refreshBtn = document.getElementById('refreshBtn');
     var topBuyList = document.getElementById('topBuyList');
     var topSellList = document.getElementById('topSellList');
     var totalBuyEl = document.getElementById('totalBuy');
     var totalSellEl = document.getElementById('totalSell');
     
-    // Helper: Format number
     function formatNumber(num) {
         return Number(num).toLocaleString('tr-TR', {
             minimumFractionDigits: 2,
@@ -346,15 +342,7 @@
         });
     }
     
-    function showError(msg) {
-        errorContainer.innerHTML = '<div class="error">⚠️ ' + msg + '</div>';
-        setTimeout(function() {
-            errorContainer.innerHTML = '';
-        }, 5000);
-    }
-    
     function updateTopLists() {
-        // BUY TOP 5
         var buyArray = Object.keys(buyVolumes).map(function(coin) {
             return { coin: coin, amount: buyVolumes[coin] };
         });
@@ -370,10 +358,9 @@
                 '<span class="top-amount">' + formatNumber(item.amount) + '</span>' +
                 '</div>';
         });
-        topBuyList.innerHTML = buyHTML || '<div class="top-item" style="justify-content:center;color:#666;">Henüz veri yok</div>';
+        topBuyList.innerHTML = buyHTML || '<div class="top-item" style="justify-content:center;color:#666;">Veri bekleniyor...</div>';
         totalBuyEl.textContent = formatNumber(buyTotal);
         
-        // SELL TOP 5
         var sellArray = Object.keys(sellVolumes).map(function(coin) {
             return { coin: coin, amount: sellVolumes[coin] };
         });
@@ -389,14 +376,13 @@
                 '<span class="top-amount">' + formatNumber(item.amount) + '</span>' +
                 '</div>';
         });
-        topSellList.innerHTML = sellHTML || '<div class="top-item" style="justify-content:center;color:#666;">Henüz veri yok</div>';
+        topSellList.innerHTML = sellHTML || '<div class="top-item" style="justify-content:center;color:#666;">Veri bekleniyor...</div>';
         totalSellEl.textContent = formatNumber(sellTotal);
     }
     
     function updateUI() {
         totalTradesEl.textContent = totalCount;
         
-        // Son 4 saat içindeki işlemleri say
         var fourHoursAgo = Date.now() - FOUR_HOURS;
         var recentTrades = trades.filter(function(t) {
             return t.timestamp > fourHoursAgo;
@@ -406,7 +392,7 @@
         tradesContainer.innerHTML = '';
         
         if (trades.length === 0) {
-            tradesContainer.innerHTML = '<div class="loading">📊 Yeni işlemler bekleniyor...</div>';
+            tradesContainer.innerHTML = '<div class="loading">📊 Balina işlemleri bekleniyor...</div>';
             return;
         }
         
@@ -416,12 +402,11 @@
             if (index === 0) div.className += ' new';
             
             var sideClass = trade.side === 'BUY' ? 'buy' : 'sell';
-            var exchangeClass = trade.exchange.toLowerCase();
             
             div.innerHTML = 
                 '<div class="trade-header">' +
                     '<span class="trade-coin">' + trade.coin + '</span>' +
-                    '<span class="trade-exchange ' + exchangeClass + '">' + trade.exchange + '</span>' +
+                    '<span class="trade-exchange">Binance</span>' +
                 '</div>' +
                 '<div class="trade-details">' +
                     '<div class="trade-detail">' +
@@ -446,7 +431,7 @@
         });
     }
     
-    function addTrade(coin, side, amount, price, exchange) {
+    function addTrade(coin, side, amount, price) {
         var numAmount = parseFloat(amount);
         
         var trade = {
@@ -454,7 +439,6 @@
             side: side,
             amount: formatNumber(numAmount),
             price: formatNumber(parseFloat(price)),
-            exchange: exchange,
             time: new Date().toLocaleTimeString('tr-TR'),
             timestamp: Date.now()
         };
@@ -464,7 +448,6 @@
             trades.pop();
         }
         
-        // Top 5 tracking
         if (side === 'BUY') {
             buyVolumes[coin] = (buyVolumes[coin] || 0) + numAmount;
         } else {
@@ -476,58 +459,48 @@
         updateTopLists();
     }
     
-    function getThreshold(symbol) {
-        var thresholds = {
-            'BTCUSDT': 5, 'ETHUSDT': 50, 'SOLUSDT': 500,
-            'XRPUSDT': 50000, 'DOGEUSDT': 500000, 'ADAUSDT': 50000,
-            'DOTUSDT': 5000, 'LINKUSDT': 5000, 'MATICUSDT': 50000,
-            'AVAXUSDT': 2000, 'LTCUSDT': 1000, 'BCHUSDT': 500
+    function connectWebSocket(symbol, threshold) {
+        var ws = new WebSocket('wss://stream.binance.com:9443/ws/' + symbol + '@trade');
+        
+        ws.onopen = function() {
+            wsDot.classList.add('on');
+            apiDot.classList.add('on');
+            console.log('WebSocket bağlandı: ' + symbol);
         };
-        return thresholds[symbol] || 1000;
-    }
-    
-    function fetchBinanceData() {
-        var symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'DOGEUSDT', 'ADAUSDT', 'DOTUSDT', 'LINKUSDT', 'MATICUSDT', 'AVAXUSDT', 'LTCUSDT', 'BCHUSDT'];
         
-        var url = 'https://api.binance.com/api/v3/ticker/24hr';
-        
-        fetch(url)
-            .then(function(response) {
-                if (!response.ok) throw new Error('Binance API error');
-                return response.json();
-            })
-            .then(function(data) {
-                binanceDot.classList.add('on');
-                apiDot.classList.add('on');
+        ws.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
                 
-                var filtered = data.filter(function(ticker) {
-                    return symbols.indexOf(ticker.symbol) !== -1;
-                });
+                var quantity = parseFloat(data.q);
+                var price = parseFloat(data.p);
                 
-                filtered.forEach(function(ticker) {
-                    var volume = parseFloat(ticker.volume);
-                    var price = parseFloat(ticker.lastPrice);
-                    var priceChange = parseFloat(ticker.priceChangePercent);
+                if (quantity >= threshold) {
+                    var coin = symbol.replace('usdt', '').toUpperCase();
+                    var side = data.m ? 'SELL' : 'BUY';
                     
-                    var threshold = getThreshold(ticker.symbol);
-                    if (volume >= threshold) {
-                        var coin = ticker.symbol.replace('USDT', '');
-                        var side = priceChange >= 0 ? 'BUY' : 'SELL';
-                        
-                        if (Date.now() - lastUpdate > UPDATE_INTERVAL - 1000) {
-                            addTrade(coin, side, volume, price, 'Binance');
-                        }
-                    }
-                });
-                
-                lastUpdate = Date.now();
-            })
-            .catch(function(error) {
-                console.error('Binance fetch error:', error);
-                binanceDot.classList.remove('on');
-                apiDot.classList.remove('on');
-                showError('Binance verileri çekilemedi. HTTPS kullandığınızdan emin olun.');
-            });
+                    addTrade(coin, side, quantity, price);
+                }
+            } catch (e) {
+                console.error('Parse error:', e);
+            }
+        };
+        
+        ws.onerror = function(error) {
+            console.error('WebSocket error ' + symbol + ':', error);
+            wsDot.classList.remove('on');
+        };
+        
+        ws.onclose = function() {
+            console.log('WebSocket kapandı: ' + symbol + ', 5 saniye sonra yeniden bağlanılıyor...');
+            wsDot.classList.remove('on');
+            
+            setTimeout(function() {
+                connectWebSocket(symbol, threshold);
+            }, 5000);
+        };
+        
+        websockets.push(ws);
     }
     
     function fetchFearIndex() {
@@ -546,22 +519,8 @@
             })
             .catch(function(error) {
                 console.error('Fear index error:', error);
-                fearValueEl.innerHTML = '<span style="color:#888">--</span>';
             });
     }
-    
-    refreshBtn.addEventListener('click', function() {
-        refreshBtn.textContent = '🔄 Yenileniyor...';
-        refreshBtn.disabled = true;
-        
-        fetchBinanceData();
-        fetchFearIndex();
-        
-        setTimeout(function() {
-            refreshBtn.textContent = '🔄 Yenile';
-            refreshBtn.disabled = false;
-        }, 2000);
-    });
     
     function cleanOldTrades() {
         var fourHoursAgo = Date.now() - FOUR_HOURS;
@@ -569,7 +528,6 @@
             return t.timestamp > fourHoursAgo;
         });
         
-        // Reset volumes for top 5 (recalculate from current trades)
         buyVolumes = {};
         sellVolumes = {};
         trades.forEach(function(trade) {
@@ -587,20 +545,28 @@
     }
     
     function init() {
-        fetchBinanceData();
+        Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
+            connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
+        });
+        
         fetchFearIndex();
+        setInterval(fetchFearIndex, 300000);
+        setInterval(cleanOldTrades, 60000);
         
-        updateTimer = setInterval(fetchBinanceData, UPDATE_INTERVAL);
-        fearTimer = setInterval(fetchFearIndex, FEAR_UPDATE);
-        
-        setInterval(cleanOldTrades, 60000); // Her dakika temizlik
-        
-        console.log('Whale Tracker başlatıldı - Son 4 saat takibi aktif');
+        console.log('🐋 Whale Tracker CANLI - 12 coin WebSocket aktif');
+        console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
     }
     
     document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) {
-            fetchBinanceData();
+        if (document.hidden) {
+            websockets.forEach(function(ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            websockets = [];
+        } else {
+            init();
         }
     });
     
