@@ -2,669 +2,583 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Whale Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Whale Tracker Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { 
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Arial', sans-serif;
-    background: #0a0a0a;
-    color: #d1d4dc; 
-    padding: 10px;
-    font-size: 12px;
-    line-height: 1.2;
-}
-.header {
-    border: 1px solid #1e222d;
-    padding: 8px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #131722;
-    box-shadow: none;
-}
-.header span {
-    margin-right: 15px;
-}
-.status { color: #434651; }
-.status.on { color: #2962ff; text-shadow: none; }
+    :root {
+        --bg-color: #0f172a;
+        --card-bg: rgba(30, 41, 59, 0.6);
+        --card-border: rgba(148, 163, 184, 0.1);
+        --text-primary: #e2e8f0;
+        --text-secondary: #94a3b8;
+        --accent-green: #10b981;
+        --accent-red: #ef4444;
+        --accent-blue: #3b82f6;
+        --glow-green: rgba(16, 185, 129, 0.2);
+        --glow-red: rgba(239, 68, 68, 0.2);
+    }
 
-.controls {
-    background: #131722;
-    border: 1px solid #1e222d;
-    padding: 8px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    flex-wrap: wrap;
-}
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-.controls label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    color: #d1d4dc;
-    cursor: pointer;
-}
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-color);
+        background-image: 
+            radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 20%),
+            radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 20%);
+        color: var(--text-primary);
+        font-size: 13px;
+        padding-bottom: 20px;
+        min-height: 100vh;
+    }
 
-.controls input[type="checkbox"] {
-    width: auto;
-    margin: 0;
-}
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
 
-input { 
-    width: 100%;
-    background: #131722;
-    border: 1px solid #2a2e39;
-    color: #d1d4dc;
-    padding: 6px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Arial', sans-serif;
-    font-size: 12px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-}
-input:focus {
-    outline: none;
-    border-color: #2962ff;
-    box-shadow: none;
-}
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 10px;
+    }
 
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 10px;
-    margin-bottom: 10px;
-}
+    /* Header & Stats */
+    .header-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
 
-.stat-card {
-    background: #131722;
-    border: 1px solid #1e222d;
-    border-radius: 4px;
-    padding: 8px;
-}
+    .app-title {
+        font-weight: 800;
+        font-size: 18px;
+        background: linear-gradient(45deg, #fff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.5px;
+    }
 
-.stat-card .label {
-    color: #787b86;
-    font-size: 10px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-}
+    .connection-status {
+        display: flex;
+        gap: 8px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+    }
+    
+    .status-dot {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #475569;
+        margin-right: 4px;
+        transition: all 0.3s ease;
+    }
+    .status-dot.active { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
 
-.stat-card .value {
-    font-size: 14px;
-    font-weight: 600;
-}
+    .stat-badge {
+        background: rgba(15, 23, 42, 0.5);
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        border: 1px solid var(--card-border);
+    }
 
-.stat-card .change {
-    font-size: 10px;
-    margin-top: 2px;
-}
+    /* Controls */
+    .controls {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+        -webkit-overflow-scrolling: touch;
+    }
 
-.positive { color: #089981; }
-.negative { color: #f23645; }
+    .control-btn {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        color: var(--text-secondary);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 500;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s;
+        user-select: none;
+    }
 
-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    border: 1px solid #1e222d;
-    background: #131722;
-    margin-bottom: 15px;
-    box-shadow: none;
-    position: relative;
-    border-radius: 4px;
-    overflow: hidden;
-}
-th {
-    background: #1e222d;
-    color: #787b86;
-    padding: 8px;
-    text-align: left;
-    border-bottom: 1px solid #2a2e39;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-}
-td {
-    padding: 6px 8px;
-    border-bottom: 1px solid #1e222d;
-    color: #d1d4dc;
-}
-tr:hover td {
-    background: #1a1e27;
-}
-.buy { color: #089981; font-weight: 600; text-shadow: none; }
-.sell { color: #f23645; font-weight: 600; text-shadow: none; }
-.total-row {
-    background: #1a1e27;
-    font-weight: bold;
-    border-top: 1px solid #2a2e39;
-}
-.total-row td {
-    border-top: 1px solid #2a2e39;
-}
-.gray { color: #787b86; }
-.new-row {
-    animation: highlight 1s ease;
-}
-@keyframes highlight {
-    0% { background: #1a2e27; }
-    100% { background: transparent; }
-}
+    .control-btn.active {
+        background: rgba(59, 130, 246, 0.2);
+        border-color: rgba(59, 130, 246, 0.4);
+        color: #60a5fa;
+    }
 
-table::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border: 1px solid #2a2e39;
-    pointer-events: none;
-    opacity: 0.3;
-    border-radius: 4px;
-}
+    input[type="text"] {
+        width: 100%;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid var(--card-border);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-family: 'Inter', sans-serif;
+        margin-bottom: 15px;
+        transition: all 0.3s;
+    }
+    input[type="text"]:focus {
+        outline: none;
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Grid Layouts */
+    .market-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .market-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        padding: 10px;
+        transition: transform 0.2s;
+    }
+    
+    .market-card h4 {
+        color: var(--text-secondary);
+        font-size: 10px;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+    .market-card .price {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+        font-size: 13px;
+    }
+    
+    /* Tables */
+    .table-container {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        backdrop-filter: blur(10px);
+    }
+
+    .table-header {
+        padding: 12px 15px;
+        border-bottom: 1px solid var(--card-border);
+        font-weight: 600;
+        color: var(--text-primary);
+        display: flex;
+        justify-content: space-between;
+        background: rgba(255,255,255,0.02);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        text-align: left;
+        padding: 10px 12px;
+        color: var(--text-secondary);
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--card-border);
+        background: rgba(15, 23, 42, 0.3);
+    }
+
+    td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--card-border);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Colors & Animations */
+    .text-green { color: var(--accent-green); }
+    .text-red { color: var(--accent-red); }
+    .bg-green-glow { background-color: var(--glow-green); }
+    .bg-red-glow { background-color: var(--glow-red); }
+
+    .new-trade-anim {
+        animation: flashRow 1s ease-out;
+    }
+
+    @keyframes flashRow {
+        0% { background-color: rgba(255, 255, 255, 0.1); }
+        100% { background-color: transparent; }
+    }
+
+    .price-cell { font-weight: 700; }
+    .coin-cell { font-family: 'Inter', sans-serif; font-weight: 600; color: #fff; }
+    
+    /* Mobile Responsive Adjustments */
+    @media (max-width: 600px) {
+        .hide-mobile { display: none; }
+        .header-card { flex-direction: column; align-items: stretch; text-align: center; }
+        .connection-status { justify-content: center; margin-top: 5px; }
+        .stats-row { justify-content: space-between; display: flex; margin-top: 10px; }
+        th, td { padding: 8px; }
+        .market-grid { grid-template-columns: repeat(2, 1fr); }
+    }
 </style>
 </head>
 <body>
 
-<div class="header">
-    <div>
-        <span><strong>WHALE TRACKER</strong></span>
-        <span class="status" id="wsStatus">⬤ WS</span>
-        <span class="status" id="apiStatus">⬤ API</span>
+<div class="container">
+    <div class="header-card">
+        <div>
+            <div class="app-title">WHALE TRACKER PRO</div>
+            <div class="connection-status">
+                <span><span class="status-dot" id="wsDot"></span>STREAM</span>
+                <span><span class="status-dot" id="apiDot"></span>API</span>
+            </div>
+        </div>
+        <div class="stats-row">
+            <span class="stat-badge">F&G: <span id="fearValue" class="text-green">--</span></span>
+            <span class="stat-badge">Total: <span id="totalCount">0</span></span>
+        </div>
     </div>
-    <div>
-        <span>F&G: <span id="fear">--</span></span>
-        <span>Total: <span id="total">0</span></span>
-        <span>4H: <span id="hourly">0</span></span>
+
+    <div class="controls">
+        <div class="control-btn active" id="btnSound">🔔 Ses</div>
+        <div class="control-btn active" id="btnVibrate">📳 Titreşim</div>
+        <div class="control-btn active" id="btnMarket">📊 Market</div>
+    </div>
+
+    <div id="marketSection">
+        <div class="market-grid" id="marketGrid">
+            </div>
+    </div>
+
+    <input type="text" id="filterInput" placeholder="Filtrele: BTC, ETH, SOL..." autocomplete="off">
+
+    <div class="table-container">
+        <div class="table-header">Özet Tablosu</div>
+        <div style="overflow-x: auto;">
+            <table id="summaryTable">
+                <thead>
+                    <tr>
+                        <th>Coin</th>
+                        <th>Alım (Adet)</th>
+                        <th>Satım (Adet)</th>
+                        <th>Net Hacim ($)</th>
+                    </tr>
+                </thead>
+                <tbody id="summaryBody">
+                    <tr><td colspan="4" style="text-align:center; color:#64748b; padding:20px;">Veri bekleniyor...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header">Canlı İşlemler</div>
+        <div style="overflow-x: auto;">
+            <table id="tradesTable">
+                <thead>
+                    <tr>
+                        <th>Saat</th>
+                        <th>Coin</th>
+                        <th>Yön</th>
+                        <th>Fiyat</th>
+                        <th>Tutar ($)</th>
+                    </tr>
+                </thead>
+                <tbody id="tradesBody">
+                    <tr><td colspan="5" style="text-align:center; color:#64748b; padding:20px;">Bağlantı kuruluyor...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-
-<div class="controls">
-    <label>
-        <input type="checkbox" id="soundToggle" checked>
-        <span>🔔 Ses</span>
-    </label>
-    <label>
-        <input type="checkbox" id="vibrationToggle" checked>
-        <span>📳 Titreşim</span>
-    </label>
-    <label>
-        <input type="checkbox" id="marketDataToggle" checked>
-        <span>📊 Market Data</span>
-    </label>
-</div>
-
-<div class="stats-grid" id="statsGrid">
-    <!-- Market stats buraya gelecek -->
-</div>
-
-<input type="text" id="filter" placeholder="Filter: BTC, ETH, SOL...">
-
-<table id="summaryTable">
-    <thead>
-        <tr>
-            <th>COIN</th>
-            <th>BUY</th>
-            <th>SELL</th>
-            <th>BUY USD</th>
-            <th>SELL USD</th>
-            <th>TOTAL USD</th>
-        </tr>
-    </thead>
-    <tbody id="summaryBody">
-        <tr><td colspan="6" class="gray" style="text-align:center;">Loading...</td></tr>
-    </tbody>
-</table>
-
-<table id="tradesTable">
-    <thead>
-        <tr>
-            <th>TIME</th>
-            <th>COIN</th>
-            <th>SIDE</th>
-            <th>AMOUNT</th>
-            <th>PRICE</th>
-            <th>TOTAL USD</th>
-        </tr>
-    </thead>
-    <tbody id="tradesBody">
-        <tr><td colspan="6" class="gray" style="text-align:center;">Connecting...</td></tr>
-    </tbody>
-</table>
 
 <script>
 (function() {
-'use strict';
+    'use strict';
 
-var THRESHOLDS = {
-    btcusdt: 20,
-    ethusdt: 300,
-    bnbusdt: 2000,
-    solusdt: 8000,
-    xrpusdt: 400000,
-    adausdt: 800000,
-    dogeusdt: 8000000,
-    dotusdt: 80000,
-    maticusdt: 800000,
-    linkusdt: 80000,
-    avaxusdt: 40000,
-    ltcusdt: 20000,
-    bchusdt: 12000,
-    uniusdt: 40000,
-    atomusdt: 40000,
-    etcusdt: 200000,
-    nearusdt: 80000,
-    aptusdt: 40000,
-    arbusdt: 400000,
-    opusdt: 120000,
-    ldousdt: 200000,
-    injusdt: 20000,
-    stxusdt: 200000,
-    filusdt: 40000,
-    suiusdt: 120000,
-    imxusdt: 120000,
-    tiausdt: 40000,
-    seiusdt: 200000,
-    hbarusdt: 800000,
-    rndrusdt: 40000,
-    fetusdt: 200000,
-    taousdt: 4000,
-    arusdt: 80000,
-    wldusdt: 120000,
-    flokiusdt: 8000000,
-    pepeusdt: 40000000000,
-    shibusdt: 1200000000,
-    wifusdt: 200000,
-    bonkusdt: 8000000000,
-    jupusdt: 200000,
-    pythusdt: 400000,
-    trbusdt: 8000,
-    icpusdt: 40000,
-    runeusdt: 40000,
-    aaveusdt: 4000,
-    mkrusdt: 800,
-    grtusdt: 800000,
-    ftmusdt: 200000,
-    algousdt: 400000,
-    qntusdt: 2000,
-    sandusdt: 400000,
-    manausdt: 400000,
-    axsusdt: 80000,
-    galausdt: 800000,
-    chzusdt: 800000,
-    apeusdt: 120000,
-    gmxusdt: 8000,
-    blurusdt: 120000,
-    pendleusdt: 80000
-};
+    // Konfigürasyon
+    const THRESHOLDS = {
+        btcusdt: 20, ethusdt: 300, bnbusdt: 2000, solusdt: 8000, xrpusdt: 400000,
+        adausdt: 800000, dogeusdt: 8000000, avaxusdt: 40000, dotusdt: 80000,
+        maticusdt: 800000, linkusdt: 80000, shibusdt: 1200000000, pepeusdt: 40000000000,
+        bonkusdt: 8000000000, wifusdt: 200000, fetusdt: 200000, rndrusdt: 40000,
+        nearusdt: 80000, filusdt: 40000, injusdt: 20000, imxusdt: 120000,
+        flokiusdt: 8000000, fantomusdt: 200000, arbusdt: 400000, opusdt: 120000,
+        suiusdt: 120000, aptusdt: 40000, tiausdt: 40000, seiusdt: 200000
+    };
 
-var trades = [];
-var totalCount = 0;
-var connectedWS = 0;
-var filterText = '';
-var websockets = [];
-var audioContext;
-var soundEnabled = true;
-var vibrationEnabled = true;
-var marketDataEnabled = true;
-var marketData = {};
-
-var summaryBody = document.getElementById('summaryBody');
-var tradesBody = document.getElementById('tradesBody');
-var totalEl = document.getElementById('total');
-var hourlyEl = document.getElementById('hourly');
-var fearEl = document.getElementById('fear');
-var wsStatus = document.getElementById('wsStatus');
-var apiStatus = document.getElementById('apiStatus');
-var filterEl = document.getElementById('filter');
-var soundToggle = document.getElementById('soundToggle');
-var vibrationToggle = document.getElementById('vibrationToggle');
-var marketDataToggle = document.getElementById('marketDataToggle');
-var statsGrid = document.getElementById('statsGrid');
-
-// Kontrol ayarları
-soundToggle.addEventListener('change', function(e) {
-    soundEnabled = e.target.checked;
-});
-
-vibrationToggle.addEventListener('change', function(e) {
-    vibrationEnabled = e.target.checked;
-});
-
-marketDataToggle.addEventListener('change', function(e) {
-    marketDataEnabled = e.target.checked;
-    if (!marketDataEnabled) {
-        statsGrid.innerHTML = '';
-    }
-});
-
-// Ses fonksiyonu
-function playSound(type) {
-    if (!soundEnabled) return;
+    // State
+    let trades = [];
+    let summaryData = {};
+    let marketInfo = {};
+    let settings = { sound: true, vibrate: true, market: true };
+    let totalTrades = 0;
+    let filterText = '';
+    let wsConnection = null;
+    let audioCtx = null;
     
-    try {
-        if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    // DOM Elements
+    const els = {
+        tradesBody: document.getElementById('tradesBody'),
+        summaryBody: document.getElementById('summaryBody'),
+        marketGrid: document.getElementById('marketGrid'),
+        wsDot: document.getElementById('wsDot'),
+        totalCount: document.getElementById('totalCount'),
+        fearValue: document.getElementById('fearValue'),
+        filterInput: document.getElementById('filterInput')
+    };
+
+    // --- SES ve TİTREŞİM ---
+    function initAudio() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function playTone(type) {
+        if (!settings.sound || !audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.frequency.value = type === 'BUY' ? 600 : 300;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime); // Ses seviyesi düşürüldü
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+        
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+    }
+
+    function triggerVibrate(type) {
+        if (settings.vibrate && navigator.vibrate) {
+            navigator.vibrate(type === 'BUY' ? 50 : [30, 30]);
         }
-        
-        var oscillator = audioContext.createOscillator();
-        var gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.value = type === 'BUY' ? 800 : 400;
-        oscillator.type = 'sine';
-        
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.5);
-    } catch(err) {
-        console.log('Ses çalınamadı:', err);
     }
-}
 
-// Titreşim fonksiyonu
-function vibrate(pattern) {
-    if (!vibrationEnabled) return;
-    if ('vibrate' in navigator) {
-        navigator.vibrate(pattern);
-    }
-}
-
-// Bildirim fonksiyonu
-function notifyTrade(side) {
-    playSound(side);
-    vibrate(side === 'BUY' ? [100] : [200]);
-}
-
-function formatNum(n) {
-    if (n >= 1000000) return (n/1000000).toFixed(2) + 'M';
-    if (n >= 1000) return (n/1000).toFixed(2) + 'K';
-    return n.toFixed(2);
-}
-
-function formatPercent(n) {
-    return (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
-}
-
-// Market data gösterimi
-function updateMarketStats() {
-    if (!marketDataEnabled) return;
+    // --- FORMATLAMA ---
+    const fmtNum = (n) => {
+        if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+        if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+        return n.toFixed(0);
+    };
     
-    var topCoins = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT'];
-    var html = '';
-    
-    topCoins.forEach(function(symbol) {
-        var data = marketData[symbol];
-        if (data) {
-            var changeClass = data.priceChangePercent >= 0 ? 'positive' : 'negative';
-            html += '<div class="stat-card">' +
-                '<div class="label">' + symbol.replace('USDT', '') + '</div>' +
-                '<div class="value">$' + formatNum(parseFloat(data.lastPrice)) + '</div>' +
-                '<div class="change ' + changeClass + '">' + formatPercent(parseFloat(data.priceChangePercent)) + '</div>' +
-                (data.fundingRate ? '<div class="gray" style="font-size:10px;">FR: ' + (parseFloat(data.fundingRate) * 100).toFixed(4) + '%</div>' : '') +
-                '</div>';
-        }
-    });
-    
-    statsGrid.innerHTML = html;
-}
+    const fmtUSD = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 
-function updateSummary() {
-    var coins = {};
-    trades.forEach(function(t) {
-        if (!coins[t.coin]) coins[t.coin] = {buy:0, sell:0, buyUSD:0, sellUSD:0};
-        if (t.side === 'BUY') {
-            coins[t.coin].buy += t.amount;
-            coins[t.coin].buyUSD += t.usd;
+    // --- LOGIC ---
+    function processTrade(data) {
+        // Data format: {s: symbol, q: quantity, p: price, m: isBuyerMaker (true=SELL, false=BUY)}
+        const symbol = data.s.toLowerCase();
+        // Combined stream'den gelen veri yapısı farklı olabilir, kontrol edelim
+        const coin = symbol.replace('usdt', '').toUpperCase();
+        
+        if (!THRESHOLDS[symbol]) return; // Takip listemizde yoksa geç
+        
+        const qty = parseFloat(data.q);
+        const price = parseFloat(data.p);
+        
+        if (qty < THRESHOLDS[symbol]) return; // Eşik altıysa geç
+
+        const side = data.m ? 'SELL' : 'BUY';
+        const usd = qty * price;
+        const timeStr = new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+
+        // Trade Ekle
+        const trade = { coin, side, price, qty, usd, time: timeStr, id: Date.now() + Math.random() };
+        trades.unshift(trade);
+        if (trades.length > 50) trades.pop();
+        
+        // Özet Güncelle
+        if (!summaryData[coin]) summaryData[coin] = { buy:0, sell:0, net:0 };
+        if (side === 'BUY') {
+            summaryData[coin].buy += qty;
+            summaryData[coin].net += usd;
         } else {
-            coins[t.coin].sell += t.amount;
-            coins[t.coin].sellUSD += t.usd;
+            summaryData[coin].sell += qty;
+            summaryData[coin].net -= usd;
         }
-    });
-    
-    var arr = Object.keys(coins).map(function(c) {
-        return {
-            coin: c,
-            buy: coins[c].buy,
-            sell: coins[c].sell,
-            buyUSD: coins[c].buyUSD,
-            sellUSD: coins[c].sellUSD,
-            totalUSD: coins[c].buyUSD + coins[c].sellUSD
-        };
-    }).sort(function(a,b) { return b.totalUSD - a.totalUSD; });
-    
-    if (filterText) {
-        arr = arr.filter(function(x) { return x.coin.indexOf(filterText) !== -1; });
-    }
-    
-    var html = '';
-    var totBuy = 0, totSell = 0, totBuyUSD = 0, totSellUSD = 0, totUSD = 0;
-    
-    arr.forEach(function(x) {
-        totBuy += x.buy;
-        totSell += x.sell;
-        totBuyUSD += x.buyUSD;
-        totSellUSD += x.sellUSD;
-        totUSD += x.totalUSD;
+
+        totalTrades++;
+        playTone(side);
+        triggerVibrate(side);
         
-        html += '<tr>' +
-            '<td><strong>' + x.coin + '</strong></td>' +
-            '<td class="buy">' + formatNum(x.buy) + '</td>' +
-            '<td class="sell">' + formatNum(x.sell) + '</td>' +
-            '<td class="buy">$' + formatNum(x.buyUSD) + '</td>' +
-            '<td class="sell">$' + formatNum(x.sellUSD) + '</td>' +
-            '<td><strong>$' + formatNum(x.totalUSD) + '</strong></td>' +
-            '</tr>';
-    });
-    
-    html += '<tr class="total-row">' +
-        '<td><strong>TOTAL</strong></td>' +
-        '<td class="buy">' + formatNum(totBuy) + '</td>' +
-        '<td class="sell">' + formatNum(totSell) + '</td>' +
-        '<td class="buy">$' + formatNum(totBuyUSD) + '</td>' +
-        '<td class="sell">$' + formatNum(totSellUSD) + '</td>' +
-        '<td><strong>$' + formatNum(totUSD) + '</strong></td>' +
-        '</tr>';
-    
-    summaryBody.innerHTML = html || '<tr><td colspan="6" class="gray" style="text-align:center;">No data</td></tr>';
-}
-
-function updateTrades() {
-    totalEl.textContent = totalCount;
-    var recent = trades.filter(function(t) { return t.timestamp > Date.now() - 14400000; });
-    hourlyEl.textContent = recent.length;
-    
-    var filtered = filterText ? trades.filter(function(t) { return t.coin.indexOf(filterText) !== -1; }) : trades;
-    
-    if (filtered.length === 0) {
-        tradesBody.innerHTML = '<tr><td colspan="6" class="gray" style="text-align:center;">' + 
-            (filterText ? 'No matches for: ' + filterText : 'Waiting for trades...') + '</td></tr>';
-        return;
+        // Render işlemlerini hemen yapmıyoruz, throttle fonksiyonu yapacak
+        requestAnimationFrame(renderUI);
     }
-    
-    var html = '';
-    filtered.slice(0, 50).forEach(function(t, i) {
-        html += '<tr' + (i === 0 ? ' class="new-row"' : '') + '>' +
-            '<td class="gray">' + t.time + '</td>' +
-            '<td><strong>' + t.coin + '</strong></td>' +
-            '<td class="' + (t.side === 'BUY' ? 'buy' : 'sell') + '">' + t.side + '</td>' +
-            '<td>' + formatNum(t.amount) + '</td>' +
-            '<td>$' + formatNum(t.price) + '</td>' +
-            '<td><strong>$' + formatNum(t.usd) + '</strong></td>' +
-            '</tr>';
-    });
-    
-    tradesBody.innerHTML = html;
-}
 
-function addTrade(coin, side, amount, price) {
-    trades.unshift({
-        coin: coin,
-        side: side,
-        amount: amount,
-        price: price,
-        usd: amount * price,
-        time: new Date().toLocaleTimeString('tr-TR'),
-        timestamp: Date.now()
-    });
-    
-    notifyTrade(side);
-    
-    if (trades.length > 100) trades.pop();
-    totalCount++;
-    updateTrades();
-    updateSummary();
-}
+    // --- RENDER ---
+    let lastRender = 0;
+    function renderUI() {
+        const now = Date.now();
+        if (now - lastRender < 250) return; // 250ms Throttle (iPhone kasmaması için çok önemli)
+        lastRender = now;
 
-// Aggregated Trade WebSocket
-function connectWS(symbol, threshold) {
-    var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
-    
-    ws.onopen = function() {
-        connectedWS++;
-        if (connectedWS === 1) wsStatus.classList.add('on');
-        updateTrades();
-    };
-    
-    ws.onmessage = function(e) {
-        try {
-            var data = JSON.parse(e.data);
-            var qty = parseFloat(data.q);
-            var price = parseFloat(data.p);
-            if (qty >= threshold) {
-                addTrade(symbol.replace('usdt','').toUpperCase(), data.m ? 'SELL' : 'BUY', qty, price);
-            }
-        } catch(err) {}
-    };
-    
-    ws.onclose = function() {
-        connectedWS--;
-        if (connectedWS === 0) wsStatus.classList.remove('on');
-        setTimeout(function() { connectWS(symbol, threshold); }, 3000);
-    };
-    
-    websockets.push(ws);
-}
+        els.totalCount.textContent = totalTrades;
 
-// 24hr Ticker Statistics + Mark Price (tek stream'de birleşik)
-function connectMarketDataWS() {
-    var ws = new WebSocket('wss://fstream.binance.com/ws/!ticker@arr');
-    
-    ws.onopen = function() {
-        console.log('Market data connected');
-    };
-    
-    ws.onmessage = function(e) {
-        try {
-            var data = JSON.parse(e.data);
-            if (Array.isArray(data)) {
-                data.forEach(function(ticker) {
-                    marketData[ticker.s] = {
-                        lastPrice: ticker.c,
-                        priceChangePercent: ticker.P,
-                        volume: ticker.v,
-                        quoteVolume: ticker.q
-                    };
-                });
-                updateMarketStats();
-            }
-        } catch(err) {
-            console.log('Market data error:', err);
+        // 1. Trades Table
+        let displayTrades = trades;
+        if (filterText) {
+            displayTrades = trades.filter(t => t.coin.includes(filterText));
         }
-    };
-    
-    ws.onclose = function() {
-        setTimeout(connectMarketDataWS, 3000);
-    };
-    
-    websockets.push(ws);
-}
 
-// Mark Price & Funding Rate Stream (tüm piyasalar)
-function connectMarkPriceWS() {
-    var ws = new WebSocket('wss://fstream.binance.com/ws/!markPrice@arr@1s');
-    
-    ws.onopen = function() {
-        console.log('Mark price connected');
-    };
-    
-    ws.onmessage = function(e) {
-        try {
-            var data = JSON.parse(e.data);
-            if (Array.isArray(data)) {
-                data.forEach(function(mark) {
-                    if (marketData[mark.s]) {
-                        marketData[mark.s].markPrice = mark.p;
-                        marketData[mark.s].indexPrice = mark.i;
-                        marketData[mark.s].fundingRate = mark.r;
-                        marketData[mark.s].nextFundingTime = mark.T;
-                    }
-                });
-                updateMarketStats();
-            }
-        } catch(err) {
-            console.log('Mark price error:', err);
-        }
-    };
-    
-    ws.onclose = function() {
-        setTimeout(connectMarkPriceWS, 3000);
-    };
-    
-    websockets.push(ws);
-}
-
-function fetchFear() {
-    fetch('https://api.alternative.me/fng/?limit=1')
-        .then(function(r) { return r.json(); })
-        .then(function(d) {
-            apiStatus.classList.add('on');
-            if (d && d.data && d.data[0]) {
-                fearEl.textContent = d.data[0].value;
-            }
-        })
-        .catch(function() {
-            apiStatus.classList.remove('on');
+        let html = '';
+        displayTrades.slice(0, 20).forEach((t, i) => {
+            const colorClass = t.side === 'BUY' ? 'text-green' : 'text-red';
+            const animClass = i === 0 ? 'new-trade-anim' : '';
+            html += `<tr class="${animClass}">
+                <td style="color:#64748b">${t.time}</td>
+                <td class="coin-cell">${t.coin}</td>
+                <td class="${colorClass}" style="font-weight:700">${t.side}</td>
+                <td class="price-cell">$${t.price < 1 ? t.price.toFixed(4) : t.price.toFixed(2)}</td>
+                <td style="color:#e2e8f0">$${fmtNum(t.usd)}</td>
+            </tr>`;
         });
-}
+        els.tradesBody.innerHTML = html || '<tr><td colspan="5" style="text-align:center; padding:10px;">İşlem yok</td></tr>';
 
-function cleanOld() {
-    trades = trades.filter(function(t) { return t.timestamp > Date.now() - 14400000; });
-    updateTrades();
-    updateSummary();
-}
+        // 2. Summary Table
+        const summaryArr = Object.entries(summaryData)
+            .map(([k, v]) => ({ coin: k, ...v }))
+            .sort((a, b) => Math.abs(b.net) - Math.abs(a.net)); // En yüksek hacme göre sırala
 
-filterEl.addEventListener('input', function(e) {
-    filterText = e.target.value.toUpperCase().trim();
-    updateSummary();
-    updateTrades();
-});
-
-// İlk tıklamada ses için AudioContext başlat
-document.addEventListener('click', function initAudio() {
-    if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let sumHtml = '';
+        summaryArr.filter(i => i.coin.includes(filterText)).slice(0, 10).forEach(item => {
+            const netColor = item.net > 0 ? 'text-green' : 'text-red';
+            const netPrefix = item.net > 0 ? '+' : '';
+            sumHtml += `<tr>
+                <td class="coin-cell">${item.coin}</td>
+                <td class="text-green">${fmtNum(item.buy)}</td>
+                <td class="text-red">${fmtNum(item.sell)}</td>
+                <td class="${netColor}" style="font-weight:700">${netPrefix}${fmtNum(item.net)} $</td>
+            </tr>`;
+        });
+        els.summaryBody.innerHTML = sumHtml || '<tr><td colspan="4" style="text-align:center;">Veri yok</td></tr>';
     }
-    document.removeEventListener('click', initAudio);
-}, { once: true });
 
-// Tüm bağlantıları başlat
-Object.keys(THRESHOLDS).forEach(function(s) { connectWS(s, THRESHOLDS[s]); });
-connectMarketDataWS();
-connectMarkPriceWS();
-fetchFear();
-setInterval(fetchFear, 300000);
-setInterval(cleanOld, 60000);
+    // --- SOCKET MANAGEMENT ---
+    function connectSocket() {
+        // PERFORMANS ÇÖZÜMÜ: Tek bir socket stringi oluşturuyoruz
+        const streams = Object.keys(THRESHOLDS).map(s => `${s}@aggTrade`).join('/');
+        // Market ticker için ana coinleri ekleyelim
+        const tickerStreams = 'btcusdt@ticker/ethusdt@ticker/solusdt@ticker/bnbusdt@ticker';
+        
+        const url = `wss://fstream.binance.com/stream?streams=${streams}/${tickerStreams}`;
+        
+        wsConnection = new WebSocket(url);
+
+        wsConnection.onopen = () => {
+            els.wsDot.classList.add('active');
+            console.log('Socket Connected');
+        };
+
+        wsConnection.onmessage = (e) => {
+            const msg = JSON.parse(e.data);
+            // msg.data asıl veriyi içerir, msg.stream stream adını içerir
+            
+            if (msg.stream.includes('@aggTrade')) {
+                processTrade(msg.data);
+            } else if (msg.stream.includes('@ticker')) {
+                updateMarketTicker(msg.data);
+            }
+        };
+
+        wsConnection.onclose = () => {
+            els.wsDot.classList.remove('active');
+            setTimeout(connectSocket, 5000);
+        };
+    }
+
+    function updateMarketTicker(data) {
+        if (!settings.market) return;
+        
+        const symbol = data.s.replace('USDT','');
+        const change = parseFloat(data.P);
+        const price = parseFloat(data.c);
+        
+        marketInfo[symbol] = { price, change };
+        
+        // Market grid render
+        if (Math.random() > 0.7) { // Her tick'te render etme, CPU koru
+            let html = '';
+            Object.keys(marketInfo).forEach(sym => {
+                const info = marketInfo[sym];
+                const color = info.change >= 0 ? 'text-green' : 'text-red';
+                const sign = info.change >= 0 ? '+' : '';
+                html += `<div class="market-card">
+                    <h4>${sym}</h4>
+                    <div class="price">$${info.price < 10 ? info.price.toFixed(3) : info.price.toFixed(1)}</div>
+                    <div class="${color}" style="font-size:11px;">${sign}${info.change}%</div>
+                </div>`;
+            });
+            els.marketGrid.innerHTML = html;
+        }
+    }
+
+    // --- INIT & EVENTS ---
+    
+    // Buton Kontrolleri
+    document.getElementById('btnSound').onclick = function() {
+        settings.sound = !settings.sound;
+        this.classList.toggle('active');
+        initAudio(); // iOS için ilk tıklamada ses bağlamını aç
+    };
+    document.getElementById('btnVibrate').onclick = function() {
+        settings.vibrate = !settings.vibrate;
+        this.classList.toggle('active');
+    };
+    document.getElementById('btnMarket').onclick = function() {
+        settings.market = !settings.market;
+        this.classList.toggle('active');
+        document.getElementById('marketSection').style.display = settings.market ? 'block' : 'none';
+    };
+
+    els.filterInput.addEventListener('input', (e) => {
+        filterText = e.target.value.toUpperCase();
+        renderUI();
+    });
+
+    // Korku & Açgözlülük Verisi
+    fetch('https://api.alternative.me/fng/?limit=1')
+        .then(r => r.json())
+        .then(d => {
+            const val = d.data[0].value;
+            els.fearValue.textContent = val;
+            els.fearValue.className = val > 50 ? 'text-green' : 'text-red';
+            document.getElementById('apiDot').classList.add('active');
+        });
+
+    // Başlat
+    connectSocket();
+
+    // Otomatik Temizlik (Bellek Sızıntısını Önler)
+    setInterval(() => {
+        if (trades.length > 200) trades = trades.slice(0, 100);
+        // Çok eski özet verileri silinebilir
+    }, 60000);
 
 })();
 </script>
