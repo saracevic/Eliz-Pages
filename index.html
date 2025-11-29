@@ -261,11 +261,11 @@
     <div class="connection">
         <div class="conn-item">
             <div class="dot" id="wsDot"></div>
-            <span>WebSocket</span>
+            <span>Binance Stream</span>
         </div>
         <div class="conn-item">
             <div class="dot" id="apiDot"></div>
-            <span>Binance</span>
+            <span>Fear & Greed</span>
         </div>
     </div>
 </div>
@@ -464,8 +464,7 @@
         
         ws.onopen = function() {
             wsDot.classList.add('on');
-            apiDot.classList.add('on');
-            console.log('WebSocket bağlandı: ' + symbol);
+            console.log('Binance stream bağlandı: ' + symbol);
         };
         
         ws.onmessage = function(event) {
@@ -510,6 +509,7 @@
                 return response.json();
             })
             .then(function(data) {
+                apiDot.classList.add('on');
                 if (data && data.data && data.data[0]) {
                     var value = parseInt(data.data[0].value);
                     var className = value < 25 ? 'fear' : value > 75 ? 'greed' : 'neutral';
@@ -518,6 +518,7 @@
                 }
             })
             .catch(function(error) {
+                apiDot.classList.remove('on');
                 console.error('Fear index error:', error);
             });
     }
