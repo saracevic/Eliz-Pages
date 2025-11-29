@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Whale Tracker PRO - CANLI</title>
+<title>Whale Tracker PRO - FUTURES</title>
 <style>
     * { 
         box-sizing: border-box; 
@@ -207,7 +207,7 @@
         border-radius: 4px;
         font-size: 0.75em;
         font-weight: bold;
-        background: #f3ba2f;
+        background: #f0b90b;
         color: #000;
     }
     
@@ -240,7 +240,7 @@
     <h1>🐋 Whale Tracker PRO</h1>
     <div class="live-indicator">
         <div class="live-dot"></div>
-        <span>CANLI YAYIN</span>
+        <span>FUTURES CANLI</span>
     </div>
     
     <div class="stats">
@@ -261,7 +261,7 @@
     <div class="connection">
         <div class="conn-item">
             <div class="dot" id="wsDot"></div>
-            <span>Binance Stream</span>
+            <span>Futures Stream (60 Coin)</span>
         </div>
         <div class="conn-item">
             <div class="dot" id="apiDot"></div>
@@ -291,7 +291,7 @@
 </div>
 
 <div class="trades-container" id="tradesContainer">
-    <div class="loading">📡 Canlı verilere bağlanıyor...</div>
+    <div class="loading">📡 Futures canlı verilerine bağlanıyor...</div>
 </div>
 
 <script>
@@ -301,20 +301,69 @@
     // Config
     var MAX_TRADES = 50;
     var FOUR_HOURS = 14400000;
+    
+    // YÜKSEK WHALE EŞİKLERİ - 3X ARTIRILDI (60 COİN)
     var WHALE_THRESHOLDS = {
-        'btcusdt': 6,
-        'ethusdt': 90,
-        'solusdt': 900,
-        'bnbusdt': 900,
-        'xrpusdt': 20000,
-        'dogeusdt': 200000,
-        'adausdt': 20000,
-        'xlmusdt': 20000,
-        'linkusdt': 2000,
-        'maticusdt': 20000,
-        'avaxusdt': 1000,
-        'trumpusdt': 500,
-        'trxusdt': 30000
+        'btcusdt': 6,      // 2 -> 6
+        'ethusdt': 90,     // 30 -> 90
+        'bnbusdt': 150,
+        'solusdt': 600,
+        'xrpusdt': 30000,
+        'adausdt': 60000,
+        'dogeusdt': 600000,
+        'dotusdt': 6000,
+        'maticusdt': 60000,
+        'linkusdt': 6000,
+        'avaxusdt': 3000,
+        'ltcusdt': 1500,
+        'bchusdt': 900,
+        'uniusdt': 3000,
+        'atomusdt': 3000,
+        'etcusdt': 15000,
+        'nearusdt': 6000,
+        'aptusdt': 3000,
+        'arbusdt': 30000,
+        'opusdt': 9000,
+        'ldousdt': 15000,
+        'injusdt': 1500,
+        'stxusdt': 15000,
+        'filusdt': 3000,
+        'suiusdt': 9000,
+        'imxusdt': 9000,
+        'tiausdt': 3000,
+        'seiusdt': 15000,
+        'hbarusdt': 60000,
+        'rndrusdt': 3000,
+        'fetusdt': 15000,
+        'taousdt': 300,
+        'arusdt': 6000,
+        'wldusdt': 9000,
+        'flokiusdt': 600000,
+        'pepeusdt': 3000000000,
+        'shibusdt': 90000000,
+        'wifusdt': 15000,
+        'bonkusdt': 600000000,
+        'jupusdt': 15000,
+        'pythusdt': 30000,
+        'trbusdt': 600,
+        'icpusdt': 3000,
+        'runeusdt': 3000,
+        'aaveusdt': 300,
+        'mkrusdt': 60,
+        'grtusdt': 60000,
+        'ftmusdt': 15000,
+        'algousdt': 30000,
+        'qntusdt': 150,
+        'sandusdt': 30000,
+        'manausdt': 30000,
+        'axsusdt': 6000,
+        'galausdt': 60000,
+        'chzusdt': 60000,
+        'apeusdt': 9000,
+        'gmxusdt': 600,
+        'ldousdt': 15000,
+        'blurusdt': 9000,
+        'pendleusdt': 6000
     };
     
     // State
@@ -323,6 +372,7 @@
     var buyVolumes = {};
     var sellVolumes = {};
     var websockets = [];
+    var connectedCount = 0;
     
     // Elements
     var tradesContainer = document.getElementById('tradesContainer');
@@ -359,7 +409,7 @@
                 '<span class="top-amount">' + formatNumber(item.amount) + '</span>' +
                 '</div>';
         });
-        topBuyList.innerHTML = buyHTML || '<div class="top-item" style="justify-content:center;color:#666;">Veri bekleniyor...</div>';
+        topBuyList.innerHTML = buyHTML || '<div class="top-item" style="justify-content:center;color:#666;">Balina bekleniyor...</div>';
         totalBuyEl.textContent = formatNumber(buyTotal);
         
         var sellArray = Object.keys(sellVolumes).map(function(coin) {
@@ -377,7 +427,7 @@
                 '<span class="top-amount">' + formatNumber(item.amount) + '</span>' +
                 '</div>';
         });
-        topSellList.innerHTML = sellHTML || '<div class="top-item" style="justify-content:center;color:#666;">Veri bekleniyor...</div>';
+        topSellList.innerHTML = sellHTML || '<div class="top-item" style="justify-content:center;color:#666;">Balina bekleniyor...</div>';
         totalSellEl.textContent = formatNumber(sellTotal);
     }
     
@@ -393,7 +443,7 @@
         tradesContainer.innerHTML = '';
         
         if (trades.length === 0) {
-            tradesContainer.innerHTML = '<div class="loading">📊 Balina işlemleri bekleniyor...</div>';
+            tradesContainer.innerHTML = '<div class="loading">🐋 Büyük işlemler bekleniyor...<br><small style="color:#666;font-size:0.85em;">(' + connectedCount + '/60 stream aktif)</small></div>';
             return;
         }
         
@@ -407,7 +457,7 @@
             div.innerHTML = 
                 '<div class="trade-header">' +
                     '<span class="trade-coin">' + trade.coin + '</span>' +
-                    '<span class="trade-exchange">Binance</span>' +
+                    '<span class="trade-exchange">Futures</span>' +
                 '</div>' +
                 '<div class="trade-details">' +
                     '<div class="trade-detail">' +
@@ -461,11 +511,16 @@
     }
     
     function connectWebSocket(symbol, threshold) {
-        var ws = new WebSocket('wss://stream.binance.com:9443/ws/' + symbol + '@trade');
+        // FUTURES stream
+        var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
         
         ws.onopen = function() {
-            wsDot.classList.add('on');
-            console.log('Binance stream bağlandı: ' + symbol);
+            connectedCount++;
+            if (connectedCount >= 1) {
+                wsDot.classList.add('on');
+            }
+            console.log('Futures bağlandı (' + connectedCount + '/60): ' + symbol);
+            updateUI();
         };
         
         ws.onmessage = function(event) {
@@ -488,16 +543,18 @@
         
         ws.onerror = function(error) {
             console.error('WebSocket error ' + symbol + ':', error);
-            wsDot.classList.remove('on');
         };
         
         ws.onclose = function() {
-            console.log('WebSocket kapandı: ' + symbol + ', 5 saniye sonra yeniden bağlanılıyor...');
-            wsDot.classList.remove('on');
+            connectedCount--;
+            if (connectedCount === 0) {
+                wsDot.classList.remove('on');
+            }
+            console.log('Futures kapandı: ' + symbol + ', yeniden bağlanılıyor...');
             
             setTimeout(function() {
                 connectWebSocket(symbol, threshold);
-            }, 5000);
+            }, 3000);
         };
         
         websockets.push(ws);
@@ -547,6 +604,8 @@
     }
     
     function init() {
+        console.log('🐋 Whale Tracker FUTURES başlatılıyor - 60 coin');
+        
         Object.keys(WHALE_THRESHOLDS).forEach(function(symbol) {
             connectWebSocket(symbol, WHALE_THRESHOLDS[symbol]);
         });
@@ -555,8 +614,8 @@
         setInterval(fetchFearIndex, 300000);
         setInterval(cleanOldTrades, 60000);
         
-        console.log('🐋 Whale Tracker CANLI - 12 coin WebSocket aktif');
         console.log('⚠️ HTTPS gerekli! GitHub Pages HTTPS olmalı.');
+        console.log('📊 Futures stream aktif - Balina işlemleri bekleniyor...');
     }
     
     document.addEventListener('visibilitychange', function() {
@@ -567,6 +626,7 @@
                 }
             });
             websockets = [];
+            connectedCount = 0;
         } else {
             init();
         }
