@@ -5,185 +5,122 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Whale Tracker PRO - Multi Exchange</title>
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background: #0d1117;
-    color: #c9d1d9;
-    margin: 0;
-    padding: 0;
-}
-header {
-    text-align: center;
-    padding: 20px;
-    background-color: #161b22;
-    font-size: 1.5em;
-    font-weight: bold;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-th, td {
-    padding: 10px;
-    text-align: center;
-    border-bottom: 1px solid #30363d;
-}
-th {
-    background-color: #161b22;
-}
-.buy {
-    color: #2ea44f;
-    font-weight: bold;
-}
-.sell {
-    color: #d73a49;
-    font-weight: bold;
-}
-.borsa {
-    font-weight: bold;
-    color: #79c0ff;
-}
-#tradeTableContainer {
-    max-height: 80vh;
-    overflow-y: auto;
-}
+    body { font-family: Arial, sans-serif; background: #121212; color: #f1f1f1; margin:0; padding:0;}
+    h1 { text-align:center; margin-top:20px;}
+    table { width: 95%; margin: 20px auto; border-collapse: collapse;}
+    th, td { border: 1px solid #555; padding: 8px; text-align:center;}
+    th { background: #222; }
+    tr:nth-child(even){ background: #1a1a1a; }
+    .fear { color: #ff5555; font-weight:bold;}
+    .neutral { color: #ffaa00; font-weight:bold;}
+    .greed { color: #55ff55; font-weight:bold;}
 </style>
 </head>
 <body>
-<header>Whale Tracker PRO - Binance | Bybit | CoinEx</header>
-<div id="tradeTableContainer">
-<table id="tradeTable">
-<thead>
-<tr>
-    <th>Coin</th>
-    <th>Side</th>
-    <th>Miktar</th>
-    <th>Fiyat</th>
-    <th>Borsa</th>
-</tr>
-</thead>
-<tbody>
-<!-- Trade verileri buraya gelecek -->
-</tbody>
-</table>
+
+<h1>Whale Tracker PRO - Multi Exchange</h1>
+<div style="text-align:center;">
+    Fear & Greed Index: <span id="fearIndex">Loading...</span>
 </div>
-<audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+<table id="tradeTable">
+    <thead>
+        <tr>
+            <th>Exchange</th>
+            <th>Coin</th>
+            <th>Side</th>
+            <th>Amount</th>
+            <th>Price</th>
+            <th>Time</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
 <script>
-// Burada 2. ve 3. parça JS eklenecek
-</script>
-</body>
-</html>
-// COIN ADETLERİNE GÖRE WHALE EŞİKLERİ
+// -------------------- WHALE THRESHOLDS --------------------
 const WHALE_THRESHOLDS = {
-    'BTC': 9,
-    'ETH': 90,
-    'ADA': 50000,
-    'DOT': 5000,
-    'LINK': 5000,
-    'MATIC': 50000,
-    'AVAX': 2000,
-    'SOL': 500,
-    'DOGE': 500000,
-    'XRP': 50000,
-    'LTC': 1000,
-    'BCH': 500,
-    'ETC': 5000,
-    'TRX': 500000,
-    'EOS': 50000
+    'BTC': 9, 'ETH': 90, 'ADA': 50000, 'DOT': 5000, 'LINK': 5000,
+    'MATIC': 50000, 'AVAX': 2000, 'SOL': 500, 'DOGE': 500000,
+    'XRP': 50000, 'LTC': 1000, 'BCH': 500, 'ETC': 5000, 'TRX': 500000, 'EOS': 50000
 };
 
-// Tablo ve ses
-const tradeTable = document.querySelector("#tradeTable tbody");
-const alertSound = document.getElementById("alertSound");
-
-// Trade ekleme fonksiyonu
+// -------------------- TRADE TABLO --------------------
+const tbody = document.querySelector("#tradeTable tbody");
 function addTrade(coin, side, amount, price, exchange) {
-    // Eşik kontrolü
-    if (WHALE_THRESHOLDS[coin] && amount >= WHALE_THRESHOLDS[coin]) {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${coin}</td>
-            <td class="${side.toLowerCase()}">${side}</td>
-            <td>${amount}</td>
-            <td>${price}</td>
-            <td class="borsa">${exchange}</td>
-        `;
-        tradeTable.prepend(row);
-        alertSound.play();
-    }
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${exchange}</td><td>${coin}</td><td>${side}</td><td>${amount}</td><td>${price}</td><td>${new Date().toLocaleTimeString()}</td>`;
+    tbody.prepend(tr);
+    if(tbody.childElementCount > 50) tbody.removeChild(tbody.lastChild); // sadece son 50 göster
 }
 
-// -------------------- BINANCE --------------------
+// -------------------- BINANCE WS --------------------
 const binanceWs = new WebSocket("wss://stream.binance.com:9443/ws/!miniTicker@arr");
-binanceWs.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    data.forEach(ticker => {
-        const coin = ticker.s.replace("USDT",""); // örn: BTCUSDT -> BTC
-        const price = parseFloat(ticker.c);
-        const amount = parseFloat(ticker.q); // 24h toplam volüm yerine mock trade miktarı
-        // Burada sadece örnek; Binance trade detay için trade stream kullanılabilir
-        addTrade(coin, "BUY", amount, price, "Binance");
+binanceWs.onmessage = (msg) => {
+    const data = JSON.parse(msg.data);
+    data.forEach(t => {
+        const symbol = t.s;
+        const coin = symbol.replace("USDT","");
+        const amount = parseFloat(t.c);
+        if(WHALE_THRESHOLDS[coin] && amount >= WHALE_THRESHOLDS[coin]){
+            addTrade(coin, "BUY/SELL", amount, t.c, "Binance");
+        }
     });
 };
 
-// -------------------- BYBIT --------------------
-const bybitWs = new WebSocket("wss://stream.bybit.com/realtime");
-bybitWs.onopen = () => {
-    bybitWs.send(JSON.stringify({op: "subscribe", args: ["trade.BTCUSDT","trade.ETHUSDT","trade.SOLUSDT"]}));
-};
-bybitWs.onmessage = (event) => {
-    const msg = JSON.parse(event.data);
-    if(msg.topic && msg.data) {
-        msg.data.forEach(trade => {
-            const coin = trade.symbol.replace("USDT",""); 
-            addTrade(coin, trade.side, parseFloat(trade.size), parseFloat(trade.price), "Bybit");
+// -------------------- BYBIT WS --------------------
+const bybitWs = new WebSocket("wss://stream.bybit.com/realtime_public");
+bybitWs.onopen = () => bybitWs.send(JSON.stringify({op:"subscribe", args:["trade.BTCUSD","trade.ETHUSD"]}));
+bybitWs.onmessage = (msg) => {
+    const data = JSON.parse(msg.data);
+    if(data.topic && data.data){
+        data.data.forEach(t => {
+            const coin = t.symbol.replace("USD","");
+            const amount = parseFloat(t.size);
+            if(WHALE_THRESHOLDS[coin] && amount >= WHALE_THRESHOLDS[coin]){
+                addTrade(coin, t.side, amount, t.price, "Bybit");
+            }
         });
     }
 };
 
-// -------------------- COINEX --------------------
+// -------------------- COINEX WS --------------------
 const coinexWs = new WebSocket("wss://socket.coinex.com/");
 coinexWs.onopen = () => {
-    // Örnek: subscribe BTC/USDT, ETH/USDT, SOL/USDT trades
-    coinexWs.send(JSON.stringify({method: "subscribe", params: ["BTCUSDT","ETHUSDT","SOLUSDT"], id: 1}));
-};
-coinexWs.onmessage = (event) => {
-    const msg = JSON.parse(event.data);
-    if(msg.method === "trades.update") {
-        msg.params[1].forEach(trade => {
-            const coin = trade.symbol.replace("USDT","");
-            const side = trade.side.toUpperCase();
-            addTrade(coin, side, parseFloat(trade.amount), parseFloat(trade.price), "CoinEx");
-        });
+    ["BTCUSDT","ETHUSDT","SOLUSDT","DOGEUSDT"].forEach(sym=>{
+        coinexWs.send(JSON.stringify({method:"subscribe", params:[`push.trade.${sym}`]}));
+    });
+});
+coinexWs.onmessage = (msg) => {
+    const data = JSON.parse(msg.data);
+    if(data.method === "push.trade" && data.params){
+        const t = data.params[0];
+        const coin = t.symbol.replace("USDT","");
+        const amount = parseFloat(t.amount);
+        if(WHALE_THRESHOLDS[coin] && amount >= WHALE_THRESHOLDS[coin]){
+            addTrade(coin, t.side, amount, t.price, "CoinEx");
+        }
     }
 };
 
 // -------------------- FEAR & GREED INDEX --------------------
 const fearIndexDiv = document.getElementById("fearIndex");
-
 async function fetchFearIndex() {
     try {
         const response = await fetch("https://api.alternative.me/fng/?limit=1");
         const data = await response.json();
-        if(data && data.data && data.data.length > 0) {
+        if(data && data.data && data.data.length > 0){
             const index = data.data[0].value;
             const valueClass = index < 25 ? "fear" : index > 75 ? "greed" : "neutral";
             fearIndexDiv.innerHTML = `<span class="${valueClass}">${index}</span>`;
         }
-    } catch (err) {
+    } catch(err){
         console.error("Fear Index çekilemedi:", err);
     }
 }
-
-// Her 1 dakikada bir güncelle
-setInterval(fetchFearIndex, 60000);
+setInterval(fetchFearIndex,60000);
 fetchFearIndex();
+</script>
 
-// -------------------- İsteğe bağlı ekstra filtreler --------------------
-// Örnek: sadece belirli coinler ve sadece alış işlemleri
-function addTradeFiltered(coin, side, amount, price, exchange) {
-    const allowedCoins = ["BTC","ETH","SOL","DOGE","ADA"];
-    if(!allowedCoins.includes(coin)) return; // izin verilen coinler dışında görme
-    if(side !== "BUY") return; // sadece alım işlemleri
-    addTrade(coin, side, amount, price, exchange);
-}
+</body>
+</html>
