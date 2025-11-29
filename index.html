@@ -2,356 +2,342 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Whale Tracker PRO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whale Tracker</title>
 <style>
-    * { 
-        box-sizing: border-box; 
-        margin: 0; 
-        padding: 0;
-        -webkit-tap-highlight-color: transparent;
-    }
-    body { 
-        font-family: 'Courier New', monospace;
-        background: #000;
-        color: #0f0; 
-        padding: 10px;
-        overflow-x: hidden;
-        font-size: 13px;
-    }
-    .header {
-        padding: 10px 0;
-        border-bottom: 1px solid #0f0;
-        margin-bottom: 10px;
-    }
-    .header-line {
-        display: flex;
-        justify-content: space-between;
-        margin: 3px 0;
-    }
-    .green { color: #0f0; }
-    .red { color: #f00; }
-    .yellow { color: #ff0; }
-    .cyan { color: #0ff; }
-    .gray { color: #666; }
-    
-    .filter-box {
-        margin: 10px 0;
-        padding: 5px;
-        border: 1px solid #0f0;
-    }
-    .filter-input {
-        width: 100%;
-        background: #000;
-        border: none;
-        color: #0f0;
-        font-family: 'Courier New', monospace;
-        font-size: 13px;
-        padding: 5px;
-        text-transform: uppercase;
-        outline: none;
-    }
-    .filter-input::placeholder {
-        color: #333;
-    }
-    
-    .summary-table {
-        margin: 10px 0;
-        border: 1px solid #0f0;
-        padding: 5px;
-    }
-    .summary-header {
-        border-bottom: 1px solid #0f0;
-        padding: 3px 0;
-        display: flex;
-        justify-content: space-between;
-    }
-    .summary-row {
-        padding: 2px 0;
-        display: flex;
-        justify-content: space-between;
-        border-bottom: 1px dotted #333;
-    }
-    .summary-row:last-child {
-        border-bottom: none;
-        border-top: 1px solid #0f0;
-        margin-top: 5px;
-        padding-top: 5px;
-    }
-    
-    .trade-list {
-        margin-top: 10px;
-    }
-    .trade-line {
-        padding: 3px 0;
-        border-bottom: 1px dotted #222;
-        animation: fadeIn 0.3s ease;
-    }
-    .trade-line.new {
-        animation: blink 0.5s ease 2;
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    @keyframes blink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.3; }
-    }
-    
-    .status-dot {
-        display: inline-block;
-        width: 6px;
-        height: 6px;
-        background: #f00;
-        margin-right: 3px;
-    }
-    .status-dot.on {
-        background: #0f0;
-    }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+    font-family: Arial, sans-serif;
+    background: #000;
+    color: #fff; 
+    padding: 10px;
+    font-size: 12px;
+}
+.header {
+    border: 1px solid #444;
+    padding: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #111;
+}
+.header span {
+    margin-right: 15px;
+}
+.status { color: #888; }
+.status.on { color: #0f0; }
+
+input { 
+    width: 100%;
+    background: #111;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 6px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+input:focus {
+    outline: none;
+    border-color: #666;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #444;
+    background: #111;
+    margin-bottom: 15px;
+}
+th {
+    background: #222;
+    color: #fff;
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #444;
+    font-weight: bold;
+}
+td {
+    padding: 6px 8px;
+    border: 1px solid #444;
+    color: #fff;
+}
+tr:hover td {
+    background: #1a1a1a;
+}
+.buy { color: #0f0; font-weight: bold; }
+.sell { color: #f00; font-weight: bold; }
+.total-row {
+    background: #1a1a1a;
+    font-weight: bold;
+}
+.total-row td {
+    border-top: 2px solid #666;
+}
+.gray { color: #888; }
+.new-row {
+    animation: highlight 0.5s ease;
+}
+@keyframes highlight {
+    0% { background: #2a2a2a; }
+    100% { background: transparent; }
+}
 </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="header-line">
-        <span class="cyan">WHALE TRACKER PRO - FUTURES</span>
-        <span class="yellow">LIVE</span>
+    <div>
+        <span><strong>WHALE TRACKER</strong></span>
+        <span class="status" id="wsStatus">⬤ WS</span>
+        <span class="status" id="apiStatus">⬤ API</span>
     </div>
-    <div class="header-line">
-        <span>F&G:<span id="fear" class="gray">--</span></span>
-        <span>TOTAL:<span id="total" class="cyan">0</span></span>
-        <span>4H:<span id="hourly" class="cyan">0</span></span>
-    </div>
-    <div class="header-line gray">
-        <span><span class="status-dot" id="wsDot"></span>WS(60)</span>
-        <span><span class="status-dot" id="apiDot"></span>API</span>
+    <div>
+        <span>F&G: <span id="fear">--</span></span>
+        <span>Total: <span id="total">0</span></span>
+        <span>4H: <span id="hourly">0</span></span>
     </div>
 </div>
 
-<div class="filter-box">
-    <input type="text" id="filter" class="filter-input" placeholder="FILTER: BTC ETH SOL...">
-</div>
+<input type="text" id="filter" placeholder="Filter: BTC, ETH, SOL...">
 
-<div class="summary-table" id="summary">
-    <div class="summary-header cyan">
-        <span>COIN</span>
-        <span>BUY</span>
-        <span>SELL</span>
-        <span>USD</span>
-    </div>
-    <div class="gray" style="padding:10px;text-align:center;">LOADING...</div>
-</div>
+<table id="summaryTable">
+    <thead>
+        <tr>
+            <th>COIN</th>
+            <th>BUY</th>
+            <th>SELL</th>
+            <th>BUY USD</th>
+            <th>SELL USD</th>
+            <th>TOTAL USD</th>
+        </tr>
+    </thead>
+    <tbody id="summaryBody">
+        <tr><td colspan="6" class="gray" style="text-align:center;">Loading...</td></tr>
+    </tbody>
+</table>
 
-<div class="trade-list" id="trades">
-    <div class="gray" style="text-align:center;">CONNECTING TO BINANCE FUTURES...</div>
-</div>
+<table id="tradesTable">
+    <thead>
+        <tr>
+            <th>TIME</th>
+            <th>COIN</th>
+            <th>SIDE</th>
+            <th>AMOUNT</th>
+            <th>PRICE</th>
+            <th>TOTAL USD</th>
+        </tr>
+    </thead>
+    <tbody id="tradesBody">
+        <tr><td colspan="6" class="gray" style="text-align:center;">Connecting...</td></tr>
+    </tbody>
+</table>
 
 <script>
 (function() {
-    'use strict';
-    
-    var MAX = 100;
-    var FOUR_H = 14400000;
-    
-    var THRESH = {
-        'btcusdt': 6, 'ethusdt': 90, 'bnbusdt': 600, 'solusdt': 2400, 'xrpusdt': 120000,
-        'adausdt': 240000, 'dogeusdt': 2400000, 'dotusdt': 24000, 'maticusdt': 240000, 
-        'linkusdt': 24000, 'avaxusdt': 12000, 'ltcusdt': 6000, 'bchusdt': 3600, 
-        'uniusdt': 12000, 'atomusdt': 12000, 'etcusdt': 60000, 'nearusdt': 24000,
-        'aptusdt': 12000, 'arbusdt': 120000, 'opusdt': 36000, 'ldousdt': 60000,
-        'injusdt': 6000, 'stxusdt': 60000, 'filusdt': 12000, 'suiusdt': 36000,
-        'imxusdt': 36000, 'tiausdt': 12000, 'seiusdt': 60000, 'hbarusdt': 240000,
-        'rndrusdt': 12000, 'fetusdt': 60000, 'taousdt': 1200, 'arusdt': 24000,
-        'wldusdt': 36000, 'flokiusdt': 2400000, 'pepeusdt': 12000000000, 
-        'shibusdt': 360000000, 'wifusdt': 60000, 'bonkusdt': 2400000000,
-        'jupusdt': 60000, 'pythusdt': 120000, 'trbusdt': 2400, 'icpusdt': 12000,
-        'runeusdt': 12000, 'aaveusdt': 1200, 'mkrusdt': 240, 'grtusdt': 240000,
-        'ftmusdt': 60000, 'algousdt': 120000, 'qntusdt': 600, 'sandusdt': 120000,
-        'manausdt': 120000, 'axsusdt': 24000, 'galausdt': 240000, 'chzusdt': 240000,
-        'apeusdt': 36000, 'gmxusdt': 2400, 'blurusdt': 36000, 'pendleusdt': 24000
-    };
-    
-    var trades = [];
-    var total = 0;
-    var ws = [];
-    var conn = 0;
-    var filt = '';
-    
-    var tradesEl = document.getElementById('trades');
-    var summaryEl = document.getElementById('summary');
-    var totalEl = document.getElementById('total');
-    var hourlyEl = document.getElementById('hourly');
-    var fearEl = document.getElementById('fear');
-    var wsDot = document.getElementById('wsDot');
-    var apiDot = document.getElementById('apiDot');
-    var filterEl = document.getElementById('filter');
-    
-    function fmt(n) {
-        if (n >= 1000000) return (n/1000000).toFixed(2) + 'M';
-        if (n >= 1000) return (n/1000).toFixed(2) + 'K';
-        return n.toFixed(2);
-    }
-    
-    function updateSummary() {
-        var coins = {};
-        trades.forEach(function(t) {
-            if (!coins[t.coin]) coins[t.coin] = {b:0,s:0,bu:0,su:0};
-            if (t.side === 'BUY') {
-                coins[t.coin].b += t.amt;
-                coins[t.coin].bu += t.usd;
-            } else {
-                coins[t.coin].s += t.amt;
-                coins[t.coin].su += t.usd;
-            }
-        });
-        
-        var arr = Object.keys(coins).map(function(c) {
-            return {
-                coin: c,
-                b: coins[c].b,
-                s: coins[c].s,
-                bu: coins[c].bu,
-                su: coins[c].su,
-                tot: coins[c].bu + coins[c].su
-            };
-        }).sort(function(a,b) { return b.tot - a.tot; });
-        
-        if (filt) arr = arr.filter(function(x) { return x.coin.indexOf(filt) !== -1; });
-        
-        var html = '<div class="summary-header cyan"><span>COIN</span><span>BUY</span><span>SELL</span><span>USD</span></div>';
-        var tb = 0, ts = 0, tu = 0;
-        
-        arr.forEach(function(x) {
-            tb += x.b; ts += x.s; tu += x.tot;
-            html += '<div class="summary-row">' +
-                '<span class="cyan">' + x.coin + '</span>' +
-                '<span class="green">' + fmt(x.b) + '</span>' +
-                '<span class="red">' + fmt(x.s) + '</span>' +
-                '<span class="yellow">$' + fmt(x.tot) + '</span>' +
-                '</div>';
-        });
-        
-        html += '<div class="summary-row">' +
-            '<span class="yellow">TOT</span>' +
-            '<span class="green">' + fmt(tb) + '</span>' +
-            '<span class="red">' + fmt(ts) + '</span>' +
-            '<span class="yellow">$' + fmt(tu) + '</span>' +
-            '</div>';
-        
-        summaryEl.innerHTML = html;
-    }
-    
-    function updateUI() {
-        totalEl.textContent = total;
-        var h = trades.filter(function(t) { return t.ts > Date.now() - FOUR_H; });
-        hourlyEl.textContent = h.length;
-        
-        var arr = filt ? trades.filter(function(t) { return t.coin.indexOf(filt) !== -1; }) : trades;
-        
-        if (arr.length === 0) {
-            tradesEl.innerHTML = '<div class="gray" style="text-align:center;">' + 
-                (filt ? 'NO MATCH: ' + filt : 'WAITING...') + '</div>';
-            return;
+'use strict';
+
+var THRESHOLDS = {
+    btcusdt:6,ethusdt:90,bnbusdt:600,solusdt:2400,xrpusdt:120000,adausdt:240000,
+    dogeusdt:2400000,dotusdt:24000,maticusdt:240000,linkusdt:24000,avaxusdt:12000,
+    ltcusdt:6000,bchusdt:3600,uniusdt:12000,atomusdt:12000,etcusdt:60000,nearusdt:24000,
+    aptusdt:12000,arbusdt:120000,opusdt:36000,ldousdt:60000,injusdt:6000,stxusdt:60000,
+    filusdt:12000,suiusdt:36000,imxusdt:36000,tiausdt:12000,seiusdt:60000,hbarusdt:240000,
+    rndrusdt:12000,fetusdt:60000,taousdt:1200,arusdt:24000,wldusdt:36000,flokiusdt:2400000,
+    pepeusdt:12000000000,shibusdt:360000000,wifusdt:60000,bonkusdt:2400000000,jupusdt:60000,
+    pythusdt:120000,trbusdt:2400,icpusdt:12000,runeusdt:12000,aaveusdt:1200,mkrusdt:240,
+    grtusdt:240000,ftmusdt:60000,algousdt:120000,qntusdt:600,sandusdt:120000,manausdt:120000,
+    axsusdt:24000,galausdt:240000,chzusdt:240000,apeusdt:36000,gmxusdt:2400,blurusdt:36000,
+    pendleusdt:24000
+};
+
+var trades = [];
+var totalCount = 0;
+var connectedWS = 0;
+var filterText = '';
+var websockets = [];
+
+var summaryBody = document.getElementById('summaryBody');
+var tradesBody = document.getElementById('tradesBody');
+var totalEl = document.getElementById('total');
+var hourlyEl = document.getElementById('hourly');
+var fearEl = document.getElementById('fear');
+var wsStatus = document.getElementById('wsStatus');
+var apiStatus = document.getElementById('apiStatus');
+var filterEl = document.getElementById('filter');
+
+function formatNum(n) {
+    if (n >= 1000000) return (n/1000000).toFixed(2) + 'M';
+    if (n >= 1000) return (n/1000).toFixed(2) + 'K';
+    return n.toFixed(2);
+}
+
+function updateSummary() {
+    var coins = {};
+    trades.forEach(function(t) {
+        if (!coins[t.coin]) coins[t.coin] = {buy:0, sell:0, buyUSD:0, sellUSD:0};
+        if (t.side === 'BUY') {
+            coins[t.coin].buy += t.amount;
+            coins[t.coin].buyUSD += t.usd;
+        } else {
+            coins[t.coin].sell += t.amount;
+            coins[t.coin].sellUSD += t.usd;
         }
-        
-        var html = '';
-        arr.slice(0, 50).forEach(function(t, i) {
-            var cls = i === 0 ? 'trade-line new' : 'trade-line';
-            var color = t.side === 'BUY' ? 'green' : 'red';
-            html += '<div class="' + cls + '">' +
-                '<span class="cyan">' + t.coin + '</span> ' +
-                '<span class="' + color + '">' + t.side + '</span> ' +
-                '<span class="yellow">$' + fmt(t.usd) + '</span> ' +
-                '<span class="gray">' + t.time + '</span>' +
-                '</div>';
-        });
-        
-        tradesEl.innerHTML = html;
-    }
-    
-    function add(coin, side, amt, price) {
-        var usd = amt * price;
-        trades.unshift({
-            coin: coin,
-            side: side,
-            amt: amt,
-            price: price,
-            usd: usd,
-            time: new Date().toLocaleTimeString('tr-TR'),
-            ts: Date.now()
-        });
-        
-        if (trades.length > MAX) trades.pop();
-        total++;
-        updateUI();
-        updateSummary();
-    }
-    
-    function connect(sym, thresh) {
-        var w = new WebSocket('wss://fstream.binance.com/ws/' + sym + '@aggTrade');
-        
-        w.onopen = function() {
-            conn++;
-            if (conn >= 1) wsDot.classList.add('on');
-            updateUI();
-        };
-        
-        w.onmessage = function(e) {
-            try {
-                var d = JSON.parse(e.data);
-                var q = parseFloat(d.q);
-                var p = parseFloat(d.p);
-                if (q >= thresh) {
-                    add(sym.replace('usdt','').toUpperCase(), d.m ? 'SELL' : 'BUY', q, p);
-                }
-            } catch(err) {}
-        };
-        
-        w.onclose = function() {
-            conn--;
-            if (conn === 0) wsDot.classList.remove('on');
-            setTimeout(function() { connect(sym, thresh); }, 3000);
-        };
-        
-        ws.push(w);
-    }
-    
-    function fetchFear() {
-        fetch('https://api.alternative.me/fng/?limit=1')
-            .then(function(r) { return r.json(); })
-            .then(function(d) {
-                apiDot.classList.add('on');
-                if (d && d.data && d.data[0]) {
-                    var v = parseInt(d.data[0].value);
-                    var cls = v < 25 ? 'red' : v > 75 ? 'green' : 'yellow';
-                    fearEl.innerHTML = '<span class="' + cls + '">' + v + '</span>';
-                }
-            })
-            .catch(function() { apiDot.classList.remove('on'); });
-    }
-    
-    function clean() {
-        var cut = Date.now() - FOUR_H;
-        trades = trades.filter(function(t) { return t.ts > cut; });
-        updateUI();
-        updateSummary();
-    }
-    
-    filterEl.addEventListener('input', function(e) {
-        filt = e.target.value.toUpperCase().trim();
-        updateSummary();
-        updateUI();
     });
     
-    function init() {
-        Object.keys(THRESH).forEach(function(s) { connect(s, THRESH[s]); });
-        fetchFear();
-        setInterval(fetchFear, 300000);
-        setInterval(clean, 60000);
+    var arr = Object.keys(coins).map(function(c) {
+        return {
+            coin: c,
+            buy: coins[c].buy,
+            sell: coins[c].sell,
+            buyUSD: coins[c].buyUSD,
+            sellUSD: coins[c].sellUSD,
+            totalUSD: coins[c].buyUSD + coins[c].sellUSD
+        };
+    }).sort(function(a,b) { return b.totalUSD - a.totalUSD; });
+    
+    if (filterText) {
+        arr = arr.filter(function(x) { return x.coin.indexOf(filterText) !== -1; });
     }
     
-    init();
+    var html = '';
+    var totBuy = 0, totSell = 0, totBuyUSD = 0, totSellUSD = 0, totUSD = 0;
+    
+    arr.forEach(function(x) {
+        totBuy += x.buy;
+        totSell += x.sell;
+        totBuyUSD += x.buyUSD;
+        totSellUSD += x.sellUSD;
+        totUSD += x.totalUSD;
+        
+        html += '<tr>' +
+            '<td><strong>' + x.coin + '</strong></td>' +
+            '<td class="buy">' + formatNum(x.buy) + '</td>' +
+            '<td class="sell">' + formatNum(x.sell) + '</td>' +
+            '<td class="buy">$' + formatNum(x.buyUSD) + '</td>' +
+            '<td class="sell">$' + formatNum(x.sellUSD) + '</td>' +
+            '<td><strong>$' + formatNum(x.totalUSD) + '</strong></td>' +
+            '</tr>';
+    });
+    
+    html += '<tr class="total-row">' +
+        '<td><strong>TOTAL</strong></td>' +
+        '<td class="buy">' + formatNum(totBuy) + '</td>' +
+        '<td class="sell">' + formatNum(totSell) + '</td>' +
+        '<td class="buy">$' + formatNum(totBuyUSD) + '</td>' +
+        '<td class="sell">$' + formatNum(totSellUSD) + '</td>' +
+        '<td><strong>$' + formatNum(totUSD) + '</strong></td>' +
+        '</tr>';
+    
+    summaryBody.innerHTML = html || '<tr><td colspan="6" class="gray" style="text-align:center;">No data</td></tr>';
+}
+
+function updateTrades() {
+    totalEl.textContent = totalCount;
+    var recent = trades.filter(function(t) { return t.timestamp > Date.now() - 14400000; });
+    hourlyEl.textContent = recent.length;
+    
+    var filtered = filterText ? trades.filter(function(t) { return t.coin.indexOf(filterText) !== -1; }) : trades;
+    
+    if (filtered.length === 0) {
+        tradesBody.innerHTML = '<tr><td colspan="6" class="gray" style="text-align:center;">' + 
+            (filterText ? 'No matches for: ' + filterText : 'Waiting for trades...') + '</td></tr>';
+        return;
+    }
+    
+    var html = '';
+    filtered.slice(0, 50).forEach(function(t, i) {
+        html += '<tr' + (i === 0 ? ' class="new-row"' : '') + '>' +
+            '<td class="gray">' + t.time + '</td>' +
+            '<td><strong>' + t.coin + '</strong></td>' +
+            '<td class="' + (t.side === 'BUY' ? 'buy' : 'sell') + '">' + t.side + '</td>' +
+            '<td>' + formatNum(t.amount) + '</td>' +
+            '<td>$' + formatNum(t.price) + '</td>' +
+            '<td><strong>$' + formatNum(t.usd) + '</strong></td>' +
+            '</tr>';
+    });
+    
+    tradesBody.innerHTML = html;
+}
+
+function addTrade(coin, side, amount, price) {
+    trades.unshift({
+        coin: coin,
+        side: side,
+        amount: amount,
+        price: price,
+        usd: amount * price,
+        time: new Date().toLocaleTimeString('tr-TR'),
+        timestamp: Date.now()
+    });
+    
+    if (trades.length > 100) trades.pop();
+    totalCount++;
+    updateTrades();
+    updateSummary();
+}
+
+function connectWS(symbol, threshold) {
+    var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
+    
+    ws.onopen = function() {
+        connectedWS++;
+        if (connectedWS === 1) wsStatus.classList.add('on');
+        updateTrades();
+    };
+    
+    ws.onmessage = function(e) {
+        try {
+            var data = JSON.parse(e.data);
+            var qty = parseFloat(data.q);
+            var price = parseFloat(data.p);
+            if (qty >= threshold) {
+                addTrade(symbol.replace('usdt','').toUpperCase(), data.m ? 'SELL' : 'BUY', qty, price);
+            }
+        } catch(err) {}
+    };
+    
+    ws.onclose = function() {
+        connectedWS--;
+        if (connectedWS === 0) wsStatus.classList.remove('on');
+        setTimeout(function() { connectWS(symbol, threshold); }, 3000);
+    };
+    
+    websockets.push(ws);
+}
+
+function fetchFear() {
+    fetch('https://api.alternative.me/fng/?limit=1')
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            apiStatus.classList.add('on');
+            if (d && d.data && d.data[0]) {
+                fearEl.textContent = d.data[0].value;
+            }
+        })
+        .catch(function() {
+            apiStatus.classList.remove('on');
+        });
+}
+
+function cleanOld() {
+    trades = trades.filter(function(t) { return t.timestamp > Date.now() - 14400000; });
+    updateTrades();
+    updateSummary();
+}
+
+filterEl.addEventListener('input', function(e) {
+    filterText = e.target.value.toUpperCase().trim();
+    updateSummary();
+    updateTrades();
+});
+
+Object.keys(THRESHOLDS).forEach(function(s) { connectWS(s, THRESHOLDS[s]); });
+fetchFear();
+setInterval(fetchFear, 300000);
+setInterval(cleanOld, 60000);
+
 })();
 </script>
 </body>
