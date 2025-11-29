@@ -72,6 +72,40 @@ input:focus {
     box-shadow: none;
 }
 
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.stat-card {
+    background: #131722;
+    border: 1px solid #1e222d;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+.stat-card .label {
+    color: #787b86;
+    font-size: 10px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.stat-card .value {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.stat-card .change {
+    font-size: 10px;
+    margin-top: 2px;
+}
+
+.positive { color: #089981; }
+.negative { color: #f23645; }
+
 table {
     width: 100%;
     border-collapse: separate;
@@ -154,12 +188,20 @@ table::before {
 <div class="controls">
     <label>
         <input type="checkbox" id="soundToggle" checked>
-        <span>🔔 Ses Bildirimleri</span>
+        <span>🔔 Ses</span>
     </label>
     <label>
         <input type="checkbox" id="vibrationToggle" checked>
         <span>📳 Titreşim</span>
     </label>
+    <label>
+        <input type="checkbox" id="marketDataToggle" checked>
+        <span>📊 Market Data</span>
+    </label>
+</div>
+
+<div class="stats-grid" id="statsGrid">
+    <!-- Market stats buraya gelecek -->
 </div>
 
 <input type="text" id="filter" placeholder="Filter: BTC, ETH, SOL...">
@@ -201,65 +243,65 @@ table::before {
 'use strict';
 
 var THRESHOLDS = {
-    btcusdt: 12,
-    ethusdt: 900,
-    bnbusdt: 9000,
-    solusdt: 9000,
-    xrpusdt: 900000,
-    adausdt: 900000,
-    dogeusdt: 9000000,
-    dotusdt: 90000,
-    maticusdt: 900000,
-    linkusdt: 90000,
-    avaxusdt: 90000,
-    ltcusdt: 90000,
-    bchusdt: 24000,
-    uniusdt: 90000,
-    atomusdt: 90000,
-    etcusdt: 900000,
-    nearusdt: 90000,
-    aptusdt: 90000,
-    arbusdt: 900000,
-    opusdt: 240000,
-    ldousdt: 900000,
-    injusdt: 90000,
-    stxusdt: 900000,
-    filusdt: 90000,
-    suiusdt: 240000,
-    imxusdt: 240000,
-    tiausdt: 90000,
-    seiusdt: 900000,
-    hbarusdt: 900000,
-    rndrusdt: 90000,
-    fetusdt: 900000,
-    taousdt: 9000,
-    arusdt: 90000,
-    wldusdt: 240000,
-    flokiusdt: 9000000,
-    pepeusdt: 90000000000,
-    shibusdt: 2400000000,
-    wifusdt: 600000,
+    btcusdt: 20,
+    ethusdt: 300,
+    bnbusdt: 2000,
+    solusdt: 8000,
+    xrpusdt: 400000,
+    adausdt: 800000,
+    dogeusdt: 8000000,
+    dotusdt: 80000,
+    maticusdt: 800000,
+    linkusdt: 80000,
+    avaxusdt: 40000,
+    ltcusdt: 20000,
+    bchusdt: 12000,
+    uniusdt: 40000,
+    atomusdt: 40000,
+    etcusdt: 200000,
+    nearusdt: 80000,
+    aptusdt: 40000,
+    arbusdt: 400000,
+    opusdt: 120000,
+    ldousdt: 200000,
+    injusdt: 20000,
+    stxusdt: 200000,
+    filusdt: 40000,
+    suiusdt: 120000,
+    imxusdt: 120000,
+    tiausdt: 40000,
+    seiusdt: 200000,
+    hbarusdt: 800000,
+    rndrusdt: 40000,
+    fetusdt: 200000,
+    taousdt: 4000,
+    arusdt: 80000,
+    wldusdt: 120000,
+    flokiusdt: 8000000,
+    pepeusdt: 40000000000,
+    shibusdt: 1200000000,
+    wifusdt: 200000,
     bonkusdt: 8000000000,
-    jupusdt: 600000,
-    pythusdt: 900000,
-    trbusdt: 9000,
-    icpusdt: 90000,
-    runeusdt: 90000,
-    aaveusdt: 9000,
-    mkrusdt: 900,
-    grtusdt: 900000,
-    ftmusdt: 900000,
-    algousdt: 900000,
-    qntusdt: 5000,
-    sandusdt: 800000,
-    manausdt: 800000,
-    axsusdt: 90000,
-    galausdt: 900000,
-    chzusdt: 900000,
+    jupusdt: 200000,
+    pythusdt: 400000,
+    trbusdt: 8000,
+    icpusdt: 40000,
+    runeusdt: 40000,
+    aaveusdt: 4000,
+    mkrusdt: 800,
+    grtusdt: 800000,
+    ftmusdt: 200000,
+    algousdt: 400000,
+    qntusdt: 2000,
+    sandusdt: 400000,
+    manausdt: 400000,
+    axsusdt: 80000,
+    galausdt: 800000,
+    chzusdt: 800000,
     apeusdt: 120000,
-    gmxusdt: 9000,
+    gmxusdt: 8000,
     blurusdt: 120000,
-    pendleusdt: 90000
+    pendleusdt: 80000
 };
 
 var trades = [];
@@ -270,6 +312,8 @@ var websockets = [];
 var audioContext;
 var soundEnabled = true;
 var vibrationEnabled = true;
+var marketDataEnabled = true;
+var marketData = {};
 
 var summaryBody = document.getElementById('summaryBody');
 var tradesBody = document.getElementById('tradesBody');
@@ -281,8 +325,10 @@ var apiStatus = document.getElementById('apiStatus');
 var filterEl = document.getElementById('filter');
 var soundToggle = document.getElementById('soundToggle');
 var vibrationToggle = document.getElementById('vibrationToggle');
+var marketDataToggle = document.getElementById('marketDataToggle');
+var statsGrid = document.getElementById('statsGrid');
 
-// Ses ve titreşim ayarları
+// Kontrol ayarları
 soundToggle.addEventListener('change', function(e) {
     soundEnabled = e.target.checked;
 });
@@ -291,7 +337,14 @@ vibrationToggle.addEventListener('change', function(e) {
     vibrationEnabled = e.target.checked;
 });
 
-// Ses çalma fonksiyonu (Web Audio API)
+marketDataToggle.addEventListener('change', function(e) {
+    marketDataEnabled = e.target.checked;
+    if (!marketDataEnabled) {
+        statsGrid.innerHTML = '';
+    }
+});
+
+// Ses fonksiyonu
 function playSound(type) {
     if (!soundEnabled) return;
     
@@ -306,7 +359,6 @@ function playSound(type) {
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
         
-        // BUY için yüksek, SELL için düşük ton
         oscillator.frequency.value = type === 'BUY' ? 800 : 400;
         oscillator.type = 'sine';
         
@@ -323,7 +375,6 @@ function playSound(type) {
 // Titreşim fonksiyonu
 function vibrate(pattern) {
     if (!vibrationEnabled) return;
-    
     if ('vibrate' in navigator) {
         navigator.vibrate(pattern);
     }
@@ -331,10 +382,7 @@ function vibrate(pattern) {
 
 // Bildirim fonksiyonu
 function notifyTrade(side) {
-    // Ses çal
     playSound(side);
-    
-    // Titret (BUY: kısa, SELL: uzun)
     vibrate(side === 'BUY' ? [100] : [200]);
 }
 
@@ -342,6 +390,33 @@ function formatNum(n) {
     if (n >= 1000000) return (n/1000000).toFixed(2) + 'M';
     if (n >= 1000) return (n/1000).toFixed(2) + 'K';
     return n.toFixed(2);
+}
+
+function formatPercent(n) {
+    return (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
+}
+
+// Market data gösterimi
+function updateMarketStats() {
+    if (!marketDataEnabled) return;
+    
+    var topCoins = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT'];
+    var html = '';
+    
+    topCoins.forEach(function(symbol) {
+        var data = marketData[symbol];
+        if (data) {
+            var changeClass = data.priceChangePercent >= 0 ? 'positive' : 'negative';
+            html += '<div class="stat-card">' +
+                '<div class="label">' + symbol.replace('USDT', '') + '</div>' +
+                '<div class="value">$' + formatNum(parseFloat(data.lastPrice)) + '</div>' +
+                '<div class="change ' + changeClass + '">' + formatPercent(parseFloat(data.priceChangePercent)) + '</div>' +
+                (data.fundingRate ? '<div class="gray" style="font-size:10px;">FR: ' + (parseFloat(data.fundingRate) * 100).toFixed(4) + '%</div>' : '') +
+                '</div>';
+        }
+    });
+    
+    statsGrid.innerHTML = html;
 }
 
 function updateSummary() {
@@ -443,7 +518,6 @@ function addTrade(coin, side, amount, price) {
         timestamp: Date.now()
     });
     
-    // Bildirim gönder
     notifyTrade(side);
     
     if (trades.length > 100) trades.pop();
@@ -452,6 +526,7 @@ function addTrade(coin, side, amount, price) {
     updateSummary();
 }
 
+// Aggregated Trade WebSocket
 function connectWS(symbol, threshold) {
     var ws = new WebSocket('wss://fstream.binance.com/ws/' + symbol + '@aggTrade');
     
@@ -476,6 +551,74 @@ function connectWS(symbol, threshold) {
         connectedWS--;
         if (connectedWS === 0) wsStatus.classList.remove('on');
         setTimeout(function() { connectWS(symbol, threshold); }, 3000);
+    };
+    
+    websockets.push(ws);
+}
+
+// 24hr Ticker Statistics + Mark Price (tek stream'de birleşik)
+function connectMarketDataWS() {
+    var ws = new WebSocket('wss://fstream.binance.com/ws/!ticker@arr');
+    
+    ws.onopen = function() {
+        console.log('Market data connected');
+    };
+    
+    ws.onmessage = function(e) {
+        try {
+            var data = JSON.parse(e.data);
+            if (Array.isArray(data)) {
+                data.forEach(function(ticker) {
+                    marketData[ticker.s] = {
+                        lastPrice: ticker.c,
+                        priceChangePercent: ticker.P,
+                        volume: ticker.v,
+                        quoteVolume: ticker.q
+                    };
+                });
+                updateMarketStats();
+            }
+        } catch(err) {
+            console.log('Market data error:', err);
+        }
+    };
+    
+    ws.onclose = function() {
+        setTimeout(connectMarketDataWS, 3000);
+    };
+    
+    websockets.push(ws);
+}
+
+// Mark Price & Funding Rate Stream (tüm piyasalar)
+function connectMarkPriceWS() {
+    var ws = new WebSocket('wss://fstream.binance.com/ws/!markPrice@arr@1s');
+    
+    ws.onopen = function() {
+        console.log('Mark price connected');
+    };
+    
+    ws.onmessage = function(e) {
+        try {
+            var data = JSON.parse(e.data);
+            if (Array.isArray(data)) {
+                data.forEach(function(mark) {
+                    if (marketData[mark.s]) {
+                        marketData[mark.s].markPrice = mark.p;
+                        marketData[mark.s].indexPrice = mark.i;
+                        marketData[mark.s].fundingRate = mark.r;
+                        marketData[mark.s].nextFundingTime = mark.T;
+                    }
+                });
+                updateMarketStats();
+            }
+        } catch(err) {
+            console.log('Mark price error:', err);
+        }
+    };
+    
+    ws.onclose = function() {
+        setTimeout(connectMarkPriceWS, 3000);
     };
     
     websockets.push(ws);
@@ -515,7 +658,10 @@ document.addEventListener('click', function initAudio() {
     document.removeEventListener('click', initAudio);
 }, { once: true });
 
+// Tüm bağlantıları başlat
 Object.keys(THRESHOLDS).forEach(function(s) { connectWS(s, THRESHOLDS[s]); });
+connectMarketDataWS();
+connectMarkPriceWS();
 fetchFear();
 setInterval(fetchFear, 300000);
 setInterval(cleanOld, 60000);
