@@ -44,10 +44,9 @@ const WHALE_THRESHOLDS = {
    ALARM FONKSİYONU
    =========================== */
 function triggerAlarm(trade) {
-    // Örnek: Telefon bildirim veya ses
     console.log("ALARM: Whale trade detected!", trade);
     if (Notification.permission === "granted") {
-        new Notification(`Whale ${trade.coin} ${trade.side} ${trade.amount}`);
+        new Notification(`Whale ${trade.coin} ${trade.side} ${trade.amount} @ ${trade.borsa}`);
     } else if (Notification.permission !== "denied") {
         Notification.requestPermission();
     }
@@ -57,12 +56,14 @@ function triggerAlarm(trade) {
    TRADE GÖSTERİMİ
    =========================== */
 function showTrade(trade) {
+    if (!(trade.coin in WHALE_THRESHOLDS)) return;
+    if (trade.amount < WHALE_THRESHOLDS[trade.coin]) return;
+
     const div = document.createElement('div');
-    div.className = 'trade';
-    if (trade.amount >= (WHALE_THRESHOLDS[trade.coin] || 0)) div.classList.add('large');
+    div.className = 'trade large';
     div.innerText = `[${trade.borsa}] ${trade.coin} ${trade.side} ${trade.amount} @ ${trade.price}`;
     document.getElementById('trades').prepend(div);
-    if (div.classList.contains('large')) triggerAlarm(trade);
+    triggerAlarm(trade);
 }
 
 /* ===========================
@@ -79,42 +80,42 @@ async function fetchFGI() {
     }
 }
 fetchFGI();
-setInterval(fetchFGI, 60*1000); // Her dakika güncelle
+setInterval(fetchFGI, 60*1000);
 
 /* ===========================
    BORSALAR: BINANCE, BYBIT, COINEX
    =========================== */
 
 function connectBinance() {
-    const ws = new WebSocket('wss://stream.binance.com:9443/ws/!ticker@arr');
+    const ws = new WebSocket('wss://stream.binance.com:9443/ws/!miniTicker@arr');
     ws.onmessage = (msg) => {
         const data = JSON.parse(msg.data);
         data.forEach(t => {
             const coin = t.s.replace('USDT','');
-            const amount = parseFloat(t.q);
-            const price = parseFloat(t.c);
-            const side = (parseFloat(t.p) > 0) ? 'BUY' : 'SELL';
-            if (WHALE_THRESHOLDS[coin] && amount >= WHALE_THRESHOLDS[coin]) {
-                showTrade({coin, amount, price, side, borsa:'BINANCE'});
-            }
+            if (!(coin in WHALE_THRESHOLDS)) return;
+            const amount = parseFloat(t.c); // Binance miniTicker c: close price, q: quote volume?
+            const side = 'BUY'; // Binance miniTicker stream ile side yok, örnek için BUY
+            showTrade({coin, amount: parseFloat(t.Q||0), price: parseFloat(t.c), side, borsa:'BINANCE'});
         });
     };
 }
 
 function connectBybit() {
-    const ws = new WebSocket('wss://stream.bybit.com/realtime');
-    ws.onopen = () => ws.send(JSON.stringify({op:"subscribe",args:["trade.BTCUSD","trade.ETHUSD"]}));
+    const ws = new WebSocket('wss://stream.bybit.com/realtime_public');
+    ws.onopen = () => {
+        const symbols = Object.keys(WHALE_THRESHOLDS).map(c => `trade.${c}USD`);
+        ws.send(JSON.stringify({op:"subscribe", args: symbols}));
+    };
     ws.onmessage = (msg) => {
         const data = JSON.parse(msg.data);
         if (data.topic && data.data) {
             data.data.forEach(t => {
                 const coin = t.symbol.replace('USD','');
+                if (!(coin in WHALE_THRESHOLDS)) return;
                 const amount = parseFloat(t.size);
                 const price = parseFloat(t.price);
                 const side = t.side.toUpperCase();
-                if (WHALE_THRESHOLDS[coin] && amount >= WHALE_THRESHOLDS[coin]) {
-                    showTrade({coin, amount, price, side, borsa:'BYBIT'});
-                }
+                showTrade({coin, amount, price, side, borsa:'BYBIT'});
             });
         }
     };
@@ -123,19 +124,19 @@ function connectBybit() {
 function connectCoinEx() {
     const ws = new WebSocket('wss://socket.coinex.com/');
     ws.onopen = () => {
-        ws.send(JSON.stringify({"method":"subscribe","params":["spot/trade.BTCUSDT","spot/trade.ETHUSDT"]}));
+        const symbols = Object.keys(WHALE_THRESHOLDS).map(c => `spot/trade.${c}USDT`);
+        ws.send(JSON.stringify({"method":"subscribe","params":symbols}));
     };
     ws.onmessage = (msg) => {
         const data = JSON.parse(msg.data);
         if (data.method === 'snapshot.update' && data.params && data.params[1]) {
             data.params[1].forEach(t => {
                 const coin = t[0].replace('USDT','');
+                if (!(coin in WHALE_THRESHOLDS)) return;
                 const amount = parseFloat(t[1]);
                 const price = parseFloat(t[2]);
                 const side = t[3].toUpperCase();
-                if (WHALE_THRESHOLDS[coin] && amount >= WHALE_THRESHOLDS[coin]) {
-                    showTrade({coin, amount, price, side, borsa:'COINEX'});
-                }
+                showTrade({coin, amount, price, side, borsa:'COINEX'});
             });
         }
     };
