@@ -136,7 +136,7 @@
         position: fixed;
         top: 10px;
         right: 10px;
-        width: 300px;
+        width: 320px;
         z-index: 1000;
         display: flex;
         flex-direction: column;
@@ -245,9 +245,21 @@
         font-size: 10px;
     }
 
-    .fibo-timeframe {
+    .fibo-position {
         font-size: 8px;
-        color: var(--text-dim);
+        padding: 1px 4px;
+        border-radius: 3px;
+        font-weight: 600;
+    }
+
+    .fibo-position.support {
+        background: rgba(16, 185, 129, 0.2);
+        color: var(--green);
+    }
+
+    .fibo-position.resistance {
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--red);
     }
 
     .fibo-percent.close { color: var(--green); }
@@ -315,7 +327,7 @@
     .toast-container {
         position: fixed;
         top: 10px;
-        right: 320px; /* Fibo panel için yer aç */
+        right: 340px; /* Fibo panel için yer aç */
         z-index: 9999;
         display: flex;
         flex-direction: column;
@@ -382,6 +394,7 @@
         <div class="fibo-header">
             <div class="fibo-title">
                 <span>📊 FIBO 0.72</span>
+                <span style="color:var(--text-dim); font-size:10px;">Destek/Direnç Analizi</span>
             </div>
             <div class="fibo-refresh" id="fiboRefresh">🔄</div>
         </div>
@@ -616,6 +629,9 @@
                             const monthlyFibo72 = monthlyLowest + (monthlyAth - monthlyLowest) * 0.72;
                             const monthlyDistancePercent = Math.abs((monthlyCurrentPrice - monthlyFibo72) / monthlyFibo72) * 100;
                             
+                            // Destek/Direnç belirleme
+                            const monthlyPosition = monthlyCurrentPrice >= monthlyFibo72 ? 'resistance' : 'support';
+                            
                             // 1 HAFTALIK FIBO HESAPLAMA
                             const weeklyHighs = weeklyKlines.map(k => parseFloat(k[2]));
                             const weeklyLows = weeklyKlines.map(k => parseFloat(k[3]));
@@ -627,6 +643,9 @@
                             const weeklyFibo72 = weeklyLowest + (weeklyAth - weeklyLowest) * 0.72;
                             const weeklyDistancePercent = Math.abs((weeklyCurrentPrice - weeklyFibo72) / weeklyFibo72) * 100;
                             
+                            // Destek/Direnç belirleme
+                            const weeklyPosition = weeklyCurrentPrice >= weeklyFibo72 ? 'resistance' : 'support';
+                            
                             analyzedCount++;
                             
                             return {
@@ -636,14 +655,16 @@
                                     fibo72: monthlyFibo72,
                                     distancePercent: monthlyDistancePercent,
                                     ath: monthlyAth,
-                                    lowest: monthlyLowest
+                                    lowest: monthlyLowest,
+                                    position: monthlyPosition
                                 },
                                 weekly: {
                                     currentPrice: weeklyCurrentPrice,
                                     fibo72: weeklyFibo72,
                                     distancePercent: weeklyDistancePercent,
                                     ath: weeklyAth,
-                                    lowest: weeklyLowest
+                                    lowest: weeklyLowest,
+                                    position: weeklyPosition
                                 }
                             };
                         }
@@ -703,7 +724,9 @@
                                 <span class="fibo-symbol">${coin.symbol}</span>
                                 <div class="fibo-details">
                                     <span class="fibo-percent ${percentClass}">%${coin.distancePercent.toFixed(2)}</span>
-                                    <span class="fibo-timeframe">${coin.timeframe}</span>
+                                    <span class="fibo-position ${coin.position}">
+                                        ${coin.position === 'support' ? 'DESTEK' : 'DİRENÇ'}
+                                    </span>
                                 </div>
                             </div>
                         `;
@@ -731,7 +754,9 @@
                                 <span class="fibo-symbol">${coin.symbol}</span>
                                 <div class="fibo-details">
                                     <span class="fibo-percent ${percentClass}">%${coin.distancePercent.toFixed(2)}</span>
-                                    <span class="fibo-timeframe">${coin.timeframe}</span>
+                                    <span class="fibo-position ${coin.position}">
+                                        ${coin.position === 'support' ? 'DESTEK' : 'DİRENÇ'}
+                                    </span>
                                 </div>
                             </div>
                         `;
