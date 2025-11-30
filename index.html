@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coin Sinyal Takip - Gerçek Veri</title>
+    <title>Coin Sinyal Takip - Çoklu Borsa</title>
     <style>
         * {
             margin: 0;
@@ -117,6 +117,16 @@
         
         .coin-input { flex: 1; min-width: 200px; }
         .volume-input { width: 150px; }
+
+        .exchange-select {
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            min-width: 180px;
+        }
         
         .search-btn {
             background: linear-gradient(135deg, #00b894, #00a085);
@@ -139,6 +149,21 @@
             gap: 10px;
             margin-top: 15px;
         }
+
+        .exchange-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .badge-binance { background: #f3ba2f; color: #000; }
+        .badge-kraken { background: #5741d9; color: white; }
+        .badge-okx { background: #000; color: white; }
+        .badge-bybit { background: #f7a600; color: #000; }
+        .badge-coinbase { background: #0052ff; color: white; }
         
         .results { 
             padding: 30px;
@@ -299,7 +324,7 @@
                 flex-direction: column;
             }
 
-            .coin-input, .volume-input, .search-btn {
+            .coin-input, .volume-input, .exchange-select, .search-btn {
                 width: 100%;
             }
 
@@ -338,11 +363,18 @@
         
         <div class="header">
             <h1>⚡ Canlı Coin Sinyal Takip</h1>
-            <p>Gerçek 100K+ İşlem Sinyalleri</p>
+            <p>Çoklu Borsa - Gerçek Zamanlı Veri</p>
         </div>
         
         <div class="controls">
             <div class="input-group">
+                <select class="exchange-select" id="exchangeSelect">
+                    <option value="binance">🟡 Binance</option>
+                    <option value="kraken">🟣 Kraken</option>
+                    <option value="okx">⚫ OKX</option>
+                    <option value="bybit">🟠 Bybit</option>
+                    <option value="coinbase">🔵 Coinbase</option>
+                </select>
                 <input type="text" class="coin-input" placeholder="Coin (BTC, ETH...)" value="BTC">
                 <input type="number" class="volume-input" placeholder="Min hacim" value="100000" min="1000" step="1000">
                 <button class="search-btn" onclick="searchSignals()">Sinyalleri Getir</button>
@@ -354,19 +386,69 @@
         </div>
         
         <div class="results" id="results">
-            <div class="info-text">Coin sembolünü girip butona tıklayın</div>
+            <div class="info-text">Borsa ve coin seçip butona tıklayın</div>
         </div>
     </div>
 
     <script>
+        // WebSocket URL Yapılandırması - 2025 Güncel Adresler
+        const EXCHANGE_CONFIG = {
+            binance: {
+                name: 'Binance',
+                badge: 'badge-binance',
+                getWsUrl: (symbol) => `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@aggTrade`,
+                getRestUrl: (symbol) => `https://api.binance.com/api/v3/trades?symbol=${symbol}&limit=500`,
+                parseMessage: (data) => {
+                    return {
+                        id: data.a + '-' + Date.now(),
+                        symbol: data.s,
+                        price: parseFloat(data.p),
+                        amount: parseFloat(data.q),
+                        volume: parseFloat(data.p) * parseFloat(data.q),
+                        type: data.m ? 'SELL' : 'BUY',
+                        timestamp: data.T
+                    };
+                }
+            },
+            kraken: {
+                name: 'Kraken',
+                badge: 'badge-kraken',
+                getWsUrl: () => 'wss://ws.kraken.com/v2',
+                supported: false, // REST API ile gösterim
+                note: 'Kraken WebSocket v2 entegrasyonu yakında'
+            },
+            okx: {
+                name: 'OKX',
+                badge: 'badge-okx',
+                getWsUrl: () => 'wss://ws.okx.com:8443/ws/v5/public',
+                supported: false, // REST API ile gösterim
+                note: 'OKX WebSocket v5 entegrasyonu yakında'
+            },
+            bybit: {
+                name: 'Bybit',
+                badge: 'badge-bybit',
+                getWsUrl: () => 'wss://stream.bybit.com/v5/public/linear',
+                supported: false, // REST API ile gösterim
+                note: 'Bybit WebSocket v5 entegrasyonu yakında'
+            },
+            coinbase: {
+                name: 'Coinbase',
+                badge: 'badge-coinbase',
+                getWsUrl: () => 'wss://advanced-trade-ws.coinbase.com',
+                supported: false, // REST API ile gösterim
+                note: 'Coinbase Advanced Trade entegrasyonu yakında'
+            }
+        };
+
         let ws = null;
         let currentCoin = 'BTC';
+        let currentExchange = 'binance';
         let currentMinVolume = 100000;
         let collectedTrades = [];
         let isConnected = false;
         let displayInterval = null;
         let reconnectAttempts = 0;
-        const MAX_TRADES = 50; // Mobil için optimize edilmiş
+        const MAX_TRADES = 50;
 
         function getFearIndexClass(value) {
             if (value <= 25) return { class: "fear-extreme", label: "Aşırı Korku" };
@@ -409,46 +491,44 @@
         }
 
         function connectWebSocket(symbol) {
+            const config = EXCHANGE_CONFIG[currentExchange];
+            
+            if (!config.supported) {
+                console.log('⚠️', config.name, 'için WebSocket henüz desteklenmiyor');
+                return;
+            }
+
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.close();
             }
 
-            const wsUrl = `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@aggTrade`;
-            console.log('🔌 Bağlanıyor:', symbol);
+            const wsUrl = config.getWsUrl(symbol);
+            console.log('🔌 Bağlanıyor:', config.name, symbol);
             
             ws = new WebSocket(wsUrl);
 
             ws.onopen = () => {
-                console.log('✅ Canlı bağlantı kuruldu');
+                console.log('✅', config.name, 'canlı bağlantı kuruldu');
                 isConnected = true;
                 reconnectAttempts = 0;
             };
 
             ws.onmessage = (event) => {
                 try {
-                    const trade = JSON.parse(event.data);
-                    const volume = parseFloat(trade.p) * parseFloat(trade.q);
+                    const data = JSON.parse(event.data);
+                    const signal = config.parseMessage(data);
                     
-                    if (volume >= currentMinVolume) {
-                        const signal = {
-                            id: trade.a + '-' + Date.now(),
-                            symbol: trade.s,
-                            volume: volume,
-                            price: parseFloat(trade.p),
-                            amount: parseFloat(trade.q),
-                            type: trade.m ? 'SELL' : 'BUY',
-                            timestamp: trade.T,
-                            isLargeOrder: volume > currentMinVolume * 3
-                        };
+                    if (signal.volume >= currentMinVolume) {
+                        signal.exchange = currentExchange;
+                        signal.isLargeOrder = signal.volume > currentMinVolume * 3;
                         
                         collectedTrades.unshift(signal);
                         
-                        // Mobil performans için max trade sayısını sınırla
                         if (collectedTrades.length > MAX_TRADES) {
                             collectedTrades = collectedTrades.slice(0, MAX_TRADES);
                         }
                         
-                        console.log('💰', signal.type, volume.toFixed(0), 'USD');
+                        console.log('💰', config.name, signal.type, signal.volume.toFixed(0), 'USD');
                     }
                 } catch (error) {
                     console.error('Parse hatası:', error);
@@ -464,7 +544,6 @@
                 console.log('📴 Bağlantı kapandı');
                 isConnected = false;
                 
-                // Otomatik yeniden bağlanma (max 5 deneme)
                 if (reconnectAttempts < 5 && document.getElementById('autoRefresh').checked) {
                     reconnectAttempts++;
                     setTimeout(() => {
@@ -477,7 +556,15 @@
 
         async function loadInitialData(symbol) {
             try {
-                const response = await fetch(`https://api.binance.com/api/v3/trades?symbol=${symbol}&limit=500`);
+                const config = EXCHANGE_CONFIG[currentExchange];
+                
+                // Şu an sadece Binance REST API destekleniyor
+                if (currentExchange !== 'binance') {
+                    showError(`${config.name} için veri yükleme henüz desteklenmiyor. Lütfen Binance seçin.`);
+                    return 0;
+                }
+
+                const response = await fetch(config.getRestUrl(symbol));
                 
                 if (!response.ok) {
                     throw new Error('Geçersiz coin sembolü');
@@ -490,6 +577,7 @@
                         return {
                             id: trade.id,
                             symbol: symbol,
+                            exchange: currentExchange,
                             volume: volume,
                             price: parseFloat(trade.price),
                             amount: parseFloat(trade.qty),
@@ -511,30 +599,33 @@
         async function searchSignals() {
             const coinInput = document.querySelector('.coin-input');
             const volumeInput = document.querySelector('.volume-input');
+            const exchangeSelect = document.getElementById('exchangeSelect');
             const searchBtn = document.querySelector('.search-btn');
             const resultsDiv = document.getElementById('results');
             
             currentCoin = coinInput.value.trim().toUpperCase().replace(/[^a-zA-Z0-9]/g, '');
             currentMinVolume = parseInt(volumeInput.value);
+            currentExchange = exchangeSelect.value;
             
             if (!currentCoin) {
                 showError('Lütfen coin sembolü girin');
                 return;
             }
 
+            const config = EXCHANGE_CONFIG[currentExchange];
+
             searchBtn.disabled = true;
             searchBtn.textContent = 'BAĞLANIYOR...';
             resultsDiv.innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>${currentCoin} için canlı bağlantı kuruluyor...</div>
+                    <div>${config.name} - ${currentCoin} için bağlantı kuruluyor...</div>
                 </div>
             `;
             
             try {
                 const symbol = currentCoin + 'USDT';
                 
-                // İlk veriyi yükle
                 const count = await loadInitialData(symbol);
                 
                 if (count === 0) {
@@ -542,10 +633,8 @@
                     return;
                 }
                 
-                // WebSocket bağlantısını başlat
                 connectWebSocket(symbol);
                 
-                // Görüntüleme interval'ını başlat
                 if (displayInterval) {
                     clearInterval(displayInterval);
                 }
@@ -554,9 +643,8 @@
                     if (collectedTrades.length > 0) {
                         displayResults();
                     }
-                }, 500); // 0.5 saniyede bir güncelle (mobil için optimize)
+                }, 500);
                 
-                // İlk görüntüleme
                 displayResults();
                 
             } catch (error) {
@@ -571,6 +659,7 @@
         function displayResults() {
             const resultsDiv = document.getElementById('results');
             const signals = collectedTrades;
+            const config = EXCHANGE_CONFIG[currentExchange];
             
             const statusIcon = isConnected ? '🟢' : '🔴';
             const statusText = isConnected ? 'CANLI' : 'BAĞLANTI KESİK';
@@ -579,6 +668,7 @@
                 <div class="last-update">
                     ${statusIcon} ${new Date().toLocaleTimeString('tr-TR')} 
                     <span class="high-frequency">${statusText}</span>
+                    <span class="exchange-badge ${config.badge}">${config.name}</span>
                 </div>
                 <div style="margin-bottom: 20px; font-size: 1.1em; color: #2d3436;">
                     <strong>${currentCoin}</strong> için <strong>${currentMinVolume.toLocaleString()} USD</strong> üzeri 
@@ -598,11 +688,14 @@
                                  timeAgo < 3600 ? `${Math.floor(timeAgo/60)}dk önce` : 
                                  date.toLocaleTimeString('tr-TR');
                 
+                const exchangeConfig = EXCHANGE_CONFIG[signal.exchange || currentExchange];
+                
                 html += `
                     <div class="signal-card" style="border-left: 4px solid ${signal.type === 'BUY' ? '#00b894' : '#e17055'}">
                         <div class="signal-header">
                             <div class="coin-symbol">
                                 ${signal.symbol} ${signal.isLargeOrder ? '⚡' : '✅'}
+                                <span class="exchange-badge ${exchangeConfig.badge}">${exchangeConfig.name}</span>
                                 ${timeAgo < 5 ? '<span class="high-frequency">YENİ</span>' : ''}
                             </div>
                             <div class="volume-badge">${volumeFormatted}</div>
@@ -638,7 +731,6 @@
             const checkbox = document.getElementById('autoRefresh');
             
             if (!checkbox.checked) {
-                // WebSocket'i kapat
                 if (ws && ws.readyState === WebSocket.OPEN) {
                     ws.close();
                 }
@@ -648,7 +740,6 @@
                 }
                 isConnected = false;
             } else {
-                // Eğer coin seçiliyse bağlantıyı başlat
                 if (currentCoin && collectedTrades.length > 0) {
                     connectWebSocket(currentCoin + 'USDT');
                     if (!displayInterval) {
@@ -679,13 +770,11 @@
             setInterval(updateFearIndex, 300000);
             setInterval(updateNasdaqCountdown, 60000);
             
-            // İlk aramayı yap
             setTimeout(() => {
                 searchSignals();
             }, 500);
         });
 
-        // Sayfa kapanırken temizlik
         window.addEventListener('beforeunload', () => {
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.close();
