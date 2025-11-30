@@ -332,58 +332,6 @@
         grid-column: 1 / -1;
     }
 
-    /* VOLUME TABLE */
-    .volume-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 9px;
-    }
-
-    .volume-table th {
-        background: rgba(0,0,0,0.3);
-        padding: 4px 6px;
-        text-align: left;
-        font-weight: 600;
-        color: var(--text-dim);
-        border-bottom: 1px solid var(--border);
-        font-size: 8px;
-    }
-
-    .volume-table td {
-        padding: 3px 6px;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-        color: var(--text);
-    }
-
-    .volume-table tr:last-child td {
-        border-bottom: none;
-    }
-
-    .volume-coin {
-        font-family: 'Inter';
-        font-weight: 600;
-        color: #fff;
-        font-size: 9px;
-    }
-
-    .volume-positive {
-        color: var(--green);
-        font-weight: 700;
-    }
-
-    .volume-negative {
-        color: var(--red);
-        font-weight: 700;
-    }
-
-    .volume-loading {
-        text-align: center;
-        color: var(--text-dim);
-        font-size: 9px;
-        padding: 20px 0;
-    }
-
     /* MARKET SENTIMENT BAR */
     .sentiment-bar {
         background: var(--card-bg);
@@ -907,21 +855,10 @@
         </div>
         <div class="fibo-stats" id="fiboStats"></div>
     </div>
+</div>
 
-    <!-- Hacim Panel -->
-    <div class="sidebar-panel">
-        <div class="panel-header">
-            <div class="panel-title">
-                <span>📈 En Çok Hacim</span>
-                <span style="color:var(--text-dim); font-size:9px;">Son 1 Saat</span>
-</div>
-</div>
-<div id="volumeContent">
-<div class="volume-loading">Hacim verileri bekleniyor...</div>
-</div>
-</div>
-</div>
 <div class="toast-container" id="toastContainer"></div>
+
 <div class="container">
     <div class="header">
         <div>
@@ -933,63 +870,63 @@
         </div>
     </div>
     <div class="controls">
-    <div class="btn active" id="btnSound">🔔 Ses</div>
-    <div class="btn active" id="btnVib">📳 Titreşim</div>
-    <div class="btn active" id="btnNotify">💬 Bildirim</div>
-    <div class="btn active" id="btnSignals">⚡ Sinyaller</div>
-</div>
-
-<!-- Market Sentiment Bar -->
-<div class="sentiment-bar">
-    <div class="sentiment-header">
-        <div class="sentiment-title">📊 Market Sentiment</div>
-        <div class="sentiment-value" id="sentimentValue">50% 🟡</div>
+        <div class="btn active" id="btnSound">🔔 Ses</div>
+        <div class="btn active" id="btnVib">📳 Titreşim</div>
+        <div class="btn active" id="btnNotify">💬 Bildirim</div>
+        <div class="btn active" id="btnSignals">⚡ Sinyaller</div>
     </div>
-    <div class="sentiment-progress">
-        <div class="sentiment-fill" id="sentimentFill" style="width: 50%"></div>
-    </div>
-</div>
 
-<!-- SİNYAL BÖLÜMÜ -->
-<div id="signalsSection" style="margin-bottom: 20px;">
-    <div class="section-title">🎯 Aktif Sinyaller</div>
-    <div id="signalsContainer">
-        <div style="text-align:center; padding:20px; color:var(--text-dim); background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;">
-            Güçlü momentum sinyali bekleniyor...
+    <!-- Market Sentiment Bar -->
+    <div class="sentiment-bar">
+        <div class="sentiment-header">
+            <div class="sentiment-title">📊 Market Sentiment</div>
+            <div class="sentiment-value" id="sentimentValue">50% 🟡</div>
+        </div>
+        <div class="sentiment-progress">
+            <div class="sentiment-fill" id="sentimentFill" style="width: 50%"></div>
         </div>
     </div>
-</div>
 
-<!-- ÖZET TABLO -->
-<div class="section-title">📊 1 Saatlik Özet</div>
-<div class="table-card" style="margin-bottom: 20px;">
-    <div class="summary-grid" style="padding: 14px;">
-        <div class="summary-section">
-            <div class="summary-title">🟢 EN ÇOK ALINAN</div>
-            <div id="topBuysContainer">
-                <div style="text-align:center; color:var(--text-dim); font-size:9px; padding:10px;">Veri bekleniyor...</div>
-            </div>
-        </div>
-        <div class="summary-section">
-            <div class="summary-title">🔴 EN ÇOK SATILAN</div>
-            <div id="topSellsContainer">
-                <div style="text-align:center; color:var(--text-dim); font-size:9px; padding:10px;">Veri bekleniyor...</div>
+    <!-- SİNYAL BÖLÜMÜ -->
+    <div id="signalsSection" style="margin-bottom: 20px;">
+        <div class="section-title">🎯 Aktif Sinyaller</div>
+        <div id="signalsContainer">
+            <div style="text-align:center; padding:20px; color:var(--text-dim); background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;">
+                Güçlü momentum sinyali bekleniyor...
             </div>
         </div>
     </div>
-</div>
 
-<div class="section-title">⚡ Canlı Akış (Whales Only)</div>
-<div class="table-card">
-    <div style="overflow-x:auto;">
-        <table>
-            <thead><tr><th>Saat</th><th>Coin</th><th>Yön</th><th>Adet</th><th>Net ($)</th></tr></thead>
-            <tbody id="tradesBody">
-                <tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-dim)">Balinalar bekleniyor...</td></tr>
-            </tbody>
-        </table>
+    <!-- ÖZET TABLO -->
+    <div class="section-title">📊 1 Saatlik Özet</div>
+    <div class="table-card" style="margin-bottom: 20px;">
+        <div class="summary-grid" style="padding: 14px;">
+            <div class="summary-section">
+                <div class="summary-title">🟢 EN ÇOK ALINAN</div>
+                <div id="topBuysContainer">
+                    <div style="text-align:center; color:var(--text-dim); font-size:9px; padding:10px;">Veri bekleniyor...</div>
+                </div>
+            </div>
+            <div class="summary-section">
+                <div class="summary-title">🔴 EN ÇOK SATILAN</div>
+                <div id="topSellsContainer">
+                    <div style="text-align:center; color:var(--text-dim); font-size:9px; padding:10px;">Veri bekleniyor...</div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+
+    <div class="section-title">⚡ Canlı Akış (Whales Only)</div>
+    <div class="table-card">
+        <div style="overflow-x:auto;">
+            <table>
+                <thead><tr><th>Saat</th><th>Coin</th><th>Yön</th><th>Adet</th><th>Fiyat</th></tr></thead>
+                <tbody id="tradesBody">
+                    <tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-dim)">Balinalar bekleniyor...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -1290,36 +1227,6 @@
     }
 
     document.getElementById('fiboRefresh').addEventListener('click', fetchFiboData);
-
-    // --- HACİM TABLOSU ---
-    function updateVolumeTable() {
-        const volumeContent = document.getElementById('volumeContent');
-        
-        if (Object.keys(summary).length === 0) {
-            volumeContent.innerHTML = '<div class="volume-loading">İşlem bekleniyor...</div>';
-            return;
-        }
-
-        const sorted = Object.entries(summary)
-            .sort((a, b) => Math.abs(b[1].net) - Math.abs(a[1].net))
-            .slice(0, 8);
-
-        let html = '<table class="volume-table">';
-        html += '<thead><tr><th>Coin</th><th>Net ($)</th></tr></thead><tbody>';
-        
-        sorted.forEach(([sym, data]) => {
-            const netColor = data.net > 0 ? 'volume-positive' : 'volume-negative';
-            const netValue = data.net > 0 ? `+$${fmt(data.net)}` : `-$${fmt(Math.abs(data.net))}`;
-            
-            html += `<tr>
-                <td class="volume-coin">${sym}</td>
-                <td class="${netColor}">${netValue}</td>
-            </tr>`;
-        });
-        
-        html += '</tbody></table>';
-        volumeContent.innerHTML = html;
-    }
 
     // --- SES MOTORU ---
     function initAudio() {
@@ -1669,12 +1576,11 @@
                 <td class="col-coin">${t.symbol}</td>
                 <td class="${color}" style="font-weight:700">${t.side}</td>
                 <td>${t.qty < 1 ? t.qty.toFixed(4) : t.qty.toFixed(2)}</td>
-                <td>$${fmt(t.usd)}</td>
+                <td>$${t.price.toFixed(t.price < 1 ? 4 : 2)}</td>
             </tr>`;
         });
         els.trades.innerHTML = html;
 
-        updateVolumeTable();
         updateSummaryTables();
         updateSentiment();
     }
@@ -1707,37 +1613,37 @@
     document.getElementById('btnSound').onclick = function() {
         settings.sound = !settings.sound;
         this.classList.toggle('active');
-initAudio();
-};
-document.getElementById('btnVib').onclick = function() {
-settings.vib = !settings.vib;
-this.classList.toggle('active');
-};
-document.getElementById('btnNotify').onclick = function() {
-settings.notify = !settings.notify;
-this.classList.toggle('active');
-};
-document.getElementById('btnSignals').onclick = function() {
-settings.signals = !settings.signals;
-this.classList.toggle('active');
-renderSignals();
-};
+        initAudio();
+    };
+    document.getElementById('btnVib').onclick = function() {
+        settings.vib = !settings.vib;
+        this.classList.toggle('active');
+    };
+    document.getElementById('btnNotify').onclick = function() {
+        settings.notify = !settings.notify;
+        this.classList.toggle('active');
+    };
+    document.getElementById('btnSignals').onclick = function() {
+        settings.signals = !settings.signals;
+        this.classList.toggle('active');
+        renderSignals();
+    };
 
-// --- BAŞLATMA ---
-connect();
-fetchFiboData();
-updateTRTime();
-updateNasdaqStatus();
-updateFearIndex();
+    // --- BAŞLATMA ---
+    connect();
+    fetchFiboData();
+    updateTRTime();
+    updateNasdaqStatus();
+    updateFearIndex();
 
-setInterval(updateTRTime, 1000);
-setInterval(updateNasdaqStatus, 60000);
-setInterval(updateFearIndex, 5 * 60 * 1000);
-setInterval(fetchFiboData, 10 * 60 * 1000);
+    setInterval(updateTRTime, 1000);
+    setInterval(updateNasdaqStatus, 60000);
+    setInterval(updateFearIndex, 5 * 60 * 1000);
+    setInterval(fetchFiboData, 10 * 60 * 1000);
 
-setInterval(() => {
-    if(trades.length > 100) trades = trades.slice(0, 50);
-}, 60000);
+    setInterval(() => {
+        if(trades.length > 100) trades = trades.slice(0, 50);
+    }, 60000);
 
 })();
 </script>
