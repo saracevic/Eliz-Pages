@@ -16,6 +16,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+            overflow-x: hidden;
         }
         
         .container {
@@ -25,6 +26,8 @@
             border-radius: 15px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .top-info-bar {
@@ -137,7 +140,11 @@
             margin-top: 15px;
         }
         
-        .results { padding: 30px; }
+        .results { 
+            padding: 30px;
+            overflow-x: hidden;
+            word-wrap: break-word;
+        }
         
         .loading {
             text-align: center;
@@ -259,6 +266,51 @@
             50% { opacity: 0.7; }
             100% { opacity: 1; }
         }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                border-radius: 10px;
+            }
+
+            .top-info-bar {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .info-item {
+                width: 100%;
+                min-width: auto;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .controls {
+                padding: 15px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .coin-input, .volume-input, .search-btn {
+                width: 100%;
+            }
+
+            .results {
+                padding: 15px;
+            }
+
+            .signal-card {
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -366,7 +418,7 @@
             }
 
             searchBtn.disabled = true;
-            searchBtn.textContent = 'ARANIY OR...';
+            searchBtn.textContent = 'ARANIYOR...';
             resultsDiv.innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
@@ -377,50 +429,248 @@
             try {
                 const signals = await getRealTimeSignals(currentCoin, currentMinVolume);
                 displayResults(signals, currentCoin, currentMinVolume);
+                
+                // Otomatik yenilemeyi başlat
+                const autoRefreshCheckbox = document.getElementById('autoRefresh');
+                if (autoRefreshCheckbox && autoRefreshCheckbox.checked) {
+                    toggleAutoRefresh();
+                }
             } catch (error) {
                 console.error('Sinyal hatası:', error);
                 showError('Hata: ' + error.message);
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
             } finally {
                 searchBtn.disabled = false;
                 searchBtn.textContent = 'Sinyalleri Getir';
             }
         }
         
+        // WebSocket üzerinden gerçek zamanlı trade'leri dinle
+        let ws = null;
+        let collectedTrades = [];
+        let isConnecting = false;
+
+        function connectWebSocket(symbol) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.close();
+            }
+
+            const wsUrl = `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@aggTrade`;
+            console.log('WebSocket bağlanıyor:', wsUrl);
+            
+            ws = new WebSocket(wsUrl);
+            isConnecting = true;
+
+            ws.onopen = () => {
+                console.log('✅ WebSocket bağlantısı açıldı');
+                isConnecting = false;
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const trade = JSON.parse(event.data);
+                    const volume = parseFloat(trade.p) * parseFloat(trade.q);
+                    
+                    if (volume >= currentMinVolume) {
+                        const signal = {
+                            id: trade.a,
+                            symbol: trade.s,
+                            volume: volume,
+                            price: parseFloat(trade.p),
+                            amount: parseFloat(trade.q),
+                            type: trade.m ? 'SELL' : 'BUY',
+                            timestamp: new Date(trade.T).toISOString(),
+                            isLargeOrder: volume > currentMinVolume * 3,
+                            isReal: true
+                        };
+                        
+                        // Yeni trade'i en başa ekle
+                        collectedTrades.unshift(signal);
+                        
+                        // Maksimum 100 trade tut
+                        if (collectedTrades.length > 100) {
+                            collectedTrades = collectedTrades.slice(0, 100);
+                        }
+                        
+                        console.log('💰 Büyük işlem:', signal.symbol, '
+        
+        function displayResults(signals, coinSymbol, minVolume) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `
+                <div class="last-update">
+                    ⚡ ${new Date().toLocaleTimeString('tr-TR')} 
+                    <span class="high-frequency">CANLI</span>
+                </div>
+                <div style="margin-bottom: 20px; font-size: 1.1em; color: #2d3436;">
+                    <strong>${coinSymbol}</strong> için <strong>${minVolume.toLocaleString()} USD</strong> üzeri 
+                    <strong>${signals.length}</strong> sinyal
+                    <span class="real-badge">GERÇEK</span>
+                </div>
+            `;
+            
+            signals.forEach(signal => {
+                const date = new Date(signal.timestamp);
+                const volumeFormatted = signal.volume >= 1000000 ? 
+                    (signal.volume / 1000000).toFixed(2) + 'M USD' : 
+                    (signal.volume / 1000).toFixed(1) + 'K USD';
+                
+                html += `
+                    <div class="signal-card" style="border-left: 4px solid ${signal.type === 'BUY' ? '#00b894' : '#e17055'}">
+                        <div class="signal-header">
+                            <div class="coin-symbol">
+                                ${signal.symbol} ${signal.isLargeOrder ? '⚡' : '✅'}
+                                <span class="real-badge">GERÇEK</span>
+                            </div>
+                            <div class="volume-badge">${volumeFormatted}</div>
+                        </div>
+                        <div class="signal-details">
+                            <div class="detail-item">
+                                <span class="detail-label">İşlem</span>
+                                <span class="detail-value" style="color: ${signal.type === 'BUY' ? '#00b894' : '#e17055'}">
+                                    ${signal.type === 'BUY' ? '🟢 ALIM' : '🔴 SATIM'}
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Fiyat</span>
+                                <span class="detail-value">${signal.price.toFixed(2)} USD</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Miktar</span>
+                                <span class="detail-value">${signal.amount.toFixed(4)} ${coinSymbol}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Zaman</span>
+                                <span class="detail-value">${date.toLocaleTimeString('tr-TR')}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function toggleAutoRefresh() {
+            const checkbox = document.getElementById('autoRefresh');
+            
+            if (checkbox.checked) {
+                // WebSocket zaten gerçek zamanlı, sadece ekranı güncelle
+                autoRefreshInterval = setInterval(() => {
+                    updateDisplay();
+                }, 1000);
+            } else {
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                    autoRefreshInterval = null;
+                }
+            }
+        }
+        
+        function showError(message) {
+            document.getElementById('results').innerHTML = `<div class="error">❌ ${message}</div>`;
+        }
+        
+        document.querySelector('.coin-input').addEventListener('keypress', e => {
+            if (e.key === 'Enter') searchSignals();
+        });
+        
+        window.addEventListener('load', () => {
+            updateTurkeyTime();
+            updateFearIndex();
+            updateNasdaqCountdown();
+            
+            setInterval(updateTurkeyTime, 1000);
+            setInterval(updateFearIndex, 300000);
+            setInterval(updateNasdaqCountdown, 60000);
+            
+            // İlk aramayı yap
+            setTimeout(() => {
+                searchSignals();
+            }, 1000);
+        });
+
+        // Sayfa kapanırken WebSocket'i kapat
+        window.addEventListener('beforeunload', () => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.close();
+            }
+        });
+    </script>
+</body>
+</html> + Math.floor(volume));
+                    }
+                } catch (error) {
+                    console.error('Trade parse hatası:', error);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('❌ WebSocket hatası:', error);
+                isConnecting = false;
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket bağlantısı kapandı');
+                isConnecting = false;
+            };
+        }
+
         async function getRealTimeSignals(coinSymbol, minVolume) {
             const symbol = coinSymbol.toUpperCase() + 'USDT';
             
-            // Doğrudan Binance API
-            const response = await fetch(`https://api.binance.com/api/v3/trades?symbol=${symbol}&limit=1000`);
+            // WebSocket'i başlat
+            connectWebSocket(symbol);
             
-            if (!response.ok) {
-                throw new Error(`Geçersiz coin: ${coinSymbol}`);
+            // İlk veriyi REST API'den al (geçmiş trade'ler)
+            try {
+                const response = await fetch(`https://api.binance.com/api/v3/trades?symbol=${symbol}&limit=1000`);
+                
+                if (!response.ok) {
+                    throw new Error(`Geçersiz coin: ${coinSymbol}`);
+                }
+
+                const trades = await response.json();
+
+                const signals = trades
+                    .map(trade => {
+                        const volume = parseFloat(trade.quoteQty) || (parseFloat(trade.price) * parseFloat(trade.qty));
+                        return {
+                            id: trade.id,
+                            symbol: trade.symbol,
+                            volume: volume,
+                            price: parseFloat(trade.price),
+                            amount: parseFloat(trade.qty),
+                            type: trade.isBuyerMaker ? 'SELL' : 'BUY',
+                            timestamp: new Date(trade.time).toISOString(),
+                            isLargeOrder: volume > minVolume * 3,
+                            isReal: true
+                        };
+                    })
+                    .filter(s => s.volume >= minVolume)
+                    .sort((a, b) => b.volume - a.volume);
+
+                // İlk veriyi collected trades'e ekle
+                collectedTrades = signals;
+
+                if (signals.length === 0) {
+                    throw new Error(`${minVolume.toLocaleString()} USD üzeri işlem bulunamadı`);
+                }
+
+                return signals;
+            } catch (error) {
+                if (ws) ws.close();
+                throw error;
             }
+        }
 
-            const trades = await response.json();
-
-            const signals = trades
-                .map(trade => {
-                    const volume = parseFloat(trade.quoteQty) || (parseFloat(trade.price) * parseFloat(trade.qty));
-                    return {
-                        id: trade.id,
-                        symbol: trade.symbol,
-                        volume: volume,
-                        price: parseFloat(trade.price),
-                        amount: parseFloat(trade.qty),
-                        type: trade.isBuyerMaker ? 'SELL' : 'BUY',
-                        timestamp: new Date(trade.time).toISOString(),
-                        isLargeOrder: volume > minVolume * 3,
-                        isReal: true
-                    };
-                })
-                .filter(s => s.volume >= minVolume)
-                .sort((a, b) => b.volume - a.volume);
-
-            if (signals.length === 0) {
-                throw new Error(`${minVolume.toLocaleString()} USD üzeri işlem bulunamadı`);
+        // Görüntüleme fonksiyonunu güncelle - WebSocket verilerini kullan
+        function updateDisplay() {
+            if (collectedTrades.length > 0) {
+                displayResults(collectedTrades, currentCoin, currentMinVolume);
             }
-
-            return signals;
         }
         
         function displayResults(signals, coinSymbol, minVolume) {
