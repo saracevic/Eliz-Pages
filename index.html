@@ -77,7 +77,7 @@
         position: fixed;
         top: 10px;
         right: 10px;
-        width: 600px;
+        width: 650px;
         z-index: 1000;
         display: flex;
         flex-direction: column;
@@ -371,6 +371,198 @@
         padding: 20px 0;
     }
 
+    /* SINYAL KARTLARI */
+    .signal-card {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.02));
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-left: 4px solid var(--green);
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 12px;
+        animation: slideIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.1);
+    }
+
+    .signal-card.sell {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(239, 68, 68, 0.02));
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-left: 4px solid var(--red);
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1);
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    .signal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .signal-coin {
+        font-size: 16px;
+        font-weight: 800;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .signal-badge {
+        font-size: 9px;
+        padding: 3px 6px;
+        border-radius: 4px;
+        font-weight: 700;
+        background: rgba(16, 185, 129, 0.2);
+        color: var(--green);
+        border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .signal-card.sell .signal-badge {
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--red);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .signal-time {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        color: var(--text-dim);
+    }
+
+    .signal-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .signal-stat {
+        text-align: center;
+    }
+
+    .signal-stat-label {
+        font-size: 8px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+    }
+
+    .signal-stat-value {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .signal-strength {
+        width: 100%;
+        height: 4px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 8px;
+    }
+
+    .signal-strength-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--green), #22c55e);
+        border-radius: 2px;
+        transition: width 0.3s;
+    }
+
+    .signal-card.sell .signal-strength-fill {
+        background: linear-gradient(90deg, var(--red), #dc2626);
+    }
+
+    /* ÖZET TABLO */
+    .summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .summary-section {
+        background: rgba(0,0,0,0.2);
+        border-radius: 8px;
+        padding: 8px;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .summary-title {
+        font-size: 9px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 0;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .summary-item:last-child {
+        border-bottom: none;
+    }
+
+    .summary-coin {
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .summary-value {
+        font-weight: 700;
+    }
+
+    .summary-value.positive {
+        color: var(--green);
+    }
+
+    .summary-value.negative {
+        color: var(--red);
+    }
+
+    .summary-trades {
+        font-size: 8px;
+        color: var(--text-dim);
+        margin-left: 4px;
+    }
+
+    /* HOT COINS INDICATOR */
+    .hot-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 8px;
+        padding: 2px 4px;
+        border-radius: 3px;
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--red);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+
     /* CONTROLS */
     .controls { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
     .btn {
@@ -406,7 +598,7 @@
     .toast-container {
         position: fixed;
         top: 10px;
-        right: 620px; /* Sidebar için yer aç */
+        right: 670px; /* Sidebar için yer aç */
         z-index: 9999;
         display: flex;
         flex-direction: column;
@@ -532,6 +724,36 @@
         <div class="btn active" id="btnSound">🔔 Ses</div>
         <div class="btn active" id="btnVib">📳 Titreşim</div>
         <div class="btn active" id="btnNotify">💬 Bildirim</div>
+        <div class="btn active" id="btnSignals">⚡ Sinyaller</div>
+    </div>
+
+    <!-- SİNYAL BÖLÜMÜ -->
+    <div id="signalsSection" style="margin-bottom: 20px;">
+        <div class="section-title">🎯 Aktif Sinyaller</div>
+        <div id="signalsContainer">
+            <div style="text-align:center; padding:20px; color:var(--text-dim); background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;">
+                Güçlü sinyal bekleniyor...
+            </div>
+        </div>
+    </div>
+
+    <!-- ÖZET TABLO -->
+    <div class="section-title">📊 1 Saatlik Özet</div>
+    <div class="table-card" style="margin-bottom: 20px;">
+        <div class="summary-grid" style="padding: 12px;">
+            <div class="summary-section">
+                <div class="summary-title">🟢 EN ÇOK ALINAN</div>
+                <div id="topBuysContainer">
+                    <div style="text-align:center; color:var(--text-dim); font-size:9px; padding:8px;">Veri bekleniyor...</div>
+                </div>
+            </div>
+            <div class="summary-section">
+                <div class="summary-title">🔴 EN ÇOK SATILAN</div>
+                <div id="topSellsContainer">
+                    <div style="text-align:center; color:var(--text-dim); font-size:9px; padding:8px;">Veri bekleniyor...</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="section-title">Canlı Akış (Whales Only)</div>
@@ -554,6 +776,7 @@
     // --- AYARLAR ---
     const MIN_USD = 2000000;
     const COINS = [
+    --- AYARLAR ---
         'btcusdt','ethusdt','bnbusdt','solusdt','xrpusdt','adausdt','dogeusdt','avaxusdt',
         'linkusdt','dotusdt','maticusdt','ltcusdt','shibusdt','pepeusdt','bonkusdt',
         'wifusdt','fetusdt','rndrusdt','nearusdt','filusdt','aptusdt','suiusdt','arbusdt',
