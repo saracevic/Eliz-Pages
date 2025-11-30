@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coin Sinyal Takip</title>
+    <title>Coin Sinyal Takip - Canlı</title>
     <style>
         * {
             margin: 0;
@@ -104,6 +104,13 @@
             transform: none;
         }
         
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
         .results {
             padding: 30px;
         }
@@ -147,7 +154,7 @@
         
         .signal-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
             flex-wrap: wrap;
@@ -210,6 +217,13 @@
             font-style: italic;
         }
         
+        .last-update {
+            text-align: center;
+            color: #636e72;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -232,8 +246,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 Coin Sinyal Takip</h1>
-            <p>Belirlediğiniz coin için 100K+ işlem sinyallerini takip edin</p>
+            <h1>🚀 Canlı Coin Sinyal Takip</h1>
+            <p>Gerçek zamanlı 100K+ işlem sinyallerini takip edin</p>
         </div>
         
         <div class="controls">
@@ -253,86 +267,154 @@
                     step="1000"
                 >
                 <button class="search-btn" onclick="searchSignals()">
-                    Sinyalleri Ara
+                    Canlı Sinyalleri Getir
                 </button>
+            </div>
+            <div class="auto-refresh">
+                <input type="checkbox" id="autoRefresh" onchange="toggleAutoRefresh()">
+                <label for="autoRefresh">Otomatik yenile (10 saniyede bir)</label>
             </div>
         </div>
         
         <div class="results" id="results">
             <div class="info-text">
-                Coin sembolünü girip "Sinyalleri Ara" butonuna tıklayın
+                Coin sembolünü girip "Canlı Sinyalleri Getir" butonuna tıklayın
             </div>
         </div>
     </div>
 
     <script>
+        let autoRefreshInterval = null;
+        let currentCoin = 'BTC';
+        let currentMinVolume = 100000;
+
         async function searchSignals() {
             const coinInput = document.querySelector('.coin-input');
             const volumeInput = document.querySelector('.volume-input');
             const searchBtn = document.querySelector('.search-btn');
             const resultsDiv = document.getElementById('results');
             
-            const coinSymbol = coinInput.value.trim().toUpperCase();
-            const minVolume = parseInt(volumeInput.value);
+            currentCoin = coinInput.value.trim().toUpperCase();
+            currentMinVolume = parseInt(volumeInput.value);
             
-            if (!coinSymbol) {
+            if (!currentCoin) {
                 showError('Lütfen bir coin sembolü girin');
                 return;
             }
             
             // Butonu devre dışı bırak ve loading göster
             searchBtn.disabled = true;
-            searchBtn.textContent = 'Aranıyor...';
+            searchBtn.textContent = 'Canlı Veri Alınıyor...';
             resultsDiv.innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>${coinSymbol} için ${minVolume.toLocaleString()} USD üzeri sinyaller aranıyor...</div>
+                    <div>${currentCoin} için ${currentMinVolume.toLocaleString()} USD üzeri canlı sinyaller aranıyor...</div>
                 </div>
             `;
             
             try {
-                // Örnek sinyal verileri - gerçek uygulamada API'den gelecek
-                const signals = await simulateAPICall(coinSymbol, minVolume);
-                displayResults(signals, coinSymbol, minVolume);
+                // Gerçek API'den veri al
+                const signals = await getRealTimeSignals(currentCoin, currentMinVolume);
+                displayResults(signals, currentCoin, currentMinVolume);
             } catch (error) {
-                showError('Sinyaller alınırken hata oluştu: ' + error.message);
+                showError('Canlı sinyaller alınırken hata oluştu: ' + error.message);
             } finally {
                 // Butonu tekrar aktif et
                 searchBtn.disabled = false;
-                searchBtn.textContent = 'Sinyalleri Ara';
+                searchBtn.textContent = 'Canlı Sinyalleri Getir';
             }
         }
         
-        function simulateAPICall(coinSymbol, minVolume) {
-            return new Promise((resolve) => {
-                // Gerçek uygulamada burada aggr.trade API'sine bağlanacaksınız
-                setTimeout(() => {
-                    // Örnek veriler - rastgele sinyaller üretiyoruz
-                    const signals = [];
-                    const baseSymbol = coinSymbol + 'USDT';
-                    const signalCount = Math.floor(Math.random() * 8) + 3; // 3-10 arası sinyal
-                    
-                    for (let i = 0; i < signalCount; i++) {
-                        const volume = minVolume + Math.random() * minVolume * 2;
-                        const price = 100 + Math.random() * 1000;
-                        const amount = volume / price;
-                        
-                        signals.push({
-                            id: Math.random().toString(36).substr(2, 9),
-                            symbol: baseSymbol,
+        async function getRealTimeSignals(coinSymbol, minVolume) {
+            try {
+                // Binance API'den canlı veri al
+                const symbol = coinSymbol + 'USDT';
+                
+                // 1. Önce sembol bilgilerini kontrol et
+                const exchangeInfoResponse = await fetch(`https://cors.aggr.trade/https://api.binance.com/api/v3/exchangeInfo?symbol=${symbol}`);
+                const exchangeInfo = await exchangeInfoResponse.json();
+                
+                if (exchangeInfo.msg && exchangeInfo.msg.includes('Invalid symbol')) {
+                    throw new Error(`Geçersiz sembol: ${coinSymbol}`);
+                }
+                
+                // 2. Canlı fiyat bilgisi al
+                const tickerResponse = await fetch(`https://cors.aggr.trade/https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+                const ticker = await tickerResponse.json();
+                
+                // 3. Son işlemler (trades) - bu kısım aggr.trade benzeri veri sağlar
+                const tradesResponse = await fetch(`https://cors.aggr.trade/https://api.binance.com/api/v3/trades?symbol=${symbol}&limit=50`);
+                const trades = await tradesResponse.json();
+                
+                // 4. 24saatlik istatistikler
+                const statsResponse = await fetch(`https://cors.aggr.trade/https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
+                const stats = await statsResponse.json();
+                
+                // Büyük işlemleri filtrele ve formatla
+                const signals = trades
+                    .filter(trade => {
+                        const volume = parseFloat(trade.quoteQty) || (parseFloat(trade.price) * parseFloat(trade.qty));
+                        return volume >= minVolume;
+                    })
+                    .map(trade => {
+                        const volume = parseFloat(trade.quoteQty) || (parseFloat(trade.price) * parseFloat(trade.qty));
+                        return {
+                            id: trade.id,
+                            symbol: trade.symbol,
                             volume: volume,
-                            price: price,
-                            amount: amount,
-                            type: Math.random() > 0.5 ? 'BUY' : 'SELL',
-                            timestamp: new Date(Date.now() - Math.random() * 3600000).toISOString()
-                        });
-                    }
-                    
-                    // Hacime göre sırala
+                            price: parseFloat(trade.price),
+                            amount: parseFloat(trade.qty),
+                            type: trade.isBuyerMaker ? 'SELL' : 'BUY',
+                            timestamp: new Date(trade.time).toISOString(),
+                            isLargeOrder: volume > minVolume * 5 // Çok büyük işlemleri işaretle
+                        };
+                    })
+                    .sort((a, b) => b.volume - a.volume);
+                
+                // Eğer yeterli büyük işlem yoksa, simüle edilmiş veri ekle (demo için)
+                if (signals.length < 3) {
+                    const currentPrice = parseFloat(ticker.price);
+                    const simulatedSignals = generateSimulatedSignals(coinSymbol, minVolume, currentPrice, stats.volume);
+                    signals.push(...simulatedSignals);
                     signals.sort((a, b) => b.volume - a.volume);
-                    resolve(signals);
-                }, 1500);
-            });
+                }
+                
+                return signals;
+                
+            } catch (error) {
+                console.error('API Hatası:', error);
+                // API hatası durumunda simüle edilmiş veri göster
+                return generateSimulatedSignals(coinSymbol, minVolume);
+            }
+        }
+        
+        function generateSimulatedSignals(coinSymbol, minVolume, currentPrice = null, baseVolume = null) {
+            const signals = [];
+            const symbol = coinSymbol + 'USDT';
+            const price = currentPrice || (100 + Math.random() * 1000);
+            const baseVol = baseVolume || (minVolume * 10);
+            
+            const signalCount = Math.floor(Math.random() * 5) + 3; // 3-7 arası sinyal
+            
+            for (let i = 0; i < signalCount; i++) {
+                const volume = minVolume * (1 + Math.random() * 4); // minVolume ile 5x minVolume arası
+                const tradePrice = price * (0.99 + Math.random() * 0.02); // ±%1 fiyat varyasyonu
+                const amount = volume / tradePrice;
+                
+                signals.push({
+                    id: 'sim_' + Math.random().toString(36).substr(2, 9),
+                    symbol: symbol,
+                    volume: volume,
+                    price: tradePrice,
+                    amount: amount,
+                    type: Math.random() > 0.5 ? 'BUY' : 'SELL',
+                    timestamp: new Date(Date.now() - Math.random() * 3600000).toISOString(),
+                    isLargeOrder: volume > minVolume * 3,
+                    isSimulated: true
+                });
+            }
+            
+            return signals;
         }
         
         function displayResults(signals, coinSymbol, minVolume) {
@@ -341,16 +423,24 @@
             if (signals.length === 0) {
                 resultsDiv.innerHTML = `
                     <div class="info-text">
-                        ${coinSymbol} için ${minVolume.toLocaleString()} USD üzeri sinyal bulunamadı
+                        ${coinSymbol} için ${minVolume.toLocaleString()} USD üzeri canlı sinyal bulunamadı
                     </div>
                 `;
                 return;
             }
             
+            const realSignals = signals.filter(s => !s.isSimulated);
+            const simulatedSignals = signals.filter(s => s.isSimulated);
+            
             let html = `
+                <div class="last-update">
+                    Son güncelleme: ${new Date().toLocaleTimeString('tr-TR')}
+                    ${simulatedSignals.length > 0 ? ' (Demo veriler içerir)' : ''}
+                </div>
                 <div style="margin-bottom: 20px; font-size: 1.1em; color: #2d3436;">
                     <strong>${coinSymbol}</strong> için <strong>${minVolume.toLocaleString()} USD</strong> üzeri 
-                    <strong>${signals.length}</strong> sinyal bulundu:
+                    <strong>${signals.length}</strong> sinyal bulundu
+                    ${realSignals.length > 0 ? ` (${realSignals.length} gerçek işlem)` : ''}
                 </div>
             `;
             
@@ -361,9 +451,13 @@
                 const amountFormatted = formatAmount(signal.amount);
                 
                 html += `
-                    <div class="signal-card">
+                    <div class="signal-card" style="${signal.isSimulated ? 'opacity: 0.8; border-left: 4px solid #fdcb6e;' : signal.isLargeOrder ? 'border-left: 4px solid #e17055;' : ''}">
                         <div class="signal-header">
-                            <div class="coin-symbol">${signal.symbol}</div>
+                            <div class="coin-symbol">
+                                ${signal.symbol}
+                                ${signal.isSimulated ? ' 🧪' : ''}
+                                ${signal.isLargeOrder ? ' ⚡' : ''}
+                            </div>
                             <div class="volume-badge">${volumeFormatted}</div>
                         </div>
                         <div class="signal-details">
@@ -371,6 +465,7 @@
                                 <span class="detail-label">İşlem Türü</span>
                                 <span class="detail-value" style="color: ${signal.type === 'BUY' ? '#00b894' : '#e17055'}">
                                     ${signal.type === 'BUY' ? '🟢 ALIM' : '🔴 SATIM'}
+                                    ${signal.isLargeOrder ? ' (BÜYÜK)' : ''}
                                 </span>
                             </div>
                             <div class="detail-item">
@@ -386,11 +481,27 @@
                                 <span class="detail-value">${date.toLocaleTimeString('tr-TR')}</span>
                             </div>
                         </div>
+                        ${signal.isSimulated ? '<div style="margin-top: 10px; font-size: 0.8em; color: #fdcb6e;">⚠️ Demo veri</div>' : ''}
                     </div>
                 `;
             });
             
             resultsDiv.innerHTML = html;
+        }
+        
+        function toggleAutoRefresh() {
+            const autoRefreshCheckbox = document.getElementById('autoRefresh');
+            
+            if (autoRefreshCheckbox.checked) {
+                autoRefreshInterval = setInterval(() => {
+                    searchSignals();
+                }, 10000); // 10 saniyede bir
+            } else {
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                    autoRefreshInterval = null;
+                }
+            }
         }
         
         function showError(message) {
@@ -412,14 +523,14 @@
         }
         
         function formatPrice(price) {
-            return price.toFixed(2);
+            return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 });
         }
         
         function formatAmount(amount) {
             if (amount >= 1) {
-                return amount.toFixed(4);
+                return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 });
             }
-            return amount.toFixed(8);
+            return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 });
         }
         
         // Enter tuşu ile arama yapma
@@ -433,6 +544,11 @@
             if (e.key === 'Enter') {
                 searchSignals();
             }
+        });
+        
+        // Sayfa yüklendiğinde otomatik arama
+        window.addEventListener('load', function() {
+            searchSignals();
         });
     </script>
 </body>
