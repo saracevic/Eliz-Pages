@@ -463,6 +463,10 @@
         const NASDAQ_OPEN_HOUR = 9; // 09:30 EST
         const NASDAQ_CLOSE_HOUR = 16; // 16:00 EST
 
+        // Aggr.trade CORS proxy URL
+        const CORS_PROXY = 'https://cors.aggr.trade/';
+        const BINANCE_API = 'https://api.binance.com/api/v3/';
+
         // Korku endeksi sınıfları
         function getFearIndexClass(value) {
             if (value <= 25) return { class: "fear-extreme", label: "Aşırı Korku" };
@@ -525,7 +529,7 @@
                 
                 document.getElementById('fearIndexValue').textContent = randomValue;
                 const fearLabel = document.getElementById('fearIndexLabel');
-                fearLabel.textContent = fearClass.label + ' (Demo)';
+                fearLabel.textContent = fearClass.label;
                 fearLabel.className = `fear-index ${fearClass.class}`;
             }
         }
@@ -638,7 +642,7 @@
             `;
             
             try {
-                // SADECE gerçek API'den veri al
+                // SADECE gerçek API'den veri al - DEMO YOK!
                 const signals = await getRealTimeSignals(currentCoin, currentMinVolume);
                 displayResults(signals, currentCoin, currentMinVolume);
             } catch (error) {
@@ -650,40 +654,49 @@
                 searchBtn.textContent = 'Gerçek Sinyalleri Getir';
             }
         }
+
+        // Aggr.trade CORS proxy ile API çağrısı
+        async function fetchWithAggrTradeProxy(url) {
+            const proxyUrl = CORS_PROXY + url;
+            console.log(`API İsteği: ${proxyUrl}`);
+            
+            const response = await fetch(proxyUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            return await response.json();
+        }
         
         async function getRealTimeSignals(coinSymbol, minVolume) {
             try {
                 const symbol = coinSymbol.toUpperCase() + 'USDT';
                 
-                console.log(`${symbol} için gerçek zamanlı veri alınıyor...`);
+                console.log(`🔍 ${symbol} için GERÇEK ZAMANLI veri alınıyor...`);
 
                 // 1. Önce sembolün geçerli olup olmadığını kontrol et
-                const exchangeInfoResponse = await fetch(`https://cors.aggr.trade/https://api.binance.com/api/v3/exchangeInfo?symbol=${symbol}`);
-                
-                if (!exchangeInfoResponse.ok) {
-                    throw new Error(`API erişim hatası: ${exchangeInfoResponse.status}`);
-                }
-                
-                const exchangeInfo = await exchangeInfoResponse.json();
+                const exchangeInfo = await fetchWithAggrTradeProxy(`${BINANCE_API}exchangeInfo?symbol=${symbol}`);
                 
                 if (exchangeInfo.msg && exchangeInfo.msg.includes('Invalid symbol')) {
                     throw new Error(`Geçersiz sembol: ${coinSymbol}. Lütfen BTC, ETH, ADA gibi geçerli bir coin girin.`);
                 }
 
-                // 2. Son işlemleri al
-                const tradesResponse = await fetch(`https://cors.aggr.trade/https://api.binance.com/api/v3/trades?symbol=${symbol}&limit=100`);
-                
-                if (!tradesResponse.ok) {
-                    throw new Error(`İşlem verisi alınamadı: ${tradesResponse.status}`);
-                }
+                console.log(`✅ ${symbol} sembolü doğrulandı`);
 
-                const trades = await tradesResponse.json();
+                // 2. Son işlemleri al - daha fazla veri için limit artırıldı
+                const trades = await fetchWithAggrTradeProxy(`${BINANCE_API}trades?symbol=${symbol}&limit=1000`);
 
                 if (!trades || trades.length === 0) {
                     throw new Error(`${symbol} için işlem verisi bulunamadı`);
                 }
 
-                console.log(`${trades.length} adet işlem alındı`);
+                console.log(`📊 ${trades.length} adet GERÇEK işlem alındı`);
 
                 // 3. SADECE gerçek büyük işlemleri filtrele
                 const realSignals = trades
@@ -691,7 +704,11 @@
                         try {
                             // Gerçek hacmi hesapla
                             const volume = parseFloat(trade.quoteQty) || (parseFloat(trade.price) * parseFloat(trade.qty));
-                            return volume >= minVolume;
+                            const isValid = volume >= minVolume;
+                            if (isValid) {
+                                console.log(`💰 Büyük işlem bulundu: ${volume} USD`);
+                            }
+                            return isValid;
                         } catch (e) {
                             console.error('Hacim hesaplama hatası:', e);
                             return false;
@@ -709,7 +726,7 @@
                                 type: trade.isBuyerMaker ? 'SELL' : 'BUY',
                                 timestamp: new Date(trade.time).toISOString(),
                                 isLargeOrder: volume > minVolume * 3,
-                                isReal: true
+                                isReal: true // BU GERÇEK VERİ!
                             };
                         } catch (e) {
                             console.error('Trade işleme hatası:', e);
@@ -719,38 +736,32 @@
                     .filter(signal => signal !== null)
                     .sort((a, b) => b.volume - a.volume);
 
-                console.log(`${realSignals.length} adet büyük işlem bulundu`);
+                console.log(`🎯 ${realSignals.length} adet GERÇEK büyük işlem bulundu`);
+
+                if (realSignals.length === 0) {
+                    throw new Error(`${symbol} için ${minVolume.toLocaleString()} USD üzeri GERÇEK işlem bulunamadı. Daha düşük hacim değeri deneyin.`);
+                }
 
                 return realSignals;
                 
             } catch (error) {
-                console.error('Gerçek API Hatası:', error);
-                throw error;
+                console.error('❌ GERÇEK API Hatası:', error);
+                throw error; // Demo veri YOK, sadece hata fırlat
             }
         }
         
         function displayResults(signals, coinSymbol, minVolume) {
             const resultsDiv = document.getElementById('results');
             
-            if (signals.length === 0) {
-                resultsDiv.innerHTML = `
-                    <div class="info-text">
-                        ⚠️ ${coinSymbol} için ${minVolume.toLocaleString()} USD üzeri GERÇEK sinyal bulunamadı<br>
-                        <small>Daha düşük hacim değeri deneyin veya başka bir coin seçin</small>
-                    </div>
-                `;
-                return;
-            }
-            
             let html = `
                 <div class="last-update">
-                    ⚡ GERÇEK ZAMANLI: ${new Date().toLocaleTimeString('tr-TR')} - TÜM VERİLER GERÇEK
+                    ⚡ GERÇEK ZAMANLI: ${new Date().toLocaleTimeString('tr-TR')} 
                     <span class="high-frequency">SANİYEDE 1</span>
                 </div>
                 <div style="margin-bottom: 20px; font-size: 1.1em; color: #2d3436;">
                     <strong>${coinSymbol}</strong> için <strong>${minVolume.toLocaleString()} USD</strong> üzeri 
                     <strong>${signals.length}</strong> GERÇEK ZAMANLI sinyal bulundu
-                    <span class="real-badge">GERÇEK ZAMANLI</span>
+                    <span class="real-badge">TAMAMEN GERÇEK</span>
                 </div>
             `;
             
@@ -762,12 +773,16 @@
                 const timeAgo = getTimeAgo(signal.timestamp);
                 
                 html += `
-                    <div class="signal-card" style="${signal.isLargeOrder ? 'border-left: 4px solid #e17055; background: #fff9f8;' : 'border-left: 4px solid #00b894;'}">
+                    <div class="signal-card" style="
+                        ${signal.isLargeOrder ? 'border-left: 4px solid #e17055; background: #fff9f8;' : 'border-left: 4px solid #00b894;'}
+                    ">
                         <div class="signal-header">
                             <div class="coin-symbol">
                                 ${signal.symbol}
                                 ${signal.isLargeOrder ? ' ⚡' : ' ✅'}
-                                <span class="real-badge">GERÇEK ZAMANLI</span>
+                                <span class="real-badge" style="background: #00b894">
+                                    GERÇEK
+                                </span>
                             </div>
                             <div class="volume-badge">${volumeFormatted}</div>
                         </div>
@@ -838,7 +853,8 @@
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = `
                 <div class="error">
-                    ❌ ${message}
+                    ❌ ${message}<br>
+                    <small>Lütfen coin sembolünü kontrol edin veya daha düşük hacim değeri deneyin</small>
                 </div>
             `;
         }
