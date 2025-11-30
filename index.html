@@ -999,7 +999,7 @@
                 <td style="color:var(--text-dim)">${t.time}</td>
                 <td class="col-coin">${t.symbol}</td>
                 <td class="${color}" style="font-weight:700">${t.side}</td>
-                <td>${t.price < 1 ? t.price.toFixed(4) : t.price.toFixed(2)}</td>
+                <td>${t.qty < 1 ? t.qty.toFixed(4) : t.qty.toFixed(2)}</td>
                 <td>$${fmt(t.usd)}</td>
             </tr>`;
         });
