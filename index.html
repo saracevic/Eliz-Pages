@@ -233,6 +233,31 @@
             margin-left: 8px;
         }
 
+        .countdown {
+            background: #3498db;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            margin-left: 8px;
+        }
+
+        .high-frequency {
+            background: #e17055;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            margin-left: 8px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -255,8 +280,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 Canlı Coin Sinyal Takip</h1>
-            <p>Sadece Gerçek 100K+ İşlem Sinyalleri</p>
+            <h1>⚡ Canlı Coin Sinyal Takip</h1>
+            <p>Sadece Gerçek 100K+ İşlem Sinyalleri - SANİYEDE 1 Güncel</p>
         </div>
         
         <div class="controls">
@@ -280,8 +305,8 @@
                 </button>
             </div>
             <div class="auto-refresh">
-                <input type="checkbox" id="autoRefresh" onchange="toggleAutoRefresh()">
-                <label for="autoRefresh">Otomatik yenile ( saniyede bir)</label>
+                <input type="checkbox" id="autoRefresh" onchange="toggleAutoRefresh()" checked>
+                <label for="autoRefresh">SANIYEDE 1 yenile - <span id="countdown">1</span>s <span class="high-frequency">YÜKSEK HIZ</span></label>
             </div>
         </div>
         
@@ -294,8 +319,47 @@
 
     <script>
         let autoRefreshInterval = null;
+        let countdownInterval = null;
         let currentCoin = 'BTC';
         let currentMinVolume = 100000;
+        let countdownValue = 1;
+
+        function updateCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            if (countdownElement) {
+                countdownElement.textContent = countdownValue;
+            }
+        }
+
+        function startCountdown() {
+            countdownValue = 1;
+            updateCountdown();
+            
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+            
+            countdownInterval = setInterval(() => {
+                countdownValue--;
+                updateCountdown();
+                
+                if (countdownValue <= 0) {
+                    countdownValue = 1;
+                    updateCountdown();
+                }
+            }, 1000);
+        }
+
+        function stopCountdown() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+            const countdownElement = document.getElementById('countdown');
+            if (countdownElement) {
+                countdownElement.textContent = '1';
+            }
+        }
 
         async function searchSignals() {
             const coinInput = document.querySelector('.coin-input');
@@ -313,11 +377,11 @@
             
             // Butonu devre dışı bırak ve loading göster
             searchBtn.disabled = true;
-            searchBtn.textContent = 'Gerçek Veri Alınıyor...';
+            searchBtn.textContent = 'GERÇEK ZAMANLI...';
             resultsDiv.innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>${currentCoin} için ${currentMinVolume.toLocaleString()} USD üzeri GERÇEK sinyaller aranıyor...</div>
+                    <div>${currentCoin} için ${currentMinVolume.toLocaleString()} USD üzeri GERÇEK ZAMANLI sinyaller aranıyor...</div>
                 </div>
             `;
             
@@ -338,7 +402,7 @@
             try {
                 const symbol = coinSymbol + 'USDT';
                 
-                console.log(`${symbol} için gerçek veri alınıyor...`);
+                console.log(`${symbol} için gerçek zamanlı veri alınıyor...`);
 
                 // 1. Önce sembolün geçerli olup olmadığını kontrol et
                 const exchangeInfoResponse = await fetch(`https://cors.aggr.trade/https://api.binance.com/api/v3/exchangeInfo?symbol=${symbol}`);
@@ -387,7 +451,6 @@
                 
             } catch (error) {
                 console.error('Gerçek API Hatası:', error);
-                // API hatası durumunda BİLE demo veri EKLEME, sadece hata göster
                 throw error;
             }
         }
@@ -407,12 +470,13 @@
             
             let html = `
                 <div class="last-update">
-                    ✅ SON GÜNCELLEME: ${new Date().toLocaleTimeString('tr-TR')} - TÜM VERİLER GERÇEK
+                    ⚡ GERÇEK ZAMANLI: ${new Date().toLocaleTimeString('tr-TR')} - TÜM VERİLER GERÇEK
+                    <span class="high-frequency">SANİYEDE 1</span>
                 </div>
                 <div style="margin-bottom: 20px; font-size: 1.1em; color: #2d3436;">
                     <strong>${coinSymbol}</strong> için <strong>${minVolume.toLocaleString()} USD</strong> üzeri 
-                    <strong>${signals.length}</strong> GERÇEK sinyal bulundu
-                    <span class="real-badge">GERÇEK VERİ</span>
+                    <strong>${signals.length}</strong> GERÇEK ZAMANLI sinyal bulundu
+                    <span class="real-badge">GERÇEK ZAMANLI</span>
                 </div>
             `;
             
@@ -429,7 +493,7 @@
                             <div class="coin-symbol">
                                 ${signal.symbol}
                                 ${signal.isLargeOrder ? ' ⚡' : ' ✅'}
-                                <span class="real-badge">GERÇEK</span>
+                                <span class="real-badge">GERÇEK ZAMANLI</span>
                             </div>
                             <div class="volume-badge">${volumeFormatted}</div>
                         </div>
@@ -459,33 +523,41 @@
             });
             
             resultsDiv.innerHTML = html;
+
+            // Otomatik yenileme aktifse countdown'u başlat
+            const autoRefreshCheckbox = document.getElementById('autoRefresh');
+            if (autoRefreshCheckbox && autoRefreshCheckbox.checked) {
+                startCountdown();
+            }
         }
         
         function getTimeAgo(timestamp) {
             const now = new Date();
             const signalTime = new Date(timestamp);
             const diffMs = now - signalTime;
+            const diffSecs = Math.floor(diffMs / 1000);
             const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
             
-            if (diffMins < 1) return 'şimdi';
+            if (diffSecs < 60) return `${diffSecs} saniye önce`;
             if (diffMins < 60) return `${diffMins} dakika önce`;
-            if (diffHours < 24) return `${diffHours} saat önce`;
-            return `${Math.floor(diffHours / 24)} gün önce`;
+            return `${Math.floor(diffMins / 60)} saat önce`;
         }
         
         function toggleAutoRefresh() {
             const autoRefreshCheckbox = document.getElementById('autoRefresh');
             
             if (autoRefreshCheckbox.checked) {
+                // 1 SANİYE olarak ayarlandı
                 autoRefreshInterval = setInterval(() => {
                     searchSignals();
-                }, 1000); // saniyede bir
+                }, 1000); // 1 SANİYE
+                startCountdown();
             } else {
                 if (autoRefreshInterval) {
                     clearInterval(autoRefreshInterval);
                     autoRefreshInterval = null;
                 }
+                stopCountdown();
             }
         }
         
@@ -533,7 +605,12 @@
         
         // Sayfa yüklendiğinde otomatik arama
         window.addEventListener('load', function() {
-            searchSignals();
+            // Otomatik yenilemeyi başlat
+            const autoRefreshCheckbox = document.getElementById('autoRefresh');
+            if (autoRefreshCheckbox) {
+                autoRefreshCheckbox.checked = true;
+                toggleAutoRefresh();
+            }
         });
     </script>
 </body>
