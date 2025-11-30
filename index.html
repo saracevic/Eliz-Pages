@@ -846,7 +846,7 @@
         <div class="panel-header">
             <div class="panel-title">
                 <span>📊 FIBO 0.72</span>
-                <span style="color:var(--text-dim); font-size:9px;">1 Aylık</span>
+                <span style="color:var(--text-dim); font-size:9px;">52 Haftalık</span>
             </div>
             <div class="panel-refresh" id="fiboRefresh">🔄</div>
         </div>
@@ -934,9 +934,9 @@
     'use strict';
 
     // --- AYARLAR ---
-    const MIN_USD = 140000;
+    const MIN_USD = 950000;
     const COINS = [
-        'btc','eth','bnbusdt','solusdt','xrpusdt','adausdt','dogeusdt','avaxusdt',
+        'btcusdt','ethusdt','bnbusdt','solusdt','xrpusdt','adausdt','dogeusdt','avaxusdt',
         'linkusdt','dotusdt','maticusdt','ltcusdt','shibusdt','pepeusdt','bonkusdt',
         'wifusdt','fetusdt','rndrusdt','nearusdt','filusdt','aptusdt','suiusdt','arbusdt',
         'opusdt','tiausdt','injusdt','imxusdt','ftmusdt','flokusdt','seiusdt','enausdt',
@@ -1061,7 +1061,7 @@
         }
     }
 
-    // --- FIBONACCI SİSTEMİ ---
+    // --- FIBONACCI SİSTEMİ - 52 HAFTALIK ---
     let isAnalyzing = false;
 
     async function fetchFiboData() {
@@ -1073,7 +1073,7 @@
         const fiboStats = document.getElementById('fiboStats');
         
         fiboRefresh.classList.add('loading');
-        fiboContent.innerHTML = '<div class="fibo-loading">100 coin analiz ediliyor...</div>';
+        fiboContent.innerHTML = '<div class="fibo-loading">100 coin analiz ediliyor (52 Haftalık)...</div>';
 
         try {
             const normalResults = [];
@@ -1086,24 +1086,27 @@
                 
                 const promises = coinGroup.map(async (symbol) => {
                     try {
-                        const monthlyResponse = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol.toUpperCase()}&interval=1d&limit=30`);
-                        const monthlyKlines = await monthlyResponse.json();
+                        // 52 haftalık (1 yıllık) veri için 365 günlük veri çekiyoruz
+                        const yearlyResponse = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol.toUpperCase()}&interval=1d&limit=365`);
+                        const yearlyKlines = await yearlyResponse.json();
 
-                        if (monthlyKlines.length > 0) {
-                            const monthlyHighs = monthlyKlines.map(k => parseFloat(k[2]));
-                            const monthlyLows = monthlyKlines.map(k => parseFloat(k[3]));
-                            const monthlyCurrentPrice = parseFloat(monthlyKlines[monthlyKlines.length - 1][4]);
+                        if (yearlyKlines.length > 0) {
+                            const yearlyHighs = yearlyKlines.map(k => parseFloat(k[2]));
+                            const yearlyLows = yearlyKlines.map(k => parseFloat(k[3]));
+                            const yearlyCurrentPrice = parseFloat(yearlyKlines[yearlyKlines.length - 1][4]);
                             
-                            const monthlyAth = Math.max(...monthlyHighs);
-                            const monthlyLowest = Math.min(...monthlyLows);
+                            const yearlyAth = Math.max(...yearlyHighs);
+                            const yearlyLowest = Math.min(...yearlyLows);
                             
-                            const normalFibo72 = monthlyLowest + (monthlyAth - monthlyLowest) * 0.72;
-                            const normalDistancePercent = Math.abs((monthlyCurrentPrice - normalFibo72) / normalFibo72) * 100;
-                            const normalPosition = monthlyCurrentPrice >= normalFibo72 ? 'resistance' : 'support';
+                            // Normal Fibonacci 0.72 seviyesi
+                            const normalFibo72 = yearlyLowest + (yearlyAth - yearlyLowest) * 0.72;
+                            const normalDistancePercent = Math.abs((yearlyCurrentPrice - normalFibo72) / normalFibo72) * 100;
+                            const normalPosition = yearlyCurrentPrice >= normalFibo72 ? 'resistance' : 'support';
                             
-                            const reverseFibo72 = monthlyAth - (monthlyAth - monthlyLowest) * 0.72;
-                            const reverseDistancePercent = Math.abs((monthlyCurrentPrice - reverseFibo72) / reverseFibo72) * 100;
-                            const reversePosition = monthlyCurrentPrice >= reverseFibo72 ? 'resistance' : 'support';
+                            // Reverse Fibonacci 0.72 seviyesi
+                            const reverseFibo72 = yearlyAth - (yearlyAth - yearlyLowest) * 0.72;
+                            const reverseDistancePercent = Math.abs((yearlyCurrentPrice - reverseFibo72) / reverseFibo72) * 100;
+                            const reversePosition = yearlyCurrentPrice >= reverseFibo72 ? 'resistance' : 'support';
                             
                             analyzedCount++;
                             
@@ -1125,6 +1128,7 @@
                         }
                     } catch (error) {
                         errorCount++;
+                        console.warn(`${symbol} için 52 haftalık veri çekilemedi:`, error);
                         return null;
                     }
                 });
@@ -1143,11 +1147,12 @@
                     });
                 });
                 
-                fiboContent.innerHTML = `<div class="fibo-loading">${analyzedCount}/${COINS.length} coin analiz edildi...</div>`;
+                fiboContent.innerHTML = `<div class="fibo-loading">${analyzedCount}/${COINS.length} coin analiz edildi (52 Haftalık)...</div>`;
                 
                 await new Promise(resolve => setTimeout(resolve, 800));
             }
 
+            // Mesafe yüzdesine göre sırala (en yakından en uzağa)
             normalResults.sort((a, b) => a.distancePercent - b.distancePercent);
             reverseResults.sort((a, b) => a.distancePercent - b.distancePercent);
             
@@ -1180,6 +1185,8 @@
                             </div>
                         `;
                     });
+                } else {
+                    html += `<div style="text-align:center; color:var(--text-dim); font-size:8px; padding:8px;">Veri bulunamadı</div>`;
                 }
                 
                 html += `</div>`;
@@ -1207,19 +1214,21 @@
                             </div>
                         `;
                     });
+                } else {
+                    html += `<div style="text-align:center; color:var(--text-dim); font-size:8px; padding:8px;">Veri bulunamadı</div>`;
                 }
                 
                 html += `</div>`;
                 
                 fiboContent.innerHTML = html;
-                fiboStats.innerHTML = `${analyzedCount} coin tarandı • ${errorCount} hata`;
+                fiboStats.innerHTML = `${analyzedCount} coin tarandı • 52 Haftalık • ${errorCount} hata`;
             } else {
                 fiboContent.innerHTML = '<div class="fibo-error">Analiz edilecek coin bulunamadı</div>';
             }
             
         } catch (error) {
-            fiboContent.innerHTML = '<div class="fibo-error">Hata: Veri çekilemedi</div>';
-            console.error('Fibonacci veri hatası:', error);
+            fiboContent.innerHTML = '<div class="fibo-error">Hata: 52 haftalık veri çekilemedi</div>';
+            console.error('Fibonacci 52 haftalık veri hatası:', error);
         } finally {
             isAnalyzing = false;
             fiboRefresh.classList.remove('loading');
@@ -1242,7 +1251,7 @@
         gain.connect(audioCtx.destination);
         
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(type === 'BUY' ? 850 : 450, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(type === 'BUY' ? 550 : 250, audioCtx.currentTime);
         
         gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
