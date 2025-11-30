@@ -934,7 +934,7 @@
     'use strict';
 
     // --- AYARLAR ---
-    const MIN_USD = 180000;
+    const MIN_USD = 140000;
     const COINS = [
         'btc','eth','bnbusdt','solusdt','xrpusdt','adausdt','dogeusdt','avaxusdt',
         'linkusdt','dotusdt','maticusdt','ltcusdt','shibusdt','pepeusdt','bonkusdt',
@@ -1242,7 +1242,7 @@
         gain.connect(audioCtx.destination);
         
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(type === 'BUY' ? 550 : 250, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(type === 'BUY' ? 850 : 450, audioCtx.currentTime);
         
         gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
