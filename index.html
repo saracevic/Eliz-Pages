@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Whale Hunter Pro</title>
+<title>Whale Hunter Pro V2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -16,6 +16,8 @@
         --blue: #3b82f6;
         --text: #f1f5f9;
         --text-dim: #94a3b8;
+        --orange: #f59e0b;
+        --purple: #a855f7;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -29,7 +31,6 @@
         overflow-x: hidden;
     }
 
-    /* Arkaplan Efekti */
     body::before {
         content: '';
         position: fixed;
@@ -56,7 +57,14 @@
         box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
 
-    .brand { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .brand { 
+        font-size: 18px; 
+        font-weight: 800; 
+        letter-spacing: -0.5px; 
+        background: linear-gradient(to right, #fff, #94a3b8); 
+        -webkit-background-clip: text; 
+        -webkit-text-fill-color: transparent; 
+    }
     
     .status-badge {
         font-family: 'JetBrains Mono', monospace;
@@ -69,10 +77,25 @@
         align-items: center;
         gap: 6px;
     }
-    .dot { width: 6px; height: 6px; border-radius: 50%; background: #475569; transition: 0.3s; }
-    .dot.active { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .dot { 
+        width: 6px; 
+        height: 6px; 
+        border-radius: 50%; 
+        background: #475569; 
+        transition: 0.3s; 
+    }
+    .dot.active { 
+        background: var(--green); 
+        box-shadow: 0 0 8px var(--green); 
+        animation: pulse-dot 2s infinite;
+    }
 
-    /* RIGHT SIDEBAR - Fibo ve Hacim Panelleri */
+    @keyframes pulse-dot {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+
+    /* RIGHT SIDEBAR */
     .right-sidebar {
         position: fixed;
         top: 10px;
@@ -84,7 +107,6 @@
         gap: 10px;
     }
 
-    /* TOP INFO BAR - Fibo Panelinin Üstünde */
     .top-info-bar {
         background: var(--card-bg);
         backdrop-filter: blur(12px);
@@ -120,7 +142,7 @@
 
     .nasdaq-status.open { background: var(--green); color: #000; }
     .nasdaq-status.closed { background: var(--red); color: #fff; }
-    .nasdaq-status.weekend { background: #f59e0b; color: #000; }
+    .nasdaq-status.weekend { background: var(--orange); color: #000; }
 
     .fear-greed {
         display: flex;
@@ -138,7 +160,7 @@
     }
 
     .fear-value.extreme-fear { color: var(--red); }
-    .fear-value.fear { color: #f59e0b; }
+    .fear-value.fear { color: var(--orange); }
     .fear-value.neutral { color: #94a3b8; }
     .fear-value.greed { color: #10b981; }
     .fear-value.extreme-greed { color: #22c55e; }
@@ -280,17 +302,8 @@
         border: 1px solid rgba(239, 68, 68, 0.3);
     }
 
-    .fibo-type {
-        font-size: 6px;
-        color: var(--text-dim);
-        background: rgba(59, 130, 246, 0.1);
-        padding: 1px 2px;
-        border-radius: 2px;
-        border: 1px solid rgba(59, 130, 246, 0.3);
-    }
-
     .fibo-percent.close { color: var(--green); }
-    .fibo-percent.medium { color: #f59e0b; }
+    .fibo-percent.medium { color: var(--orange); }
     .fibo-percent.far { color: var(--text-dim); }
 
     .fibo-loading {
@@ -371,60 +384,149 @@
         padding: 20px 0;
     }
 
-    /* SINYAL KARTLARI */
-    .signal-card {
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.02));
-        border: 1px solid rgba(16, 185, 129, 0.3);
-        border-left: 4px solid var(--green);
-        border-radius: 10px;
+    /* MARKET SENTIMENT BAR */
+    .sentiment-bar {
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
+        border-radius: 12px;
         padding: 12px;
-        margin-bottom: 12px;
-        animation: slideIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.1);
+        margin-bottom: 15px;
     }
 
-    .signal-card.sell {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(239, 68, 68, 0.02));
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        border-left: 4px solid var(--red);
-        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1);
-    }
-
-    @keyframes slideIn {
-        from { opacity: 0; transform: translateX(-20px); }
-        to { opacity: 1; transform: translateX(0); }
-    }
-
-    .signal-header {
+    .sentiment-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 8px;
     }
 
+    .sentiment-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .sentiment-value {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .sentiment-progress {
+        width: 100%;
+        height: 8px;
+        background: rgba(239, 68, 68, 0.2);
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .sentiment-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--red), var(--green));
+        border-radius: 4px;
+        transition: width 0.5s ease;
+        position: relative;
+    }
+
+    .sentiment-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 4px;
+        height: 100%;
+        background: rgba(255,255,255,0.8);
+        box-shadow: 0 0 8px rgba(255,255,255,0.6);
+    }
+
+    /* SINYAL KARTLARI - YENİ TASARIM */
+    .signal-card {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.03));
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        border-left: 4px solid var(--green);
+        border-radius: 12px;
+        padding: 14px;
+        margin-bottom: 12px;
+        animation: slideInBounce 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        box-shadow: 0 4px 20px rgba(16, 185, 129, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .signal-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+
+    .signal-card.sell {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(239, 68, 68, 0.03));
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        border-left: 4px solid var(--red);
+        box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);
+    }
+
+    @keyframes slideInBounce {
+        0% { 
+            opacity: 0; 
+            transform: translateX(-30px) scale(0.95); 
+        }
+        60% {
+            transform: translateX(5px) scale(1.02);
+        }
+        100% { 
+            opacity: 1; 
+            transform: translateX(0) scale(1); 
+        }
+    }
+
+    .signal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
     .signal-coin {
-        font-size: 16px;
+        font-size: 17px;
         font-weight: 800;
         color: #fff;
         display: flex;
         align-items: center;
         gap: 6px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
     .signal-badge {
         font-size: 9px;
-        padding: 3px 6px;
-        border-radius: 4px;
+        padding: 4px 8px;
+        border-radius: 5px;
         font-weight: 700;
-        background: rgba(16, 185, 129, 0.2);
+        background: rgba(16, 185, 129, 0.25);
         color: var(--green);
-        border: 1px solid rgba(16, 185, 129, 0.4);
+        border: 1px solid rgba(16, 185, 129, 0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .signal-card.sell .signal-badge {
-        background: rgba(239, 68, 68, 0.2);
+        background: rgba(239, 68, 68, 0.25);
         color: var(--red);
-        border: 1px solid rgba(239, 68, 68, 0.4);
+        border: 1px solid rgba(239, 68, 68, 0.5);
     }
 
     .signal-time {
@@ -435,11 +537,11 @@
 
     .signal-stats {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-        margin-top: 8px;
-        padding-top: 8px;
-        border-top: 1px solid rgba(255,255,255,0.05);
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255,255,255,0.08);
     }
 
     .signal-stat {
@@ -451,47 +553,49 @@
         color: var(--text-dim);
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        margin-bottom: 2px;
+        margin-bottom: 3px;
     }
 
     .signal-stat-value {
         font-family: 'JetBrains Mono', monospace;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 700;
         color: var(--text);
     }
 
     .signal-strength {
         width: 100%;
-        height: 4px;
+        height: 5px;
         background: rgba(255,255,255,0.1);
-        border-radius: 2px;
+        border-radius: 3px;
         overflow: hidden;
-        margin-top: 8px;
+        margin-top: 10px;
     }
 
     .signal-strength-fill {
         height: 100%;
         background: linear-gradient(90deg, var(--green), #22c55e);
-        border-radius: 2px;
-        transition: width 0.3s;
+        border-radius: 3px;
+        transition: width 0.5s ease;
+        box-shadow: 0 0 10px var(--green);
     }
 
     .signal-card.sell .signal-strength-fill {
         background: linear-gradient(90deg, var(--red), #dc2626);
+        box-shadow: 0 0 10px var(--red);
     }
 
-    /* ÖZET TABLO */
+    /* ÖZET TABLO - GELIŞMIŞ */
     .summary-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        gap: 12px;
     }
 
     .summary-section {
         background: rgba(0,0,0,0.2);
-        border-radius: 8px;
-        padding: 8px;
+        border-radius: 10px;
+        padding: 10px;
         border: 1px solid rgba(255,255,255,0.05);
     }
 
@@ -499,31 +603,71 @@
         font-size: 9px;
         color: var(--text-dim);
         text-transform: uppercase;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
         font-weight: 700;
         letter-spacing: 0.5px;
         display: flex;
         align-items: center;
         gap: 4px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
     .summary-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 4px 0;
+        padding: 5px 0;
         font-family: 'JetBrains Mono', monospace;
         font-size: 10px;
         border-bottom: 1px solid rgba(255,255,255,0.03);
+        position: relative;
     }
 
     .summary-item:last-child {
         border-bottom: none;
     }
 
+    .summary-coin-info {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
     .summary-coin {
         font-weight: 700;
         color: var(--text);
+    }
+
+    .hot-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        font-size: 7px;
+        padding: 1px 4px;
+        border-radius: 3px;
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--red);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        animation: pulse-glow 2s infinite;
+    }
+
+    @keyframes pulse-glow {
+        0%, 100% { 
+            opacity: 1; 
+            box-shadow: 0 0 0 rgba(239, 68, 68, 0.4);
+        }
+        50% { 
+            opacity: 0.7; 
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+        }
+    }
+
+    .summary-value-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 2px;
     }
 
     .summary-value {
@@ -539,49 +683,103 @@
     }
 
     .summary-trades {
-        font-size: 8px;
+        font-size: 7px;
         color: var(--text-dim);
-        margin-left: 4px;
+        opacity: 0.7;
     }
 
-    /* HOT COINS INDICATOR */
-    .hot-indicator {
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        font-size: 8px;
-        padding: 2px 4px;
-        border-radius: 3px;
-        background: rgba(239, 68, 68, 0.15);
-        color: var(--red);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        animation: pulse 2s infinite;
+    .summary-momentum {
+        height: 3px;
+        width: 100%;
+        background: rgba(255,255,255,0.1);
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 3px;
     }
 
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.6; }
+    .summary-momentum-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.3s ease;
+    }
+
+    .summary-momentum-fill.buy {
+        background: linear-gradient(90deg, transparent, var(--green));
+    }
+
+    .summary-momentum-fill.sell {
+        background: linear-gradient(90deg, transparent, var(--red));
     }
 
     /* CONTROLS */
-    .controls { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
-    .btn {
-        background: var(--card-bg); border: 1px solid var(--border); color: var(--text-dim);
-        padding: 8px 14px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer;
-        transition: 0.2s; white-space: nowrap;
+    .controls { 
+        display: flex; 
+        gap: 8px; 
+        margin-bottom: 15px; 
+        overflow-x: auto; 
+        padding-bottom: 5px; 
     }
-    .btn.active { background: rgba(59, 130, 246, 0.15); color: var(--blue); border-color: rgba(59, 130, 246, 0.4); }
+    
+    .btn {
+        background: var(--card-bg); 
+        border: 1px solid var(--border); 
+        color: var(--text-dim);
+        padding: 8px 14px; 
+        border-radius: 8px; 
+        font-size: 11px; 
+        font-weight: 600; 
+        cursor: pointer;
+        transition: all 0.2s; 
+        white-space: nowrap;
+    }
+    
+    .btn.active { 
+        background: rgba(59, 130, 246, 0.15); 
+        color: var(--blue); 
+        border-color: rgba(59, 130, 246, 0.4);
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        border-color: rgba(59, 130, 246, 0.6);
+    }
 
     /* TABLES */
-    .section-title { font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; margin-left: 4px; letter-spacing: 0.5px; }
+    .section-title { 
+        font-size: 11px; 
+        font-weight: 700; 
+        color: var(--text-dim); 
+        text-transform: uppercase; 
+        margin-bottom: 8px; 
+        margin-left: 4px; 
+        letter-spacing: 0.5px; 
+    }
     
     .table-card {
-        background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px;
+        background: var(--card-bg); 
+        border: 1px solid var(--border); 
+        border-radius: 12px; 
+        overflow: hidden; 
+        margin-bottom: 20px;
     }
 
     table { width: 100%; border-collapse: collapse; }
-    th { text-align: left; padding: 10px 12px; font-size: 10px; color: var(--text-dim); background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border); }
-    td { padding: 8px 12px; font-family: 'JetBrains Mono'; font-size: 11px; border-bottom: 1px solid var(--border); color: #e2e8f0; }
+    th { 
+        text-align: left; 
+        padding: 10px 12px; 
+        font-size: 10px; 
+        color: var(--text-dim); 
+        background: rgba(0,0,0,0.2); 
+        border-bottom: 1px solid var(--border); 
+    }
+    td { 
+        padding: 8px 12px; 
+        font-family: 'JetBrains Mono'; 
+        font-size: 11px; 
+        border-bottom: 1px solid var(--border); 
+        color: #e2e8f0; 
+    }
     tr:last-child td { border-bottom: none; }
     
     .col-coin { font-family: 'Inter'; font-weight: 600; color: #fff; }
@@ -594,11 +792,11 @@
     @keyframes flashG { 0% { background: rgba(16, 185, 129, 0.2); } 100% { background: transparent; } }
     @keyframes flashR { 0% { background: rgba(239, 68, 68, 0.2); } 100% { background: transparent; } }
 
-    /* 🔔 NOTIFICATION TOASTS (Sağ Üst) */
+    /* NOTIFICATION TOASTS */
     .toast-container {
         position: fixed;
         top: 10px;
-        right: 670px; /* Sidebar için yer aç */
+        right: 670px;
         z-index: 9999;
         display: flex;
         flex-direction: column;
@@ -626,8 +824,20 @@
     .toast.buy { border-left-color: var(--green); }
     .toast.sell { border-left-color: var(--red); }
 
-    .toast-header { display: flex; justify-content: space-between; margin-bottom: 2px; font-size: 11px; font-weight: 700; }
-    .toast-body { display: flex; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 12px; }
+    .toast-header { 
+        display: flex; 
+        justify-content: space-between; 
+        margin-bottom: 2px; 
+        font-size: 11px; 
+        font-weight: 700; 
+    }
+    
+    .toast-body { 
+        display: flex; 
+        justify-content: space-between; 
+        font-family: 'JetBrains Mono'; 
+        font-size: 12px; 
+    }
 
     /* Responsive */
     @media (max-width: 1200px) {
@@ -653,15 +863,21 @@
         .fibo-grid {
             grid-template-columns: 1fr;
         }
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+        .signal-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 
 </style>
 </head>
 <body>
 
-<!-- Right Sidebar - Fibo ve Hacim Panelleri -->
+<!-- Right Sidebar -->
 <div class="right-sidebar">
-    <!-- Top Info Bar - Fibo Panelinin Üstünde -->
+    <!-- Top Info Bar -->
     <div class="top-info-bar">
         <div class="market-status">
             <div class="nasdaq-info">
@@ -698,75 +914,82 @@
             <div class="panel-title">
                 <span>📈 En Çok Hacim</span>
                 <span style="color:var(--text-dim); font-size:9px;">Son 1 Saat</span>
-            </div>
+</div>
+</div>
+<div id="volumeContent">
+<div class="volume-loading">Hacim verileri bekleniyor...</div>
+</div>
+</div>
+</div>
+<div class="toast-container" id="toastContainer"></div>
+<div class="container">
+    <div class="header">
+        <div>
+            <div class="brand">WHALE HUNTER PRO</div>
+            <div style="font-size:10px; color: var(--text-dim); margin-top:2px;">Threshold: >$800K • v2.0</div>
         </div>
-        <div id="volumeContent">
-            <div class="volume-loading">Hacim verileri bekleniyor...</div>
+        <div class="status-badge">
+            <div class="dot" id="wsDot"></div>
+        </div>
+    </div>
+    <div class="controls">
+    <div class="btn active" id="btnSound">🔔 Ses</div>
+    <div class="btn active" id="btnVib">📳 Titreşim</div>
+    <div class="btn active" id="btnNotify">💬 Bildirim</div>
+    <div class="btn active" id="btnSignals">⚡ Sinyaller</div>
+</div>
+
+<!-- Market Sentiment Bar -->
+<div class="sentiment-bar">
+    <div class="sentiment-header">
+        <div class="sentiment-title">📊 Market Sentiment</div>
+        <div class="sentiment-value" id="sentimentValue">50% 🟡</div>
+    </div>
+    <div class="sentiment-progress">
+        <div class="sentiment-fill" id="sentimentFill" style="width: 50%"></div>
+    </div>
+</div>
+
+<!-- SİNYAL BÖLÜMÜ -->
+<div id="signalsSection" style="margin-bottom: 20px;">
+    <div class="section-title">🎯 Aktif Sinyaller</div>
+    <div id="signalsContainer">
+        <div style="text-align:center; padding:20px; color:var(--text-dim); background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;">
+            Güçlü momentum sinyali bekleniyor...
         </div>
     </div>
 </div>
 
-<div class="toast-container" id="toastContainer"></div>
-
-<div class="container">
-    <div class="header">
-        <div>
-            <div class="brand">WHALE HUNTER</div>
-            <div style="font-size:10px; color: var(--text-dim); margin-top:2px;">Threshold: >$200.000</div>
+<!-- ÖZET TABLO -->
+<div class="section-title">📊 1 Saatlik Özet</div>
+<div class="table-card" style="margin-bottom: 20px;">
+    <div class="summary-grid" style="padding: 14px;">
+        <div class="summary-section">
+            <div class="summary-title">🟢 EN ÇOK ALINAN</div>
+            <div id="topBuysContainer">
+                <div style="text-align:center; color:var(--text-dim); font-size:9px; padding:10px;">Veri bekleniyor...</div>
+            </div>
         </div>
-        <div class="status-badge">
-            <div class="dot" id="wsDot"></div>
-            <!-- LIVE yazısı kaldırıldı -->
-        </div>
-    </div>
-
-    <div class="controls">
-        <div class="btn active" id="btnSound">🔔 Ses</div>
-        <div class="btn active" id="btnVib">📳 Titreşim</div>
-        <div class="btn active" id="btnNotify">💬 Bildirim</div>
-        <div class="btn active" id="btnSignals">⚡ Sinyaller</div>
-    </div>
-
-    <!-- SİNYAL BÖLÜMÜ -->
-    <div id="signalsSection" style="margin-bottom: 20px;">
-        <div class="section-title">🎯 Aktif Sinyaller</div>
-        <div id="signalsContainer">
-            <div style="text-align:center; padding:20px; color:var(--text-dim); background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;">
-                Güçlü sinyal bekleniyor...
+        <div class="summary-section">
+            <div class="summary-title">🔴 EN ÇOK SATILAN</div>
+            <div id="topSellsContainer">
+                <div style="text-align:center; color:var(--text-dim); font-size:9px; padding:10px;">Veri bekleniyor...</div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- ÖZET TABLO -->
-    <div class="section-title">📊 1 Saatlik Özet</div>
-    <div class="table-card" style="margin-bottom: 20px;">
-        <div class="summary-grid" style="padding: 12px;">
-            <div class="summary-section">
-                <div class="summary-title">🟢 EN ÇOK ALINAN</div>
-                <div id="topBuysContainer">
-                    <div style="text-align:center; color:var(--text-dim); font-size:9px; padding:8px;">Veri bekleniyor...</div>
-                </div>
-            </div>
-            <div class="summary-section">
-                <div class="summary-title">🔴 EN ÇOK SATILAN</div>
-                <div id="topSellsContainer">
-                    <div style="text-align:center; color:var(--text-dim); font-size:9px; padding:8px;">Veri bekleniyor...</div>
-                </div>
-            </div>
-        </div>
+<div class="section-title">⚡ Canlı Akış (Whales Only)</div>
+<div class="table-card">
+    <div style="overflow-x:auto;">
+        <table>
+            <thead><tr><th>Saat</th><th>Coin</th><th>Yön</th><th>Adet</th><th>Net ($)</th></tr></thead>
+            <tbody id="tradesBody">
+                <tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-dim)">Balinalar bekleniyor...</td></tr>
+            </tbody>
+        </table>
     </div>
-
-    <div class="section-title">Canlı Akış (Whales Only)</div>
-    <div class="table-card">
-        <div style="overflow-x:auto;">
-            <table>
-                <thead><tr><th>Saat</th><th>Coin</th><th>Yön</th><th>Adet</th><th>Net ($)</th></tr></thead>
-                <tbody id="tradesBody">
-                    <tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-dim)">Balinalar bekleniyor...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+</div>
 </div>
 
 <script>
@@ -776,25 +999,43 @@
     // --- AYARLAR ---
     const MIN_USD = 800000;
     const COINS = [
-    --- AYARLAR ---
         'btcusdt','ethusdt','bnbusdt','solusdt','xrpusdt','adausdt','dogeusdt','avaxusdt',
         'linkusdt','dotusdt','maticusdt','ltcusdt','shibusdt','pepeusdt','bonkusdt',
         'wifusdt','fetusdt','rndrusdt','nearusdt','filusdt','aptusdt','suiusdt','arbusdt',
-        'opusdt','tiausdt','injusdt','imxusdt','ftmusdt','flokusdt','seiust','enaust',
+        'opusdt','tiausdt','injusdt','imxusdt','ftmusdt','flokusdt','seiusdt','enausdt',
         'algousdt','atomusdt','bchusdt','batusdt','compusdt','crvusdt','dashusdt','enjusdt',
         'eosusdt','etcusdt','icpusdt','ksmusdt','lrcusdt','lskusdt','manausdt','neousdt',
         'omgusdt','ontusdt','qtumusdt','rvnusdt','scusdt','snxusdt','storjusdt','sxpusdt',
-        'tfuelusdt','thetausdt','vetusdt','wavesusdt','xlmusdt','xtzusdt','zecusdt','zilusdt',
-        '1inchusdt','aaveusdt','achusdt','adausdt','akrousdt','alphausdt','ankrusdt','apeusdt',
+        'trxusdt','thetausdt','vetusdt','wavesusdt','xlmusdt','xtzusdt','zecusdt','zilusdt',
+        '1inchusdt','aaveusdt','achusdt','akrousdt','alphausdt','ankrusdt','apeusdt',
         'axsusdt','balusdt','bandusdt','blzusdt','celousdt','celrusdt','chzusdt','cotiusdt',
-        'cvxusdt','dgbusdt','dydxusdt','egldusdt','ensusdt','fiousdt','flowusdt','galaust',
-        'glmusdt','grtusdt','hbarusdt','hotusdt','ilusdt','iostusdt','iotxusdt','jstusdt',
-        'kncusdt','ksmusdt','litusdt','loomusdt','lptusdt','lunausdt','manskusdt','mirust'
-    ].slice(0, 100); // İlk 100 coin
+        'cvxusdt','dgbusdt','dydxusdt','egldusdt','ensusdt','fiousdt','flowusdt','galausdt',
+        'glmusdt','grtusdt','hbarusdt','hotusdt','icxusdt','iostusdt','iotxusdt','jstusdt',
+        'kncusdt','litusdt','loomusdt','lptusdt','lunausdt','maskusdt','minausdt'
+    ].slice(0, 100);
+
+    // --- STATE ---
+    let trades = [];
+    let summary = {};
+    let signals = [];
+    let signalTracker = {}; // Coin bazlı sinyal takibi
+    let settings = { sound: true, vib: true, notify: true, signals: true };
+    let audioCtx = null;
+    let ws = null;
+    
+    // DOM Cache
+    const els = {
+        trades: document.getElementById('tradesBody'),
+        toasts: document.getElementById('toastContainer'),
+        wsDot: document.getElementById('wsDot'),
+        signalsContainer: document.getElementById('signalsContainer'),
+        topBuys: document.getElementById('topBuysContainer'),
+        topSells: document.getElementById('topSellsContainer'),
+        sentimentValue: document.getElementById('sentimentValue'),
+        sentimentFill: document.getElementById('sentimentFill')
+    };
 
     // --- TOP INFO BAR SİSTEMİ ---
-    
-    // TR Saati Güncelleme
     function updateTRTime() {
         const now = new Date();
         const trTime = now.toLocaleTimeString('tr-TR', {
@@ -806,21 +1047,15 @@
         document.getElementById('trTime').textContent = trTime;
     }
 
-    // Nasdaq Durumu
     function updateNasdaqStatus() {
         const now = new Date();
-        const day = now.getDay(); // 0: Pazar, 1: Pazartesi, ..., 6: Cumartesi
+        const day = now.getDay();
         const hour = now.getHours();
         const minute = now.getMinutes();
         
         const statusEl = document.getElementById('nasdaqStatus');
         const countdownEl = document.getElementById('nasdaqCountdown');
         
-        // Nasdaq çalışma saatleri: PST timezone (TR'den 10 saat geri)
-        // Açılış: 09:30 PST (19:30 TR) - Kapanış: 16:00 PST (02:00 TR ertesi gün)
-        let trHour = hour;
-        
-        // Haftasonu kontrolü - Sadece "Tatil" yaz
         if (day === 0 || day === 6) {
             statusEl.textContent = 'TATİL';
             statusEl.className = 'nasdaq-status weekend';
@@ -828,16 +1063,14 @@
             return;
         }
         
-        // Çalışma saatleri kontrolü
         const isOpen = (day >= 1 && day <= 5) && 
-                      ((trHour >= 19 && trHour < 24) || (trHour >= 0 && trHour < 2));
+                      ((hour >= 19 && hour < 24) || (hour >= 0 && hour < 2));
         
         if (isOpen) {
             statusEl.textContent = 'AÇIK';
             statusEl.className = 'nasdaq-status open';
             
-            // Kapanışa kalan süre hesapla (02:00 TR)
-            let hoursLeft = (trHour < 2) ? 1 - trHour : 24 - trHour + 2;
+            let hoursLeft = (hour < 2) ? 1 - hour : 24 - hour + 2;
             let minutesLeft = 60 - minute;
             
             if (minutesLeft === 60) {
@@ -850,14 +1083,13 @@
             statusEl.textContent = 'KAPALI';
             statusEl.className = 'nasdaq-status closed';
             
-            // Açılışa kalan süre hesapla (19:30 TR)
             let hoursLeft, minutesLeft;
             
-            if (trHour < 19) {
-                hoursLeft = 18 - trHour;
+            if (hour < 19) {
+                hoursLeft = 18 - hour;
                 minutesLeft = 60 - minute;
             } else {
-                hoursLeft = 24 - trHour + 18;
+                hoursLeft = 24 - hour + 18;
                 minutesLeft = 60 - minute;
             }
             
@@ -870,18 +1102,15 @@
         }
     }
 
-    // Fear & Greed Index
     async function updateFearIndex() {
         try {
             const response = await fetch('https://api.alternative.me/fng/');
             const data = await response.json();
             const fearValue = parseInt(data.data[0].value);
-            const fearText = data.data[0].value_classification;
             
             const fearEl = document.getElementById('fearIndex');
             fearEl.textContent = fearValue;
             
-            // Renk sınıflarını güncelle
             fearEl.className = 'fear-value';
             if (fearValue <= 25) fearEl.classList.add('extreme-fear');
             else if (fearValue <= 45) fearEl.classList.add('fear');
@@ -907,7 +1136,7 @@
         const fiboStats = document.getElementById('fiboStats');
         
         fiboRefresh.classList.add('loading');
-        fiboContent.innerHTML = '<div class="fibo-loading">100 coin analiz ediliyor...<br><small>Bu biraz zaman alabilir</small></div>';
+        fiboContent.innerHTML = '<div class="fibo-loading">100 coin analiz ediliyor...</div>';
 
         try {
             const normalResults = [];
@@ -920,7 +1149,6 @@
                 
                 const promises = coinGroup.map(async (symbol) => {
                     try {
-                        // 1 aylık veri (30 gün)
                         const monthlyResponse = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol.toUpperCase()}&interval=1d&limit=30`);
                         const monthlyKlines = await monthlyResponse.json();
 
@@ -932,12 +1160,10 @@
                             const monthlyAth = Math.max(...monthlyHighs);
                             const monthlyLowest = Math.min(...monthlyLows);
                             
-                            // NORMAL FIBO: ATH'den en düşüğe
                             const normalFibo72 = monthlyLowest + (monthlyAth - monthlyLowest) * 0.72;
                             const normalDistancePercent = Math.abs((monthlyCurrentPrice - normalFibo72) / normalFibo72) * 100;
                             const normalPosition = monthlyCurrentPrice >= normalFibo72 ? 'resistance' : 'support';
                             
-                            // REVERSE FIBO: En düşükten ATH'ye (karşıt fibo)
                             const reverseFibo72 = monthlyAth - (monthlyAth - monthlyLowest) * 0.72;
                             const reverseDistancePercent = Math.abs((monthlyCurrentPrice - reverseFibo72) / reverseFibo72) * 100;
                             const reversePosition = monthlyCurrentPrice >= reverseFibo72 ? 'resistance' : 'support';
@@ -962,7 +1188,6 @@
                         }
                     } catch (error) {
                         errorCount++;
-                        console.log(`Hata: ${symbol}`, error);
                         return null;
                     }
                 });
@@ -981,23 +1206,20 @@
                     });
                 });
                 
-                fiboContent.innerHTML = `<div class="fibo-loading">${analyzedCount}/${COINS.length} coin analiz edildi...<br><small>Lütfen bekleyin</small></div>`;
+                fiboContent.innerHTML = `<div class="fibo-loading">${analyzedCount}/${COINS.length} coin analiz edildi...</div>`;
                 
                 await new Promise(resolve => setTimeout(resolve, 800));
             }
 
-            // Normal ve reverse sonuçları ayrı ayrı sırala
             normalResults.sort((a, b) => a.distancePercent - b.distancePercent);
             reverseResults.sort((a, b) => a.distancePercent - b.distancePercent);
             
-            // En yakın 5 coin'i al
             const topNormal = normalResults.slice(0, 5);
             const topReverse = reverseResults.slice(0, 5);
             
             if (topNormal.length > 0 || topReverse.length > 0) {
                 let html = '';
                 
-                // Normal Fibo Bölümü
                 html += `
                     <div class="fibo-section">
                         <div class="fibo-section-title">NORMAL FIBO</div>
@@ -1021,13 +1243,10 @@
                             </div>
                         `;
                     });
-                } else {
-                    html += `<div style="text-align:center; color:var(--text-dim); font-size:8px; padding:6px 0;">Veri yok</div>`;
                 }
                 
                 html += `</div>`;
                 
-                // Reverse Fibo Bölümü
                 html += `
                     <div class="fibo-section">
                         <div class="fibo-section-title">KARŞIT FIBO</div>
@@ -1051,8 +1270,6 @@
                             </div>
                         `;
                     });
-                } else {
-                    html += `<div style="text-align:center; color:var(--text-dim); font-size:8px; padding:6px 0;">Veri yok</div>`;
                 }
                 
                 html += `</div>`;
@@ -1072,10 +1289,9 @@
         }
     }
 
-    // Fibonacci panelini yenile
     document.getElementById('fiboRefresh').addEventListener('click', fetchFiboData);
 
-    // --- HACİM TABLOSU GÜNCELLEME ---
+    // --- HACİM TABLOSU ---
     function updateVolumeTable() {
         const volumeContent = document.getElementById('volumeContent');
         
@@ -1105,20 +1321,6 @@
         volumeContent.innerHTML = html;
     }
 
-    // --- STATE ---
-    let trades = [];
-    let summary = {};
-    let settings = { sound: true, vib: true, notify: true };
-    let audioCtx = null;
-    let ws = null;
-    
-    // DOM Cache
-    const els = {
-        trades: document.getElementById('tradesBody'),
-        toasts: document.getElementById('toastContainer'),
-        wsDot: document.getElementById('wsDot')
-    };
-
     // --- SES MOTORU ---
     function initAudio() {
         if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1142,7 +1344,7 @@
         osc.stop(audioCtx.currentTime + 0.15);
     }
 
-    // --- BİLDİRİM SİSTEMİ (TOAST) ---
+    // --- BİLDİRİM SİSTEMİ ---
     function showToast(coin, side, usd, amount) {
         if(!settings.notify) return;
 
@@ -1179,6 +1381,233 @@
         }
     }
 
+    // --- SİNYAL SİSTEMİ ---
+    function analyzeSignal(symbol, side, usd) {
+        if (!settings.signals) return;
+        
+        const now = Date.now();
+        
+        if (!signalTracker[symbol]) {
+            signalTracker[symbol] = {
+                trades: [],
+                lastSignal: 0
+            };
+        }
+        
+        signalTracker[symbol].trades.push({
+            side,
+            usd,
+            time: now
+        });
+        
+        // Son 5 dakikalık işlemleri tut
+        signalTracker[symbol].trades = signalTracker[symbol].trades.filter(t => now - t.time < 300000);
+        
+        const recentTrades = signalTracker[symbol].trades.filter(t => now - t.time < 300000);
+        
+        if (recentTrades.length >= 3) {
+            const buyCount = recentTrades.filter(t => t.side === 'BUY').length;
+            const sellCount = recentTrades.filter(t => t.side === 'SELL').length;
+            const totalVolume = recentTrades.reduce((sum, t) => sum + t.usd, 0);
+            
+            const dominantSide = buyCount > sellCount ? 'BUY' : 'SELL';
+            const dominantCount = Math.max(buyCount, sellCount);
+            const dominantRatio = dominantCount / recentTrades.length;
+            
+            // Güçlü tek yönlü momentum (en az 70% aynı yön)
+            if (dominantRatio >= 0.7 && dominantCount >= 3) {
+                // Son 10 dakikada sinyal verilmediyse
+                if (now - signalTracker[symbol].lastSignal > 600000) {
+                    const strength = Math.min(100, Math.floor(dominantRatio * 100));
+                    
+                    createSignal({
+                        coin: symbol,
+                        side: dominantSide,
+                        strength,
+                        trades: recentTrades.length,
+                        volume: totalVolume,
+                        avgTrade: totalVolume / recentTrades.length
+                    });
+                    
+                    signalTracker[symbol].lastSignal = now;
+                }
+            }
+        }
+    }
+
+    function createSignal(data) {
+        const signalId = Date.now();
+        const signal = {
+            id: signalId,
+            ...data,
+            time: new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}),
+            timestamp: Date.now()
+        };
+        
+        signals.unshift(signal);
+        if (signals.length > 5) signals.pop();
+        
+        renderSignals();
+        
+        // 15 dakika sonra otomatik sil
+        setTimeout(() => {
+            signals = signals.filter(s => s.id !== signalId);
+            renderSignals();
+        }, 900000);
+    }
+
+    function renderSignals() {
+        if (!settings.signals || signals.length === 0) {
+            els.signalsContainer.innerHTML = `
+                <div style="text-align:center; padding:20px; color:var(--text-dim); background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;">
+                    Güçlü momentum sinyali bekleniyor...
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '';
+        signals.forEach(sig => {
+            const sideClass = sig.side === 'BUY' ? '' : 'sell';
+            html += `
+                <div class="signal-card ${sideClass}">
+                    <div class="signal-header">
+                        <div class="signal-coin">
+                            ${sig.side === 'BUY' ? '🟢' : '🔴'} ${sig.coin}
+                            <span class="signal-badge">${sig.side} SIGNAL</span>
+                        </div>
+                        <div class="signal-time">${sig.time}</div>
+                    </div>
+                    <div class="signal-stats">
+                        <div class="signal-stat">
+                            <div class="signal-stat-label">İşlem</div>
+                            <div class="signal-stat-value">${sig.trades}</div>
+                        </div>
+                        <div class="signal-stat">
+                            <div class="signal-stat-label">Hacim</div>
+                            <div class="signal-stat-value">$${fmt(sig.volume)}</div>
+                        </div>
+                        <div class="signal-stat">
+                            <div class="signal-stat-label">Ort. İşlem</div>
+                            <div class="signal-stat-value">$${fmt(sig.avgTrade)}</div>
+                        </div>
+                        <div class="signal-stat">
+                            <div class="signal-stat-label">Güç</div>
+                            <div class="signal-stat-value">${sig.strength}%</div>
+                        </div>
+                    </div>
+                    <div class="signal-strength">
+                        <div class="signal-strength-fill" style="width: ${sig.strength}%"></div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        els.signalsContainer.innerHTML = html;
+    }
+
+    // --- SENTIMENT BAR ---
+    function updateSentiment() {
+        let totalBuy = 0;
+        let totalSell = 0;
+        
+        Object.values(summary).forEach(coin => {
+            if (coin.net > 0) totalBuy += coin.net;
+            else totalSell += Math.abs(coin.net);
+        });
+        
+        const total = totalBuy + totalSell;
+        if (total === 0) return;
+        
+        const buyPercent = (totalBuy / total) * 100;
+        
+        let emoji = '🟡';
+        if (buyPercent >= 65) emoji = '🟢';
+        else if (buyPercent <= 35) emoji = '🔴';
+        
+        els.sentimentValue.textContent = `${buyPercent.toFixed(0)}% ${emoji}`;
+        els.sentimentFill.style.width = buyPercent + '%';
+    }
+
+    // --- ÖZET TABLO ---
+    function updateSummaryTables() {
+        const now = Date.now();
+        
+        // Hot coins tespiti (son 10 dakika)
+        const recentTrades = trades.filter(t => {
+            const tradeTime = new Date();
+            const [h, m, s] = t.time.split(':');
+            tradeTime.setHours(h, m, s);
+            return now - tradeTime.getTime() < 600000;
+        });
+        
+        const hotCoins = {};
+        recentTrades.forEach(t => {
+            if (!hotCoins[t.symbol]) hotCoins[t.symbol] = 0;
+            hotCoins[t.symbol]++;
+        });
+        
+        // En çok alınan
+        const topBuys = Object.entries(summary)
+            .filter(([_, data]) => data.net > 0)
+            .sort((a, b) => b[1].net - a[1].net)
+            .slice(0, 5);
+        
+        let buysHTML = '';
+        topBuys.forEach(([sym, data]) => {
+            const isHot = hotCoins[sym] >= 3;
+            const tradeCount = (data.buy / (data.buy + data.sell)) * 100;
+            
+            buysHTML += `
+                <div class="summary-item">
+                    <div class="summary-coin-info">
+                        <span class="summary-coin">${sym}</span>
+                        ${isHot ? '<span class="hot-badge">🔥 HOT</span>' : ''}
+                    </div>
+                    <div class="summary-value-group">
+                        <span class="summary-value positive">+$${fmt(data.net)}</span>
+                        <span class="summary-trades">${Math.floor(tradeCount)}% alım</span>
+                    </div>
+                </div>
+                <div class="summary-momentum">
+                    <div class="summary-momentum-fill buy" style="width: ${Math.min(100, tradeCount)}%"></div>
+                </div>
+            `;
+        });
+        
+        els.topBuys.innerHTML = buysHTML || '<div style="text-align:center; color:var(--text-dim); font-size:9px; padding:10px;">Henüz veri yok</div>';
+        
+        // En çok satılan
+        const topSells = Object.entries(summary)
+            .filter(([_, data]) => data.net < 0)
+            .sort((a, b) => a[1].net - b[1].net)
+            .slice(0, 5);
+        
+        let sellsHTML = '';
+        topSells.forEach(([sym, data]) => {
+            const isHot = hotCoins[sym] >= 3;
+            const tradeCount = (data.sell / (data.buy + data.sell)) * 100;
+            
+            sellsHTML += `
+                <div class="summary-item">
+                    <div class="summary-coin-info">
+                        <span class="summary-coin">${sym}</span>
+                        ${isHot ? '<span class="hot-badge">🔥 HOT</span>' : ''}
+                    </div>
+                    <div class="summary-value-group">
+                        <span class="summary-value negative">-$${fmt(Math.abs(data.net))}</span>
+                        <span class="summary-trades">${Math.floor(tradeCount)}% satış</span>
+                    </div>
+                </div>
+                <div class="summary-momentum">
+                    <div class="summary-momentum-fill sell" style="width: ${Math.min(100, tradeCount)}%"></div>
+                </div>
+            `;
+        });
+        
+        els.topSells.innerHTML = sellsHTML || '<div style="text-align:center; color:var(--text-dim); font-size:9px; padding:10px;">Henüz veri yok</div>';
+    }
+
     // --- İŞLEM MANTIĞI ---
     function processTrade(data) {
         const price = parseFloat(data.p);
@@ -1203,7 +1632,9 @@
             summary[symbol].net -= usd;
         }
 
+        analyzeSignal(symbol, side, usd);
         playSound(side);
+        
         if(settings.vib && navigator.vibrate) navigator.vibrate(side === 'BUY' ? 40 : [30,30]);
         
         if(usd > MIN_USD) {
@@ -1213,7 +1644,7 @@
         requestRender();
     }
 
-    // --- RENDER (THROTTLE) ---
+    // --- RENDER ---
     let tick = false;
     function requestRender() {
         if(!tick) {
@@ -1228,7 +1659,7 @@
     const fmt = n => new Intl.NumberFormat('en-US', {notation: "compact", maximumFractionDigits: 1}).format(n);
 
     function render() {
-        // 1. Trades
+        // Trades
         let html = '';
         trades.slice(0, 15).forEach((t, i) => {
             const color = t.side === 'BUY' ? 'text-green' : 'text-red';
@@ -1243,11 +1674,12 @@
         });
         els.trades.innerHTML = html;
 
-        // 2. Hacim tablosunu güncelle
         updateVolumeTable();
+        updateSummaryTables();
+        updateSentiment();
     }
 
-    // --- SOCKET BAĞLANTISI ---
+    // --- SOCKET ---
     function connect() {
         const streams = COINS.map(c => c + '@aggTrade').join('/');
         
@@ -1271,38 +1703,41 @@
         };
     }
 
-    // --- BAŞLATMA ---
+    // --- KONTROLLER ---
     document.getElementById('btnSound').onclick = function() {
         settings.sound = !settings.sound;
         this.classList.toggle('active');
-        initAudio();
-    };
-    document.getElementById('btnVib').onclick = function() {
-        settings.vib = !settings.vib;
-        this.classList.toggle('active');
-    };
-    document.getElementById('btnNotify').onclick = function() {
-        settings.notify = !settings.notify;
-        this.classList.toggle('active');
-    };
+initAudio();
+};
+document.getElementById('btnVib').onclick = function() {
+settings.vib = !settings.vib;
+this.classList.toggle('active');
+};
+document.getElementById('btnNotify').onclick = function() {
+settings.notify = !settings.notify;
+this.classList.toggle('active');
+};
+document.getElementById('btnSignals').onclick = function() {
+settings.signals = !settings.signals;
+this.classList.toggle('active');
+renderSignals();
+};
 
-    // Uygulama başladığında tüm sistemleri başlat
-    connect();
-    fetchFiboData();
-    updateTRTime();
-    updateNasdaqStatus();
-    updateFearIndex();
+// --- BAŞLATMA ---
+connect();
+fetchFiboData();
+updateTRTime();
+updateNasdaqStatus();
+updateFearIndex();
 
-    // Zamanlayıcılar
-    setInterval(updateTRTime, 1000);
-    setInterval(updateNasdaqStatus, 60000);
-    setInterval(updateFearIndex, 5 * 60 * 1000); // 5 dakikada bir
-    setInterval(fetchFiboData, 10 * 60 * 1000); // 10 dakikada bir
+setInterval(updateTRTime, 1000);
+setInterval(updateNasdaqStatus, 60000);
+setInterval(updateFearIndex, 5 * 60 * 1000);
+setInterval(fetchFiboData, 10 * 60 * 1000);
 
-    // Bellek Temizliği
-    setInterval(() => {
-        if(trades.length > 100) trades = trades.slice(0, 50);
-    }, 60000);
+setInterval(() => {
+    if(trades.length > 100) trades = trades.slice(0, 50);
+}, 60000);
 
 })();
 </script>
