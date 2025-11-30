@@ -19,12 +19,98 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
+        }
+
+        /* ÜST BİLGİ SATIRI */
+        .top-info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 200px;
+        }
+
+        .info-item.left {
+            align-items: flex-start;
+        }
+
+        .info-item.center {
+            align-items: center;
+        }
+
+        .info-item.right {
+            align-items: flex-end;
+        }
+
+        .info-label {
+            font-size: 0.8em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-value {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .fear-index {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .fear-extreme {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .fear-greed {
+            background: #f39c12;
+            color: white;
+        }
+
+        .fear-neutral {
+            background: #f1c40f;
+            color: #2c3e50;
+        }
+
+        .countdown-timer {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .market-open {
+            color: #2ecc71;
+        }
+
+        .market-closed {
+            color: #e74c3c;
+        }
+
+        .turkey-time {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #9b59b6;
         }
         
         .header {
@@ -262,6 +348,18 @@
             .container {
                 margin: 10px;
             }
+
+            .top-info-bar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .info-item {
+                min-width: auto;
+                width: 100%;
+                align-items: center !important;
+            }
             
             .header h1 {
                 font-size: 2em;
@@ -279,6 +377,32 @@
 </head>
 <body>
     <div class="container">
+        <!-- ÜST BİLGİ SATIRI -->
+        <div class="top-info-bar">
+            <!-- SOL: Korku Endeksi -->
+            <div class="info-item left">
+                <div class="info-label">Korku & Açgözlülük Endeksi</div>
+                <div class="info-value">
+                    <span id="fearIndexValue">-</span>
+                    <span class="fear-index" id="fearIndexLabel">Yükleniyor...</span>
+                </div>
+            </div>
+
+            <!-- ORTA: Nasdaq Geri Sayım -->
+            <div class="info-item center">
+                <div class="info-label">Nasdaq Borsası</div>
+                <div class="countdown-timer" id="nasdaqCountdown">Yükleniyor...</div>
+                <div class="info-value" id="nasdaqStatus">-</div>
+            </div>
+
+            <!-- SAĞ: TR Saati -->
+            <div class="info-item right">
+                <div class="info-label">Türkiye Saati</div>
+                <div class="turkey-time" id="turkeyTime">--:--:--</div>
+                <div class="info-value" id="turkeyDate">-</div>
+            </div>
+        </div>
+        
         <div class="header">
             <h1>⚡ Canlı Coin Sinyal Takip</h1>
             <p>Sadece Gerçek 100K+ İşlem Sinyalleri - SANİYEDE 1 Güncel</p>
@@ -306,7 +430,7 @@
             </div>
             <div class="auto-refresh">
                 <input type="checkbox" id="autoRefresh" onchange="toggleAutoRefresh()" checked>
-                <label for="autoRefresh">SANIYEDE 1 yenile - <span id="countdown">1</span>s <span class="high-frequency">YÜKSEK HIZ</span></label>
+                <label for="autoRefresh">SANİYEDE 1 yenile - <span id="countdown">1</span>s <span class="high-frequency">YÜKSEK HIZ</span></label>
             </div>
         </div>
         
@@ -323,6 +447,100 @@
         let currentCoin = 'BTC';
         let currentMinVolume = 100000;
         let countdownValue = 1;
+
+        // Korku Endeksi Verisi (Örnek veri - gerçek uygulamada API'den alınacak)
+        const fearGreedData = [
+            { value: 25, label: "Aşırı Korku", class: "fear-extreme" },
+            { value: 45, label: "Korku", class: "fear-greed" },
+            { value: 55, label: "Nötr", class: "fear-neutral" },
+            { value: 75, label: "Açgözlülük", class: "fear-greed" },
+            { value: 85, label: "Aşırı Açgözlülük", class: "fear-extreme" }
+        ];
+
+        // Nasdaq işlem saatleri (EST zaman dilimi)
+        const NASDAQ_OPEN_HOUR = 9; // 09:30 EST
+        const NASDAQ_CLOSE_HOUR = 16; // 16:00 EST
+
+        function updateTopInfoBar() {
+            updateTurkeyTime();
+            updateFearIndex();
+            updateNasdaqCountdown();
+        }
+
+        function updateTurkeyTime() {
+            const now = new Date();
+            const turkeyTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Istanbul"}));
+            
+            const timeString = turkeyTime.toLocaleTimeString('tr-TR', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+            
+            const dateString = turkeyTime.toLocaleDateString('tr-TR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            document.getElementById('turkeyTime').textContent = timeString;
+            document.getElementById('turkeyDate').textContent = dateString;
+        }
+
+        function updateFearIndex() {
+            // Rastgele korku endeksi değeri (gerçek uygulamada API'den alınacak)
+            const randomValue = Math.floor(Math.random() * 100) + 1;
+            const fearData = fearGreedData.find(data => randomValue <= data.value) || fearGreedData[fearGreedData.length - 1];
+            
+            document.getElementById('fearIndexValue').textContent = randomValue;
+            const fearLabel = document.getElementById('fearIndexLabel');
+            fearLabel.textContent = fearData.label;
+            fearLabel.className = `fear-index ${fearData.class}`;
+        }
+
+        function updateNasdaqCountdown() {
+            const now = new Date();
+            const estTime = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
+            
+            const currentHour = estTime.getHours();
+            const currentMinute = estTime.getMinutes();
+            const currentSeconds = estTime.getSeconds();
+
+            let targetTime, status, isOpen;
+
+            if (currentHour < NASDAQ_OPEN_HOUR || (currentHour === NASDAQ_OPEN_HOUR && currentMinute < 30)) {
+                // Borsa henüz açılmadı
+                targetTime = new Date(estTime);
+                targetTime.setHours(NASDAQ_OPEN_HOUR, 30, 0, 0);
+                status = "Açılışa Kalan";
+                isOpen = false;
+            } else if (currentHour < NASDAQ_CLOSE_HOUR) {
+                // Borsa açık
+                targetTime = new Date(estTime);
+                targetTime.setHours(NASDAQ_CLOSE_HOUR, 0, 0, 0);
+                status = "Kapanışa Kalan";
+                isOpen = true;
+            } else {
+                // Borsa kapalı - yarın açılacak
+                targetTime = new Date(estTime);
+                targetTime.setDate(targetTime.getDate() + 1);
+                targetTime.setHours(NASDAQ_OPEN_HOUR, 30, 0, 0);
+                status = "Yarın Açılış";
+                isOpen = false;
+            }
+
+            const timeDiff = targetTime - estTime;
+            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            const countdownText = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('nasdaqCountdown').textContent = countdownText;
+            document.getElementById('nasdaqCountdown').className = `countdown-timer ${isOpen ? 'market-open' : 'market-closed'}`;
+            document.getElementById('nasdaqStatus').textContent = status;
+        }
 
         function updateCountdown() {
             const countdownElement = document.getElementById('countdown');
@@ -440,7 +658,7 @@
                             type: trade.isBuyerMaker ? 'SELL' : 'BUY',
                             timestamp: new Date(trade.time).toISOString(),
                             isLargeOrder: volume > minVolume * 3,
-                            isReal: true // GERÇEK veri olduğunu işaretle
+                            isReal: true
                         };
                     })
                     .sort((a, b) => b.volume - a.volume);
@@ -547,7 +765,6 @@
             const autoRefreshCheckbox = document.getElementById('autoRefresh');
             
             if (autoRefreshCheckbox.checked) {
-                // 1 SANİYE olarak ayarlandı
                 autoRefreshInterval = setInterval(() => {
                     searchSignals();
                 }, 1000); // 1 SANİYE
@@ -603,8 +820,12 @@
             }
         });
         
-        // Sayfa yüklendiğinde otomatik arama
+        // Sayfa yüklendiğinde otomatik başlat
         window.addEventListener('load', function() {
+            // Üst bilgi çubuğunu güncelle
+            updateTopInfoBar();
+            setInterval(updateTopInfoBar, 1000); // Her saniye güncelle
+            
             // Otomatik yenilemeyi başlat
             const autoRefreshCheckbox = document.getElementById('autoRefresh');
             if (autoRefreshCheckbox) {
