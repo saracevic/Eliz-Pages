@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coin Sinyal Takip - Sadece Gerçek Veri</title>
+    <title>Coin Sinyal Takip - Gerçek Veri</title>
     <style>
         * {
             margin: 0;
@@ -27,7 +27,6 @@
             overflow: hidden;
         }
 
-        /* ÜST BİLGİ SATIRI */
         .top-info-bar {
             display: flex;
             justify-content: space-between;
@@ -43,18 +42,6 @@
             flex-direction: column;
             align-items: center;
             min-width: 200px;
-        }
-
-        .info-item.left {
-            align-items: flex-start;
-        }
-
-        .info-item.center {
-            align-items: center;
-        }
-
-        .info-item.right {
-            align-items: flex-end;
         }
 
         .info-label {
@@ -79,30 +66,11 @@
             font-size: 0.9em;
         }
 
-        .fear-extreme {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .fear-fear {
-            background: #f39c12;
-            color: white;
-        }
-
-        .fear-neutral {
-            background: #f1c40f;
-            color: #2c3e50;
-        }
-
-        .fear-greed {
-            background: #2ecc71;
-            color: white;
-        }
-
-        .fear-extreme-greed {
-            background: #27ae60;
-            color: white;
-        }
+        .fear-extreme { background: #e74c3c; color: white; }
+        .fear-fear { background: #f39c12; color: white; }
+        .fear-neutral { background: #f1c40f; color: #2c3e50; }
+        .fear-greed { background: #2ecc71; color: white; }
+        .fear-extreme-greed { background: #27ae60; color: white; }
 
         .countdown-timer {
             font-size: 1.3em;
@@ -110,19 +78,9 @@
             color: #3498db;
         }
 
-        .market-open {
-            color: #2ecc71;
-        }
-
-        .market-closed {
-            color: #e74c3c;
-        }
-
-        .turkey-time {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #9b59b6;
-        }
+        .market-open { color: #2ecc71; }
+        .market-closed { color: #e74c3c; }
+        .turkey-time { font-size: 1.3em; font-weight: bold; color: #9b59b6; }
         
         .header {
             background: linear-gradient(135deg, #2c3e50, #3498db);
@@ -131,15 +89,8 @@
             text-align: center;
         }
         
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .header p {
-            opacity: 0.9;
-            font-size: 1.1em;
-        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { opacity: 0.9; font-size: 1.1em; }
         
         .controls {
             padding: 30px;
@@ -154,29 +105,15 @@
             flex-wrap: wrap;
         }
         
-        .coin-input {
-            flex: 1;
-            min-width: 200px;
-            padding: 15px 20px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-        
-        .coin-input:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-        }
-        
-        .volume-input {
-            width: 150px;
+        .coin-input, .volume-input {
             padding: 15px 20px;
             border: 2px solid #e9ecef;
             border-radius: 10px;
             font-size: 16px;
         }
+        
+        .coin-input { flex: 1; min-width: 200px; }
+        .volume-input { width: 150px; }
         
         .search-btn {
             background: linear-gradient(135deg, #00b894, #00a085);
@@ -190,16 +127,8 @@
             transition: all 0.3s ease;
         }
         
-        .search-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 184, 148, 0.3);
-        }
-        
-        .search-btn:disabled {
-            background: #b2bec3;
-            cursor: not-allowed;
-            transform: none;
-        }
+        .search-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 184, 148, 0.3); }
+        .search-btn:disabled { background: #b2bec3; cursor: not-allowed; transform: none; }
         
         .auto-refresh {
             display: flex;
@@ -208,9 +137,7 @@
             margin-top: 15px;
         }
         
-        .results {
-            padding: 30px;
-        }
+        .results { padding: 30px; }
         
         .loading {
             text-align: center;
@@ -280,22 +207,9 @@
             margin-top: 15px;
         }
         
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .detail-label {
-            font-size: 0.85em;
-            color: #636e72;
-            margin-bottom: 5px;
-        }
-        
-        .detail-value {
-            font-size: 1.1em;
-            font-weight: 600;
-            color: #2d3436;
-        }
+        .detail-item { display: flex; flex-direction: column; }
+        .detail-label { font-size: 0.85em; color: #636e72; margin-bottom: 5px; }
+        .detail-value { font-size: 1.1em; font-weight: 600; color: #2d3436; }
         
         .error {
             background: #ffeaa7;
@@ -330,15 +244,6 @@
             margin-left: 8px;
         }
 
-        .countdown {
-            background: #3498db;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.7em;
-            margin-left: 8px;
-        }
-
         .high-frequency {
             background: #e17055;
             color: white;
@@ -354,120 +259,58 @@
             50% { opacity: 0.7; }
             100% { opacity: 1; }
         }
-
-        @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-            }
-
-            .top-info-bar {
-                flex-direction: column;
-                gap: 15px;
-                padding: 15px;
-            }
-
-            .info-item {
-                min-width: auto;
-                width: 100%;
-                align-items: center !important;
-            }
-            
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .input-group {
-                flex-direction: column;
-            }
-            
-            .coin-input, .volume-input, .search-btn {
-                width: 100%;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- ÜST BİLGİ SATIRI -->
         <div class="top-info-bar">
-            <!-- SOL: Korku Endeksi -->
-            <div class="info-item left">
-                <div class="info-label">Korku & Açgözlülük Endeksi</div>
+            <div class="info-item">
+                <div class="info-label">Korku & Açgözlülük</div>
                 <div class="info-value">
                     <span id="fearIndexValue">-</span>
-                    <span class="fear-index" id="fearIndexLabel">Yükleniyor...</span>
+                    <span class="fear-index" id="fearIndexLabel">...</span>
                 </div>
             </div>
 
-            <!-- ORTA: Nasdaq Geri Sayım -->
-            <div class="info-item center">
+            <div class="info-item">
                 <div class="info-label">Nasdaq Borsası</div>
-                <div class="countdown-timer" id="nasdaqCountdown">Yükleniyor...</div>
+                <div class="countdown-timer" id="nasdaqCountdown">...</div>
                 <div class="info-value" id="nasdaqStatus">-</div>
             </div>
 
-            <!-- SAĞ: TR Saati -->
-            <div class="info-item right">
+            <div class="info-item">
                 <div class="info-label">Türkiye Saati</div>
                 <div class="turkey-time" id="turkeyTime">--:--:--</div>
-                <div class="info-value" id="turkeyDate">-</div>
             </div>
         </div>
         
         <div class="header">
             <h1>⚡ Canlı Coin Sinyal Takip</h1>
-            <p>Sadece Gerçek 100K+ İşlem Sinyalleri - SANİYEDE 1 Güncel</p>
+            <p>Gerçek 100K+ İşlem Sinyalleri</p>
         </div>
         
         <div class="controls">
             <div class="input-group">
-                <input 
-                    type="text" 
-                    class="coin-input" 
-                    placeholder="Coin sembolü girin (Örnek: BTC, ETH, ADA...)" 
-                    value="BTC"
-                >
-                <input 
-                    type="number" 
-                    class="volume-input" 
-                    placeholder="Min hacim" 
-                    value="100000"
-                    min="1000"
-                    step="1000"
-                >
-                <button class="search-btn" onclick="searchSignals()">
-                    Gerçek Sinyalleri Getir
-                </button>
+                <input type="text" class="coin-input" placeholder="Coin (BTC, ETH...)" value="BTC">
+                <input type="number" class="volume-input" placeholder="Min hacim" value="100000" min="1000" step="1000">
+                <button class="search-btn" onclick="searchSignals()">Sinyalleri Getir</button>
             </div>
             <div class="auto-refresh">
                 <input type="checkbox" id="autoRefresh" onchange="toggleAutoRefresh()" checked>
-                <label for="autoRefresh">SANİYEDE 1 yenile - <span id="countdown">1</span>s <span class="high-frequency">YÜKSEK HIZ</span></label>
+                <label for="autoRefresh">1 saniyede yenile <span class="high-frequency">YÜKSEK HIZ</span></label>
             </div>
         </div>
         
         <div class="results" id="results">
-            <div class="info-text">
-                Coin sembolünü girip "Gerçek Sinyalleri Getir" butonuna tıklayın
-            </div>
+            <div class="info-text">Coin sembolünü girip butona tıklayın</div>
         </div>
     </div>
 
     <script>
         let autoRefreshInterval = null;
-        let countdownInterval = null;
         let currentCoin = 'BTC';
         let currentMinVolume = 100000;
-        let countdownValue = 1;
 
-        // Nasdaq işlem saatleri (EST zaman dilimi)
-        const NASDAQ_OPEN_HOUR = 9; // 09:30 EST
-        const NASDAQ_CLOSE_HOUR = 16; // 16:00 EST
-
-        // Aggr.trade CORS proxy URL
-        const CORS_PROXY = 'https://cors.aggr.trade/';
-        const BINANCE_API = 'https://api.binance.com/api/v3/';
-
-        // Korku endeksi sınıfları
         function getFearIndexClass(value) {
             if (value <= 25) return { class: "fear-extreme", label: "Aşırı Korku" };
             if (value <= 45) return { class: "fear-fear", label: "Korku" };
@@ -476,142 +319,36 @@
             return { class: "fear-extreme-greed", label: "Aşırı Açgözlülük" };
         }
 
-        async function updateTopInfoBar() {
-            updateTurkeyTime();
-            await updateFearIndex();
-            updateNasdaqCountdown();
-        }
-
         function updateTurkeyTime() {
             const now = new Date();
-            const turkeyTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Istanbul"}));
-            
-            const timeString = turkeyTime.toLocaleTimeString('tr-TR', { 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                second: '2-digit' 
-            });
-            
-            const dateString = turkeyTime.toLocaleDateString('tr-TR', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-
+            const timeString = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             document.getElementById('turkeyTime').textContent = timeString;
-            document.getElementById('turkeyDate').textContent = dateString;
         }
 
         async function updateFearIndex() {
             try {
-                // Alternative.me API'sinden gerçek korku endeksi verisi
                 const response = await fetch('https://api.alternative.me/fng/?limit=1');
                 const data = await response.json();
+                const fearValue = parseInt(data.data[0].value);
+                const fearClass = getFearIndexClass(fearValue);
                 
-                if (data && data.data && data.data[0]) {
-                    const fearData = data.data[0];
-                    const fearValue = parseInt(fearData.value);
-                    const fearClass = getFearIndexClass(fearValue);
-                    
-                    document.getElementById('fearIndexValue').textContent = fearValue;
-                    const fearLabel = document.getElementById('fearIndexLabel');
-                    fearLabel.textContent = fearClass.label;
-                    fearLabel.className = `fear-index ${fearClass.class}`;
-                } else {
-                    throw new Error('Korku endeksi verisi alınamadı');
-                }
-            } catch (error) {
-                console.error('Korku endeksi hatası:', error);
-                // Fallback: Rastgele değer
-                const randomValue = Math.floor(Math.random() * 100) + 1;
-                const fearClass = getFearIndexClass(randomValue);
-                
-                document.getElementById('fearIndexValue').textContent = randomValue;
+                document.getElementById('fearIndexValue').textContent = fearValue;
                 const fearLabel = document.getElementById('fearIndexLabel');
                 fearLabel.textContent = fearClass.label;
                 fearLabel.className = `fear-index ${fearClass.class}`;
+            } catch (error) {
+                console.error('Fear index hatası:', error);
             }
         }
 
         function updateNasdaqCountdown() {
             const now = new Date();
             const estTime = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
-            
             const currentHour = estTime.getHours();
-            const currentMinute = estTime.getMinutes();
-            const currentSeconds = estTime.getSeconds();
-
-            let targetTime, status, isOpen;
-
-            if (currentHour < NASDAQ_OPEN_HOUR || (currentHour === NASDAQ_OPEN_HOUR && currentMinute < 30)) {
-                // Borsa henüz açılmadı
-                targetTime = new Date(estTime);
-                targetTime.setHours(NASDAQ_OPEN_HOUR, 30, 0, 0);
-                status = "Açılışa Kalan";
-                isOpen = false;
-            } else if (currentHour < NASDAQ_CLOSE_HOUR) {
-                // Borsa açık
-                targetTime = new Date(estTime);
-                targetTime.setHours(NASDAQ_CLOSE_HOUR, 0, 0, 0);
-                status = "Kapanışa Kalan";
-                isOpen = true;
-            } else {
-                // Borsa kapalı - yarın açılacak
-                targetTime = new Date(estTime);
-                targetTime.setDate(targetTime.getDate() + 1);
-                targetTime.setHours(NASDAQ_OPEN_HOUR, 30, 0, 0);
-                status = "Yarın Açılış";
-                isOpen = false;
-            }
-
-            const timeDiff = targetTime - estTime;
-            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-
-            const countdownText = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const isOpen = currentHour >= 9 && currentHour < 16;
             
-            document.getElementById('nasdaqCountdown').textContent = countdownText;
+            document.getElementById('nasdaqStatus').textContent = isOpen ? "AÇIK" : "KAPALI";
             document.getElementById('nasdaqCountdown').className = `countdown-timer ${isOpen ? 'market-open' : 'market-closed'}`;
-            document.getElementById('nasdaqStatus').textContent = status;
-        }
-
-        function updateCountdown() {
-            const countdownElement = document.getElementById('countdown');
-            if (countdownElement) {
-                countdownElement.textContent = countdownValue;
-            }
-        }
-
-        function startCountdown() {
-            countdownValue = 1;
-            updateCountdown();
-            
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-            }
-            
-            countdownInterval = setInterval(() => {
-                countdownValue--;
-                updateCountdown();
-                
-                if (countdownValue <= 0) {
-                    countdownValue = 1;
-                    updateCountdown();
-                }
-            }, 1000);
-        }
-
-        function stopCountdown() {
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-                countdownInterval = null;
-            }
-            const countdownElement = document.getElementById('countdown');
-            if (countdownElement) {
-                countdownElement.textContent = '1';
-            }
         }
 
         async function searchSignals() {
@@ -620,134 +357,70 @@
             const searchBtn = document.querySelector('.search-btn');
             const resultsDiv = document.getElementById('results');
             
-            currentCoin = coinInput.value.trim().toUpperCase();
+            currentCoin = coinInput.value.trim().toUpperCase().replace(/[^a-zA-Z0-9]/g, '');
             currentMinVolume = parseInt(volumeInput.value);
             
             if (!currentCoin) {
-                showError('Lütfen bir coin sembolü girin');
+                showError('Lütfen coin sembolü girin');
                 return;
             }
 
-            // Coin sembolünü temizle (sadece harf ve sayı)
-            currentCoin = currentCoin.replace(/[^a-zA-Z0-9]/g, '');
-            
-            // Butonu devre dışı bırak ve loading göster
             searchBtn.disabled = true;
-            searchBtn.textContent = 'GERÇEK ZAMANLI...';
+            searchBtn.textContent = 'ARANIY OR...';
             resultsDiv.innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>${currentCoin} için ${currentMinVolume.toLocaleString()} USD üzeri GERÇEK ZAMANLI sinyaller aranıyor...</div>
+                    <div>${currentCoin} için ${currentMinVolume.toLocaleString()} USD üzeri sinyaller aranıyor...</div>
                 </div>
             `;
             
             try {
-                // SADECE gerçek API'den veri al - DEMO YOK!
                 const signals = await getRealTimeSignals(currentCoin, currentMinVolume);
                 displayResults(signals, currentCoin, currentMinVolume);
             } catch (error) {
-                console.error('Sinyal alma hatası:', error);
-                showError('Gerçek sinyaller alınırken hata oluştu: ' + error.message);
+                console.error('Sinyal hatası:', error);
+                showError('Hata: ' + error.message);
             } finally {
-                // Butonu tekrar aktif et
                 searchBtn.disabled = false;
-                searchBtn.textContent = 'Gerçek Sinyalleri Getir';
+                searchBtn.textContent = 'Sinyalleri Getir';
             }
-        }
-
-        // Aggr.trade CORS proxy ile API çağrısı
-        async function fetchWithAggrTradeProxy(url) {
-            const proxyUrl = CORS_PROXY + url;
-            console.log(`API İsteği: ${proxyUrl}`);
-            
-            const response = await fetch(proxyUrl, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            return await response.json();
         }
         
         async function getRealTimeSignals(coinSymbol, minVolume) {
-            try {
-                const symbol = coinSymbol.toUpperCase() + 'USDT';
-                
-                console.log(`🔍 ${symbol} için GERÇEK ZAMANLI veri alınıyor...`);
-
-                // 1. Önce sembolün geçerli olup olmadığını kontrol et
-                const exchangeInfo = await fetchWithAggrTradeProxy(`${BINANCE_API}exchangeInfo?symbol=${symbol}`);
-                
-                if (exchangeInfo.msg && exchangeInfo.msg.includes('Invalid symbol')) {
-                    throw new Error(`Geçersiz sembol: ${coinSymbol}. Lütfen BTC, ETH, ADA gibi geçerli bir coin girin.`);
-                }
-
-                console.log(`✅ ${symbol} sembolü doğrulandı`);
-
-                // 2. Son işlemleri al - daha fazla veri için limit artırıldı
-                const trades = await fetchWithAggrTradeProxy(`${BINANCE_API}trades?symbol=${symbol}&limit=1000`);
-
-                if (!trades || trades.length === 0) {
-                    throw new Error(`${symbol} için işlem verisi bulunamadı`);
-                }
-
-                console.log(`📊 ${trades.length} adet GERÇEK işlem alındı`);
-
-                // 3. SADECE gerçek büyük işlemleri filtrele
-                const realSignals = trades
-                    .filter(trade => {
-                        try {
-                            // Gerçek hacmi hesapla
-                            const volume = parseFloat(trade.quoteQty) || (parseFloat(trade.price) * parseFloat(trade.qty));
-                            const isValid = volume >= minVolume;
-                            if (isValid) {
-                                console.log(`💰 Büyük işlem bulundu: ${volume} USD`);
-                            }
-                            return isValid;
-                        } catch (e) {
-                            console.error('Hacim hesaplama hatası:', e);
-                            return false;
-                        }
-                    })
-                    .map(trade => {
-                        try {
-                            const volume = parseFloat(trade.quoteQty) || (parseFloat(trade.price) * parseFloat(trade.qty));
-                            return {
-                                id: trade.id,
-                                symbol: trade.symbol,
-                                volume: volume,
-                                price: parseFloat(trade.price),
-                                amount: parseFloat(trade.qty),
-                                type: trade.isBuyerMaker ? 'SELL' : 'BUY',
-                                timestamp: new Date(trade.time).toISOString(),
-                                isLargeOrder: volume > minVolume * 3,
-                                isReal: true // BU GERÇEK VERİ!
-                            };
-                        } catch (e) {
-                            console.error('Trade işleme hatası:', e);
-                            return null;
-                        }
-                    })
-                    .filter(signal => signal !== null)
-                    .sort((a, b) => b.volume - a.volume);
-
-                console.log(`🎯 ${realSignals.length} adet GERÇEK büyük işlem bulundu`);
-
-                if (realSignals.length === 0) {
-                    throw new Error(`${symbol} için ${minVolume.toLocaleString()} USD üzeri GERÇEK işlem bulunamadı. Daha düşük hacim değeri deneyin.`);
-                }
-
-                return realSignals;
-                
-            } catch (error) {
-                console.error('❌ GERÇEK API Hatası:', error);
-                throw error; // Demo veri YOK, sadece hata fırlat
+            const symbol = coinSymbol.toUpperCase() + 'USDT';
+            
+            // Doğrudan Binance API
+            const response = await fetch(`https://api.binance.com/api/v3/trades?symbol=${symbol}&limit=1000`);
+            
+            if (!response.ok) {
+                throw new Error(`Geçersiz coin: ${coinSymbol}`);
             }
+
+            const trades = await response.json();
+
+            const signals = trades
+                .map(trade => {
+                    const volume = parseFloat(trade.quoteQty) || (parseFloat(trade.price) * parseFloat(trade.qty));
+                    return {
+                        id: trade.id,
+                        symbol: trade.symbol,
+                        volume: volume,
+                        price: parseFloat(trade.price),
+                        amount: parseFloat(trade.qty),
+                        type: trade.isBuyerMaker ? 'SELL' : 'BUY',
+                        timestamp: new Date(trade.time).toISOString(),
+                        isLargeOrder: volume > minVolume * 3,
+                        isReal: true
+                    };
+                })
+                .filter(s => s.volume >= minVolume)
+                .sort((a, b) => b.volume - a.volume);
+
+            if (signals.length === 0) {
+                throw new Error(`${minVolume.toLocaleString()} USD üzeri işlem bulunamadı`);
+            }
+
+            return signals;
         }
         
         function displayResults(signals, coinSymbol, minVolume) {
@@ -755,56 +428,49 @@
             
             let html = `
                 <div class="last-update">
-                    ⚡ GERÇEK ZAMANLI: ${new Date().toLocaleTimeString('tr-TR')} 
-                    <span class="high-frequency">SANİYEDE 1</span>
+                    ⚡ ${new Date().toLocaleTimeString('tr-TR')} 
+                    <span class="high-frequency">CANLI</span>
                 </div>
                 <div style="margin-bottom: 20px; font-size: 1.1em; color: #2d3436;">
                     <strong>${coinSymbol}</strong> için <strong>${minVolume.toLocaleString()} USD</strong> üzeri 
-                    <strong>${signals.length}</strong> GERÇEK ZAMANLI sinyal bulundu
-                    <span class="real-badge">TAMAMEN GERÇEK</span>
+                    <strong>${signals.length}</strong> sinyal
+                    <span class="real-badge">GERÇEK</span>
                 </div>
             `;
             
             signals.forEach(signal => {
                 const date = new Date(signal.timestamp);
-                const volumeFormatted = formatVolume(signal.volume);
-                const priceFormatted = formatPrice(signal.price);
-                const amountFormatted = formatAmount(signal.amount);
-                const timeAgo = getTimeAgo(signal.timestamp);
+                const volumeFormatted = signal.volume >= 1000000 ? 
+                    (signal.volume / 1000000).toFixed(2) + 'M USD' : 
+                    (signal.volume / 1000).toFixed(1) + 'K USD';
                 
                 html += `
-                    <div class="signal-card" style="
-                        ${signal.isLargeOrder ? 'border-left: 4px solid #e17055; background: #fff9f8;' : 'border-left: 4px solid #00b894;'}
-                    ">
+                    <div class="signal-card" style="border-left: 4px solid ${signal.type === 'BUY' ? '#00b894' : '#e17055'}">
                         <div class="signal-header">
                             <div class="coin-symbol">
-                                ${signal.symbol}
-                                ${signal.isLargeOrder ? ' ⚡' : ' ✅'}
-                                <span class="real-badge" style="background: #00b894">
-                                    GERÇEK
-                                </span>
+                                ${signal.symbol} ${signal.isLargeOrder ? '⚡' : '✅'}
+                                <span class="real-badge">GERÇEK</span>
                             </div>
                             <div class="volume-badge">${volumeFormatted}</div>
                         </div>
                         <div class="signal-details">
                             <div class="detail-item">
-                                <span class="detail-label">İşlem Türü</span>
+                                <span class="detail-label">İşlem</span>
                                 <span class="detail-value" style="color: ${signal.type === 'BUY' ? '#00b894' : '#e17055'}">
                                     ${signal.type === 'BUY' ? '🟢 ALIM' : '🔴 SATIM'}
-                                    ${signal.isLargeOrder ? ' (BÜYÜK İŞLEM)' : ''}
                                 </span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Fiyat</span>
-                                <span class="detail-value">${priceFormatted} USD</span>
+                                <span class="detail-value">${signal.price.toFixed(2)} USD</span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Miktar</span>
-                                <span class="detail-value">${amountFormatted} ${coinSymbol}</span>
+                                <span class="detail-value">${signal.amount.toFixed(4)} ${coinSymbol}</span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Zaman</span>
-                                <span class="detail-value">${date.toLocaleTimeString('tr-TR')}<br><small>(${timeAgo})</small></span>
+                                <span class="detail-value">${date.toLocaleTimeString('tr-TR')}</span>
                             </div>
                         </div>
                     </div>
@@ -812,100 +478,39 @@
             });
             
             resultsDiv.innerHTML = html;
-
-            // Otomatik yenileme aktifse countdown'u başlat
-            const autoRefreshCheckbox = document.getElementById('autoRefresh');
-            if (autoRefreshCheckbox && autoRefreshCheckbox.checked) {
-                startCountdown();
-            }
-        }
-        
-        function getTimeAgo(timestamp) {
-            const now = new Date();
-            const signalTime = new Date(timestamp);
-            const diffMs = now - signalTime;
-            const diffSecs = Math.floor(diffMs / 1000);
-            const diffMins = Math.floor(diffMs / 60000);
-            
-            if (diffSecs < 60) return `${diffSecs} saniye önce`;
-            if (diffMins < 60) return `${diffMins} dakika önce`;
-            return `${Math.floor(diffMins / 60)} saat önce`;
         }
         
         function toggleAutoRefresh() {
-            const autoRefreshCheckbox = document.getElementById('autoRefresh');
+            const checkbox = document.getElementById('autoRefresh');
             
-            if (autoRefreshCheckbox.checked) {
-                autoRefreshInterval = setInterval(() => {
-                    searchSignals();
-                }, 1000); // 1 SANİYE
-                startCountdown();
+            if (checkbox.checked) {
+                autoRefreshInterval = setInterval(() => searchSignals(), 1000);
             } else {
                 if (autoRefreshInterval) {
                     clearInterval(autoRefreshInterval);
                     autoRefreshInterval = null;
                 }
-                stopCountdown();
             }
         }
         
         function showError(message) {
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = `
-                <div class="error">
-                    ❌ ${message}<br>
-                    <small>Lütfen coin sembolünü kontrol edin veya daha düşük hacim değeri deneyin</small>
-                </div>
-            `;
+            document.getElementById('results').innerHTML = `<div class="error">❌ ${message}</div>`;
         }
         
-        function formatVolume(volume) {
-            if (volume >= 1000000) {
-                return (volume / 1000000).toFixed(2) + 'M USD';
-            } else if (volume >= 1000) {
-                return (volume / 1000).toFixed(1) + 'K USD';
-            }
-            return volume.toFixed(0) + ' USD';
-        }
-        
-        function formatPrice(price) {
-            return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 });
-        }
-        
-        function formatAmount(amount) {
-            if (amount >= 1) {
-                return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 });
-            }
-            return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 });
-        }
-        
-        // Enter tuşu ile arama yapma
-        document.querySelector('.coin-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchSignals();
-            }
+        document.querySelector('.coin-input').addEventListener('keypress', e => {
+            if (e.key === 'Enter') searchSignals();
         });
         
-        document.querySelector('.volume-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchSignals();
-            }
-        });
-        
-        // Sayfa yüklendiğinde otomatik başlat
-        window.addEventListener('load', function() {
-            // Üst bilgi çubuğunu güncelle
-            updateTopInfoBar();
-            setInterval(updateTopInfoBar, 1000); // Her saniye güncelle
+        window.addEventListener('load', () => {
+            updateTurkeyTime();
+            updateFearIndex();
+            updateNasdaqCountdown();
             
-            // Otomatik yenilemeyi başlat
-            const autoRefreshCheckbox = document.getElementById('autoRefresh');
-            if (autoRefreshCheckbox) {
-                autoRefreshCheckbox.checked = true;
-                setTimeout(() => {
-                    toggleAutoRefresh();
-                }, 1000);
-            }
+            setInterval(updateTurkeyTime, 1000);
+            setInterval(updateFearIndex, 300000);
+            setInterval(updateNasdaqCountdown, 60000);
+            
+            setTimeout(() => toggleAutoRefresh(), 1000);
         });
     </script>
 </body>
