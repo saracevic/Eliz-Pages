@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyperliquid Whale Scanner 🐋</title>
+    <title>Hyperliquid Whale Tracker</title>
     <style>
         * {
             margin: 0;
@@ -12,206 +12,254 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0e27;
-            color: #fff;
-            padding: 15px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f1419;
+            color: #e8e8e8;
+            padding: 20px;
             min-height: 100vh;
         }
 
         .container {
-            max-width: 1600px;
+            max-width: 1800px;
             margin: 0 auto;
         }
 
-        header {
+        .header-section {
+            background: #1a1f2e;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #2a3142;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
             text-align: center;
-            margin-bottom: 30px;
+            padding: 10px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #8a8f98;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        .stat-value.positive {
+            color: #10b981;
+        }
+
+        .stat-value.negative {
+            color: #ef4444;
+        }
+
+        .controls-section {
+            background: #1a1f2e;
+            border-radius: 8px;
             padding: 20px;
-            background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            border: 1px solid #2a3142;
         }
 
-        h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .control-group {
+            margin-bottom: 15px;
         }
 
-        .whale-emoji {
-            font-size: 2.5em;
-            animation: float 3s ease-in-out infinite;
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #8a8f98;
+            font-size: 0.9em;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            background: #0f1419;
+            border: 1px solid #2a3142;
+            border-radius: 6px;
+            padding: 12px;
+            color: #e8e8e8;
+            font-family: monospace;
+            font-size: 0.9em;
+            resize: vertical;
         }
 
-        .wallet-section {
-            background: #1a1f3a;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        textarea:focus {
+            outline: none;
+            border-color: #4a9eff;
         }
 
-        .wallet-input-group {
+        select {
+            width: 100%;
+            max-width: 300px;
+            padding: 10px;
+            background: #0f1419;
+            border: 1px solid #2a3142;
+            border-radius: 6px;
+            color: #e8e8e8;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #4a9eff;
+        }
+
+        .button-group {
             display: flex;
             gap: 10px;
-            margin-bottom: 15px;
             flex-wrap: wrap;
-        }
-
-        .wallet-input {
-            flex: 1;
-            min-width: 250px;
-            padding: 12px 15px;
-            background: #0a0e27;
-            border: 2px solid #667eea;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 0.95em;
-            font-family: monospace;
-        }
-
-        .wallet-input:focus {
-            outline: none;
-            border-color: #764ba2;
-            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
         }
 
         .btn {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 10px 20px;
             border: none;
-            border-radius: 10px;
-            font-size: 0.95em;
-            font-weight: bold;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #4a9eff;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #3a8eef;
+        }
+
+        .btn-secondary {
+            background: #2a3142;
+            color: #e8e8e8;
+        }
+
+        .btn-secondary:hover {
+            background: #3a4152;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .table-container {
+            background: #1a1f2e;
+            border-radius: 8px;
+            border: 1px solid #2a3142;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+
+        thead {
+            background: #0f1419;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 12px 10px;
+            text-align: left;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #8a8f98;
+            border-bottom: 1px solid #2a3142;
             white-space: nowrap;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        tbody tr {
+            border-bottom: 1px solid #2a3142;
+            transition: background 0.2s;
         }
 
-        .btn:active {
-            transform: translateY(0);
+        tbody tr:hover {
+            background: #22273a;
         }
 
-        .btn-success {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        }
-
-        .wallet-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .wallet-chip {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            background: #2d3561;
-            border-radius: 20px;
+        td {
+            padding: 12px 10px;
             font-size: 0.9em;
-            font-family: monospace;
         }
 
-        .wallet-chip-remove {
-            cursor: pointer;
-            color: #ef4444;
-            font-weight: bold;
-            transition: color 0.2s;
+        .token-cell {
+            font-weight: 600;
+            font-size: 1em;
         }
 
-        .wallet-chip-remove:hover {
-            color: #dc2626;
-        }
-
-        .filter-section {
-            background: #1a1f3a;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .filter-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 10px 20px;
-            background: #2d3561;
-            color: #fff;
-            border: 2px solid transparent;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-
-        .filter-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #764ba2;
-        }
-
-        .filter-btn:hover {
-            border-color: #667eea;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .stat-card h3 {
+        .amount-cell {
+            color: #8a8f98;
             font-size: 0.85em;
-            color: #a0aec0;
-            margin-bottom: 8px;
         }
 
-        .stat-card p {
-            font-size: 1.3em;
-            font-weight: bold;
+        .side-long {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .side-short {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .leverage-cell {
+            color: #8a8f98;
+        }
+
+        .value-cell {
+            font-weight: 600;
+        }
+
+        .pnl-positive {
+            color: #10b981;
+        }
+
+        .pnl-negative {
+            color: #ef4444;
+        }
+
+        .wallet-cell {
+            font-family: monospace;
+            font-size: 0.85em;
+            color: #8a8f98;
         }
 
         .loading {
             text-align: center;
-            padding: 30px;
-            color: #667eea;
+            padding: 40px;
+            color: #8a8f98;
         }
 
         .spinner {
-            border: 4px solid #1a1f3a;
-            border-top: 4px solid #667eea;
+            border: 3px solid #2a3142;
+            border-top: 3px solid #4a9eff;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
-            margin: 20px auto;
+            margin: 0 auto 15px;
         }
 
         @keyframes spin {
@@ -219,251 +267,141 @@
             100% { transform: rotate(360deg); }
         }
 
-        .positions-table {
-            background: #1a1f3a;
-            border-radius: 15px;
-            overflow-x: auto;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 1100px;
-        }
-
-        thead {
-            background: #0a0e27;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        th {
-            padding: 15px 10px;
-            text-align: left;
-            font-size: 0.85em;
-            font-weight: 600;
-            color: #a0aec0;
-            border-bottom: 2px solid #2d3561;
-        }
-
-        tbody tr {
-            border-bottom: 1px solid #2d3561;
-            transition: background 0.2s;
-        }
-
-        tbody tr:hover {
-            background: #232847;
-        }
-
-        td {
-            padding: 15px 10px;
-            font-size: 0.9em;
-        }
-
-        .token-cell {
-            font-weight: bold;
-            font-size: 1em;
-        }
-
-        .side-badge {
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-weight: bold;
-            font-size: 0.85em;
-            display: inline-block;
-        }
-
-        .side-long {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-            border: 1px solid #10b981;
-        }
-
-        .side-short {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: 1px solid #ef4444;
-        }
-
-        .leverage-badge {
-            padding: 4px 10px;
-            border-radius: 10px;
-            background: rgba(102, 126, 234, 0.2);
-            color: #667eea;
-            font-weight: bold;
-            font-size: 0.85em;
-        }
-
-        .whale-category {
-            padding: 4px 10px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 0.8em;
-            display: inline-block;
-        }
-
-        .whale-small {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-            border: 1px solid #3b82f6;
-        }
-
-        .whale-medium {
-            background: rgba(139, 92, 246, 0.2);
-            color: #8b5cf6;
-            border: 1px solid #8b5cf6;
-        }
-
-        .whale-tidal {
-            background: rgba(236, 72, 153, 0.2);
-            color: #ec4899;
-            border: 1px solid #ec4899;
-        }
-
-        .whale-mega {
-            background: rgba(251, 191, 36, 0.2);
-            color: #fbbf24;
-            border: 1px solid #fbbf24;
-        }
-
-        .positive {
-            color: #10b981;
-        }
-
-        .negative {
-            color: #ef4444;
-        }
-
         .no-data {
             text-align: center;
             padding: 60px 20px;
-            color: #a0aec0;
-            font-size: 1.1em;
+            color: #8a8f98;
         }
 
-        .wallet-address-table {
-            font-family: monospace;
+        .wallet-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #0f1419;
+            border-radius: 6px;
+            border: 1px solid #2a3142;
+        }
+
+        .wallet-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            background: #2a3142;
+            border-radius: 4px;
             font-size: 0.85em;
-            color: #667eea;
+            font-family: monospace;
+        }
+
+        .wallet-chip-remove {
+            cursor: pointer;
+            color: #ef4444;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+
+        .wallet-chip-remove:hover {
+            color: #dc2626;
         }
 
         @media (max-width: 768px) {
-            h1 {
-                font-size: 1.5em;
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
             }
 
-            .wallet-input-group {
+            .button-group {
                 flex-direction: column;
             }
 
-            th, td {
-                padding: 10px 8px;
-                font-size: 0.8em;
+            .btn {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <div class="whale-emoji">🐋</div>
-            <h1>Hyperliquid Whale Scanner</h1>
-            <p style="color: #a0aec0; margin-top: 5px;">Büyük Balina Pozisyonlarını Takip Edin</p>
-        </header>
+        <div class="header-section">
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-label">Long Value</div>
+                    <div class="stat-value positive" id="longValue">$0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Short Value</div>
+                    <div class="stat-value negative" id="shortValue">$0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Total</div>
+                    <div class="stat-value" id="totalValue">$0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Sum Funding</div>
+                    <div class="stat-value" id="sumFunding">$0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Sum PNL</div>
+                    <div class="stat-value" id="sumPnl">$0</div>
+                </div>
+            </div>
+        </div>
 
-        <div class="wallet-section">
-            <h3 style="margin-bottom: 15px; color: #667eea;">📍 Cüzdan Adresi Ekle</h3>
-            <div class="wallet-input-group">
-                <input 
-                    type="text" 
+        <div class="controls-section">
+            <div class="control-group">
+                <label>📍 Wallet Addresses (her satıra bir adres)</label>
+                <textarea 
                     id="walletInput" 
-                    class="wallet-input" 
-                    placeholder="0x... cüzdan adresini girin (örn: 0x99b1098d9d50aa076f78bd26ab22e6abd3710729)"
-                >
-                <button id="addWalletBtn" class="btn">➕ Ekle</button>
-                <button id="refreshBtn" class="btn btn-success">🔄 Yenile</button>
+                    placeholder="0x1234...&#10;0x5678...&#10;0xabcd...&#10;(Her satıra bir cüzdan adresi girin)"
+                ></textarea>
             </div>
-            <div id="walletList" class="wallet-list"></div>
-        </div>
 
-        <div class="filter-section">
-            <h3 style="margin-bottom: 15px; color: #667eea;">🔍 Whale Kategorisi Filtresi</h3>
-            <div class="filter-buttons">
-                <button class="filter-btn active" data-filter="all">Tümü</button>
-                <button class="filter-btn" data-filter="small">🐟 Small Whale ($100K - $500K)</button>
-                <button class="filter-btn" data-filter="whale">🐋 Whale ($500K - $1M)</button>
-                <button class="filter-btn" data-filter="tidal">🌊 Tidal Whale ($1M - $50M)</button>
-                <button class="filter-btn" data-filter="mega">🦈 Mega Whale ($50M+)</button>
+            <div class="control-group">
+                <label>🪙 Coin Filter</label>
+                <select id="coinFilter">
+                    <option value="all">All Coins</option>
+                </select>
             </div>
-        </div>
 
-        <div class="stats">
-            <div class="stat-card">
-                <h3>Toplam Pozisyon</h3>
-                <p id="totalPositions">0</p>
+            <div class="button-group">
+                <button class="btn btn-primary" id="addWalletsBtn">➕ Add Wallets</button>
+                <button class="btn btn-secondary" id="refreshBtn">🔄 Refresh</button>
+                <button class="btn btn-danger" id="clearBtn">🗑️ Clear All</button>
             </div>
-            <div class="stat-card">
-                <h3>Toplam Değer</h3>
-                <p id="totalValue">$0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Toplam PnL</h3>
-                <p id="totalPnl">$0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Long Pozisyonlar</h3>
-                <p id="longPositions">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Short Pozisyonlar</h3>
-                <p id="shortPositions">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Small Whales</h3>
-                <p id="smallWhales">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Whales</h3>
-                <p id="regularWhales">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Tidal Whales</h3>
-                <p id="tidalWhales">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Mega Whales</h3>
-                <p id="megaWhales">0</p>
-            </div>
+
+            <div id="walletList" class="wallet-list" style="display: none;"></div>
         </div>
 
         <div id="loadingIndicator" class="loading" style="display: none;">
             <div class="spinner"></div>
-            <p>Pozisyonlar yükleniyor...</p>
+            <p>Loading positions...</p>
         </div>
 
-        <div class="positions-table">
+        <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>Wallet</th>
-                        <th>Category</th>
                         <th>Token</th>
                         <th>Side</th>
                         <th>Leverage</th>
                         <th>Value</th>
                         <th>Amount</th>
-                        <th>Entry Price</th>
-                        <th>Profit & Loss (PnL)</th>
-                        <th>Funding Fee</th>
-                        <th>Liq.Price</th>
+                        <th>Avg Entry</th>
+                        <th>Live</th>
+                        <th>PNL/ROE</th>
+                        <th>Funding</th>
+                        <th>Dist. to Liq</th>
+                        <th>Age</th>
+                        <th>Wallet</th>
                     </tr>
                 </thead>
                 <tbody id="positionsBody">
                     <tr>
-                        <td colspan="11" class="no-data">
-                            Başlamak için yukarıdan cüzdan adresi ekleyin
+                        <td colspan="12" class="no-data">
+                            Add wallet addresses above to start tracking
                         </td>
                     </tr>
                 </tbody>
@@ -472,21 +410,11 @@
     </div>
 
     <script>
-
 // Global değişkenler
 let walletAddresses = [];
 let allPositions = [];
-let currentFilter = 'all';
 let currentCoinFilter = 'all';
 const API_URL = 'https://api.hyperliquid.xyz/info';
-
-// Whale kategorileri
-const WHALE_CATEGORIES = {
-    small: { min: 100000, max: 500000, name: 'Small Whale', emoji: '🐟' },
-    whale: { min: 500000, max: 1000000, name: 'Whale', emoji: '🐋' },
-    tidal: { min: 1000000, max: 50000000, name: 'Tidal Whale', emoji: '🌊' },
-    mega: { min: 50000000, max: Infinity, name: 'Mega Whale', emoji: '🦈' }
-};
 
 // LocalStorage fonksiyonları
 function loadWalletsFromStorage() {
@@ -496,7 +424,7 @@ function loadWalletsFromStorage() {
             walletAddresses = JSON.parse(stored);
             updateWalletList();
         } catch (e) {
-            console.error('Storage hatası:', e);
+            console.error('Storage error:', e);
         }
     }
 }
@@ -505,161 +433,75 @@ function saveWalletsToStorage() {
     localStorage.setItem('hyperliquid_wallets', JSON.stringify(walletAddresses));
 }
 
-// Whale kategorisini belirle
-function getWhaleCategory(value) {
-    if (value >= WHALE_CATEGORIES.mega.min) return 'mega';
-    if (value >= WHALE_CATEGORIES.tidal.min) return 'tidal';
-    if (value >= WHALE_CATEGORIES.whale.min) return 'whale';
-    if (value >= WHALE_CATEGORIES.small.min) return 'small';
-    return null;
-}
-
-// Benzersiz coin listesini al
-function getUniqueCoins() {
-    const coins = [...new Set(allPositions.map(p => p.coin))];
-    return coins.sort();
-}
-
-// Coin filtre dropdown'unu güncelle
-function updateCoinFilter() {
-    const coins = getUniqueCoins();
-    const filterSection = document.querySelector('.filter-section');
-    
-    let coinFilterHTML = filterSection.querySelector('.coin-filter-container');
-    if (!coinFilterHTML) {
-        coinFilterHTML = document.createElement('div');
-        coinFilterHTML.className = 'coin-filter-container';
-        coinFilterHTML.style.marginTop = '15px';
-        filterSection.appendChild(coinFilterHTML);
-    }
-    
-    coinFilterHTML.innerHTML = '<h3 style="margin-bottom: 10px; color: #667eea; font-size: 0.9em;">🪙 Coin Filtresi</h3>' +
-        '<select id="coinFilterSelect" style="width: 100%; max-width: 300px; padding: 10px; background: #0a0e27; border: 2px solid #667eea; border-radius: 10px; color: #fff; font-size: 0.95em; cursor: pointer;">' +
-        '<option value="all">Tüm Coinler (' + coins.length + ')</option>' +
-        coins.map(coin => '<option value="' + coin + '">' + coin + '</option>').join('') +
-        '</select>';
-    
-    document.getElementById('coinFilterSelect').addEventListener('change', function(e) {
-        currentCoinFilter = e.target.value;
-        displayPositions();
-    });
-}
-
-// Adresin açık pozisyonu var mı kontrol et
-async function checkPositionExists(address) {
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                type: 'clearinghouseState',
-                user: address
-            })
-        });
-        
-        if (!response.ok) return { exists: false, count: 0 };
-        const data = await response.json();
-        
-        if (!data || !data.assetPositions) return { exists: false, count: 0 };
-        
-        let validPositions = 0;
-        let totalValue = 0;
-        
-        for (const pos of data.assetPositions) {
-            const position = pos.position;
-            if (position && position.szi !== '0') {
-                const szi = parseFloat(position.szi);
-                const size = Math.abs(szi);
-                const entryPx = parseFloat(position.entryPx || 0);
-                const value = size * entryPx;
-                
-                if (getWhaleCategory(value)) {
-                    validPositions++;
-                    totalValue += value;
-                }
-            }
-        }
-        
-        return { 
-            exists: validPositions > 0, 
-            count: validPositions,
-            totalValue: totalValue
-        };
-    } catch (error) {
-        console.error('Pozisyon kontrol hatası:', error);
-        return { exists: false, count: 0 };
-    }
-}
-
-// Cüzdan ekle (pozisyon kontrolü ile)
-async function addWallet() {
+// Toplu cüzdan ekleme
+function addWallets() {
     const input = document.getElementById('walletInput');
-    const btn = document.getElementById('addWalletBtn');
-    let address = input.value.trim();
+    const text = input.value.trim();
     
-    if (!address) {
-        alert('Lütfen bir cüzdan adresi girin');
+    if (!text) {
+        alert('Please enter wallet addresses');
         return;
     }
 
-    if (!address.startsWith('0x')) {
-        address = '0x' + address;
+    const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+    let added = 0;
+    let skipped = 0;
+    let invalid = 0;
+
+    for (let address of lines) {
+        if (!address.startsWith('0x')) {
+            address = '0x' + address;
+        }
+
+        if (address.length !== 42) {
+            invalid++;
+            continue;
+        }
+
+        const lowerAddress = address.toLowerCase();
+        if (walletAddresses.includes(lowerAddress)) {
+            skipped++;
+            continue;
+        }
+
+        walletAddresses.push(lowerAddress);
+        added++;
     }
 
-    if (address.length !== 42) {
-        alert('Geçersiz Ethereum adresi (42 karakter olmalı)');
-        return;
-    }
-
-    if (walletAddresses.includes(address.toLowerCase())) {
-        alert('Bu adres zaten ekli');
-        return;
-    }
-
-    // Kontrol animasyonu
-    btn.textContent = '⏳ Kontrol ediliyor...';
-    btn.disabled = true;
-    
-    // Pozisyon kontrolü
-    const check = await checkPositionExists(address.toLowerCase());
-    
-    if (!check.exists) {
-        btn.textContent = '➕ Ekle';
-        btn.disabled = false;
-        alert('❌ Bu adreste $100K+ açık pozisyon bulunamadı!\n\nAdres geçerli ama whale kategorisine girmiyor.');
-        return;
-    }
-    
-    // Başarılı, ekle
-    walletAddresses.push(address.toLowerCase());
     saveWalletsToStorage();
     updateWalletList();
     input.value = '';
-    
-    btn.textContent = '✅ Eklendi!';
-    setTimeout(() => {
-        btn.textContent = '➕ Ekle';
-        btn.disabled = false;
-    }, 2000);
-    
-    // Konfirmasyon mesajı
-    alert('✅ Adres eklendi!\n\n' + 
-          '📊 Pozisyon sayısı: ' + check.count + '\n' +
-          '💰 Toplam değer: $' + formatNumber(check.totalValue));
-    
-    fetchAllPositions();
-}
 
-// Cüzdan sil - GLOBAL
-window.removeWallet = function(address) {
-    if (confirm('Bu adresi silmek istediğinize emin misiniz?\n\n' + address)) {
-        walletAddresses = walletAddresses.filter(w => w !== address);
-        saveWalletsToStorage();
-        updateWalletList();
+    alert('✅ Wallets added!\n\n' +
+          '➕ Added: ' + added + '\n' +
+          '⏭️ Skipped (duplicate): ' + skipped + '\n' +
+          '❌ Invalid: ' + invalid);
+
+    if (added > 0) {
         fetchAllPositions();
     }
+}
+
+// Tüm cüzdanları temizle
+function clearAllWallets() {
+    if (!confirm('Are you sure you want to remove all wallets?')) {
+        return;
+    }
+    walletAddresses = [];
+    allPositions = [];
+    saveWalletsToStorage();
+    updateWalletList();
+    updateCoinFilter();
+    displayPositions();
+    updateStats();
+}
+
+// Tek cüzdan sil
+window.removeWallet = function(address) {
+    walletAddresses = walletAddresses.filter(w => w !== address);
+    saveWalletsToStorage();
+    updateWalletList();
+    fetchAllPositions();
 };
 
 // Cüzdan listesini güncelle
@@ -667,16 +509,28 @@ function updateWalletList() {
     const container = document.getElementById('walletList');
     
     if (walletAddresses.length === 0) {
-        container.innerHTML = '<p style="color: #a0aec0; font-size: 0.9em;">Henüz cüzdan eklenmedi</p>';
+        container.style.display = 'none';
         return;
     }
 
+    container.style.display = 'flex';
     container.innerHTML = walletAddresses.map(address => 
         '<div class="wallet-chip">' +
         '<span>' + shortenAddress(address) + '</span>' +
         '<span class="wallet-chip-remove" onclick="removeWallet(\'' + address + '\')">✕</span>' +
         '</div>'
     ).join('');
+}
+
+// Coin filtre dropdown'unu güncelle
+function updateCoinFilter() {
+    const coins = [...new Set(allPositions.map(p => p.coin))].sort();
+    const select = document.getElementById('coinFilter');
+    
+    select.innerHTML = '<option value="all">All Coins (' + coins.length + ')</option>' +
+        coins.map(coin => '<option value="' + coin + '">' + coin + '</option>').join('');
+    
+    select.value = currentCoinFilter;
 }
 
 // API: Kullanıcı pozisyonlarını çek
@@ -693,11 +547,10 @@ async function fetchUserPositions(userAddress) {
             })
         });
         
-        if (!response.ok) throw new Error('API hatası');
-        const data = await response.json();
-        return data;
+        if (!response.ok) throw new Error('API error');
+        return await response.json();
     } catch (error) {
-        console.error('Pozisyon hatası:', error);
+        console.error('Position error:', error);
         return null;
     }
 }
@@ -715,10 +568,10 @@ async function fetchMetadata() {
             })
         });
         
-        if (!response.ok) throw new Error('API hatası');
+        if (!response.ok) throw new Error('API error');
         return await response.json();
     } catch (error) {
-        console.error('Metadata hatası:', error);
+        console.error('Metadata error:', error);
         return null;
     }
 }
@@ -735,15 +588,6 @@ async function fetchAllPositions() {
     showLoading(true);
     allPositions = [];
 
-    const metadata = await fetchMetadata();
-    const assetMap = {};
-    
-    if (metadata && metadata.universe) {
-        metadata.universe.forEach(asset => {
-            assetMap[asset.name] = asset;
-        });
-    }
-
     for (const address of walletAddresses) {
         const data = await fetchUserPositions(address);
         
@@ -759,11 +603,14 @@ async function fetchAllPositions() {
                 
                 const entryPx = parseFloat(position.entryPx || 0);
                 const leverage = parseFloat(position.leverage?.value || 0);
+                const leverageType = position.leverage?.type || 'cross';
                 const unrealizedPnl = parseFloat(position.unrealizedPnl || 0);
                 const returnOnEquity = parseFloat(position.returnOnEquity || 0);
                 const liquidationPx = parseFloat(position.liquidationPx || 0);
                 const cumFunding = parseFloat(position.cumFunding?.total || 0);
+                const positionValue = parseFloat(position.positionValue || 0);
                 
+                // Mevcut fiyat hesaplama
                 let currentPrice = entryPx;
                 if (size > 0 && unrealizedPnl !== 0) {
                     if (side === 'Long') {
@@ -773,26 +620,33 @@ async function fetchAllPositions() {
                     }
                 }
 
-                const value = size * currentPrice;
-                const category = getWhaleCategory(value);
+                const value = positionValue || (size * currentPrice);
 
-                if (category) {
-                    allPositions.push({
-                        wallet: address,
-                        coin: coin,
-                        side: side,
-                        leverage: leverage,
-                        size: size,
-                        entryPrice: entryPx,
-                        currentPrice: currentPrice,
-                        value: value,
-                        pnl: unrealizedPnl,
-                        pnlPercent: returnOnEquity * 100,
-                        fundingFee: cumFunding,
-                        liquidationPrice: liquidationPx,
-                        category: category
-                    });
+                // Liquidation distance hesaplama
+                let liqDistance = 0;
+                if (liquidationPx > 0) {
+                    liqDistance = ((currentPrice - liquidationPx) / currentPrice) * 100;
+                    if (side === 'Short') {
+                        liqDistance = ((liquidationPx - currentPrice) / currentPrice) * 100;
+                    }
                 }
+
+                allPositions.push({
+                    wallet: address,
+                    coin: coin,
+                    side: side,
+                    leverage: leverage,
+                    leverageType: leverageType,
+                    size: size,
+                    entryPrice: entryPx,
+                    currentPrice: currentPrice,
+                    value: value,
+                    pnl: unrealizedPnl,
+                    pnlPercent: returnOnEquity * 100,
+                    fundingFee: cumFunding,
+                    liquidationPrice: liquidationPx,
+                    liqDistance: liqDistance
+                });
             }
         }
 
@@ -805,85 +659,6 @@ async function fetchAllPositions() {
     updateCoinFilter();
     displayPositions();
     updateStats();
-}
-
-// Pozisyonları göster
-function displayPositions() {
-    const tbody = document.getElementById('positionsBody');
-    
-    let filteredPositions = allPositions;
-    
-    if (currentFilter !== 'all') {
-        filteredPositions = filteredPositions.filter(p => p.category === currentFilter);
-    }
-    
-    if (currentCoinFilter !== 'all') {
-        filteredPositions = filteredPositions.filter(p => p.coin === currentCoinFilter);
-    }
-    
-    if (filteredPositions.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="11" class="no-data">' + 
-            (allPositions.length === 0 ? 'Açık pozisyon bulunamadı' : 'Bu filtrede pozisyon bulunamadı') + 
-            '</td></tr>';
-        return;
-    }
-
-    tbody.innerHTML = filteredPositions.map(pos => {
-        const categoryInfo = WHALE_CATEGORIES[pos.category];
-        const categoryClass = 'whale-' + pos.category;
-        
-        return '<tr>' +
-            '<td class="wallet-address-table">' + shortenAddress(pos.wallet) + '</td>' +
-            '<td><span class="whale-category ' + categoryClass + '">' + 
-            categoryInfo.emoji + ' ' + categoryInfo.name + '</span></td>' +
-            '<td class="token-cell">' + pos.coin + '</td>' +
-            '<td><span class="side-badge side-' + pos.side.toLowerCase() + '">' + pos.side + '</span></td>' +
-            '<td><span class="leverage-badge">' + pos.leverage.toFixed(1) + 'X Cross</span></td>' +
-            '<td><strong>' + formatCurrency(pos.value) + '</strong></td>' +
-            '<td>' + formatNumber(pos.size) + ' ' + pos.coin + '</td>' +
-            '<td>$' + formatNumber(pos.entryPrice) + '</td>' +
-            '<td><span class="' + (pos.pnl >= 0 ? 'positive' : 'negative') + '">' +
-            (pos.pnl >= 0 ? '+' : '') + formatCurrency(pos.pnl) + '<br>' +
-            (pos.pnl >= 0 ? '+' : '') + pos.pnlPercent.toFixed(2) + '%</span></td>' +
-            '<td class="' + (pos.fundingFee >= 0 ? 'positive' : 'negative') + '">' +
-            (pos.fundingFee >= 0 ? '+' : '') + formatCurrency(pos.fundingFee) + '</td>' +
-            '<td>$' + formatNumber(pos.liquidationPrice) + '</td>' +
-            '</tr>';
-    }).join('');
-}
-
-// İstatistikleri güncelle
-function updateStats() {
-    let filteredForStats = allPositions;
-    
-    if (currentCoinFilter !== 'all') {
-        filteredForStats = allPositions.filter(p => p.coin === currentCoinFilter);
-    }
-    
-    const totalPositions = filteredForStats.length;
-    const longPositions = filteredForStats.filter(p => p.side === 'Long').length;
-    const shortPositions = filteredForStats.filter(p => p.side === 'Short').length;
-    const totalValue = filteredForStats.reduce((sum, p) => sum + p.value, 0);
-    const totalPnl = filteredForStats.reduce((sum, p) => sum + p.pnl, 0);
-
-    const smallWhales = filteredForStats.filter(p => p.category === 'small').length;
-    const regularWhales = filteredForStats.filter(p => p.category === 'whale').length;
-    const tidalWhales = filteredForStats.filter(p => p.category === 'tidal').length;
-    const megaWhales = filteredForStats.filter(p => p.category === 'mega').length;
-
-    document.getElementById('totalPositions').textContent = totalPositions;
-    document.getElementById('totalValue').textContent = formatCurrency(totalValue);
-    
-    const pnlElement = document.getElementById('totalPnl');
-    pnlElement.textContent = formatCurrency(totalPnl);
-    pnlElement.className = totalPnl >= 0 ? 'positive' : 'negative';
-    
-    document.getElementById('longPositions').textContent = longPositions;
-    document.getElementById('shortPositions').textContent = shortPositions;
-    document.getElementById('smallWhales').textContent = smallWhales;
-    document.getElementById('regularWhales').textContent = regularWhales;
-    document.getElementById('tidalWhales').textContent = tidalWhales;
-    document.getElementById('megaWhales').textContent = megaWhales;
 }
 
 // Yardımcı fonksiyonlar
@@ -909,23 +684,93 @@ function showLoading(show) {
     document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
 }
 
-// Filtre butonları
-document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        currentFilter = this.dataset.filter;
-        displayPositions();
-    });
-});
+function calculateAge(position) {
+    // Age hesaplama - şimdilik placeholder
+    return 'N/A';
+}
+
+        // Pozisyonları göster
+function displayPositions() {
+    const tbody = document.getElementById('positionsBody');
+    
+    let filteredPositions = allPositions;
+    
+    if (currentCoinFilter !== 'all') {
+        filteredPositions = filteredPositions.filter(p => p.coin === currentCoinFilter);
+    }
+    
+    if (filteredPositions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="12" class="no-data">' + 
+            (allPositions.length === 0 ? 'No positions found' : 'No positions for this filter') + 
+            '</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = filteredPositions.map(pos => {
+        const leverageText = pos.leverage.toFixed(0) + 'x ' + (pos.leverageType === 'cross' ? 'Cross' : 'Isolated');
+        const liqDistText = pos.liqDistance !== 0 ? Math.abs(pos.liqDistance).toFixed(0) + '%' : 'N/A';
+        
+        return '<tr>' +
+            '<td class="token-cell">' + pos.coin + '</td>' +
+            '<td class="side-' + pos.side.toLowerCase() + '">' + pos.side + '</td>' +
+            '<td class="leverage-cell">' + leverageText + '</td>' +
+            '<td class="value-cell">' + formatCurrency(pos.value) + '</td>' +
+            '<td class="amount-cell">' + formatNumber(pos.size) + '</td>' +
+            '<td>$' + formatNumber(pos.entryPrice) + '</td>' +
+            '<td>$' + formatNumber(pos.currentPrice) + '</td>' +
+            '<td class="' + (pos.pnl >= 0 ? 'pnl-positive' : 'pnl-negative') + '">' +
+            (pos.pnl >= 0 ? '+' : '') + formatCurrency(pos.pnl) + '<br>' +
+            (pos.pnl >= 0 ? '+' : '') + pos.pnlPercent.toFixed(2) + '%</td>' +
+            '<td class="' + (pos.fundingFee >= 0 ? 'pnl-positive' : 'pnl-negative') + '">' +
+            (pos.fundingFee >= 0 ? '+' : '') + formatCurrency(pos.fundingFee) + '</td>' +
+            '<td>' + liqDistText + '</td>' +
+            '<td>N/A</td>' +
+            '<td class="wallet-cell">' + shortenAddress(pos.wallet) + '</td>' +
+            '</tr>';
+    }).join('');
+}
+
+// İstatistikleri güncelle
+function updateStats() {
+    let filteredForStats = allPositions;
+    
+    if (currentCoinFilter !== 'all') {
+        filteredForStats = allPositions.filter(p => p.coin === currentCoinFilter);
+    }
+    
+    const longValue = filteredForStats.filter(p => p.side === 'Long').reduce((sum, p) => sum + p.value, 0);
+    const shortValue = filteredForStats.filter(p => p.side === 'Short').reduce((sum, p) => sum + p.value, 0);
+    const totalValue = longValue + shortValue;
+    const totalPnl = filteredForStats.reduce((sum, p) => sum + p.pnl, 0);
+    const totalFunding = filteredForStats.reduce((sum, p) => sum + p.fundingFee, 0);
+
+    document.getElementById('longValue').textContent = formatCurrency(longValue);
+    document.getElementById('shortValue').textContent = formatCurrency(shortValue);
+    document.getElementById('totalValue').textContent = formatCurrency(totalValue);
+    document.getElementById('sumFunding').textContent = formatCurrency(totalFunding);
+    
+    const pnlElement = document.getElementById('sumPnl');
+    pnlElement.textContent = formatCurrency(totalPnl);
+    pnlElement.className = 'stat-value ' + (totalPnl >= 0 ? 'positive' : 'negative');
+    
+    const fundingElement = document.getElementById('sumFunding');
+    fundingElement.className = 'stat-value ' + (totalFunding >= 0 ? 'positive' : 'negative');
+}
 
 // Event listeners
-document.getElementById('addWalletBtn').addEventListener('click', addWallet);
+document.getElementById('addWalletsBtn').addEventListener('click', addWallets);
 document.getElementById('refreshBtn').addEventListener('click', fetchAllPositions);
+document.getElementById('clearBtn').addEventListener('click', clearAllWallets);
 
-document.getElementById('walletInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        addWallet();
+document.getElementById('coinFilter').addEventListener('change', function(e) {
+    currentCoinFilter = e.target.value;
+    displayPositions();
+    updateStats();
+});
+
+document.getElementById('walletInput').addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'Enter') {
+        addWallets();
     }
 });
 
@@ -935,7 +780,8 @@ if (walletAddresses.length > 0) {
     fetchAllPositions();
 }
 
-console.log('🐋 Hyperliquid Whale Scanner hazır!');
+console.log('🐋 Hyperliquid Whale Tracker Ready!');
     </script>
 </body>
 </html>
+
