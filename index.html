@@ -110,100 +110,6 @@
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         }
 
-        .wallet-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .wallet-chip {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            background: #2d3561;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-family: monospace;
-        }
-
-        .wallet-chip-remove {
-            cursor: pointer;
-            color: #ef4444;
-            font-weight: bold;
-            transition: color 0.2s;
-        }
-
-        .wallet-chip-remove:hover {
-            color: #dc2626;
-        }
-
-        .filter-section {
-            background: #1a1f3a;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .filter-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 10px 20px;
-            background: #2d3561;
-            color: #fff;
-            border: 2px solid transparent;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-
-        .filter-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #764ba2;
-        }
-
-        .filter-btn:hover {
-            border-color: #667eea;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .stat-card h3 {
-            font-size: 0.85em;
-            color: #a0aec0;
-            margin-bottom: 8px;
-        }
-
-        .stat-card p {
-            font-size: 1.3em;
-            font-weight: bold;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 30px;
-            color: #667eea;
-        }
-
         .spinner {
             border: 4px solid #1a1f3a;
             border-top: 4px solid #667eea;
@@ -217,6 +123,12 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #667eea;
         }
 
         .positions-table {
@@ -262,11 +174,6 @@
             font-size: 0.9em;
         }
 
-        .token-cell {
-            font-weight: bold;
-            font-size: 1em;
-        }
-
         .side-badge {
             padding: 4px 12px;
             border-radius: 15px;
@@ -287,47 +194,6 @@
             border: 1px solid #ef4444;
         }
 
-        .leverage-badge {
-            padding: 4px 10px;
-            border-radius: 10px;
-            background: rgba(102, 126, 234, 0.2);
-            color: #667eea;
-            font-weight: bold;
-            font-size: 0.85em;
-        }
-
-        .whale-category {
-            padding: 4px 10px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 0.8em;
-            display: inline-block;
-        }
-
-        .whale-small {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-            border: 1px solid #3b82f6;
-        }
-
-        .whale-medium {
-            background: rgba(139, 92, 246, 0.2);
-            color: #8b5cf6;
-            border: 1px solid #8b5cf6;
-        }
-
-        .whale-tidal {
-            background: rgba(236, 72, 153, 0.2);
-            color: #ec4899;
-            border: 1px solid #ec4899;
-        }
-
-        .whale-mega {
-            background: rgba(251, 191, 36, 0.2);
-            color: #fbbf24;
-            border: 1px solid #fbbf24;
-        }
-
         .positive {
             color: #10b981;
         }
@@ -342,27 +208,6 @@
             color: #a0aec0;
             font-size: 1.1em;
         }
-
-        .wallet-address-table {
-            font-family: monospace;
-            font-size: 0.85em;
-            color: #667eea;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.5em;
-            }
-
-            .wallet-input-group {
-                flex-direction: column;
-            }
-
-            th, td {
-                padding: 10px 8px;
-                font-size: 0.8em;
-            }
-        }
     </style>
 </head>
 <body>
@@ -373,69 +218,65 @@
             <p style="color: #a0aec0; margin-top: 5px;">Büyük Balina Pozisyonlarını Takip Edin</p>
         </header>
 
+<!-- Etherscan Scanner Section -->
+        <div class="wallet-section" style="background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%); border: 2px solid #667eea;">
+            <h3 style="margin-bottom: 10px; color: #fbbf24;">🔍 Etherscan Auto Scanner</h3>
+            <p style="color: #a0aec0; font-size: 0.85em; margin-bottom: 15px;">Etherscan'den belirli bir kontrat veya adresle etkileşime giren whale adresleri otomatik bulun</p>
+            
+            <div class="wallet-input-group">
+                <input 
+                    type="text" 
+                    id="etherscanApiKey" 
+                    class="wallet-input" 
+                    placeholder="Etherscan API Key (ücretsiz: etherscan.io/myapikey)"
+                    style="border-color: #fbbf24;"
+                >
+            </div>
+            
+            <div class="wallet-input-group">
+                <input 
+                    type="text" 
+                    id="contractAddressInput" 
+                    class="wallet-input" 
+                    placeholder="Kontrat adresi (örn: Hyperliquid kontrat adresi)"
+                    style="border-color: #fbbf24;"
+                >
+                <input 
+                    type="number" 
+                    id="scanLimit" 
+                    class="wallet-input" 
+                    placeholder="Max adres"
+                    value="50"
+                    style="max-width: 150px; border-color: #fbbf24;"
+                >
+                <button id="scanEtherscanBtn" class="btn" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);">🔍 Tara ve Ekle</button>
+            </div>
+            
+            <div id="scanProgress" style="display: none; margin-top: 15px; padding: 15px; background: #0a0e27; border-radius: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <div class="spinner" style="width: 20px; height: 20px; margin: 0;"></div>
+                    <span id="scanStatus" style="color: #fbbf24;">Tarama başlıyor...</span>
+                </div>
+                <div style="background: #1a1f3a; border-radius: 5px; height: 8px; overflow: hidden;">
+                    <div id="scanProgressBar" style="background: linear-gradient(90deg, #fbbf24, #f59e0b); height: 100%; width: 0%; transition: width 0.3s;"></div>
+                </div>
+                <div id="scanResults" style="margin-top: 10px; font-size: 0.85em; color: #a0aec0;"></div>
+            </div>
+        </div>
+
         <div class="wallet-section">
-            <h3 style="margin-bottom: 15px; color: #667eea;">📍 Cüzdan Adresi Ekle</h3>
+            <h3 style="margin-bottom: 15px; color: #667eea;">📍 Manuel Cüzdan Adresi Ekle</h3>
             <div class="wallet-input-group">
                 <input 
                     type="text" 
                     id="walletInput" 
                     class="wallet-input" 
-                    placeholder="0x... cüzdan adresini girin (örn: 0x99b1098d9d50aa076f78bd26ab22e6abd3710729)"
+                    placeholder="0x... cüzdan adresini girin"
                 >
                 <button id="addWalletBtn" class="btn">➕ Ekle</button>
                 <button id="refreshBtn" class="btn btn-success">🔄 Yenile</button>
             </div>
             <div id="walletList" class="wallet-list"></div>
-        </div>
-
-        <div class="filter-section">
-            <h3 style="margin-bottom: 15px; color: #667eea;">🔍 Whale Kategorisi Filtresi</h3>
-            <div class="filter-buttons">
-                <button class="filter-btn active" data-filter="all">Tümü</button>
-                <button class="filter-btn" data-filter="small">🐟 Small Whale ($100K - $500K)</button>
-                <button class="filter-btn" data-filter="whale">🐋 Whale ($500K - $1M)</button>
-                <button class="filter-btn" data-filter="tidal">🌊 Tidal Whale ($1M - $50M)</button>
-                <button class="filter-btn" data-filter="mega">🦈 Mega Whale ($50M+)</button>
-            </div>
-        </div>
-
-        <div class="stats">
-            <div class="stat-card">
-                <h3>Toplam Pozisyon</h3>
-                <p id="totalPositions">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Toplam Değer</h3>
-                <p id="totalValue">$0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Toplam PnL</h3>
-                <p id="totalPnl">$0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Long Pozisyonlar</h3>
-                <p id="longPositions">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Short Pozisyonlar</h3>
-                <p id="shortPositions">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Small Whales</h3>
-                <p id="smallWhales">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Whales</h3>
-                <p id="regularWhales">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Tidal Whales</h3>
-                <p id="tidalWhales">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Mega Whales</h3>
-                <p id="megaWhales">0</p>
-            </div>
         </div>
 
         <div id="loadingIndicator" class="loading" style="display: none;">
@@ -448,21 +289,17 @@
                 <thead>
                     <tr>
                         <th>Wallet</th>
-                        <th>Category</th>
                         <th>Token</th>
                         <th>Side</th>
-                        <th>Leverage</th>
                         <th>Value</th>
                         <th>Amount</th>
                         <th>Entry Price</th>
-                        <th>Profit & Loss (PnL)</th>
-                        <th>Funding Fee</th>
-                        <th>Liq.Price</th>
+                        <th>PnL</th>
                     </tr>
                 </thead>
                 <tbody id="positionsBody">
                     <tr>
-                        <td colspan="11" class="no-data">
+                        <td colspan="7" class="no-data">
                             Başlamak için yukarıdan cüzdan adresi ekleyin
                         </td>
                     </tr>
@@ -472,23 +309,14 @@
     </div>
 
     <script>
-
 // Global değişkenler
 let walletAddresses = [];
 let allPositions = [];
-let currentFilter = 'all';
-let currentCoinFilter = 'all';
 const API_URL = 'https://api.hyperliquid.xyz/info';
+const ETHERSCAN_API = 'https://api.etherscan.io/api';
+let etherscanApiKey = localStorage.getItem('etherscan_api_key') || '';
 
-// Whale kategorileri
-const WHALE_CATEGORIES = {
-    small: { min: 100000, max: 500000, name: 'Small Whale', emoji: '🐟' },
-    whale: { min: 500000, max: 1000000, name: 'Whale', emoji: '🐋' },
-    tidal: { min: 1000000, max: 50000000, name: 'Tidal Whale', emoji: '🌊' },
-    mega: { min: 50000000, max: Infinity, name: 'Mega Whale', emoji: '🦈' }
-};
-
-// LocalStorage fonksiyonları
+// LocalStorage
 function loadWalletsFromStorage() {
     const stored = localStorage.getItem('hyperliquid_wallets');
     if (stored) {
@@ -499,60 +327,32 @@ function loadWalletsFromStorage() {
             console.error('Storage hatası:', e);
         }
     }
+    
+    const apiKey = localStorage.getItem('etherscan_api_key');
+    if (apiKey) {
+        document.getElementById('etherscanApiKey').value = apiKey;
+        etherscanApiKey = apiKey;
+    }
 }
 
 function saveWalletsToStorage() {
     localStorage.setItem('hyperliquid_wallets', JSON.stringify(walletAddresses));
 }
 
-// Whale kategorisini belirle
-function getWhaleCategory(value) {
-    if (value >= WHALE_CATEGORIES.mega.min) return 'mega';
-    if (value >= WHALE_CATEGORIES.tidal.min) return 'tidal';
-    if (value >= WHALE_CATEGORIES.whale.min) return 'whale';
-    if (value >= WHALE_CATEGORIES.small.min) return 'small';
-    return null;
-}
-
-// Benzersiz coin listesini al
-function getUniqueCoins() {
-    const coins = [...new Set(allPositions.map(p => p.coin))];
-    return coins.sort();
-}
-
-// Coin filtre dropdown'unu güncelle
-function updateCoinFilter() {
-    const coins = getUniqueCoins();
-    const filterSection = document.querySelector('.filter-section');
-    
-    let coinFilterHTML = filterSection.querySelector('.coin-filter-container');
-    if (!coinFilterHTML) {
-        coinFilterHTML = document.createElement('div');
-        coinFilterHTML.className = 'coin-filter-container';
-        coinFilterHTML.style.marginTop = '15px';
-        filterSection.appendChild(coinFilterHTML);
+function saveEtherscanApiKey() {
+    const apiKey = document.getElementById('etherscanApiKey').value.trim();
+    if (apiKey) {
+        localStorage.setItem('etherscan_api_key', apiKey);
+        etherscanApiKey = apiKey;
     }
-    
-    coinFilterHTML.innerHTML = '<h3 style="margin-bottom: 10px; color: #667eea; font-size: 0.9em;">🪙 Coin Filtresi</h3>' +
-        '<select id="coinFilterSelect" style="width: 100%; max-width: 300px; padding: 10px; background: #0a0e27; border: 2px solid #667eea; border-radius: 10px; color: #fff; font-size: 0.95em; cursor: pointer;">' +
-        '<option value="all">Tüm Coinler (' + coins.length + ')</option>' +
-        coins.map(coin => '<option value="' + coin + '">' + coin + '</option>').join('') +
-        '</select>';
-    
-    document.getElementById('coinFilterSelect').addEventListener('change', function(e) {
-        currentCoinFilter = e.target.value;
-        displayPositions();
-    });
 }
 
-// Adresin açık pozisyonu var mı kontrol et
+// Pozisyon kontrolü
 async function checkPositionExists(address) {
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 type: 'clearinghouseState',
                 user: address
@@ -575,7 +375,7 @@ async function checkPositionExists(address) {
                 const entryPx = parseFloat(position.entryPx || 0);
                 const value = size * entryPx;
                 
-                if (getWhaleCategory(value)) {
+                if (value >= 100000) {
                     validPositions++;
                     totalValue += value;
                 }
@@ -593,14 +393,14 @@ async function checkPositionExists(address) {
     }
 }
 
-// Cüzdan ekle (pozisyon kontrolü ile)
+// Manuel cüzdan ekle
 async function addWallet() {
     const input = document.getElementById('walletInput');
     const btn = document.getElementById('addWalletBtn');
     let address = input.value.trim();
     
     if (!address) {
-        alert('Lütfen bir cüzdan adresi girin');
+        alert('❌ Lütfen bir cüzdan adresi girin');
         return;
     }
 
@@ -609,30 +409,27 @@ async function addWallet() {
     }
 
     if (address.length !== 42) {
-        alert('Geçersiz Ethereum adresi (42 karakter olmalı)');
+        alert('❌ Geçersiz Ethereum adresi');
         return;
     }
 
     if (walletAddresses.includes(address.toLowerCase())) {
-        alert('Bu adres zaten ekli');
+        alert('⚠️ Bu adres zaten ekli');
         return;
     }
 
-    // Kontrol animasyonu
     btn.textContent = '⏳ Kontrol ediliyor...';
     btn.disabled = true;
     
-    // Pozisyon kontrolü
     const check = await checkPositionExists(address.toLowerCase());
     
     if (!check.exists) {
         btn.textContent = '➕ Ekle';
         btn.disabled = false;
-        alert('❌ Bu adreste $100K+ açık pozisyon bulunamadı!\n\nAdres geçerli ama whale kategorisine girmiyor.');
+        alert('❌ Bu adreste $100K+ pozisyon bulunamadı!');
         return;
     }
     
-    // Başarılı, ekle
     walletAddresses.push(address.toLowerCase());
     saveWalletsToStorage();
     updateWalletList();
@@ -644,15 +441,12 @@ async function addWallet() {
         btn.disabled = false;
     }, 2000);
     
-    // Konfirmasyon mesajı
-    alert('✅ Adres eklendi!\n\n' + 
-          '📊 Pozisyon sayısı: ' + check.count + '\n' +
-          '💰 Toplam değer: $' + formatNumber(check.totalValue));
+    alert('✅ Adres eklendi!\n\n📊 Pozisyon: ' + check.count + '\n💰 Değer: $' + formatNumber(check.totalValue));
     
     fetchAllPositions();
 }
 
-// Cüzdan sil - GLOBAL
+// Cüzdan sil
 window.removeWallet = function(address) {
     if (confirm('Bu adresi silmek istediğinize emin misiniz?\n\n' + address)) {
         walletAddresses = walletAddresses.filter(w => w !== address);
@@ -672,21 +466,177 @@ function updateWalletList() {
     }
 
     container.innerHTML = walletAddresses.map(address => 
-        '<div class="wallet-chip">' +
+        '<div style="display: inline-block; background: #2d3561; padding: 8px 12px; border-radius: 20px; margin: 5px; font-family: monospace; font-size: 0.85em;">' +
         '<span>' + shortenAddress(address) + '</span>' +
-        '<span class="wallet-chip-remove" onclick="removeWallet(\'' + address + '\')">✕</span>' +
+        '<span style="margin-left: 8px; color: #ef4444; cursor: pointer; font-weight: bold;" onclick="removeWallet(\'' + address + '\')">✕</span>' +
         '</div>'
     ).join('');
 }
 
-// API: Kullanıcı pozisyonlarını çek
+// Etherscan'den transaction çek
+async function fetchEtherscanTransactions(contractAddress, limit = 100) {
+    if (!etherscanApiKey) {
+        throw new Error('Etherscan API key gerekli!');
+    }
+    
+    try {
+        const url = `${ETHERSCAN_API}?module=account&action=txlist&address=${contractAddress}&startblock=0&endblock=99999999&page=1&offset=${limit}&sort=desc&apikey=${etherscanApiKey}`;
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.status !== '1') {
+            throw new Error(data.message || 'Etherscan API hatası');
+        }
+        
+        return data.result || [];
+    } catch (error) {
+        console.error('Etherscan fetch hatası:', error);
+        throw error;
+    }
+}
+
+// Benzersiz adresleri çıkar
+function extractUniqueAddresses(transactions) {
+    const addresses = new Set();
+    
+    transactions.forEach(tx => {
+        if (tx.from && tx.from !== '0x0000000000000000000000000000000000000000') {
+            addresses.add(tx.from.toLowerCase());
+        }
+        if (tx.to && tx.to !== '0x0000000000000000000000000000000000000000') {
+            addresses.add(tx.to.toLowerCase());
+        }
+    });
+    
+    return Array.from(addresses);
+}
+
+// Etherscan tarama
+async function scanEtherscanAndAddWhales() {
+    const contractAddress = document.getElementById('contractAddressInput').value.trim();
+    const scanLimit = parseInt(document.getElementById('scanLimit').value) || 50;
+    const progressDiv = document.getElementById('scanProgress');
+    const statusSpan = document.getElementById('scanStatus');
+    const resultsDiv = document.getElementById('scanResults');
+    const progressBar = document.getElementById('scanProgressBar');
+    const scanBtn = document.getElementById('scanEtherscanBtn');
+    
+    if (!contractAddress) {
+        alert('⚠️ Lütfen bir kontrat adresi girin');
+        return;
+    }
+    
+    if (!contractAddress.startsWith('0x') || contractAddress.length !== 42) {
+        alert('⚠️ Geçersiz Ethereum adresi');
+        return;
+    }
+    
+    saveEtherscanApiKey();
+    
+    if (!etherscanApiKey) {
+        alert('⚠️ Etherscan API Key gerekli!\n\nÜcretsiz API key almak için:\n1. etherscan.io/myapikey\n2. Kayıt ol\n3. API key buraya yapıştır');
+        return;
+    }
+    
+    progressDiv.style.display = 'block';
+    scanBtn.disabled = true;
+    scanBtn.textContent = '⏳ Taranıyor...';
+    
+    let foundWhales = 0;
+    let checkedAddresses = 0;
+    let totalAddresses = 0;
+    
+    try {
+        statusSpan.textContent = '1/3: Etherscan\'den transaction\'lar çekiliyor...';
+        progressBar.style.width = '10%';
+        
+        const transactions = await fetchEtherscanTransactions(contractAddress, scanLimit * 2);
+        const uniqueAddresses = extractUniqueAddresses(transactions);
+        totalAddresses = uniqueAddresses.length;
+        
+        resultsDiv.innerHTML = `📊 ${totalAddresses} benzersiz adres bulundu`;
+        progressBar.style.width = '30%';
+        
+        statusSpan.textContent = '2/3: Whale pozisyonlar kontrol ediliyor...';
+        
+        for (let i = 0; i < Math.min(totalAddresses, scanLimit); i++) {
+            const address = uniqueAddresses[i];
+            checkedAddresses++;
+            
+            if (walletAddresses.includes(address)) {
+                continue;
+            }
+            
+            const progress = 30 + (checkedAddresses / Math.min(totalAddresses, scanLimit)) * 60;
+            progressBar.style.width = progress + '%';
+            statusSpan.textContent = `2/3: Kontrol ediliyor... (${checkedAddresses}/${Math.min(totalAddresses, scanLimit)})`;
+            resultsDiv.innerHTML = `📊 ${totalAddresses} adres bulundu<br>🔍 ${checkedAddresses} kontrol edildi<br>🐋 ${foundWhales} whale bulundu`;
+            
+            const check = await checkPositionExists(address);
+            
+            if (check.exists) {
+                walletAddresses.push(address);
+                foundWhales++;
+                
+                resultsDiv.innerHTML = `📊 ${totalAddresses} adres bulundu<br>🔍 ${checkedAddresses} kontrol edildi<br>🐋 ${foundWhales} whale bulundu<br><br>✅ Yeni: ${shortenAddress(address)}<br>💰 $${formatNumber(check.totalValue)}`;
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 200));
+        }
+        
+        statusSpan.textContent = '3/3: Tamamlandı! ✅';
+        progressBar.style.width = '100%';
+        
+        if (foundWhales > 0) {
+            saveWalletsToStorage();
+            updateWalletList();
+            await fetchAllPositions();
+            
+            resultsDiv.innerHTML = `
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 8px; padding: 10px; margin-top: 10px;">
+                    <strong style="color: #10b981;">✅ Tarama Tamamlandı!</strong><br>
+                    📊 Taranan: ${checkedAddresses} adres<br>
+                    🐋 Bulunan: ${foundWhales} whale<br>
+                    💎 Toplam değer: $${formatNumber(allPositions.reduce((sum, p) => sum + p.value, 0))}
+                </div>
+            `;
+        } else {
+            resultsDiv.innerHTML = `
+                <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 8px; padding: 10px; margin-top: 10px;">
+                    <strong style="color: #ef4444;">❌ Whale Bulunamadı</strong><br>
+                    📊 ${checkedAddresses} adres kontrol edildi<br>
+                    💡 Farklı kontrat deneyin
+                </div>
+            `;
+        }
+        
+    } catch (error) {
+        statusSpan.textContent = '❌ Hata oluştu';
+        resultsDiv.innerHTML = `
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 8px; padding: 10px; margin-top: 10px; color: #ef4444;">
+                <strong>Hata:</strong> ${error.message}
+            </div>
+        `;
+        console.error('Scan hatası:', error);
+    } finally {
+        scanBtn.disabled = false;
+        scanBtn.textContent = '🔍 Tara ve Ekle';
+        
+        setTimeout(() => {
+            if (progressBar.style.width === '100%') {
+                progressDiv.style.display = 'none';
+            }
+        }, 10000);
+    }
+}
+
+// Pozisyonları çek
 async function fetchUserPositions(userAddress) {
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 type: 'clearinghouseState',
                 user: userAddress
@@ -702,47 +652,15 @@ async function fetchUserPositions(userAddress) {
     }
 }
 
-// API: Meta bilgilerini çek
-async function fetchMetadata() {
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                type: 'meta'
-            })
-        });
-        
-        if (!response.ok) throw new Error('API hatası');
-        return await response.json();
-    } catch (error) {
-        console.error('Metadata hatası:', error);
-        return null;
-    }
-}
-
-// Tüm cüzdanların pozisyonlarını çek
 async function fetchAllPositions() {
     if (walletAddresses.length === 0) {
         allPositions = [];
         displayPositions();
-        updateStats();
         return;
     }
 
     showLoading(true);
     allPositions = [];
-
-    const metadata = await fetchMetadata();
-    const assetMap = {};
-    
-    if (metadata && metadata.universe) {
-        metadata.universe.forEach(asset => {
-            assetMap[asset.name] = asset;
-        });
-    }
 
     for (const address of walletAddresses) {
         const data = await fetchUserPositions(address);
@@ -756,41 +674,20 @@ async function fetchAllPositions() {
                 const szi = parseFloat(position.szi);
                 const side = szi > 0 ? 'Long' : 'Short';
                 const size = Math.abs(szi);
-                
                 const entryPx = parseFloat(position.entryPx || 0);
-                const leverage = parseFloat(position.leverage?.value || 0);
                 const unrealizedPnl = parseFloat(position.unrealizedPnl || 0);
-                const returnOnEquity = parseFloat(position.returnOnEquity || 0);
-                const liquidationPx = parseFloat(position.liquidationPx || 0);
-                const cumFunding = parseFloat(position.cumFunding?.total || 0);
                 
-                let currentPrice = entryPx;
-                if (size > 0 && unrealizedPnl !== 0) {
-                    if (side === 'Long') {
-                        currentPrice = entryPx + (unrealizedPnl / size);
-                    } else {
-                        currentPrice = entryPx - (unrealizedPnl / size);
-                    }
-                }
+                const value = size * entryPx;
 
-                const value = size * currentPrice;
-                const category = getWhaleCategory(value);
-
-                if (category) {
+                if (value >= 100000) {
                     allPositions.push({
                         wallet: address,
                         coin: coin,
                         side: side,
-                        leverage: leverage,
                         size: size,
                         entryPrice: entryPx,
-                        currentPrice: currentPrice,
                         value: value,
-                        pnl: unrealizedPnl,
-                        pnlPercent: returnOnEquity * 100,
-                        fundingFee: cumFunding,
-                        liquidationPrice: liquidationPx,
-                        category: category
+                        pnl: unrealizedPnl
                     });
                 }
             }
@@ -800,93 +697,32 @@ async function fetchAllPositions() {
     }
 
     allPositions.sort((a, b) => b.value - a.value);
-
     showLoading(false);
-    updateCoinFilter();
     displayPositions();
-    updateStats();
 }
 
-// Pozisyonları göster
 function displayPositions() {
     const tbody = document.getElementById('positionsBody');
     
-    let filteredPositions = allPositions;
-    
-    if (currentFilter !== 'all') {
-        filteredPositions = filteredPositions.filter(p => p.category === currentFilter);
-    }
-    
-    if (currentCoinFilter !== 'all') {
-        filteredPositions = filteredPositions.filter(p => p.coin === currentCoinFilter);
-    }
-    
-    if (filteredPositions.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="11" class="no-data">' + 
-            (allPositions.length === 0 ? 'Açık pozisyon bulunamadı' : 'Bu filtrede pozisyon bulunamadı') + 
-            '</td></tr>';
+    if (allPositions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="no-data">Açık pozisyon bulunamadı</td></tr>';
         return;
     }
 
-    tbody.innerHTML = filteredPositions.map(pos => {
-        const categoryInfo = WHALE_CATEGORIES[pos.category];
-        const categoryClass = 'whale-' + pos.category;
-        
+    tbody.innerHTML = allPositions.map(pos => {
         return '<tr>' +
-            '<td class="wallet-address-table">' + shortenAddress(pos.wallet) + '</td>' +
-            '<td><span class="whale-category ' + categoryClass + '">' + 
-            categoryInfo.emoji + ' ' + categoryInfo.name + '</span></td>' +
-            '<td class="token-cell">' + pos.coin + '</td>' +
+            '<td style="font-family: monospace; font-size: 0.85em; color: #667eea;">' + shortenAddress(pos.wallet) + '</td>' +
+            '<td style="font-weight: bold;">' + pos.coin + '</td>' +
             '<td><span class="side-badge side-' + pos.side.toLowerCase() + '">' + pos.side + '</span></td>' +
-            '<td><span class="leverage-badge">' + pos.leverage.toFixed(1) + 'X Cross</span></td>' +
-            '<td><strong>' + formatCurrency(pos.value) + '</strong></td>' +
+            '<td><strong>$' + formatNumber(pos.value) + '</strong></td>' +
             '<td>' + formatNumber(pos.size) + ' ' + pos.coin + '</td>' +
             '<td>$' + formatNumber(pos.entryPrice) + '</td>' +
             '<td><span class="' + (pos.pnl >= 0 ? 'positive' : 'negative') + '">' +
-            (pos.pnl >= 0 ? '+' : '') + formatCurrency(pos.pnl) + '<br>' +
-            (pos.pnl >= 0 ? '+' : '') + pos.pnlPercent.toFixed(2) + '%</span></td>' +
-            '<td class="' + (pos.fundingFee >= 0 ? 'positive' : 'negative') + '">' +
-            (pos.fundingFee >= 0 ? '+' : '') + formatCurrency(pos.fundingFee) + '</td>' +
-            '<td>$' + formatNumber(pos.liquidationPrice) + '</td>' +
+            (pos.pnl >= 0 ? '+' : '') + '$' + formatNumber(Math.abs(pos.pnl)) + '</span></td>' +
             '</tr>';
     }).join('');
 }
 
-// İstatistikleri güncelle
-function updateStats() {
-    let filteredForStats = allPositions;
-    
-    if (currentCoinFilter !== 'all') {
-        filteredForStats = allPositions.filter(p => p.coin === currentCoinFilter);
-    }
-    
-    const totalPositions = filteredForStats.length;
-    const longPositions = filteredForStats.filter(p => p.side === 'Long').length;
-    const shortPositions = filteredForStats.filter(p => p.side === 'Short').length;
-    const totalValue = filteredForStats.reduce((sum, p) => sum + p.value, 0);
-    const totalPnl = filteredForStats.reduce((sum, p) => sum + p.pnl, 0);
-
-    const smallWhales = filteredForStats.filter(p => p.category === 'small').length;
-    const regularWhales = filteredForStats.filter(p => p.category === 'whale').length;
-    const tidalWhales = filteredForStats.filter(p => p.category === 'tidal').length;
-    const megaWhales = filteredForStats.filter(p => p.category === 'mega').length;
-
-    document.getElementById('totalPositions').textContent = totalPositions;
-    document.getElementById('totalValue').textContent = formatCurrency(totalValue);
-    
-    const pnlElement = document.getElementById('totalPnl');
-    pnlElement.textContent = formatCurrency(totalPnl);
-    pnlElement.className = totalPnl >= 0 ? 'positive' : 'negative';
-    
-    document.getElementById('longPositions').textContent = longPositions;
-    document.getElementById('shortPositions').textContent = shortPositions;
-    document.getElementById('smallWhales').textContent = smallWhales;
-    document.getElementById('regularWhales').textContent = regularWhales;
-    document.getElementById('tidalWhales').textContent = tidalWhales;
-    document.getElementById('megaWhales').textContent = megaWhales;
-}
-
-// Yardımcı fonksiyonlar
 function formatNumber(num) {
     if (Math.abs(num) >= 1000000) {
         return (num / 1000000).toFixed(2) + 'M';
@@ -894,10 +730,6 @@ function formatNumber(num) {
         return (num / 1000).toFixed(2) + 'K';
     }
     return num.toFixed(2);
-}
-
-function formatCurrency(num) {
-    return '$' + formatNumber(num);
 }
 
 function shortenAddress(address) {
@@ -909,19 +741,11 @@ function showLoading(show) {
     document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
 }
 
-// Filtre butonları
-document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        currentFilter = this.dataset.filter;
-        displayPositions();
-    });
-});
-
 // Event listeners
 document.getElementById('addWalletBtn').addEventListener('click', addWallet);
 document.getElementById('refreshBtn').addEventListener('click', fetchAllPositions);
+document.getElementById('scanEtherscanBtn').addEventListener('click', scanEtherscanAndAddWhales);
+document.getElementById('etherscanApiKey').addEventListener('blur', saveEtherscanApiKey);
 
 document.getElementById('walletInput').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
