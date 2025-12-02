@@ -1,1227 +1,592 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hyperliquid Whale Scanner</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyperliquid Whale Scanner 🐋</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
-    :root {
-        --bg: #0f172a;
-        --bg2: #1e293b;
-        --text: #e2e8f0;
-        --green: #10b981;
-        --red: #ef4444;
-        --yellow: #f59e0b;
-        --blue: #3b82f6;
-        --card: #1e293b;
-        --border: #334155;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 10px;
+            min-height: 100vh;
+        }
 
-    body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
 
-    h1 {
-        padding: 20px;
-        text-align: center;
-        background: var(--bg2);
-        margin: 0;
-        border-bottom: 1px solid var(--border);
-    }
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
 
-    /* --- TOP STATS BAR --- */
-    .stats-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-        padding: 20px;
-        justify-content: center;
-    }
+        h1 {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
 
-    .stat-card {
-        background: var(--card);
-        padding: 15px 20px;
-        border-radius: 10px;
-        min-width: 180px;
-        border: 1px solid var(--border);
-        text-align: center;
-    }
+        .whale-emoji {
+            font-size: 3em;
+            animation: float 3s ease-in-out infinite;
+        }
 
-    .stat-title {
-        font-size: 13px;
-        opacity: 0.8;
-        margin-bottom: 6px;
-    }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
 
-    .stat-value {
-        font-size: 24px;
-        font-weight: bold;
-    }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
 
-    .positive { color: var(--green); }
-    .negative { color: var(--red); }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
 
-    /* --- FILTER BAR --- */
-    .filters {
-        background: var(--bg2);
-        padding: 15px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        border-top: 1px solid var(--border);
-        border-bottom: 1px solid var(--border);
-        justify-content: center;
-    }
+        .stat-card h3 {
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
 
-    .filter-item {
-        display: flex;
-        flex-direction: column;
-        font-size: 12px;
-    }
+        .stat-card p {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
 
-    .filter-item select,
-    .filter-item input {
-        padding: 5px;
-        border-radius: 5px;
-        border: 1px solid var(--border);
-        background: var(--card);
-        color: var(--text);
-    }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
 
-    /* --- TABLE --- */
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
+        .filter-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 1em;
+        }
 
-    table thead {
-        background: var(--bg2);
-    }
+        .filter-input:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
 
-    th, td {
-        padding: 10px;
-        border-bottom: 1px solid var(--border);
-        text-align: left;
-        font-size: 14px;
-    }
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
 
-    tr:hover {
-        background: rgba(255,255,255,0.05);
-    }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
 
-    .value-cell { text-align: right; }
-    .pnl-positive { color: var(--green); }
-    .pnl-negative { color: var(--red); }
+        .btn:active {
+            transform: translateY(0);
+        }
 
-    /* --- RISK BADGES --- */
-    .risk-badge {
-        padding: 3px 8px;
-        border-radius: 5px;
-        font-size: 12px;
-        color: #000;
-        font-weight: bold;
-    }
-    .risk-low { background: var(--green); }
-    .risk-medium { background: var(--yellow); }
-    .risk-high { background: var(--red); }
+        .loading {
+            text-align: center;
+            padding: 30px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
 
-    /* --- STATUS BAR --- */
-    .status-bar {
-        padding: 10px;
-        font-size: 14px;
-        text-align: center;
-        background: var(--bg2);
-        border-top: 1px solid var(--border);
-    }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
 
-    /* --- MODAL --- */
-    #modalOverlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.7);
-        display: none;
-        justify-content: center;
-        align-items: center;
-    }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-    #modalOverlay.show {
-        display: flex;
-    }
+        .trades-container {
+            max-height: 600px;
+            overflow-y: auto;
+            border-radius: 12px;
+            background: #f8f9fa;
+            padding: 10px;
+        }
 
-    #modalBox {
-        background: var(--card);
-        padding: 20px;
-        border-radius: 10px;
-        width: 90%;
-        max-width: 420px;
-        border: 1px solid var(--border);
-    }
+        .trade-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #667eea;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
 
-    #modalClose {
-        cursor: pointer;
-        float: right;
-        font-size: 20px;
-        margin-top: -10px;
-    }
+        .trade-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        }
 
-    .modal-stat {
-        margin: 8px 0;
-        padding: 6px;
-        background: var(--bg2);
-        border-radius: 6px;
-    }
+        .trade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
 
-    .modal-stat .label {
-        font-size: 12px;
-        opacity: 0.7;
-    }
+        .coin-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1em;
+        }
 
-    .modal-stat .value {
-        font-size: 16px;
-        font-weight: bold;
-        margin-top: 3px;
-    }
+        .side-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
 
-    /* --- PROGRESS BAR --- */
-    #progressBar {
-        width: 100%;
-        height: 4px;
-        background: #1e293b;
-    }
-    #progressFill {
-        height: 4px;
-        width: 0%;
-        background: var(--blue);
-        transition: 0.3s;
-    }
-</style>
+        .side-buy {
+            background: #10b981;
+            color: white;
+        }
+
+        .side-sell {
+            background: #ef4444;
+            color: white;
+        }
+
+        .trade-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .detail-value {
+            font-weight: bold;
+            font-size: 1em;
+            color: #333;
+        }
+
+        .wallet-address {
+            font-family: monospace;
+            font-size: 0.85em;
+            color: #667eea;
+            word-break: break-all;
+        }
+
+        .time-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .whale-emoji {
+                font-size: 2em;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .filter-input, .btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
-
 <body>
+    <div class="container">
+        <header>
+            <div class="whale-emoji">🐋</div>
+            <h1>Hyperliquid Whale Scanner</h1>
+            <p style="color: #666; margin-top: 5px;">Büyük Balina İşlemlerini Takip Edin</p>
+        </header>
 
-<h1>🐋 Hyperliquid Whale Scanner</h1>
-
-<!-- STATUS BAR -->
-<div class="status-bar">
-    <span id="statusText">Hazır</span> — Son güncelleme: <span id="lastUpdate">-</span>
-</div>
-
-<!-- PROGRESS -->
-<div id="progressBar"><div id="progressFill"></div></div>
-
-<!-- STAT CARDS -->
-<div class="stats-container">
-    <div class="stat-card">
-        <div class="stat-title">Toplam Balina Pozisyonu</div>
-        <div id="totalPositions" class="stat-value">0</div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-title">Toplam Value</div>
-        <div id="totalValue" class="stat-value">0</div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-title">Aktif Whale Sayısı</div>
-        <div id="activeWhales" class="stat-value">0</div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-title">Riskli Pozisyonlar</div>
-        <div id="riskyPositions" class="stat-value">0</div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-title">Net PnL</div>
-        <div id="netPnl" class="stat-value positive">0</div>
-    </div>
-</div>
-
-<!-- FILTER BAR -->
-<div class="filters">
-
-    <div class="filter-item">
-        <label>Yön</label>
-        <select id="filterSide">
-            <option value="all">Tümü</option>
-            <option value="LONG">LONG</option>
-            <option value="SHORT">SHORT</option>
-        </select>
-    </div>
-
-    <div class="filter-item">
-        <label>Min Pozisyon ($)</label>
-        <input id="filterMinSize" type="number" value="250000">
-    </div>
-
-    <div class="filter-item">
-        <label>Coin</label>
-        <select id="filterCoin">
-            <option value="all">Tümü</option>
-        </select>
-    </div>
-
-    <div class="filter-item">
-        <label>PnL</label>
-        <select id="filterPnl">
-            <option value="all">Tümü</option>
-            <option value="profit">Kâr</option>
-            <option value="loss">Zarar</option>
-        </select>
-    </div>
-
-    <div class="filter-item">
-        <label>Sırala</label>
-        <select id="filterSort">
-            <option value="value_desc">Value (↓)</option>
-            <option value="pnl_desc">PnL (↓)</option>
-            <option value="pnl_asc">PnL (↑)</option>
-            <option value="leverage_desc">Kaldıraç (↓)</option>
-            <option value="risk_desc">Risk (↓)</option>
-        </select>
-    </div>
-
-</div>
-
-<!-- TABLE -->
-<table>
-    <thead>
-        <tr>
-            <th>Coin</th>
-            <th>Cüzdan</th>
-            <th>Yön</th>
-            <th>Miktar</th>
-            <th>Entry</th>
-            <th>Value</th>
-            <th>Kaldıraç</th>
-            <th>PnL</th>
-            <th>PnL %</th>
-            <th>Liq</th>
-            <th>Risk</th>
-            <th>Zaman</th>
-        </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-</table>
-
-<!-- MODAL -->
-<div id="modalOverlay">
-    <div id="modalBox">
-        <div id="modalClose">&times;</div>
-        <h2 id="modalTitle"></h2>
-        <div id="modalSubtitle" style="font-size:12px; opacity:0.7; margin-bottom:10px;"></div>
-        <div id="modalContent"></div>
-    </div>
-</div>
-
-<script>
-    // =========================
-    //  HYPERLIQUID WHALE SCANNER (GERÇEK VERİ)
-    //  - Leaderboard + clearinghouseState
-    //  - Min pozisyon: 250.000$
-    //  - Max 100 adres tarama
-    //  - Simülasyon YOK, random YOK
-    // =========================
-
-    const CONFIG = {
-        HL_INFO: 'https://api.hyperliquid.xyz/info',
-        MIN_POSITION_USD: 250000,   // A) Eşik: 250K USD
-        MAX_USERS: 100,             // B) En fazla 100 adres
-        REFRESH_INTERVAL: 60000,    // 60 sn otomatik tarama
-        RETRY_DELAY: 8000
-    };
-
-    // STATE
-    let allPositions = [];
-    let filteredPositions = [];
-    let leaderboardAddresses = [];
-    let isLoading = false;
-    let lastUpdateTime = null;
-    let retryCount = 0;
-
-    // DOM ELEMENTS
-    const elements = {
-        tableBody: document.getElementById('tableBody'),
-        totalPositions: document.getElementById('totalPositions'),
-        totalValue: document.getElementById('totalValue'),
-        netPnl: document.getElementById('netPnl'),
-        activeWhales: document.getElementById('activeWhales'),
-        riskyPositions: document.getElementById('riskyPositions'),
-        refreshBtn: document.getElementById('refreshBtn'),
-        statusDot: document.getElementById('statusDot'),
-        statusText: document.getElementById('statusText'),
-        lastUpdate: document.getElementById('lastUpdate'),
-        apiStatus: document.getElementById('apiStatus'),
-        dataSource: document.getElementById('dataSource'),
-        modalOverlay: document.getElementById('modalOverlay'),
-        modalClose: document.getElementById('modalClose'),
-        modalTitle: document.getElementById('modalTitle'),
-        modalSubtitle: document.getElementById('modalSubtitle'),
-        modalContent: document.getElementById('modalContent'),
-        toastContainer: document.getElementById('toastContainer'),
-        filterSide: document.getElementById('filterSide'),
-        filterMinSize: document.getElementById('filterMinSize'),
-        filterCoin: document.getElementById('filterCoin'),
-        filterPnl: document.getElementById('filterPnl'),
-        filterSort: document.getElementById('filterSort'),
-        filteredCount: document.getElementById('filteredCount'),
-        totalCount: document.getElementById('totalCount'),
-        progressFill: document.getElementById('progressFill')
-    };
-
-    // =========================
-    //  FORMAT HELPERS
-    // =========================
-    function formatUSD(value) {
-        if (!value || isNaN(value)) return '$0';
-        if (value >= 1_000_000) return '$' + (value / 1_000_000).toFixed(2) + 'M';
-        if (value >= 1_000) return '$' + (value / 1_000).toFixed(1) + 'K';
-        return '$' + Math.round(value).toLocaleString('en-US');
-    }
-
-    function formatNumber(num, decimals = 2) {
-        if (isNaN(num)) return (0).toFixed(decimals);
-        return new Intl.NumberFormat('en-US', {
-            minimumFractionDigits: decimals,
-            maximumFractionDigits: decimals
-        }).format(num);
-    }
-
-    function formatTimeAgo(timestamp) {
-        const now = Date.now();
-        const diff = now - timestamp;
-        const minutes = Math.floor(diff / 60000);
-        const hours = Math.floor(diff / 3600000);
-        const days = Math.floor(diff / 86400000);
-
-        if (minutes < 1) return 'şimdi';
-        if (minutes < 60) return `${minutes} dk önce`;
-        if (hours < 24) return `${hours} s önce`;
-        return `${days} g önce`;
-    }
-
-    function formatTimestamp(timestamp) {
-        const date = new Date(timestamp);
-        return (
-            date.toLocaleTimeString('tr-TR', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            }) +
-            ' ' +
-            date.toLocaleDateString('tr-TR')
-        );
-    }
-
-    // =========================
-    //  RISK ve PNL HESAPLAMA
-    // =========================
-    function calculateRiskLevel(liqPrice, currentPrice, side, leverage) {
-        if (!liqPrice || !currentPrice || !leverage) return 'low';
-
-        let distancePercent;
-        if (side === 'LONG') {
-            distancePercent = ((currentPrice - liqPrice) / currentPrice) * 100;
-        } else {
-            distancePercent = ((liqPrice - currentPrice) / currentPrice) * 100;
-        }
-
-        const riskScore = distancePercent * leverage / 100;
-
-        if (riskScore < 5) return 'high';
-        if (riskScore < 15) return 'medium';
-        return 'low';
-    }
-
-    function getRiskBadge(level) {
-        switch (level) {
-            case 'high':
-                return '<span class="risk-badge risk-high">YÜKSEK</span>';
-            case 'medium':
-                return '<span class="risk-badge risk-medium">ORTA</span>';
-            case 'low':
-            default:
-                return '<span class="risk-badge risk-low">DÜŞÜK</span>';
-        }
-    }
-
-    // =========================
-    //  TOAST / STATUS
-    // =========================
-    function showToast(title, message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.innerHTML = `
-            <div class="toast-header">
-                <div class="toast-title">${title}</div>
-                <button class="toast-close">&times;</button>
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Toplam İşlem</h3>
+                <p id="totalTrades">0</p>
             </div>
-            <div class="toast-message">${message}</div>
-        `;
-        elements.toastContainer.appendChild(toast);
+            <div class="stat-card">
+                <h3>Toplam Hacim</h3>
+                <p id="totalVolume">$0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Alış İşlemleri</h3>
+                <p id="buyTrades">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Satış İşlemleri</h3>
+                <p id="sellTrades">0</p>
+            </div>
+        </div>
 
-        const closeBtn = toast.querySelector('.toast-close');
-        closeBtn.onclick = () => hideToast(toast);
+        <div class="controls">
+            <input type="text" id="coinFilter" class="filter-input" placeholder="Coin filtrele (örn: BTC, ETH)">
+            <input type="number" id="minSize" class="filter-input" placeholder="Min. işlem büyüklüğü ($)" value="50000">
+            <button id="refreshBtn" class="btn">🔄 Yenile</button>
+            <button id="autoRefreshBtn" class="btn">⏱️ Otomatik Yenileme</button>
+        </div>
 
-        requestAnimationFrame(() => toast.classList.add('show'));
-        setTimeout(() => hideToast(toast), 6000);
+        <div id="loadingIndicator" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Veriler yükleniyor...</p>
+        </div>
+
+        <div class="trades-container" id="tradesContainer">
+            <div class="no-data">
+                Başlamak için "Yenile" butonuna tıklayın
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript kodu sonraki parçada gelecek
+    </script>
+</body>
+</html>
+
+// Global değişkenler
+let allTrades = [];
+let autoRefreshInterval = null;
+let isAutoRefresh = false;
+
+// Hyperliquid API endpoint
+const API_URL = 'https://api.hyperliquid.xyz/info';
+
+// Top 50 coin listesi (Hyperliquid'de popüler olanlar)
+const TOP_COINS = [
+    'BTC', 'ETH', 'SOL', 'ARB', 'MATIC', 'AVAX', 'DOGE', 'OP', 'ATOM',
+    'SUI', 'SEI', 'APT', 'TIA', 'WLD', 'INJ', 'ORDI', 'FTM', 'NEAR',
+    'STX', 'MEME', 'BONK', 'PENDLE', 'WIF', 'RNDR', 'IMX', 'BLUR',
+    'LDO', 'RUNE', 'JTO', 'STRK', 'PYTH', 'JUP', 'DYDX', 'GMX',
+    'GRT', 'FET', 'AAVE', 'MKR', 'COMP', 'UNI', 'SUSHI', 'CRV',
+    'SNX', 'YFI', 'BAL', 'LRC', '1INCH', 'ZRX', 'LINK', 'DOT'
+];
+
+// Whale wallet adresleri (bilinen büyük cüzdanlar)
+const KNOWN_WHALES = new Set();
+
+// Yardımcı fonksiyonlar
+function formatNumber(num) {
+    if (num >= 1000000) {
+        return `${(num / 1000000).toFixed(2)}M`;
+    } else if (num >= 1000) {
+        return `${(num / 1000).toFixed(2)}K`;
     }
+    return num.toFixed(2);
+}
 
-    function hideToast(toast) {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }
+function formatCurrency(num) {
+    return `$${formatNumber(num)}`;
+}
 
-    function updateStatus(text, status = 'loading') {
-        elements.statusText.textContent = text;
-        elements.statusDot.className = 'status-dot';
+function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
 
-        if (status === 'connected') {
-            elements.statusDot.classList.add('active');
-            elements.apiStatus.textContent = 'Hyperliquid API bağlantısı aktif';
-            elements.apiStatus.style.color = '#10b981';
-        } else if (status === 'error') {
-            elements.statusDot.classList.add('error');
-            elements.apiStatus.textContent = 'API hatası';
-            elements.apiStatus.style.color = '#ef4444';
-        } else if (status === 'loading') {
-            elements.apiStatus.textContent = 'Veriler Hyperliquid\'den çekiliyor...';
-            elements.apiStatus.style.color = '#f59e0b';
-        } else {
-            elements.apiStatus.textContent = 'Bağlanıyor...';
-            elements.apiStatus.style.color = '#94a3b8';
-        }
-    }
+    if (diff < 60) return `${diff} saniye önce`;
+    if (diff < 3600) return `${Math.floor(diff / 60)} dakika önce`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} saat önce`;
+    return date.toLocaleString('tr-TR');
+}
 
-    function updateLastUpdateTime() {
-        lastUpdateTime = new Date();
-        elements.lastUpdate.textContent = lastUpdateTime.toLocaleTimeString('tr-TR');
-    }
+function shortenAddress(address) {
+    if (!address) return 'N/A';
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
 
-    // =========================
-    //  LEADERBOARD → ADRES LİSTESİ
-    // =========================
-    function extractAddressesFromLeaderboard(data) {
-        const addresses = new Set();
-
-        if (!data) return [];
-
-        // Bazı implementasyonlarda direk array gelebilir
-        if (Array.isArray(data)) {
-            data.forEach(item => {
-                const addr =
-                    item.user ||
-                    item.address ||
-                    item.addr ||
-                    item.wallet ||
-                    null;
-                if (addr && typeof addr === 'string') {
-                    addresses.add(addr);
-                }
-            });
-        }
-
-        // Bazı implementasyonlarda {users:[...]} veya {leaderboard:[...]} olabilir
-        if (data.users && Array.isArray(data.users)) {
-            data.users.forEach(item => {
-                const addr =
-                    item.user ||
-                    item.address ||
-                    item.addr ||
-                    item.wallet ||
-                    null;
-                if (addr && typeof addr === 'string') {
-                    addresses.add(addr);
-                }
-            });
-        }
-
-        if (data.leaderboard && Array.isArray(data.leaderboard)) {
-            data.leaderboard.forEach(item => {
-                const addr =
-                    item.user ||
-                    item.address ||
-                    item.addr ||
-                    item.wallet ||
-                    null;
-                if (addr && typeof addr === 'string') {
-                    addresses.add(addr);
-                }
-            });
-        }
-
-        return Array.from(addresses).slice(0, CONFIG.MAX_USERS);
-    }
-
-    async function fetchLeaderboard() {
-        updateStatus('Leaderboard çekiliyor...', 'loading');
-
-        const res = await fetch(CONFIG.HL_INFO, {
+// API fonksiyonları
+async function fetchMetadata() {
+    try {
+        const response = await fetch(API_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type: 'leaderboard' }) // Hyperliquid Info API leaderboard :contentReference[oaicite:1]{index=1}
-        });
-
-        if (!res.ok) {
-            throw new Error(`Leaderboard HTTP ${res.status}`);
-        }
-
-        const data = await res.json();
-        const addrs = extractAddressesFromLeaderboard(data);
-
-        if (!addrs.length) {
-            throw new Error('Leaderboard boş veya format farklı, adres bulunamadı');
-        }
-
-        leaderboardAddresses = addrs;
-        return addrs;
-    }
-
-    // =========================
-    //  ADRES → POZİSYONLAR (clearinghouseState)
-    // =========================
-    function mapAssetPositionToLocal(assetPos, address, tsFromResponse) {
-        const pos = assetPos.position || {};
-        const coin = pos.coin;
-        const szi = parseFloat(pos.szi || '0');
-        if (!coin || !szi) return null;
-
-        const side = szi >= 0 ? 'LONG' : 'SHORT';
-        const sizeAbs = Math.abs(szi);
-        const entryPrice = parseFloat(pos.entryPx || '0');
-        if (!entryPrice || !sizeAbs) return null;
-
-        const rawPositionValue = parseFloat(pos.positionValue || '0');
-        const positionValue = rawPositionValue || sizeAbs * entryPrice;
-
-        if (!positionValue || positionValue < CONFIG.MIN_POSITION_USD) {
-            // 250K USD altı pozisyonları direkt eliyoruz (A koşulu)
-            return null;
-        }
-
-        const liqPrice = parseFloat(pos.liquidationPx || '0') || 0;
-        const unrealizedPnl = parseFloat(pos.unrealizedPnl || '0');
-        const marginUsed = parseFloat(pos.marginUsed || '0');
-
-        const leverage =
-            pos.leverage && typeof pos.leverage.value === 'number'
-                ? pos.leverage.value
-                : marginUsed > 0
-                ? positionValue / marginUsed
-                : 1;
-
-        // Güncel fiyatı, entry + unrealizedPnl / size ile HL verisinden türetiyoruz
-        const currentPrice =
-            sizeAbs > 0
-                ? side === 'LONG'
-                    ? entryPrice + unrealizedPnl / sizeAbs
-                    : entryPrice - unrealizedPnl / sizeAbs
-                : entryPrice;
-
-        const pnlPercent =
-            marginUsed > 0 ? (unrealizedPnl / marginUsed) * 100 : 0;
-
-        const riskLevel = calculateRiskLevel(
-            liqPrice,
-            currentPrice,
-            side,
-            leverage
-        );
-
-        const ts =
-            (assetPos.time || tsFromResponse || Date.now()) * (tsFromResponse > 1e12 ? 1 : 1000);
-
-        return {
-            id: `${address}-${coin}-${Math.random().toString(36).slice(2, 8)}`,
-            user: address,
-            coin,
-            size: sizeAbs,
-            entryPrice,
-            positionValue,
-            leverage,
-            side,
-            liqPrice,
-            timestamp: ts || Date.now(),
-            currentPrice,
-            unrealizedPnl,
-            pnlPercentage: pnlPercent,
-            riskLevel,
-            rawData: assetPos
-        };
-    }
-
-    async function fetchPositionsForAddress(address) {
-        const res = await fetch(CONFIG.HL_INFO, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
-                type: 'clearinghouseState',
-                user: address
-            }) // clearinghouseState ile gerçek pozisyonlar :contentReference[oaicite:2]{index=2}
-        });
-
-        if (!res.ok) {
-            throw new Error(`clearinghouseState HTTP ${res.status}`);
-        }
-
-        const data = await res.json();
-        const arr = Array.isArray(data.assetPositions)
-            ? data.assetPositions
-            : [];
-
-        const ts = typeof data.time === 'number' ? data.time : Date.now();
-
-        const positions = [];
-        arr.forEach(ap => {
-            const mapped = mapAssetPositionToLocal(ap, address, ts);
-            if (mapped) positions.push(mapped);
-        });
-
-        return positions;
-    }
-
-    // =========================
-    //  ANA TARAYICI → TÜM WHALE POZİSYONLARI
-    // =========================
-    async function fetchHyperliquidPositions() {
-        if (isLoading) return;
-        isLoading = true;
-
-        elements.refreshBtn.classList.add('loading');
-        elements.progressFill.style.width = '5%';
-        updateStatus('Veriler çekiliyor...', 'loading');
-
-        try {
-            // Leaderboard yoksa önce çek
-            if (!leaderboardAddresses.length) {
-                const addrs = await fetchLeaderboard();
-                showToast(
-                    'Leaderboard',
-                    `${addrs.length} adres tarama listesine alındı (en büyük traderlar)`,
-                    'info'
-                );
-            }
-
-            const addrs = leaderboardAddresses.slice(0, CONFIG.MAX_USERS);
-            const collected = [];
-            let riskyCount = 0;
-            let totalPnl = 0;
-            let totalVal = 0;
-
-            for (let i = 0; i < addrs.length; i++) {
-                const addr = addrs[i];
-                const progress = 5 + Math.floor(((i + 1) / addrs.length) * 85);
-                elements.progressFill.style.width = `${progress}%`;
-                elements.statusText.textContent = `Adres taranıyor ${i + 1}/${addrs.length}`;
-
-                try {
-                    const positions = await fetchPositionsForAddress(addr);
-                    positions.forEach(p => {
-                        collected.push(p);
-                        totalVal += p.positionValue;
-                        totalPnl += p.unrealizedPnl;
-                        if (p.riskLevel === 'high') riskyCount++;
-                    });
-                } catch (e) {
-                    console.warn('Adres tarama hatası', addr, e);
-                }
-            }
-
-            // Tüm ağı değil ama en büyük trader kümesini taramış oluyoruz
-            allPositions = collected;
-
-            const uniqueWhales = new Set(allPositions.map(p => p.user)).size;
-            updateStats(
-                allPositions.length,
-                totalVal,
-                uniqueWhales,
-                riskyCount,
-                totalPnl
-            );
-
-            applyFilters();
-
-            if (allPositions.length > 0) {
-                updateStatus('Bağlı', 'connected');
-                showToast(
-                    'Tarama Tamamlandı',
-                    `${allPositions.length.toLocaleString()} büyük balina pozisyonu bulundu (≥ ${formatUSD(
-                        CONFIG.MIN_POSITION_USD
-                    )}).`,
-                    'info'
-                );
-            } else {
-                updateStatus('Veri yok', 'connected');
-                showToast(
-                    'Bilgi',
-                    `Şu anda ${formatUSD(
-                        CONFIG.MIN_POSITION_USD
-                    )} üzerinde açık pozisyon tespit edilemedi.`,
-                    'warning'
-                );
-            }
-
-            elements.progressFill.style.width = '100%';
-        } catch (error) {
-            console.error('Hyperliquid tarama hatası:', error);
-            retryCount++;
-            updateStatus('API hatası', 'error');
-            showToast(
-                'API Hatası',
-                (error && error.message) ||
-                    'Hyperliquid Info API yanıt vermedi.',
-                'error'
-            );
-
-            // Otomatik retry, ama veri üretmiyoruz
-            const delay =
-                CONFIG.RETRY_DELAY * Math.min(retryCount + 1, 4);
-            setTimeout(() => {
-                fetchHyperliquidPositions();
-            }, delay);
-        } finally {
-            isLoading = false;
-            updateLastUpdateTime();
-            elements.refreshBtn.classList.remove('loading');
-            setTimeout(() => {
-                elements.progressFill.style.width = '0%';
-            }, 800);
-        }
-    }
-
-    // =========================
-    //  İSTATİSTİKLER
-    // =========================
-    function updateStats(totalCount, totalVal, whaleCount, riskyCount, netPnl = 0) {
-        elements.totalPositions.textContent = totalCount.toLocaleString('en-US');
-        elements.totalValue.textContent = formatUSD(totalVal);
-        elements.activeWhales.textContent = whaleCount.toLocaleString('en-US');
-        elements.riskyPositions.textContent = riskyCount.toLocaleString('en-US');
-        elements.netPnl.textContent = formatUSD(netPnl);
-        elements.netPnl.className =
-            'stat-value ' + (netPnl >= 0 ? 'positive' : 'negative');
-    }
-
-    // =========================
-    //  FİLTRELER
-    // =========================
-    function applyFilters() {
-        const sideFilter = elements.filterSide.value;
-        const minSize =
-            parseFloat(elements.filterMinSize.value) ||
-            CONFIG.MIN_POSITION_USD;
-        const coinFilter = elements.filterCoin.value;
-        const pnlFilter = elements.filterPnl.value;
-        const sortBy = elements.filterSort.value;
-
-        filteredPositions = allPositions.filter(pos => {
-            if (pos.positionValue < minSize) return false;
-            if (sideFilter !== 'all' && pos.side !== sideFilter) return false;
-            if (coinFilter !== 'all' && pos.coin !== coinFilter) return false;
-
-            if (pnlFilter === 'profit' && pos.unrealizedPnl <= 0) return false;
-            if (pnlFilter === 'loss' && pos.unrealizedPnl >= 0) return false;
-
-            return true;
-        });
-
-        filteredPositions.sort((a, b) => {
-            switch (sortBy) {
-                case 'value_desc':
-                    return b.positionValue - a.positionValue;
-                case 'pnl_desc':
-                    return b.unrealizedPnl - a.unrealizedPnl;
-                case 'pnl_asc':
-                    return a.unrealizedPnl - b.unrealizedPnl;
-                case 'leverage_desc':
-                    return b.leverage - a.leverage;
-                case 'risk_desc': {
-                    const order = { high: 3, medium: 2, low: 1 };
-                    return (order[b.riskLevel] || 0) - (order[a.riskLevel] || 0);
-                }
-                default:
-                    return b.positionValue - a.positionValue;
-            }
-        });
-
-        elements.totalCount.textContent = allPositions.length.toLocaleString('en-US');
-        elements.filteredCount.textContent = filteredPositions.length.toLocaleString('en-US');
-
-        updateCoinFilterOptions();
-        renderTable();
-    }
-
-    function updateCoinFilterOptions() {
-        const coinSelect = elements.filterCoin;
-        const currentValue = coinSelect.value;
-
-        // mevcut optionları "all" harici sil
-        while (coinSelect.options.length > 1) {
-            coinSelect.remove(1);
-        }
-
-        const coins = Array.from(
-            new Set(allPositions.map(p => p.coin))
-        ).sort();
-
-        coins.forEach(coin => {
-            const opt = document.createElement('option');
-            opt.value = coin;
-            opt.textContent = coin;
-            coinSelect.appendChild(opt);
-        });
-
-        if (coins.includes(currentValue)) {
-            coinSelect.value = currentValue;
-        }
-    }
-
-    // =========================
-    //  TABLO RENDER
-    // =========================
-    function renderTable() {
-        const tbody = elements.tableBody;
-
-        if (!filteredPositions.length) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="12">
-                        <div class="empty-state">
-                            <div style="font-size: 48px;">🐋</div>
-                            <div>Filtrelerinizle eşleşen balina pozisyonu bulunamadı</div>
-                            <div style="font-size: 12px; color: var(--warning);">
-                                Minimum pozisyon değerini düşürmeyi veya filtreleri gevşetmeyi deneyebilirsiniz.
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-
-        tbody.innerHTML = filteredPositions
-            .map(pos => {
-                const priceChange =
-                    ((pos.currentPrice - pos.entryPrice) / pos.entryPrice) *
-                    100;
-
-                const priceIndicator =
-                    priceChange >= 0
-                        ? `<span class="price-up">↗ $${formatNumber(
-                              pos.currentPrice
-                          )}</span>`
-                        : `<span class="price-down">↘ $${formatNumber(
-                              pos.currentPrice
-                          )}</span>`;
-
-                const sizeDecimals =
-                    pos.coin === 'BTC'
-                        ? 4
-                        : pos.coin === 'ETH'
-                        ? 3
-                        : 2;
-
-                return `
-                <tr onclick="showPositionDetails('${pos.id}')" style="cursor:pointer;">
-                    <td>
-                        <div class="coin-cell">
-                            <div class="coin-icon">${pos.coin.substring(0,3)}</div>
-                            <div class="coin-info">
-                                <div class="coin-name">${pos.coin}</div>
-                                <div class="coin-address">
-                                    ${pos.user.substring(0, 6)}...${pos.user.substring(
-                    pos.user.length - 4
-                )}
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="coin-address" title="${pos.user}">
-                            ${pos.user.substring(0, 10)}...${pos.user.substring(
-                    pos.user.length - 8
-                )}
-                        </div>
-                    </td>
-                    <td>
-                        <span class="side-badge ${pos.side.toLowerCase()}">
-                            ${pos.side} ${formatNumber(pos.leverage, 1)}x
-                        </span>
-                    </td>
-                    <td class="value-cell">
-                        ${formatNumber(pos.size, sizeDecimals)}
-                    </td>
-                    <td class="value-cell">
-                        <div>$${formatNumber(pos.entryPrice)}</div>
-                        <div style="font-size: 11px; color: ${
-                            priceChange >= 0
-                                ? 'var(--green)'
-                                : 'var(--red)'
-                        }">
-                            ${priceIndicator}
-                        </div>
-                    </td>
-                    <td class="value-cell">
-                        ${formatUSD(pos.positionValue)}
-                    </td>
-                    <td class="value-cell">
-                        ${formatNumber(pos.leverage, 1)}x
-                    </td>
-                    <td class="pnl-cell ${
-                        pos.unrealizedPnl >= 0
-                            ? 'pnl-positive'
-                            : 'pnl-negative'
-                    }">
-                        ${pos.unrealizedPnl >= 0 ? '+' : ''}${formatUSD(
-                    pos.unrealizedPnl
-                )}
-                    </td>
-                    <td class="pnl-cell ${
-                        pos.pnlPercentage >= 0
-                            ? 'pnl-positive'
-                            : 'pnl-negative'
-                    }">
-                        ${pos.pnlPercentage >= 0 ? '+' : ''}${formatNumber(
-                    pos.pnlPercentage,
-                    2
-                )}%
-                    </td>
-                    <td class="value-cell">
-                        ${
-                            pos.liqPrice > 0
-                                ? '$' + formatNumber(pos.liqPrice)
-                                : '-'
-                        }
-                    </td>
-                    <td>
-                        ${getRiskBadge(pos.riskLevel)}
-                    </td>
-                    <td class="time-cell">
-                        ${formatTimeAgo(pos.timestamp)}
-                    </td>
-                </tr>
-            `;
+                type: 'meta'
             })
-            .join('');
+        });
+        
+        if (!response.ok) throw new Error('API hatası');
+        return await response.json();
+    } catch (error) {
+        console.error('Metadata hatası:', error);
+        return null;
+    }
+}
+
+async function fetchUserFills(userAddress) {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                type: 'userFills',
+                user: userAddress
+            })
+        });
+        
+        if (!response.ok) throw new Error('API hatası');
+        return await response.json();
+    } catch (error) {
+        console.error('User fills hatası:', error);
+        return [];
+    }
+}
+
+async function fetchRecentTrades(coin) {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                type: 'recentTrades',
+                coin: coin
+            })
+        });
+        
+        if (!response.ok) throw new Error('API hatası');
+        return await response.json();
+    } catch (error) {
+        console.error(`${coin} işlem hatası:`, error);
+        return [];
+    }
+}
+
+async function scanForWhales() {
+    showLoading(true);
+    const metadata = await fetchMetadata();
+    
+    if (!metadata || !metadata.universe) {
+        showLoading(false);
+        showError('Metadata yüklenemedi');
+        return;
     }
 
-    // =========================
-    //  MODAL DETAY
-    // =========================
-    window.showPositionDetails = function (positionId) {
-        const position = filteredPositions.find(p => p.id === positionId) ||
-            allPositions.find(p => p.id === positionId);
-        if (!position) return;
+    const trades = [];
+    const minSize = parseFloat(document.getElementById('minSize').value) || 50000;
+    const coinFilter = document.getElementById('coinFilter').value.toUpperCase().trim();
 
-        const priceChange =
-            ((position.currentPrice - position.entryPrice) /
-                position.entryPrice) *
-            100;
-
-        const distanceToLiq =
-            position.liqPrice && position.currentPrice
-                ? position.side === 'LONG'
-                    ? ((position.currentPrice - position.liqPrice) /
-                          position.currentPrice) *
-                      100
-                    : ((position.liqPrice - position.currentPrice) /
-                          position.currentPrice) *
-                      100
-                : 0;
-
-        const riskTextMap = {
-            high: `Yüksek Risk - Liq. fiyata sadece ${formatNumber(
-                Math.abs(distanceToLiq),
-                2
-            )}% mesafe`,
-            medium: `Orta Risk - Liq. fiyata ${formatNumber(
-                Math.abs(distanceToLiq),
-                2
-            )}% mesafe`,
-            low: `Düşük Risk - Liq. fiyata ${formatNumber(
-                Math.abs(distanceToLiq),
-                2
-            )}% mesafe`
-        };
-
-        const riskText =
-            riskTextMap[position.riskLevel] || 'Risk analizi bulunamadı';
-
-        elements.modalTitle.textContent = `${position.coin} ${position.side} Pozisyonu`;
-        elements.modalSubtitle.textContent = `Cüzdan: ${position.user.substring(
-            0,
-            10
-        )}...${position.user.substring(position.user.length - 8)}`;
-
-        const sizeDecimals =
-            position.coin === 'BTC'
-                ? 4
-                : position.coin === 'ETH'
-                ? 3
-                : 2;
-
-        elements.modalContent.innerHTML = `
-            <div class="modal-stat">
-                <div class="label">Coin</div>
-                <div class="value">${position.coin}</div>
-            </div>
-            <div class="modal-stat">
-                <div class="label">Pozisyon Yönü</div>
-                <div class="value">${position.side} ${formatNumber(
-            position.leverage,
-            1
-        )}x</div>
-            </div>
-            <div class="modal-stat">
-                <div class="label">Miktar</div>
-                <div class="value">${formatNumber(
-                    position.size,
-                    sizeDecimals
-                )} ${position.coin}</div>
-            </div>
-            <div class="modal-stat">
-                <div class="label">Entry Fiyatı</div>
-                <div class="value">$${formatNumber(position.entryPrice)}</div>
-            </div>
-            <div class="modal-stat">
-                <div class="label">Güncel Fiyat (HL Türev)</div>
-                <div class="value ${
-                    priceChange >= 0 ? 'positive' : 'negative'
-                }">
-                    $${formatNumber(position.currentPrice)} (${
-            priceChange >= 0 ? '+' : ''
-        }${formatNumber(priceChange, 2)}%)
-                </div>
-            </div>
-            <div class="modal-stat">
-                <div class="label">Pozisyon Değeri</div>
-                <div class="value">${formatUSD(position.positionValue)}</div>
-            </div>
-            <div class="modal-stat">
-                <div class="label">Unrealized P&L</div>
-                <div class="value ${
-                    position.unrealizedPnl >= 0 ? 'positive' : 'negative'
-                }">
-                    ${position.unrealizedPnl >= 0 ? '+' : ''}${formatUSD(
-            position.unrealizedPnl
-        )}
-                </div>
-            </div>
-            <div class="modal-stat">
-                <div class="label">P&L Yüzdesi</div>
-                <div class="value ${
-                    position.pnlPercentage >= 0 ? 'positive' : 'negative'
-                }">
-                    ${position.pnlPercentage >= 0 ? '+' : ''}${formatNumber(
-            position.pnlPercentage,
-            2
-        )}%
-                </div>
-            </div>
-            <div class="modal-stat">
-                <div class="label">Liquidation Fiyatı</div>
-                <div class="value">$${formatNumber(position.liqPrice)}</div>
-            </div>
-            <div class="modal-stat">
-                <div class="label">Liq. Mesafe</div>
-                <div class="value">${formatNumber(
-                    Math.abs(distanceToLiq),
-                    2
-                )}%</div>
-            </div>
-            <div class="modal-stat">
-                <div class="label">Risk Seviyesi</div>
-                <div class="value">${getRiskBadge(position.riskLevel)}</div>
-            </div>
-            <div class="modal-stat">
-                <div class="label">Risk Analizi</div>
-                <div class="value">${riskText}</div>
-            </div>
-            <div class="modal-stat">
-                <div class="label">Cüzdan Adresi</div>
-                <div class="value" style="font-size:11px; word-break:break-all;">
-                    ${position.user}
-                </div>
-            </div>
-            <div class="modal-stat">
-                <div class="label">Pozisyon Açılış (API zamanı tahmini)</div>
-                <div class="value">${formatTimestamp(position.timestamp)}</div>
-            </div>
-            <div class="modal-stat">
-                <div class="label">Son Güncelleme</div>
-                <div class="value">${formatTimestamp(Date.now())}</div>
-            </div>
-        `;
-
-        elements.modalOverlay.classList.add('show');
-    };
-
-    // =========================
-    //  EVENTLER & INIT
-    // =========================
-    function setupEventListeners() {
-        // Yenile butonu
-        elements.refreshBtn.addEventListener('click', () => {
-            if (!isLoading) {
-                fetchHyperliquidPositions();
-            }
-        });
-
-        // Filtreler
-        [
-            elements.filterSide,
-            elements.filterCoin,
-            elements.filterPnl,
-            elements.filterSort
-        ].forEach(el => {
-            el.addEventListener('change', applyFilters);
-        });
-
-        // Min size input (debounce)
-        let minSizeTimeout;
-        elements.filterMinSize.addEventListener('input', e => {
-            clearTimeout(minSizeTimeout);
-            minSizeTimeout = setTimeout(() => {
-                const v = parseFloat(e.target.value);
-                if (v >= 1000) applyFilters();
-            }, 400);
-        });
-
-        // Modal kapatma
-        elements.modalClose.addEventListener('click', () => {
-            elements.modalOverlay.classList.remove('show');
-        });
-        elements.modalOverlay.addEventListener('click', e => {
-            if (e.target === elements.modalOverlay) {
-                elements.modalOverlay.classList.remove('show');
-            }
-        });
-
-        // Otomatik periyodik tarama
-        setInterval(() => {
-            if (!isLoading && document.visibilityState === 'visible') {
-                fetchHyperliquidPositions();
-            }
-        }, CONFIG.REFRESH_INTERVAL);
+    // Filtrelenmiş coin listesi
+    let coinsToScan = TOP_COINS;
+    if (coinFilter) {
+        coinsToScan = TOP_COINS.filter(c => c.includes(coinFilter));
     }
 
-    async function initialize() {
-        console.log('🚀 Hyperliquid Whale Scanner başlıyor...');
-        elements.dataSource.textContent =
-            'Veri Kaynakları: Hyperliquid Info API (leaderboard + clearinghouseState)';
-        elements.filterMinSize.value = CONFIG.MIN_POSITION_USD;
+    // Her coin için son işlemleri çek
+    for (const coin of coinsToScan.slice(0, 20)) { // Rate limit için ilk 20 coin
+        const recentTrades = await fetchRecentTrades(coin);
+        
+        if (Array.isArray(recentTrades)) {
+            for (const trade of recentTrades) {
+                const tradeSize = parseFloat(trade.sz || 0);
+                const tradePrice = parseFloat(trade.px || 0);
+                const tradeValue = tradeSize * tradePrice;
 
-        setupEventListeners();
-        await fetchHyperliquidPositions();
+                // Büyük işlemleri filtrele
+                if (tradeValue >= minSize) {
+                    trades.push({
+                        coin: coin,
+                        side: trade.side === 'B' ? 'BUY' : 'SELL',
+                        size: tradeSize,
+                        price: tradePrice,
+                        value: tradeValue,
+                        time: trade.time,
+                        hash: trade.tid || 'N/A'
+                    });
+                }
+            }
+        }
 
-        console.log('✅ Whale Scanner hazır (gerçek Hyperliquid verisi ile)');
+        // Rate limit için kısa bekleme
+        await new Promise(resolve => setTimeout(resolve, 100));
     }
 
-    document.addEventListener('DOMContentLoaded', initialize);
-</script>
+    allTrades = trades.sort((a, b) => b.time - a.time);
+    showLoading(false);
+    displayTrades();
+    updateStats();
+}
 
+        // UI fonksiyonları
+function showLoading(show) {
+    document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+}
+
+function showError(message) {
+    const container = document.getElementById('tradesContainer');
+    container.innerHTML = `<div class="no-data" style="color: #ef4444;">${message}</div>`;
+}
+
+function displayTrades() {
+    const container = document.getElementById('tradesContainer');
+    
+    if (allTrades.length === 0) {
+        container.innerHTML = '<div class="no-data">Balina işlemi bulunamadı</div>';
+        return;
+    }
+
+    container.innerHTML = allTrades.map(trade => `
+        <div class="trade-card">
+            <div class="trade-header">
+                <span class="coin-badge">${trade.coin}</span>
+                <span class="side-badge side-${trade.side.toLowerCase()}">${trade.side}</span>
+                <span class="time-badge">${formatTime(trade.time)}</span>
+            </div>
+            <div class="trade-details">
+                <div class="detail-item">
+                    <span class="detail-label">Miktar</span>
+                    <span class="detail-value">${formatNumber(trade.size)} ${trade.coin}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Fiyat</span>
+                    <span class="detail-value">${formatCurrency(trade.price)}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Toplam Değer</span>
+                    <span class="detail-value">${formatCurrency(trade.value)}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">İşlem ID</span>
+                    <span class="detail-value wallet-address">${trade.hash}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateStats() {
+    const totalTrades = allTrades.length;
+    const buyTrades = allTrades.filter(t => t.side === 'BUY').length;
+    const sellTrades = allTrades.filter(t => t.side === 'SELL').length;
+    const totalVolume = allTrades.reduce((sum, t) => sum + t.value, 0);
+
+    document.getElementById('totalTrades').textContent = totalTrades;
+    document.getElementById('totalVolume').textContent = formatCurrency(totalVolume);
+    document.getElementById('buyTrades').textContent = buyTrades;
+    document.getElementById('sellTrades').textContent = sellTrades;
+}
+
+function toggleAutoRefresh() {
+    isAutoRefresh = !isAutoRefresh;
+    const btn = document.getElementById('autoRefreshBtn');
+    
+    if (isAutoRefresh) {
+        btn.textContent = '⏹️ Otomatik Durdur';
+        btn.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+        autoRefreshInterval = setInterval(scanForWhales, 30000); // 30 saniyede bir
+        scanForWhales();
+    } else {
+        btn.textContent = '⏱️ Otomatik Yenileme';
+        btn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        if (autoRefreshInterval) {
+            clearInterval(autoRefreshInterval);
+            autoRefreshInterval = null;
+        }
+    }
+}
+
+// Event listeners
+document.getElementById('refreshBtn').addEventListener('click', scanForWhales);
+document.getElementById('autoRefreshBtn').addEventListener('click', toggleAutoRefresh);
+
+document.getElementById('coinFilter').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        scanForWhales();
+    }
+});
+
+document.getElementById('minSize').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        scanForWhales();
+    }
+});
+
+// Sayfa yüklendiğinde
+console.log('🐋 Hyperliquid Whale Scanner hazır!');
+console.log('Top coins:', TOP_COINS);
