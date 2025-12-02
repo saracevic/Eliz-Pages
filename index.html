@@ -491,7 +491,7 @@ const WHALE_CATEGORIES = {
     mega: { min: 50000000, max: Infinity, name: 'Mega Whale', emoji: '🦈' }
 };
 
-// LocalStorage'dan cüzdanları yükle
+// LocalStorage fonksiyonları
 function loadWalletsFromStorage() {
     const stored = localStorage.getItem('hyperliquid_wallets');
     if (stored) {
@@ -504,7 +504,6 @@ function loadWalletsFromStorage() {
     }
 }
 
-// LocalStorage'a cüzdanları kaydet
 function saveWalletsToStorage() {
     localStorage.setItem('hyperliquid_wallets', JSON.stringify(walletAddresses));
 }
@@ -549,13 +548,13 @@ function addWallet() {
     fetchAllPositions();
 }
 
-// Cüzdan sil fonksiyonunu global yap
+// Cüzdan sil - GLOBAL
 window.removeWallet = function(address) {
     walletAddresses = walletAddresses.filter(w => w !== address);
     saveWalletsToStorage();
     updateWalletList();
     fetchAllPositions();
-}
+};
 
 // Cüzdan listesini güncelle
 function updateWalletList() {
@@ -572,7 +571,6 @@ function updateWalletList() {
             <span class="wallet-chip-remove" onclick="removeWallet('${address}')">✕</span>
         </div>
     `).join('');
-}
 }
 
 // API: Kullanıcı pozisyonlarını çek
@@ -672,28 +670,29 @@ async function fetchAllPositions() {
                 const value = size * currentPrice;
                 const category = getWhaleCategory(value);
 
-                allPositions.push({
-                    wallet: address,
-                    coin: coin,
-                    side: side,
-                    leverage: leverage,
-                    size: size,
-                    entryPrice: entryPx,
-                    currentPrice: currentPrice,
-                    value: value,
-                    pnl: unrealizedPnl,
-                    pnlPercent: returnOnEquity * 100,
-                    fundingFee: cumFunding,
-                    liquidationPrice: liquidationPx,
-                    category: category
-                });
+                if (category) {
+                    allPositions.push({
+                        wallet: address,
+                        coin: coin,
+                        side: side,
+                        leverage: leverage,
+                        size: size,
+                        entryPrice: entryPx,
+                        currentPrice: currentPrice,
+                        value: value,
+                        pnl: unrealizedPnl,
+                        pnlPercent: returnOnEquity * 100,
+                        fundingFee: cumFunding,
+                        liquidationPrice: liquidationPx,
+                        category: category
+                    });
+                }
             }
         }
 
         await new Promise(resolve => setTimeout(resolve, 100));
     }
 
-    // Değere göre sırala (büyükten küçüğe)
     allPositions.sort((a, b) => b.value - a.value);
 
     showLoading(false);
@@ -705,57 +704,39 @@ async function fetchAllPositions() {
 function displayPositions() {
     const tbody = document.getElementById('positionsBody');
     
-    // Filtrelenmiş pozisyonlar
     let filteredPositions = allPositions;
     if (currentFilter !== 'all') {
         filteredPositions = allPositions.filter(p => p.category === currentFilter);
     }
     
     if (filteredPositions.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="11" class="no-data">
-                    ${currentFilter === 'all' ? 'Açık pozisyon bulunamadı' : 'Bu kategoride pozisyon bulunamadı'}
-                </td>
-            </tr>
-        `;
+        tbody.innerHTML = '<tr><td colspan="11" class="no-data">' + 
+            (currentFilter === 'all' ? 'Açık pozisyon bulunamadı' : 'Bu kategoride pozisyon bulunamadı') + 
+            '</td></tr>';
         return;
     }
 
     tbody.innerHTML = filteredPositions.map(pos => {
         const categoryInfo = WHALE_CATEGORIES[pos.category];
-        const categoryClass = `whale-${pos.category}`;
+        const categoryClass = 'whale-' + pos.category;
         
-        return `
-            <tr>
-                <td class="wallet-address-table">${shortenAddress(pos.wallet)}</td>
-                <td>
-                    <span class="whale-category ${categoryClass}">
-                        ${categoryInfo.emoji} ${categoryInfo.name}
-                    </span>
-                </td>
-                <td class="token-cell">${pos.coin}</td>
-                <td>
-                    <span class="side-badge side-${pos.side.toLowerCase()}">${pos.side}</span>
-                </td>
-                <td>
-                    <span class="leverage-badge">${pos.leverage.toFixed(1)}X Cross</span>
-                </td>
-                <td><strong>${formatCurrency(pos.value)}</strong></td>
-                <td>${formatNumber(pos.size)} ${pos.coin}</td>
-                <td>$${formatNumber(pos.entryPrice)}</td>
-                <td>
-                    <span class="${pos.pnl >= 0 ? 'positive' : 'negative'}">
-                        ${pos.pnl >= 0 ? '+' : ''}${formatCurrency(pos.pnl)}<br>
-                        ${pos.pnl >= 0 ? '+' : ''}${pos.pnlPercent.toFixed(2)}%
-                    </span>
-                </td>
-                <td class="${pos.fundingFee >= 0 ? 'positive' : 'negative'}">
-                    ${pos.fundingFee >= 0 ? '+' : ''}${formatCurrency(pos.fundingFee)}
-                </td>
-                <td>$${formatNumber(pos.liquidationPrice)}</td>
-            </tr>
-        `;
+        return '<tr>' +
+            '<td class="wallet-address-table">' + shortenAddress(pos.wallet) + '</td>' +
+            '<td><span class="whale-category ' + categoryClass + '">' + 
+            categoryInfo.emoji + ' ' + categoryInfo.name + '</span></td>' +
+            '<td class="token-cell">' + pos.coin + '</td>' +
+            '<td><span class="side-badge side-' + pos.side.toLowerCase() + '">' + pos.side + '</span></td>' +
+            '<td><span class="leverage-badge">' + pos.leverage.toFixed(1) + 'X Cross</span></td>' +
+            '<td><strong>' + formatCurrency(pos.value) + '</strong></td>' +
+            '<td>' + formatNumber(pos.size) + ' ' + pos.coin + '</td>' +
+            '<td>$' + formatNumber(pos.entryPrice) + '</td>' +
+            '<td><span class="' + (pos.pnl >= 0 ? 'positive' : 'negative') + '">' +
+            (pos.pnl >= 0 ? '+' : '') + formatCurrency(pos.pnl) + '<br>' +
+            (pos.pnl >= 0 ? '+' : '') + pos.pnlPercent.toFixed(2) + '%</span></td>' +
+            '<td class="' + (pos.fundingFee >= 0 ? 'positive' : 'negative') + '">' +
+            (pos.fundingFee >= 0 ? '+' : '') + formatCurrency(pos.fundingFee) + '</td>' +
+            '<td>$' + formatNumber(pos.liquidationPrice) + '</td>' +
+            '</tr>';
     }).join('');
 }
 
@@ -790,20 +771,20 @@ function updateStats() {
 // Yardımcı fonksiyonlar
 function formatNumber(num) {
     if (Math.abs(num) >= 1000000) {
-        return `${(num / 1000000).toFixed(2)}M`;
+        return (num / 1000000).toFixed(2) + 'M';
     } else if (Math.abs(num) >= 1000) {
-        return `${(num / 1000).toFixed(2)}K`;
+        return (num / 1000).toFixed(2) + 'K';
     }
     return num.toFixed(2);
 }
 
 function formatCurrency(num) {
-    return `$${formatNumber(num)}`;
+    return '$' + formatNumber(num);
 }
 
 function shortenAddress(address) {
     if (!address) return 'N/A';
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+    return address.slice(0, 6) + '...' + address.slice(-4);
 }
 
 function showLoading(show) {
@@ -824,7 +805,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 document.getElementById('addWalletBtn').addEventListener('click', addWallet);
 document.getElementById('refreshBtn').addEventListener('click', fetchAllPositions);
 
-document.getElementById('walletInput').addEventListener('keypress', (e) => {
+document.getElementById('walletInput').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         addWallet();
     }
@@ -837,7 +818,3 @@ if (walletAddresses.length > 0) {
 }
 
 console.log('🐋 Hyperliquid Whale Scanner hazır!');
-console.log('Whale Categories:', WHALE_CATEGORIES);
-    </script>
-</body>
-</html>
