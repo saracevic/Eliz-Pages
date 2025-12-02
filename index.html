@@ -549,8 +549,8 @@ function addWallet() {
     fetchAllPositions();
 }
 
-// Cüzdan sil
-function removeWallet(address) {
+// Cüzdan sil fonksiyonunu global yap
+window.removeWallet = function(address) {
     walletAddresses = walletAddresses.filter(w => w !== address);
     saveWalletsToStorage();
     updateWalletList();
@@ -572,6 +572,7 @@ function updateWalletList() {
             <span class="wallet-chip-remove" onclick="removeWallet('${address}')">✕</span>
         </div>
     `).join('');
+}
 }
 
 // API: Kullanıcı pozisyonlarını çek
