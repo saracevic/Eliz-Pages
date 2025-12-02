@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyperliquid Position Tracker 🐋</title>
+    <title>Hyperliquid Whale Scanner 🐋</title>
     <style>
         * {
             margin: 0;
@@ -20,7 +20,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
@@ -63,10 +63,12 @@
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
+            flex-wrap: wrap;
         }
 
         .wallet-input {
             flex: 1;
+            min-width: 250px;
             padding: 12px 15px;
             background: #0a0e27;
             border: 2px solid #667eea;
@@ -104,8 +106,8 @@
             transform: translateY(0);
         }
 
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         }
 
         .wallet-list {
@@ -134,6 +136,40 @@
 
         .wallet-chip-remove:hover {
             color: #dc2626;
+        }
+
+        .filter-section {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: #2d3561;
+            color: #fff;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #764ba2;
+        }
+
+        .filter-btn:hover {
+            border-color: #667eea;
         }
 
         .stats {
@@ -186,17 +222,21 @@
         .positions-table {
             background: #1a1f3a;
             border-radius: 15px;
-            overflow: hidden;
+            overflow-x: auto;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 1100px;
         }
 
         thead {
             background: #0a0e27;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         th {
@@ -256,6 +296,38 @@
             font-size: 0.85em;
         }
 
+        .whale-category {
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.8em;
+            display: inline-block;
+        }
+
+        .whale-small {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid #3b82f6;
+        }
+
+        .whale-medium {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+            border: 1px solid #8b5cf6;
+        }
+
+        .whale-tidal {
+            background: rgba(236, 72, 153, 0.2);
+            color: #ec4899;
+            border: 1px solid #ec4899;
+        }
+
+        .whale-mega {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+        }
+
         .positive {
             color: #10b981;
         }
@@ -286,14 +358,6 @@
                 flex-direction: column;
             }
 
-            .positions-table {
-                overflow-x: auto;
-            }
-
-            table {
-                min-width: 900px;
-            }
-
             th, td {
                 padding: 10px 8px;
                 font-size: 0.8em;
@@ -305,8 +369,8 @@
     <div class="container">
         <header>
             <div class="whale-emoji">🐋</div>
-            <h1>Hyperliquid Position Tracker</h1>
-            <p style="color: #a0aec0; margin-top: 5px;">Balina Pozisyonlarını Takip Edin</p>
+            <h1>Hyperliquid Whale Scanner</h1>
+            <p style="color: #a0aec0; margin-top: 5px;">Büyük Balina Pozisyonlarını Takip Edin</p>
         </header>
 
         <div class="wallet-section">
@@ -316,12 +380,23 @@
                     type="text" 
                     id="walletInput" 
                     class="wallet-input" 
-                    placeholder="0x... cüzdan adresini girin"
+                    placeholder="0x... cüzdan adresini girin (örn: 0x99b1098d9d50aa076f78bd26ab22e6abd3710729)"
                 >
                 <button id="addWalletBtn" class="btn">➕ Ekle</button>
-                <button id="refreshBtn" class="btn">🔄 Yenile</button>
+                <button id="refreshBtn" class="btn btn-success">🔄 Yenile</button>
             </div>
             <div id="walletList" class="wallet-list"></div>
+        </div>
+
+        <div class="filter-section">
+            <h3 style="margin-bottom: 15px; color: #667eea;">🔍 Whale Kategorisi Filtresi</h3>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">Tümü</button>
+                <button class="filter-btn" data-filter="small">🐟 Small Whale ($100K - $500K)</button>
+                <button class="filter-btn" data-filter="whale">🐋 Whale ($500K - $1M)</button>
+                <button class="filter-btn" data-filter="tidal">🌊 Tidal Whale ($1M - $50M)</button>
+                <button class="filter-btn" data-filter="mega">🦈 Mega Whale ($50M+)</button>
+            </div>
         </div>
 
         <div class="stats">
@@ -345,6 +420,22 @@
                 <h3>Short Pozisyonlar</h3>
                 <p id="shortPositions">0</p>
             </div>
+            <div class="stat-card">
+                <h3>Small Whales</h3>
+                <p id="smallWhales">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Whales</h3>
+                <p id="regularWhales">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Tidal Whales</h3>
+                <p id="tidalWhales">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Mega Whales</h3>
+                <p id="megaWhales">0</p>
+            </div>
         </div>
 
         <div id="loadingIndicator" class="loading" style="display: none;">
@@ -356,6 +447,8 @@
             <table>
                 <thead>
                     <tr>
+                        <th>Wallet</th>
+                        <th>Category</th>
                         <th>Token</th>
                         <th>Side</th>
                         <th>Leverage</th>
@@ -369,7 +462,7 @@
                 </thead>
                 <tbody id="positionsBody">
                     <tr>
-                        <td colspan="9" class="no-data">
+                        <td colspan="11" class="no-data">
                             Başlamak için yukarıdan cüzdan adresi ekleyin
                         </td>
                     </tr>
@@ -379,310 +472,371 @@
     </div>
 
     <script>
-        // Global değişkenler
-        let walletAddresses = [];
-        let allPositions = [];
-        const API_URL = 'https://api.hyperliquid.xyz/info';
+        // PART 2'de devam edecek...
+    </script>
+</body>
+</html>
 
-        // LocalStorage'dan cüzdanları yükle
-        function loadWalletsFromStorage() {
-            const stored = localStorage.getItem('hyperliquid_wallets');
-            if (stored) {
-                try {
-                    walletAddresses = JSON.parse(stored);
-                    updateWalletList();
-                } catch (e) {
-                    console.error('Storage hatası:', e);
-                }
-            }
-        }
+// Global değişkenler
+let walletAddresses = [];
+let allPositions = [];
+let currentFilter = 'all';
+const API_URL = 'https://api.hyperliquid.xyz/info';
 
-        // LocalStorage'a cüzdanları kaydet
-        function saveWalletsToStorage() {
-            localStorage.setItem('hyperliquid_wallets', JSON.stringify(walletAddresses));
-        }
+// Whale kategorileri
+const WHALE_CATEGORIES = {
+    small: { min: 100000, max: 500000, name: 'Small Whale', emoji: '🐟' },
+    whale: { min: 500000, max: 1000000, name: 'Whale', emoji: '🐋' },
+    tidal: { min: 1000000, max: 50000000, name: 'Tidal Whale', emoji: '🌊' },
+    mega: { min: 50000000, max: Infinity, name: 'Mega Whale', emoji: '🦈' }
+};
 
-        // Cüzdan ekle
-        function addWallet() {
-            const input = document.getElementById('walletInput');
-            let address = input.value.trim();
-            
-            if (!address) {
-                alert('Lütfen bir cüzdan adresi girin');
-                return;
-            }
-
-            // 0x kontrolü
-            if (!address.startsWith('0x')) {
-                address = '0x' + address;
-            }
-
-            // Adres uzunluk kontrolü
-            if (address.length !== 42) {
-                alert('Geçersiz Ethereum adresi (42 karakter olmalı)');
-                return;
-            }
-
-            // Tekrar kontrolü
-            if (walletAddresses.includes(address.toLowerCase())) {
-                alert('Bu adres zaten ekli');
-                return;
-            }
-
-            walletAddresses.push(address.toLowerCase());
-            saveWalletsToStorage();
+// LocalStorage'dan cüzdanları yükle
+function loadWalletsFromStorage() {
+    const stored = localStorage.getItem('hyperliquid_wallets');
+    if (stored) {
+        try {
+            walletAddresses = JSON.parse(stored);
             updateWalletList();
-            input.value = '';
-            fetchAllPositions();
+        } catch (e) {
+            console.error('Storage hatası:', e);
         }
+    }
+}
 
-        // Cüzdan sil
-        function removeWallet(address) {
-            walletAddresses = walletAddresses.filter(w => w !== address);
-            saveWalletsToStorage();
-            updateWalletList();
-            fetchAllPositions();
-        }
+// LocalStorage'a cüzdanları kaydet
+function saveWalletsToStorage() {
+    localStorage.setItem('hyperliquid_wallets', JSON.stringify(walletAddresses));
+}
 
-        // Cüzdan listesini güncelle
-        function updateWalletList() {
-            const container = document.getElementById('walletList');
-            
-            if (walletAddresses.length === 0) {
-                container.innerHTML = '<p style="color: #a0aec0; font-size: 0.9em;">Henüz cüzdan eklenmedi</p>';
-                return;
-            }
+// Whale kategorisini belirle
+function getWhaleCategory(value) {
+    if (value >= WHALE_CATEGORIES.mega.min) return 'mega';
+    if (value >= WHALE_CATEGORIES.tidal.min) return 'tidal';
+    if (value >= WHALE_CATEGORIES.whale.min) return 'whale';
+    if (value >= WHALE_CATEGORIES.small.min) return 'small';
+    return null;
+}
 
-            container.innerHTML = walletAddresses.map(address => `
-                <div class="wallet-chip">
-                    <span>${shortenAddress(address)}</span>
-                    <span class="wallet-chip-remove" onclick="removeWallet('${address}')">✕</span>
-                </div>
-            `).join('');
-        }
+// Cüzdan ekle
+function addWallet() {
+    const input = document.getElementById('walletInput');
+    let address = input.value.trim();
+    
+    if (!address) {
+        alert('Lütfen bir cüzdan adresi girin');
+        return;
+    }
 
-        // API: Kullanıcı pozisyonlarını çek
-        async function fetchUserPositions(userAddress) {
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        type: 'clearinghouseState',
-                        user: userAddress
-                    })
-                });
+    if (!address.startsWith('0x')) {
+        address = '0x' + address;
+    }
+
+    if (address.length !== 42) {
+        alert('Geçersiz Ethereum adresi (42 karakter olmalı)');
+        return;
+    }
+
+    if (walletAddresses.includes(address.toLowerCase())) {
+        alert('Bu adres zaten ekli');
+        return;
+    }
+
+    walletAddresses.push(address.toLowerCase());
+    saveWalletsToStorage();
+    updateWalletList();
+    input.value = '';
+    fetchAllPositions();
+}
+
+// Cüzdan sil
+function removeWallet(address) {
+    walletAddresses = walletAddresses.filter(w => w !== address);
+    saveWalletsToStorage();
+    updateWalletList();
+    fetchAllPositions();
+}
+
+// Cüzdan listesini güncelle
+function updateWalletList() {
+    const container = document.getElementById('walletList');
+    
+    if (walletAddresses.length === 0) {
+        container.innerHTML = '<p style="color: #a0aec0; font-size: 0.9em;">Henüz cüzdan eklenmedi</p>';
+        return;
+    }
+
+    container.innerHTML = walletAddresses.map(address => `
+        <div class="wallet-chip">
+            <span>${shortenAddress(address)}</span>
+            <span class="wallet-chip-remove" onclick="removeWallet('${address}')">✕</span>
+        </div>
+    `).join('');
+}
+
+// API: Kullanıcı pozisyonlarını çek
+async function fetchUserPositions(userAddress) {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                type: 'clearinghouseState',
+                user: userAddress
+            })
+        });
+        
+        if (!response.ok) throw new Error('API hatası');
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Pozisyon hatası:', error);
+        return null;
+    }
+}
+
+// API: Meta bilgilerini çek
+async function fetchMetadata() {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                type: 'meta'
+            })
+        });
+        
+        if (!response.ok) throw new Error('API hatası');
+        return await response.json();
+    } catch (error) {
+        console.error('Metadata hatası:', error);
+        return null;
+    }
+}
+
+// Tüm cüzdanların pozisyonlarını çek
+async function fetchAllPositions() {
+    if (walletAddresses.length === 0) {
+        allPositions = [];
+        displayPositions();
+        updateStats();
+        return;
+    }
+
+    showLoading(true);
+    allPositions = [];
+
+    const metadata = await fetchMetadata();
+    const assetMap = {};
+    
+    if (metadata && metadata.universe) {
+        metadata.universe.forEach(asset => {
+            assetMap[asset.name] = asset;
+        });
+    }
+
+    for (const address of walletAddresses) {
+        const data = await fetchUserPositions(address);
+        
+        if (data && data.assetPositions) {
+            for (const pos of data.assetPositions) {
+                const position = pos.position;
+                if (!position || position.szi === '0') continue;
+
+                const coin = position.coin;
+                const szi = parseFloat(position.szi);
+                const side = szi > 0 ? 'Long' : 'Short';
+                const size = Math.abs(szi);
                 
-                if (!response.ok) throw new Error('API hatası');
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error('Pozisyon hatası:', error);
-                return null;
-            }
-        }
-
-        // API: Meta bilgilerini çek
-        async function fetchMetadata() {
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        type: 'meta'
-                    })
-                });
+                const entryPx = parseFloat(position.entryPx || 0);
+                const leverage = parseFloat(position.leverage?.value || 0);
+                const unrealizedPnl = parseFloat(position.unrealizedPnl || 0);
+                const returnOnEquity = parseFloat(position.returnOnEquity || 0);
+                const liquidationPx = parseFloat(position.liquidationPx || 0);
+                const cumFunding = parseFloat(position.cumFunding?.total || 0);
                 
-                if (!response.ok) throw new Error('API hatası');
-                return await response.json();
-            } catch (error) {
-                console.error('Metadata hatası:', error);
-                return null;
-            }
-        }
-
-        // Tüm cüzdanların pozisyonlarını çek
-        async function fetchAllPositions() {
-            if (walletAddresses.length === 0) {
-                allPositions = [];
-                displayPositions();
-                updateStats();
-                return;
-            }
-
-            showLoading(true);
-            allPositions = [];
-
-            const metadata = await fetchMetadata();
-            const assetMap = {};
-            
-            if (metadata && metadata.universe) {
-                metadata.universe.forEach(asset => {
-                    assetMap[asset.name] = asset;
-                });
-            }
-
-            for (const address of walletAddresses) {
-                const data = await fetchUserPositions(address);
-                
-                if (data && data.assetPositions) {
-                    for (const pos of data.assetPositions) {
-                        const position = pos.position;
-                        if (!position || position.szi === '0') continue;
-
-                        const coin = position.coin;
-                        const assetInfo = assetMap[coin] || {};
-                        
-                        const szi = parseFloat(position.szi);
-                        const side = szi > 0 ? 'Long' : 'Short';
-                        const size = Math.abs(szi);
-                        
-                        const entryPx = parseFloat(position.entryPx || 0);
-                        const leverage = parseFloat(position.leverage?.value || 0);
-                        const unrealizedPnl = parseFloat(position.unrealizedPnl || 0);
-                        const returnOnEquity = parseFloat(position.returnOnEquity || 0);
-                        const liquidationPx = parseFloat(position.liquidationPx || 0);
-                        const cumFunding = parseFloat(position.cumFunding?.total || 0);
-                        
-                        // Mevcut fiyatı tahmin et (unrealizedPnl'den)
-                        let currentPrice = entryPx;
-                        if (size > 0 && unrealizedPnl !== 0) {
-                            if (side === 'Long') {
-                                currentPrice = entryPx + (unrealizedPnl / size);
-                            } else {
-                                currentPrice = entryPx - (unrealizedPnl / size);
-                            }
-                        }
-
-                        const value = size * currentPrice;
-
-                        allPositions.push({
-                            wallet: address,
-                            coin: coin,
-                            side: side,
-                            leverage: leverage,
-                            size: size,
-                            entryPrice: entryPx,
-                            currentPrice: currentPrice,
-                            value: value,
-                            pnl: unrealizedPnl,
-                            pnlPercent: returnOnEquity * 100,
-                            fundingFee: cumFunding,
-                            liquidationPrice: liquidationPx
-                        });
+                let currentPrice = entryPx;
+                if (size > 0 && unrealizedPnl !== 0) {
+                    if (side === 'Long') {
+                        currentPrice = entryPx + (unrealizedPnl / size);
+                    } else {
+                        currentPrice = entryPx - (unrealizedPnl / size);
                     }
                 }
 
-                await new Promise(resolve => setTimeout(resolve, 100));
+                const value = size * currentPrice;
+                const category = getWhaleCategory(value);
+
+                allPositions.push({
+                    wallet: address,
+                    coin: coin,
+                    side: side,
+                    leverage: leverage,
+                    size: size,
+                    entryPrice: entryPx,
+                    currentPrice: currentPrice,
+                    value: value,
+                    pnl: unrealizedPnl,
+                    pnlPercent: returnOnEquity * 100,
+                    fundingFee: cumFunding,
+                    liquidationPrice: liquidationPx,
+                    category: category
+                });
             }
-
-            showLoading(false);
-            displayPositions();
-            updateStats();
         }
 
-        // Pozisyonları göster
-        function displayPositions() {
-            const tbody = document.getElementById('positionsBody');
-            
-            if (allPositions.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="9" class="no-data">Açık pozisyon bulunamadı</td>
-                    </tr>
-                `;
-                return;
-            }
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
 
-            tbody.innerHTML = allPositions.map(pos => `
-                <tr>
-                    <td class="token-cell">${pos.coin}</td>
-                    <td>
-                        <span class="side-badge side-${pos.side.toLowerCase()}">${pos.side}</span>
-                    </td>
-                    <td>
-                        <span class="leverage-badge">${pos.leverage.toFixed(1)}X Cross</span>
-                    </td>
-                    <td>${formatCurrency(pos.value)}</td>
-                    <td>${formatNumber(pos.size)} ${pos.coin}</td>
-                    <td>$${formatNumber(pos.entryPrice)}</td>
-                    <td>
-                        <span class="${pos.pnl >= 0 ? 'positive' : 'negative'}">
-                            ${pos.pnl >= 0 ? '+' : ''}${formatCurrency(pos.pnl)}<br>
-                            ${pos.pnl >= 0 ? '+' : ''}${pos.pnlPercent.toFixed(2)}%
-                        </span>
-                    </td>
-                    <td class="${pos.fundingFee >= 0 ? 'positive' : 'negative'}">
-                        ${pos.fundingFee >= 0 ? '+' : ''}${formatCurrency(pos.fundingFee)}
-                    </td>
-                    <td>$${formatNumber(pos.liquidationPrice)}</td>
-                </tr>
-            `).join('');
-        }
+    // Değere göre sırala (büyükten küçüğe)
+    allPositions.sort((a, b) => b.value - a.value);
 
-        // İstatistikleri güncelle
-        function updateStats() {
-            const totalPositions = allPositions.length;
-            const longPositions = allPositions.filter(p => p.side === 'Long').length;
-            const shortPositions = allPositions.filter(p => p.side === 'Short').length;
-            const totalValue = allPositions.reduce((sum, p) => sum + p.value, 0);
-            const totalPnl = allPositions.reduce((sum, p) => sum + p.pnl, 0);
+    showLoading(false);
+    displayPositions();
+    updateStats();
+}
 
-            document.getElementById('totalPositions').textContent = totalPositions;
-            document.getElementById('totalValue').textContent = formatCurrency(totalValue);
-            
-            const pnlElement = document.getElementById('totalPnl');
-            pnlElement.textContent = formatCurrency(totalPnl);
-            pnlElement.className = totalPnl >= 0 ? 'positive' : 'negative';
-            
-            document.getElementById('longPositions').textContent = longPositions;
-            document.getElementById('shortPositions').textContent = shortPositions;
-        }
+// Pozisyonları göster
+function displayPositions() {
+    const tbody = document.getElementById('positionsBody');
+    
+    // Filtrelenmiş pozisyonlar
+    let filteredPositions = allPositions;
+    if (currentFilter !== 'all') {
+        filteredPositions = allPositions.filter(p => p.category === currentFilter);
+    }
+    
+    if (filteredPositions.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="11" class="no-data">
+                    ${currentFilter === 'all' ? 'Açık pozisyon bulunamadı' : 'Bu kategoride pozisyon bulunamadı'}
+                </td>
+            </tr>
+        `;
+        return;
+    }
 
-        // Yardımcı fonksiyonlar
-        function formatNumber(num) {
-            if (Math.abs(num) >= 1000000) {
-                return `${(num / 1000000).toFixed(2)}M`;
-            } else if (Math.abs(num) >= 1000) {
-                return `${(num / 1000).toFixed(2)}K`;
-            }
-            return num.toFixed(2);
-        }
+    tbody.innerHTML = filteredPositions.map(pos => {
+        const categoryInfo = WHALE_CATEGORIES[pos.category];
+        const categoryClass = `whale-${pos.category}`;
+        
+        return `
+            <tr>
+                <td class="wallet-address-table">${shortenAddress(pos.wallet)}</td>
+                <td>
+                    <span class="whale-category ${categoryClass}">
+                        ${categoryInfo.emoji} ${categoryInfo.name}
+                    </span>
+                </td>
+                <td class="token-cell">${pos.coin}</td>
+                <td>
+                    <span class="side-badge side-${pos.side.toLowerCase()}">${pos.side}</span>
+                </td>
+                <td>
+                    <span class="leverage-badge">${pos.leverage.toFixed(1)}X Cross</span>
+                </td>
+                <td><strong>${formatCurrency(pos.value)}</strong></td>
+                <td>${formatNumber(pos.size)} ${pos.coin}</td>
+                <td>$${formatNumber(pos.entryPrice)}</td>
+                <td>
+                    <span class="${pos.pnl >= 0 ? 'positive' : 'negative'}">
+                        ${pos.pnl >= 0 ? '+' : ''}${formatCurrency(pos.pnl)}<br>
+                        ${pos.pnl >= 0 ? '+' : ''}${pos.pnlPercent.toFixed(2)}%
+                    </span>
+                </td>
+                <td class="${pos.fundingFee >= 0 ? 'positive' : 'negative'}">
+                    ${pos.fundingFee >= 0 ? '+' : ''}${formatCurrency(pos.fundingFee)}
+                </td>
+                <td>$${formatNumber(pos.liquidationPrice)}</td>
+            </tr>
+        `;
+    }).join('');
+}
 
-        function formatCurrency(num) {
-            return `$${formatNumber(num)}`;
-        }
+// İstatistikleri güncelle
+function updateStats() {
+    const totalPositions = allPositions.length;
+    const longPositions = allPositions.filter(p => p.side === 'Long').length;
+    const shortPositions = allPositions.filter(p => p.side === 'Short').length;
+    const totalValue = allPositions.reduce((sum, p) => sum + p.value, 0);
+    const totalPnl = allPositions.reduce((sum, p) => sum + p.pnl, 0);
 
-        function shortenAddress(address) {
-            if (!address) return 'N/A';
-            return `${address.slice(0, 6)}...${address.slice(-4)}`;
-        }
+    const smallWhales = allPositions.filter(p => p.category === 'small').length;
+    const regularWhales = allPositions.filter(p => p.category === 'whale').length;
+    const tidalWhales = allPositions.filter(p => p.category === 'tidal').length;
+    const megaWhales = allPositions.filter(p => p.category === 'mega').length;
 
-        function showLoading(show) {
-            document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
-        }
+    document.getElementById('totalPositions').textContent = totalPositions;
+    document.getElementById('totalValue').textContent = formatCurrency(totalValue);
+    
+    const pnlElement = document.getElementById('totalPnl');
+    pnlElement.textContent = formatCurrency(totalPnl);
+    pnlElement.className = totalPnl >= 0 ? 'positive' : 'negative';
+    
+    document.getElementById('longPositions').textContent = longPositions;
+    document.getElementById('shortPositions').textContent = shortPositions;
+    document.getElementById('smallWhales').textContent = smallWhales;
+    document.getElementById('regularWhales').textContent = regularWhales;
+    document.getElementById('tidalWhales').textContent = tidalWhales;
+    document.getElementById('megaWhales').textContent = megaWhales;
+}
 
-        // Event listeners
-        document.getElementById('addWalletBtn').addEventListener('click', addWallet);
-        document.getElementById('refreshBtn').addEventListener('click', fetchAllPositions);
+// Yardımcı fonksiyonlar
+function formatNumber(num) {
+    if (Math.abs(num) >= 1000000) {
+        return `${(num / 1000000).toFixed(2)}M`;
+    } else if (Math.abs(num) >= 1000) {
+        return `${(num / 1000).toFixed(2)}K`;
+    }
+    return num.toFixed(2);
+}
 
-        document.getElementById('walletInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                addWallet();
-            }
-        });
+function formatCurrency(num) {
+    return `$${formatNumber(num)}`;
+}
 
-        // Sayfa yüklendiğinde
-        loadWalletsFromStorage();
-        if (walletAddresses.length > 0) {
-            fetchAllPositions();
-        }
+function shortenAddress(address) {
+    if (!address) return 'N/A';
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
 
-        console.log('🐋 Hyperliquid Position Tracker hazır!');
+function showLoading(show) {
+    document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+}
+
+// Filtre butonları
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentFilter = this.dataset.filter;
+        displayPositions();
+    });
+});
+
+// Event listeners
+document.getElementById('addWalletBtn').addEventListener('click', addWallet);
+document.getElementById('refreshBtn').addEventListener('click', fetchAllPositions);
+
+document.getElementById('walletInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        addWallet();
+    }
+});
+
+// Sayfa yüklendiğinde
+loadWalletsFromStorage();
+if (walletAddresses.length > 0) {
+    fetchAllPositions();
+}
+
+console.log('🐋 Hyperliquid Whale Scanner hazır!');
+console.log('Whale Categories:', WHALE_CATEGORIES);
     </script>
 </body>
 </html>
