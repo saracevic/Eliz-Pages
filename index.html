@@ -477,6 +477,7 @@
 let walletAddresses = [];
 let allPositions = [];
 let currentFilter = 'all';
+let currentCoinFilter = 'all';
 const API_URL = 'https://api.hyperliquid.xyz/info';
 
 // Whale kategorileri
@@ -511,6 +512,37 @@ function getWhaleCategory(value) {
     if (value >= WHALE_CATEGORIES.whale.min) return 'whale';
     if (value >= WHALE_CATEGORIES.small.min) return 'small';
     return null;
+}
+
+// Benzersiz coin listesini al
+function getUniqueCoins() {
+    const coins = [...new Set(allPositions.map(p => p.coin))];
+    return coins.sort();
+}
+
+// Coin filtre dropdown'unu güncelle
+function updateCoinFilter() {
+    const coins = getUniqueCoins();
+    const filterSection = document.querySelector('.filter-section');
+    
+    let coinFilterHTML = filterSection.querySelector('.coin-filter-container');
+    if (!coinFilterHTML) {
+        coinFilterHTML = document.createElement('div');
+        coinFilterHTML.className = 'coin-filter-container';
+        coinFilterHTML.style.marginTop = '15px';
+        filterSection.appendChild(coinFilterHTML);
+    }
+    
+    coinFilterHTML.innerHTML = '<h3 style="margin-bottom: 10px; color: #667eea; font-size: 0.9em;">🪙 Coin Filtresi</h3>' +
+        '<select id="coinFilterSelect" style="width: 100%; max-width: 300px; padding: 10px; background: #0a0e27; border: 2px solid #667eea; border-radius: 10px; color: #fff; font-size: 0.95em; cursor: pointer;">' +
+        '<option value="all">Tüm Coinler (' + coins.length + ')</option>' +
+        coins.map(coin => '<option value="' + coin + '">' + coin + '</option>').join('') +
+        '</select>';
+    
+    document.getElementById('coinFilterSelect').addEventListener('change', function(e) {
+        currentCoinFilter = e.target.value;
+        displayPositions();
+    });
 }
 
 // Cüzdan ekle
@@ -561,12 +593,12 @@ function updateWalletList() {
         return;
     }
 
-    container.innerHTML = walletAddresses.map(address => `
-        <div class="wallet-chip">
-            <span>${shortenAddress(address)}</span>
-            <span class="wallet-chip-remove" onclick="removeWallet('${address}')">✕</span>
-        </div>
-    `).join('');
+    container.innerHTML = walletAddresses.map(address => 
+        '<div class="wallet-chip">' +
+        '<span>' + shortenAddress(address) + '</span>' +
+        '<span class="wallet-chip-remove" onclick="removeWallet(\'' + address + '\')">✕</span>' +
+        '</div>'
+    ).join('');
 }
 
 // API: Kullanıcı pozisyonlarını çek
@@ -692,6 +724,7 @@ async function fetchAllPositions() {
     allPositions.sort((a, b) => b.value - a.value);
 
     showLoading(false);
+    updateCoinFilter();
     displayPositions();
     updateStats();
 }
@@ -701,13 +734,20 @@ function displayPositions() {
     const tbody = document.getElementById('positionsBody');
     
     let filteredPositions = allPositions;
+    
+    // Whale kategorisi filtresi
     if (currentFilter !== 'all') {
-        filteredPositions = allPositions.filter(p => p.category === currentFilter);
+        filteredPositions = filteredPositions.filter(p => p.category === currentFilter);
+    }
+    
+    // Coin filtresi
+    if (currentCoinFilter !== 'all') {
+        filteredPositions = filteredPositions.filter(p => p.coin === currentCoinFilter);
     }
     
     if (filteredPositions.length === 0) {
         tbody.innerHTML = '<tr><td colspan="11" class="no-data">' + 
-            (currentFilter === 'all' ? 'Açık pozisyon bulunamadı' : 'Bu kategoride pozisyon bulunamadı') + 
+            (allPositions.length === 0 ? 'Açık pozisyon bulunamadı' : 'Bu filtrede pozisyon bulunamadı') + 
             '</td></tr>';
         return;
     }
@@ -738,16 +778,23 @@ function displayPositions() {
 
 // İstatistikleri güncelle
 function updateStats() {
-    const totalPositions = allPositions.length;
-    const longPositions = allPositions.filter(p => p.side === 'Long').length;
-    const shortPositions = allPositions.filter(p => p.side === 'Short').length;
-    const totalValue = allPositions.reduce((sum, p) => sum + p.value, 0);
-    const totalPnl = allPositions.reduce((sum, p) => sum + p.pnl, 0);
+    let filteredForStats = allPositions;
+    
+    // Coin filtresi uygulanmışsa istatistiklerde de göster
+    if (currentCoinFilter !== 'all') {
+        filteredForStats = allPositions.filter(p => p.coin === currentCoinFilter);
+    }
+    
+    const totalPositions = filteredForStats.length;
+    const longPositions = filteredForStats.filter(p => p.side === 'Long').length;
+    const shortPositions = filteredForStats.filter(p => p.side === 'Short').length;
+    const totalValue = filteredForStats.reduce((sum, p) => sum + p.value, 0);
+    const totalPnl = filteredForStats.reduce((sum, p) => sum + p.pnl, 0);
 
-    const smallWhales = allPositions.filter(p => p.category === 'small').length;
-    const regularWhales = allPositions.filter(p => p.category === 'whale').length;
-    const tidalWhales = allPositions.filter(p => p.category === 'tidal').length;
-    const megaWhales = allPositions.filter(p => p.category === 'mega').length;
+    const smallWhales = filteredForStats.filter(p => p.category === 'small').length;
+    const regularWhales = filteredForStats.filter(p => p.category === 'whale').length;
+    const tidalWhales = filteredForStats.filter(p => p.category === 'tidal').length;
+    const megaWhales = filteredForStats.filter(p => p.category === 'mega').length;
 
     document.getElementById('totalPositions').textContent = totalPositions;
     document.getElementById('totalValue').textContent = formatCurrency(totalValue);
@@ -817,4 +864,3 @@ console.log('🐋 Hyperliquid Whale Scanner hazır!');
     </script>
 </body>
 </html>
-```
