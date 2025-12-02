@@ -2,1669 +2,1226 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Hyperliquid Balina Takip Paneli</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hyperliquid Whale Scanner</title>
+
 <style>
     :root {
-        --bg: #0a0e17;
-        --card-bg: rgba(15, 23, 42, 0.95);
-        --border: rgba(255, 255, 255, 0.08);
+        --bg: #0f172a;
+        --bg2: #1e293b;
+        --text: #e2e8f0;
         --green: #10b981;
         --red: #ef4444;
+        --yellow: #f59e0b;
         --blue: #3b82f6;
-        --orange: #f59e0b;
-        --purple: #8b5cf6;
-        --text: #f1f5f9;
-        --text-dim: #94a3b8;
-        --danger: #dc2626;
-        --warning: #f59e0b;
-        --safe: #10b981;
+        --card: #1e293b;
+        --border: #334155;
     }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
         background: var(--bg);
         color: var(--text);
-        font-family: 'Inter', sans-serif;
-        font-size: 14px;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1 {
         padding: 20px;
-        overflow-x: hidden;
-        min-height: 100vh;
+        text-align: center;
+        background: var(--bg2);
+        margin: 0;
+        border-bottom: 1px solid var(--border);
     }
 
-    .container {
-        max-width: 1400px;
-        margin: 0 auto;
+    /* --- TOP STATS BAR --- */
+    .stats-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        padding: 20px;
+        justify-content: center;
     }
 
-    /* HEADER */
-    .header {
-        background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
-        backdrop-filter: blur(20px);
+    .stat-card {
+        background: var(--card);
+        padding: 15px 20px;
+        border-radius: 10px;
+        min-width: 180px;
         border: 1px solid var(--border);
-        border-radius: 20px;
-        padding: 20px 30px;
-        margin-bottom: 25px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-        position: relative;
-        overflow: hidden;
+        text-align: center;
     }
 
-    .header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, var(--blue), var(--purple), transparent);
-    }
-
-    .brand {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 10px;
-    }
-
-    .brand h1 {
-        font-size: 28px;
-        font-weight: 800;
-        background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -0.5px;
-    }
-
-    .brand-badge {
-        background: rgba(139, 92, 246, 0.2);
-        color: var(--purple);
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 600;
-        border: 1px solid rgba(139, 92, 246, 0.4);
-    }
-
-    .header-info {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 15px;
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid var(--border);
-    }
-
-    .stats-grid {
-        display: flex;
-        gap: 20px;
-        flex-wrap: wrap;
-    }
-
-    .stat-item {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .stat-label {
-        font-size: 11px;
-        color: var(--text-dim);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+    .stat-title {
+        font-size: 13px;
+        opacity: 0.8;
+        margin-bottom: 6px;
     }
 
     .stat-value {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 16px;
-        font-weight: 700;
-        color: var(--text);
+        font-size: 24px;
+        font-weight: bold;
     }
 
-    .stat-value.positive { color: var(--green); }
-    .stat-value.negative { color: var(--red); }
-    .stat-value.warning { color: var(--warning); }
+    .positive { color: var(--green); }
+    .negative { color: var(--red); }
 
-    .controls {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-    }
-
-    .refresh-btn {
-        background: rgba(59, 130, 246, 0.15);
-        border: 1px solid rgba(59, 130, 246, 0.4);
-        color: var(--blue);
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .refresh-btn:hover {
-        background: rgba(59, 130, 246, 0.25);
-        transform: translateY(-1px);
-    }
-
-    .refresh-btn.loading {
-        opacity: 0.7;
-        pointer-events: none;
-    }
-
-    .status-indicator {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 12px;
-        color: var(--text-dim);
-    }
-
-    .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #475569;
-    }
-
-    .status-dot.active {
-        background: var(--green);
-        box-shadow: 0 0 10px var(--green);
-        animation: pulse 2s infinite;
-    }
-
-    .status-dot.error {
-        background: var(--red);
-        box-shadow: 0 0 10px var(--red);
-    }
-
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
-    }
-
-    /* FILTERS */
+    /* --- FILTER BAR --- */
     .filters {
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 20px;
-        margin-bottom: 25px;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        backdrop-filter: blur(10px);
+        background: var(--bg2);
+        padding: 15px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        justify-content: center;
     }
 
-    .filter-group {
+    .filter-item {
         display: flex;
         flex-direction: column;
-        gap: 8px;
-    }
-
-    .filter-label {
         font-size: 12px;
-        color: var(--text-dim);
-        font-weight: 600;
     }
 
-    .filter-select, .filter-input {
-        background: rgba(0, 0, 0, 0.3);
+    .filter-item select,
+    .filter-item input {
+        padding: 5px;
+        border-radius: 5px;
         border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 10px 12px;
+        background: var(--card);
         color: var(--text);
-        font-family: 'Inter', sans-serif;
-        font-size: 13px;
-        cursor: pointer;
-        transition: border-color 0.2s;
     }
 
-    .filter-select:hover, .filter-input:hover {
-        border-color: rgba(59, 130, 246, 0.6);
-    }
-
-    .filter-select:focus, .filter-input:focus {
-        outline: none;
-        border-color: var(--blue);
-        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-    }
-
-    /* TABLE STYLES */
-    .table-container {
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        overflow: hidden;
-        backdrop-filter: blur(10px);
-        margin-bottom: 25px;
-    }
-
-    .table-header {
-        padding: 20px;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .table-title {
-        font-size: 16px;
-        font-weight: 700;
-        color: var(--text);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .table-wrapper {
-        overflow-x: auto;
-    }
-
-    .positions-table {
+    /* --- TABLE --- */
+    table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 1100px;
     }
 
-    .positions-table th {
-        text-align: left;
-        padding: 15px 20px;
-        font-size: 11px;
-        color: var(--text-dim);
-        background: rgba(0, 0, 0, 0.3);
+    table thead {
+        background: var(--bg2);
+    }
+
+    th, td {
+        padding: 10px;
         border-bottom: 1px solid var(--border);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    .positions-table td {
-        padding: 15px 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        font-size: 13px;
-        vertical-align: middle;
-    }
-
-    .positions-table tr:last-child td {
-        border-bottom: none;
-    }
-
-    .positions-table tbody tr {
-        transition: background-color 0.2s;
-    }
-
-    .positions-table tbody tr:hover {
-        background: rgba(59, 130, 246, 0.05);
-    }
-
-    .coin-cell {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .coin-icon {
-        width: 32px;
-        height: 32px;
-        background: rgba(59, 130, 246, 0.1);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        text-align: left;
         font-size: 14px;
-        font-weight: 700;
-        border: 1px solid rgba(59, 130, 246, 0.2);
-        font-family: 'JetBrains Mono', monospace;
     }
 
-    .coin-info {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
+    tr:hover {
+        background: rgba(255,255,255,0.05);
     }
 
-    .coin-name {
-        font-weight: 600;
-        color: var(--text);
-    }
+    .value-cell { text-align: right; }
+    .pnl-positive { color: var(--green); }
+    .pnl-negative { color: var(--red); }
 
-    .coin-address {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
-        color: var(--text-dim);
-    }
-
-    .side-badge {
-        padding: 4px 10px;
-        border-radius: 6px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        display: inline-block;
-        min-width: 70px;
-        text-align: center;
-    }
-
-    .side-badge.long {
-        background: rgba(16, 185, 129, 0.15);
-        color: var(--green);
-        border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-
-    .side-badge.short {
-        background: rgba(239, 68, 68, 0.15);
-        color: var(--red);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-
-    .value-cell {
-        font-family: 'JetBrains Mono', monospace;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    .pnl-cell {
-        font-family: 'JetBrains Mono', monospace;
-        font-weight: 700;
-        white-space: nowrap;
-    }
-
-    .pnl-positive {
-        color: var(--green);
-    }
-
-    .pnl-negative {
-        color: var(--red);
-    }
-
+    /* --- RISK BADGES --- */
     .risk-badge {
-        padding: 4px 10px;
-        border-radius: 6px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        display: inline-block;
-        min-width: 80px;
-        text-align: center;
-    }
-
-    .risk-high {
-        background: rgba(220, 38, 38, 0.15);
-        color: var(--danger);
-        border: 1px solid rgba(220, 38, 38, 0.3);
-    }
-
-    .risk-medium {
-        background: rgba(245, 158, 11, 0.15);
-        color: var(--warning);
-        border: 1px solid rgba(245, 158, 11, 0.3);
-    }
-
-    .risk-low {
-        background: rgba(16, 185, 129, 0.15);
-        color: var(--safe);
-        border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-
-    .time-cell {
-        color: var(--text-dim);
+        padding: 3px 8px;
+        border-radius: 5px;
         font-size: 12px;
-        white-space: nowrap;
+        color: #000;
+        font-weight: bold;
     }
+    .risk-low { background: var(--green); }
+    .risk-medium { background: var(--yellow); }
+    .risk-high { background: var(--red); }
 
-    /* LOADING STATES */
-    .loading-state {
-        padding: 60px 20px;
-        text-align: center;
-        color: var(--text-dim);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .loading-spinner {
-        width: 40px;
-        height: 40px;
-        border: 3px solid var(--border);
-        border-top-color: var(--blue);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-
-    .empty-state {
-        padding: 60px 20px;
-        text-align: center;
-        color: var(--text-dim);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
-
-    /* TOAST NOTIFICATIONS */
-    .toast-container {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 1001;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        pointer-events: none;
-    }
-
-    .toast {
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--border);
-        border-left: 4px solid var(--green);
-        border-radius: 10px;
-        padding: 15px;
-        width: 300px;
-        transform: translateX(120%);
-        transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        pointer-events: all;
-    }
-
-    .toast.show {
-        transform: translateX(0);
-    }
-
-    .toast.error {
-        border-left-color: var(--red);
-    }
-
-    .toast.warning {
-        border-left-color: var(--warning);
-    }
-
-    .toast-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 5px;
-    }
-
-    .toast-title {
-        font-weight: 600;
-        color: var(--text);
-    }
-
-    .toast-close {
-        background: none;
-        border: none;
-        color: var(--text-dim);
-        cursor: pointer;
-        font-size: 18px;
-        padding: 0;
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .toast-message {
-        font-size: 13px;
-        color: var(--text-dim);
-        line-height: 1.4;
-    }
-
-    /* DETAILS MODAL */
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.8);
-        backdrop-filter: blur(5px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        padding: 20px;
-    }
-
-    .modal-overlay.show {
-        display: flex;
-    }
-
-    .modal {
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        padding: 30px;
-        max-width: 600px;
-        width: 100%;
-        max-height: 90vh;
-        overflow-y: auto;
-        position: relative;
-    }
-
-    .modal-close {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: none;
-        border: none;
-        color: var(--text-dim);
-        font-size: 24px;
-        cursor: pointer;
-        transition: color 0.2s;
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .modal-close:hover {
-        color: var(--text);
-    }
-
-    .modal-header {
-        margin-bottom: 25px;
-        padding-right: 40px;
-    }
-
-    .modal-title {
-        font-size: 20px;
-        font-weight: 700;
-        color: var(--text);
-        margin-bottom: 5px;
-    }
-
-    .modal-subtitle {
+    /* --- STATUS BAR --- */
+    .status-bar {
+        padding: 10px;
         font-size: 14px;
-        color: var(--text-dim);
+        text-align: center;
+        background: var(--bg2);
+        border-top: 1px solid var(--border);
     }
 
-    .modal-stats {
-        display: grid;
-        gap: 15px;
+    /* --- MODAL --- */
+    #modalOverlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.7);
+        display: none;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #modalOverlay.show {
+        display: flex;
+    }
+
+    #modalBox {
+        background: var(--card);
+        padding: 20px;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 420px;
+        border: 1px solid var(--border);
+    }
+
+    #modalClose {
+        cursor: pointer;
+        float: right;
+        font-size: 20px;
+        margin-top: -10px;
     }
 
     .modal-stat {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .modal-stat:last-child {
-        border-bottom: none;
+        margin: 8px 0;
+        padding: 6px;
+        background: var(--bg2);
+        border-radius: 6px;
     }
 
     .modal-stat .label {
-        color: var(--text-dim);
-        font-size: 14px;
+        font-size: 12px;
+        opacity: 0.7;
     }
 
     .modal-stat .value {
-        font-family: 'JetBrains Mono', monospace;
-        font-weight: 600;
-        font-size: 14px;
-        text-align: right;
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: 3px;
     }
 
-    .modal-stat .value.positive { color: var(--green); }
-    .modal-stat .value.negative { color: var(--red); }
-
-    /* RESPONSIVE */
-    @media (max-width: 768px) {
-        body {
-            padding: 10px;
-        }
-        
-        .filters {
-            grid-template-columns: 1fr;
-        }
-        
-        .header-info {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        
-        .stats-grid {
-            width: 100%;
-            justify-content: space-between;
-        }
-        
-        .controls {
-            width: 100%;
-            justify-content: space-between;
-        }
-        
-        .table-header {
-            padding: 15px;
-        }
-        
-        .positions-table th,
-        .positions-table td {
-            padding: 10px 15px;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .brand h1 {
-            font-size: 22px;
-        }
-        
-        .stat-value {
-            font-size: 14px;
-        }
-        
-        .refresh-btn {
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-    }
-
-    /* PROGRESS BAR */
-    .progress-bar {
+    /* --- PROGRESS BAR --- */
+    #progressBar {
         width: 100%;
         height: 4px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 2px;
-        overflow: hidden;
-        margin-top: 10px;
+        background: #1e293b;
     }
-
-    .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, var(--blue), var(--purple));
-        border-radius: 2px;
-        transition: width 0.3s ease;
+    #progressFill {
+        height: 4px;
+        width: 0%;
+        background: var(--blue);
+        transition: 0.3s;
     }
-
-    /* INFO BOX */
-    .info-box {
-        background: rgba(59, 130, 246, 0.1);
-        border: 1px solid rgba(59, 130, 246, 0.3);
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .info-icon {
-        font-size: 20px;
-        color: var(--blue);
-    }
-
-    .info-content {
-        flex: 1;
-    }
-
-    .info-title {
-        font-weight: 600;
-        color: var(--text);
-        margin-bottom: 5px;
-    }
-
-    .info-text {
-        font-size: 13px;
-        color: var(--text-dim);
-        line-height: 1.4;
-    }
-
-    /* CURRENT PRICE INDICATOR */
-    .price-indicator {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 12px;
-    }
-
-    .price-up {
-        color: var(--green);
-    }
-
-    .price-down {
-        color: var(--red);
-    }
-
 </style>
 </head>
+
 <body>
-    <div class="container">
-        <!-- HEADER -->
-        <div class="header">
-            <div class="brand">
-                <h1>🐋 Hyperliquid Balina Takip Paneli</h1>
-                <span class="brand-badge">GERÇEK ZAMANLI</span>
-            </div>
-            
-            <div class="header-info">
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-label">Toplam Pozisyon</div>
-                        <div class="stat-value" id="totalPositions">0</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Toplam Değer</div>
-                        <div class="stat-value" id="totalValue">$0</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Net P&L</div>
-                        <div class="stat-value" id="netPnl">$0</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Aktif Balinalar</div>
-                        <div class="stat-value" id="activeWhales">0</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Riskli Pozisyon</div>
-                        <div class="stat-value warning" id="riskyPositions">0</div>
-                    </div>
-                </div>
-                
-                <div class="controls">
-                    <div class="status-indicator">
-                        <div class="status-dot" id="statusDot"></div>
-                        <span id="statusText">Bağlanıyor...</span>
-                    </div>
-                    <button class="refresh-btn" id="refreshBtn">
-                        <span>🔄</span>
-                        <span>Yenile</span>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-            </div>
-        </div>
 
-        <!-- INFO BOX -->
-        <div class="info-box">
-            <div class="info-icon">ℹ️</div>
-            <div class="info-content">
-                <div class="info-title">Gerçek Zamanlı P&L Takibi</div>
-                <div class="info-text">
-                    • Liquidation fiyatları Hyperliquid'den gerçek zamanlı çekiliyor<br>
-                    • Coin fiyatları Binance API'den anlık güncelleniyor<br>
-                    • P&L hesaplamaları entry fiyatı vs. güncel fiyat karşılaştırmasıyla yapılıyor<br>
-                    • Risk analizi liquidation fiyatına olan mesafeye göre belirleniyor
-                </div>
-            </div>
-        </div>
+<h1>🐋 Hyperliquid Whale Scanner</h1>
 
-        <!-- FILTERS -->
-        <div class="filters">
-            <div class="filter-group">
-                <label class="filter-label">Pozisyon Tipi</label>
-                <select class="filter-select" id="filterSide">
-                    <option value="all">Tümü (Long/Short)</option>
-                    <option value="LONG">Sadece Long</option>
-                    <option value="SHORT">Sadece Short</option>
-                </select>
-            </div>
-            
-            <div class="filter-group">
-                <label class="filter-label">Minimum Pozisyon ($)</label>
-                <input type="number" class="filter-input" id="filterMinSize" value="50000" min="1000" step="1000">
-            </div>
-            
-            <div class="filter-group">
-                <label class="filter-label">Coin</label>
-                <select class="filter-select" id="filterCoin">
-                    <option value="all">Tüm Coin'ler</option>
-                    <!-- Dynamic coin options -->
-                </select>
-            </div>
-            
-            <div class="filter-group">
-                <label class="filter-label">P&L Durumu</label>
-                <select class="filter-select" id="filterPnl">
-                    <option value="all">Tümü</option>
-                    <option value="profit">Sadece Kar</option>
-                    <option value="loss">Sadece Zarar</option>
-                </select>
-            </div>
-            
-            <div class="filter-group">
-                <label class="filter-label">Sıralama</label>
-                <select class="filter-select" id="filterSort">
-                    <option value="value_desc">Değer (Yüksek → Düşük)</option>
-                    <option value="pnl_desc">P&L (Çok → Az)</option>
-                    <option value="pnl_asc">P&L (Az → Çok)</option>
-                    <option value="leverage_desc">Leverage (Yüksek → Düşük)</option>
-                    <option value="risk_desc">Risk (Yüksek → Düşük)</option>
-                </select>
-            </div>
-        </div>
+<!-- STATUS BAR -->
+<div class="status-bar">
+    <span id="statusText">Hazır</span> — Son güncelleme: <span id="lastUpdate">-</span>
+</div>
 
-        <!-- POSITIONS TABLE -->
-        <div class="table-container">
-            <div class="table-header">
-                <div class="table-title">
-                    <span>📊 Gerçek Zamanlı Balina Pozisyonları</span>
-                    <span style="font-size: 12px; color: var(--text-dim); margin-left: auto;">
-                        <span id="filteredCount">0</span> / <span id="totalCount">0</span> pozisyon gösteriliyor
-                    </span>
-                </div>
-            </div>
-            
-            <div class="table-wrapper">
-                <table class="positions-table" id="positionsTable">
-                    <thead>
-                        <tr>
-                            <th>Coin</th>
-                            <th>Cüzdan</th>
-                            <th>Yön</th>
-                            <th>Adet</th>
-                            <th>Entry / Güncel</th>
-                            <th>Pozisyon Değeri</th>
-                            <th>Leverage</th>
-                            <th>P&L ($)</th>
-                            <th>P&L (%)</th>
-                            <th>Liq. Fiyatı</th>
-                            <th>Risk</th>
-                            <th>Giriş Zamanı</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <tr>
-                            <td colspan="12">
-                                <div class="loading-state">
-                                    <div class="loading-spinner"></div>
-                                    <div>Hyperliquid ve Binance API'lerinden veriler yükleniyor...</div>
-                                    <div style="font-size: 12px;">Bu işlem birkaç saniye sürebilir</div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+<!-- PROGRESS -->
+<div id="progressBar"><div id="progressFill"></div></div>
 
-        <!-- LAST UPDATE -->
-        <div style="text-align: center; color: var(--text-dim); font-size: 12px; padding: 20px;">
-            <div>Son güncelleme: <span id="lastUpdate">--:--:--</span></div>
-            <div style="margin-top: 5px;">
-                <span id="apiStatus">API bağlantıları kuruluyor...</span>
-                • 
-                <span id="dataSource">Veri Kaynakları: Hyperliquid + Binance</span>
-            </div>
-        </div>
+<!-- STAT CARDS -->
+<div class="stats-container">
+    <div class="stat-card">
+        <div class="stat-title">Toplam Balina Pozisyonu</div>
+        <div id="totalPositions" class="stat-value">0</div>
     </div>
 
-    <!-- DETAILS MODAL -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <button class="modal-close" id="modalClose">&times;</button>
-            <div class="modal-header">
-                <div class="modal-title" id="modalTitle">Pozisyon Detayları</div>
-                <div class="modal-subtitle" id="modalSubtitle"></div>
-            </div>
-            <div class="modal-stats" id="modalContent">
-                <!-- Dynamic content -->
-            </div>
-        </div>
+    <div class="stat-card">
+        <div class="stat-title">Toplam Value</div>
+        <div id="totalValue" class="stat-value">0</div>
     </div>
 
-    <!-- TOAST CONTAINER -->
-    <div class="toast-container" id="toastContainer"></div>
+    <div class="stat-card">
+        <div class="stat-title">Aktif Whale Sayısı</div>
+        <div id="activeWhales" class="stat-value">0</div>
+    </div>
 
-    <script>
-        // CONFIGURATION
-        const CONFIG = {
-            HYPERLIQUID_API: 'https://api.hyperliquid.xyz/info',
-            BINANCE_API: 'https://api.binance.com/api/v3/ticker/price',
-            BINANCE_KLINES: 'https://api.binance.com/api/v3/klines',
-            REFRESH_INTERVAL: 15000, // 15 seconds
-            PRICE_UPDATE_INTERVAL: 10000, // 10 seconds
-            DEFAULT_MIN_VALUE: 50000, // $50K
-            RETRY_DELAY: 5000
-        };
+    <div class="stat-card">
+        <div class="stat-title">Riskli Pozisyonlar</div>
+        <div id="riskyPositions" class="stat-value">0</div>
+    </div>
 
-        // STATE
-        let allPositions = [];
-        let filteredPositions = [];
-        let isLoading = false;
-        let lastUpdateTime = null;
-        let retryCount = 0;
-        let uniqueCoins = new Set();
-        let currentPrices = new Map(); // coin -> price
-        let priceUpdateInterval = null;
+    <div class="stat-card">
+        <div class="stat-title">Net PnL</div>
+        <div id="netPnl" class="stat-value positive">0</div>
+    </div>
+</div>
 
-        // DOM ELEMENTS
-        const elements = {
-            tableBody: document.getElementById('tableBody'),
-            totalPositions: document.getElementById('totalPositions'),
-            totalValue: document.getElementById('totalValue'),
-            netPnl: document.getElementById('netPnl'),
-            activeWhales: document.getElementById('activeWhales'),
-            riskyPositions: document.getElementById('riskyPositions'),
-            refreshBtn: document.getElementById('refreshBtn'),
-            statusDot: document.getElementById('statusDot'),
-            statusText: document.getElementById('statusText'),
-            lastUpdate: document.getElementById('lastUpdate'),
-            apiStatus: document.getElementById('apiStatus'),
-            dataSource: document.getElementById('dataSource'),
-            modalOverlay: document.getElementById('modalOverlay'),
-            modalClose: document.getElementById('modalClose'),
-            modalTitle: document.getElementById('modalTitle'),
-            modalSubtitle: document.getElementById('modalSubtitle'),
-            modalContent: document.getElementById('modalContent'),
-            toastContainer: document.getElementById('toastContainer'),
-            filterSide: document.getElementById('filterSide'),
-            filterMinSize: document.getElementById('filterMinSize'),
-            filterCoin: document.getElementById('filterCoin'),
-            filterPnl: document.getElementById('filterPnl'),
-            filterSort: document.getElementById('filterSort'),
-            filteredCount: document.getElementById('filteredCount'),
-            totalCount: document.getElementById('totalCount'),
-            progressFill: document.getElementById('progressFill')
-        };
+<!-- FILTER BAR -->
+<div class="filters">
 
-        // UTILITY FUNCTIONS
-        function formatUSD(value) {
-            if (value === 0 || isNaN(value)) return '$0';
-            if (value >= 1000000) return '$' + (value / 1000000).toFixed(2) + 'M';
-            if (value >= 1000) return '$' + (value / 1000).toFixed(1) + 'K';
-            return '$' + Math.round(value).toLocaleString();
-        }
+    <div class="filter-item">
+        <label>Yön</label>
+        <select id="filterSide">
+            <option value="all">Tümü</option>
+            <option value="LONG">LONG</option>
+            <option value="SHORT">SHORT</option>
+        </select>
+    </div>
 
-        function formatNumber(num, decimals = 2) {
-            if (isNaN(num)) return '0.00';
-            return new Intl.NumberFormat('en-US', {
-                minimumFractionDigits: decimals,
-                maximumFractionDigits: decimals
-            }).format(num);
-        }
+    <div class="filter-item">
+        <label>Min Pozisyon ($)</label>
+        <input id="filterMinSize" type="number" value="250000">
+    </div>
 
-        function formatTimeAgo(timestamp) {
-            const now = Date.now();
-            const diff = now - timestamp;
-            const minutes = Math.floor(diff / 60000);
-            const hours = Math.floor(diff / 3600000);
-            const days = Math.floor(diff / 86400000);
-            
-            if (minutes < 60) return `${minutes}d önce`;
-            if (hours < 24) return `${hours}s önce`;
-            return `${days}g önce`;
-        }
+    <div class="filter-item">
+        <label>Coin</label>
+        <select id="filterCoin">
+            <option value="all">Tümü</option>
+        </select>
+    </div>
 
-        function formatTimestamp(timestamp) {
-            const date = new Date(timestamp);
-            return date.toLocaleTimeString('tr-TR', {
+    <div class="filter-item">
+        <label>PnL</label>
+        <select id="filterPnl">
+            <option value="all">Tümü</option>
+            <option value="profit">Kâr</option>
+            <option value="loss">Zarar</option>
+        </select>
+    </div>
+
+    <div class="filter-item">
+        <label>Sırala</label>
+        <select id="filterSort">
+            <option value="value_desc">Value (↓)</option>
+            <option value="pnl_desc">PnL (↓)</option>
+            <option value="pnl_asc">PnL (↑)</option>
+            <option value="leverage_desc">Kaldıraç (↓)</option>
+            <option value="risk_desc">Risk (↓)</option>
+        </select>
+    </div>
+
+</div>
+
+<!-- TABLE -->
+<table>
+    <thead>
+        <tr>
+            <th>Coin</th>
+            <th>Cüzdan</th>
+            <th>Yön</th>
+            <th>Miktar</th>
+            <th>Entry</th>
+            <th>Value</th>
+            <th>Kaldıraç</th>
+            <th>PnL</th>
+            <th>PnL %</th>
+            <th>Liq</th>
+            <th>Risk</th>
+            <th>Zaman</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+<!-- MODAL -->
+<div id="modalOverlay">
+    <div id="modalBox">
+        <div id="modalClose">&times;</div>
+        <h2 id="modalTitle"></h2>
+        <div id="modalSubtitle" style="font-size:12px; opacity:0.7; margin-bottom:10px;"></div>
+        <div id="modalContent"></div>
+    </div>
+</div>
+
+<script>
+    // =========================
+    //  HYPERLIQUID WHALE SCANNER (GERÇEK VERİ)
+    //  - Leaderboard + clearinghouseState
+    //  - Min pozisyon: 250.000$
+    //  - Max 100 adres tarama
+    //  - Simülasyon YOK, random YOK
+    // =========================
+
+    const CONFIG = {
+        HL_INFO: 'https://api.hyperliquid.xyz/info',
+        MIN_POSITION_USD: 250000,   // A) Eşik: 250K USD
+        MAX_USERS: 100,             // B) En fazla 100 adres
+        REFRESH_INTERVAL: 60000,    // 60 sn otomatik tarama
+        RETRY_DELAY: 8000
+    };
+
+    // STATE
+    let allPositions = [];
+    let filteredPositions = [];
+    let leaderboardAddresses = [];
+    let isLoading = false;
+    let lastUpdateTime = null;
+    let retryCount = 0;
+
+    // DOM ELEMENTS
+    const elements = {
+        tableBody: document.getElementById('tableBody'),
+        totalPositions: document.getElementById('totalPositions'),
+        totalValue: document.getElementById('totalValue'),
+        netPnl: document.getElementById('netPnl'),
+        activeWhales: document.getElementById('activeWhales'),
+        riskyPositions: document.getElementById('riskyPositions'),
+        refreshBtn: document.getElementById('refreshBtn'),
+        statusDot: document.getElementById('statusDot'),
+        statusText: document.getElementById('statusText'),
+        lastUpdate: document.getElementById('lastUpdate'),
+        apiStatus: document.getElementById('apiStatus'),
+        dataSource: document.getElementById('dataSource'),
+        modalOverlay: document.getElementById('modalOverlay'),
+        modalClose: document.getElementById('modalClose'),
+        modalTitle: document.getElementById('modalTitle'),
+        modalSubtitle: document.getElementById('modalSubtitle'),
+        modalContent: document.getElementById('modalContent'),
+        toastContainer: document.getElementById('toastContainer'),
+        filterSide: document.getElementById('filterSide'),
+        filterMinSize: document.getElementById('filterMinSize'),
+        filterCoin: document.getElementById('filterCoin'),
+        filterPnl: document.getElementById('filterPnl'),
+        filterSort: document.getElementById('filterSort'),
+        filteredCount: document.getElementById('filteredCount'),
+        totalCount: document.getElementById('totalCount'),
+        progressFill: document.getElementById('progressFill')
+    };
+
+    // =========================
+    //  FORMAT HELPERS
+    // =========================
+    function formatUSD(value) {
+        if (!value || isNaN(value)) return '$0';
+        if (value >= 1_000_000) return '$' + (value / 1_000_000).toFixed(2) + 'M';
+        if (value >= 1_000) return '$' + (value / 1_000).toFixed(1) + 'K';
+        return '$' + Math.round(value).toLocaleString('en-US');
+    }
+
+    function formatNumber(num, decimals = 2) {
+        if (isNaN(num)) return (0).toFixed(decimals);
+        return new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: decimals,
+            maximumFractionDigits: decimals
+        }).format(num);
+    }
+
+    function formatTimeAgo(timestamp) {
+        const now = Date.now();
+        const diff = now - timestamp;
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+
+        if (minutes < 1) return 'şimdi';
+        if (minutes < 60) return `${minutes} dk önce`;
+        if (hours < 24) return `${hours} s önce`;
+        return `${days} g önce`;
+    }
+
+    function formatTimestamp(timestamp) {
+        const date = new Date(timestamp);
+        return (
+            date.toLocaleTimeString('tr-TR', {
                 hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit'
-            }) + ' ' + date.toLocaleDateString('tr-TR');
+            }) +
+            ' ' +
+            date.toLocaleDateString('tr-TR')
+        );
+    }
+
+    // =========================
+    //  RISK ve PNL HESAPLAMA
+    // =========================
+    function calculateRiskLevel(liqPrice, currentPrice, side, leverage) {
+        if (!liqPrice || !currentPrice || !leverage) return 'low';
+
+        let distancePercent;
+        if (side === 'LONG') {
+            distancePercent = ((currentPrice - liqPrice) / currentPrice) * 100;
+        } else {
+            distancePercent = ((liqPrice - currentPrice) / currentPrice) * 100;
         }
 
-        function calculatePnl(entryPrice, currentPrice, size, side, leverage) {
-            if (!entryPrice || !currentPrice || entryPrice === 0) return { pnl: 0, pnlPercent: 0 };
-            
-            let pnl;
-            if (side === 'LONG') {
-                pnl = (currentPrice - entryPrice) * size;
-            } else {
-                pnl = (entryPrice - currentPrice) * size;
-            }
-            
-            const positionCost = (entryPrice * size) / leverage;
-            const pnlPercent = positionCost > 0 ? (pnl / positionCost) * 100 : 0;
-            
-            return { pnl, pnlPercent };
-        }
+        const riskScore = distancePercent * leverage / 100;
 
-        function calculateRiskLevel(liqPrice, currentPrice, side, leverage) {
-            if (!liqPrice || !currentPrice || liqPrice === 0 || currentPrice === 0) return 'low';
-            
-            let distancePercent;
-            if (side === 'LONG') {
-                distancePercent = ((currentPrice - liqPrice) / currentPrice) * 100;
-            } else {
-                distancePercent = ((liqPrice - currentPrice) / currentPrice) * 100;
-            }
-            
-            const riskScore = distancePercent * leverage / 100;
-            
-            if (riskScore < 5) return 'high';
-            if (riskScore < 15) return 'medium';
-            return 'low';
-        }
+        if (riskScore < 5) return 'high';
+        if (riskScore < 15) return 'medium';
+        return 'low';
+    }
 
-        function getRiskBadge(riskLevel) {
-            switch(riskLevel) {
-                case 'high': return '<span class="risk-badge risk-high">YÜKSEK</span>';
-                case 'medium': return '<span class="risk-badge risk-medium">ORTA</span>';
-                case 'low': return '<span class="risk-badge risk-low">DÜŞÜK</span>';
-                default: return '<span class="risk-badge risk-low">DÜŞÜK</span>';
-            }
+    function getRiskBadge(level) {
+        switch (level) {
+            case 'high':
+                return '<span class="risk-badge risk-high">YÜKSEK</span>';
+            case 'medium':
+                return '<span class="risk-badge risk-medium">ORTA</span>';
+            case 'low':
+            default:
+                return '<span class="risk-badge risk-low">DÜŞÜK</span>';
         }
+    }
 
-        function showToast(title, message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <div class="toast-header">
-                    <div class="toast-title">${title}</div>
-                    <button class="toast-close">&times;</button>
-                </div>
-                <div class="toast-message">${message}</div>
-            `;
-            
-            elements.toastContainer.appendChild(toast);
-            
-            const closeBtn = toast.querySelector('.toast-close');
-            closeBtn.onclick = () => hideToast(toast);
-            
-            setTimeout(() => toast.classList.add('show'), 100);
-            setTimeout(() => hideToast(toast), 5000);
-            
-            return toast;
+    // =========================
+    //  TOAST / STATUS
+    // =========================
+    function showToast(title, message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+            <div class="toast-header">
+                <div class="toast-title">${title}</div>
+                <button class="toast-close">&times;</button>
+            </div>
+            <div class="toast-message">${message}</div>
+        `;
+        elements.toastContainer.appendChild(toast);
+
+        const closeBtn = toast.querySelector('.toast-close');
+        closeBtn.onclick = () => hideToast(toast);
+
+        requestAnimationFrame(() => toast.classList.add('show'));
+        setTimeout(() => hideToast(toast), 6000);
+    }
+
+    function hideToast(toast) {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }
+
+    function updateStatus(text, status = 'loading') {
+        elements.statusText.textContent = text;
+        elements.statusDot.className = 'status-dot';
+
+        if (status === 'connected') {
+            elements.statusDot.classList.add('active');
+            elements.apiStatus.textContent = 'Hyperliquid API bağlantısı aktif';
+            elements.apiStatus.style.color = '#10b981';
+        } else if (status === 'error') {
+            elements.statusDot.classList.add('error');
+            elements.apiStatus.textContent = 'API hatası';
+            elements.apiStatus.style.color = '#ef4444';
+        } else if (status === 'loading') {
+            elements.apiStatus.textContent = 'Veriler Hyperliquid\'den çekiliyor...';
+            elements.apiStatus.style.color = '#f59e0b';
+        } else {
+            elements.apiStatus.textContent = 'Bağlanıyor...';
+            elements.apiStatus.style.color = '#94a3b8';
         }
+    }
 
-        function hideToast(toast) {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
-        }
+    function updateLastUpdateTime() {
+        lastUpdateTime = new Date();
+        elements.lastUpdate.textContent = lastUpdateTime.toLocaleTimeString('tr-TR');
+    }
 
-        function updateStatus(text, status = 'connecting') {
-            elements.statusText.textContent = text;
-            elements.statusDot.className = 'status-dot';
-            
-            switch(status) {
-                case 'connected':
-                    elements.statusDot.classList.add('active');
-                    elements.apiStatus.textContent = 'API bağlantıları aktif';
-                    elements.apiStatus.style.color = 'var(--green)';
-                    break;
-                case 'error':
-                    elements.statusDot.classList.add('error');
-                    elements.apiStatus.textContent = 'API bağlantı hatası';
-                    elements.apiStatus.style.color = 'var(--red)';
-                    break;
-                case 'loading':
-                    elements.apiStatus.textContent = 'Veriler yükleniyor...';
-                    elements.apiStatus.style.color = 'var(--warning)';
-                    break;
-                default:
-                    elements.apiStatus.textContent = 'Bağlanıyor...';
-                    elements.apiStatus.style.color = 'var(--text-dim)';
-            }
-        }
+    // =========================
+    //  LEADERBOARD → ADRES LİSTESİ
+    // =========================
+    function extractAddressesFromLeaderboard(data) {
+        const addresses = new Set();
 
-        function updateLastUpdateTime() {
-            lastUpdateTime = new Date();
-            elements.lastUpdate.textContent = lastUpdateTime.toLocaleTimeString('tr-TR');
-        }
+        if (!data) return [];
 
-        // BINANCE API - Gerçek Fiyatları Çek
-        async function fetchCurrentPrices() {
-            try {
-                const coins = Array.from(uniqueCoins);
-                if (coins.length === 0) return;
-                
-                // Tüm coin'lerin USDT pair'larını oluştur
-                const symbols = coins.map(coin => `${coin}USDT`).join(',');
-                
-                const response = await fetch(`${CONFIG.BINANCE_API}?symbols=${encodeURIComponent(JSON.stringify(coins.map(coin => `${coin}USDT`)))}`);
-                
-                if (response.ok) {
-                    const prices = await response.json();
-                    
-                    if (Array.isArray(prices)) {
-                        prices.forEach(item => {
-                            const coin = item.symbol.replace('USDT', '');
-                            currentPrices.set(coin, parseFloat(item.price));
-                        });
-                    } else if (prices.symbol) {
-                        const coin = prices.symbol.replace('USDT', '');
-                        currentPrices.set(coin, parseFloat(prices.price));
-                    }
-                    
-                    console.log(`✅ ${currentPrices.size} coin fiyatı güncellendi`);
-                    updatePositionsWithCurrentPrices();
+        // Bazı implementasyonlarda direk array gelebilir
+        if (Array.isArray(data)) {
+            data.forEach(item => {
+                const addr =
+                    item.user ||
+                    item.address ||
+                    item.addr ||
+                    item.wallet ||
+                    null;
+                if (addr && typeof addr === 'string') {
+                    addresses.add(addr);
                 }
-            } catch (error) {
-                console.warn('Binance fiyat güncelleme hatası:', error);
-            }
+            });
         }
 
-        // Pozisyonları güncel fiyatlarla güncelle
-        function updatePositionsWithCurrentPrices() {
-            let totalPnl = 0;
+        // Bazı implementasyonlarda {users:[...]} veya {leaderboard:[...]} olabilir
+        if (data.users && Array.isArray(data.users)) {
+            data.users.forEach(item => {
+                const addr =
+                    item.user ||
+                    item.address ||
+                    item.addr ||
+                    item.wallet ||
+                    null;
+                if (addr && typeof addr === 'string') {
+                    addresses.add(addr);
+                }
+            });
+        }
+
+        if (data.leaderboard && Array.isArray(data.leaderboard)) {
+            data.leaderboard.forEach(item => {
+                const addr =
+                    item.user ||
+                    item.address ||
+                    item.addr ||
+                    item.wallet ||
+                    null;
+                if (addr && typeof addr === 'string') {
+                    addresses.add(addr);
+                }
+            });
+        }
+
+        return Array.from(addresses).slice(0, CONFIG.MAX_USERS);
+    }
+
+    async function fetchLeaderboard() {
+        updateStatus('Leaderboard çekiliyor...', 'loading');
+
+        const res = await fetch(CONFIG.HL_INFO, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: 'leaderboard' }) // Hyperliquid Info API leaderboard :contentReference[oaicite:1]{index=1}
+        });
+
+        if (!res.ok) {
+            throw new Error(`Leaderboard HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        const addrs = extractAddressesFromLeaderboard(data);
+
+        if (!addrs.length) {
+            throw new Error('Leaderboard boş veya format farklı, adres bulunamadı');
+        }
+
+        leaderboardAddresses = addrs;
+        return addrs;
+    }
+
+    // =========================
+    //  ADRES → POZİSYONLAR (clearinghouseState)
+    // =========================
+    function mapAssetPositionToLocal(assetPos, address, tsFromResponse) {
+        const pos = assetPos.position || {};
+        const coin = pos.coin;
+        const szi = parseFloat(pos.szi || '0');
+        if (!coin || !szi) return null;
+
+        const side = szi >= 0 ? 'LONG' : 'SHORT';
+        const sizeAbs = Math.abs(szi);
+        const entryPrice = parseFloat(pos.entryPx || '0');
+        if (!entryPrice || !sizeAbs) return null;
+
+        const rawPositionValue = parseFloat(pos.positionValue || '0');
+        const positionValue = rawPositionValue || sizeAbs * entryPrice;
+
+        if (!positionValue || positionValue < CONFIG.MIN_POSITION_USD) {
+            // 250K USD altı pozisyonları direkt eliyoruz (A koşulu)
+            return null;
+        }
+
+        const liqPrice = parseFloat(pos.liquidationPx || '0') || 0;
+        const unrealizedPnl = parseFloat(pos.unrealizedPnl || '0');
+        const marginUsed = parseFloat(pos.marginUsed || '0');
+
+        const leverage =
+            pos.leverage && typeof pos.leverage.value === 'number'
+                ? pos.leverage.value
+                : marginUsed > 0
+                ? positionValue / marginUsed
+                : 1;
+
+        // Güncel fiyatı, entry + unrealizedPnl / size ile HL verisinden türetiyoruz
+        const currentPrice =
+            sizeAbs > 0
+                ? side === 'LONG'
+                    ? entryPrice + unrealizedPnl / sizeAbs
+                    : entryPrice - unrealizedPnl / sizeAbs
+                : entryPrice;
+
+        const pnlPercent =
+            marginUsed > 0 ? (unrealizedPnl / marginUsed) * 100 : 0;
+
+        const riskLevel = calculateRiskLevel(
+            liqPrice,
+            currentPrice,
+            side,
+            leverage
+        );
+
+        const ts =
+            (assetPos.time || tsFromResponse || Date.now()) * (tsFromResponse > 1e12 ? 1 : 1000);
+
+        return {
+            id: `${address}-${coin}-${Math.random().toString(36).slice(2, 8)}`,
+            user: address,
+            coin,
+            size: sizeAbs,
+            entryPrice,
+            positionValue,
+            leverage,
+            side,
+            liqPrice,
+            timestamp: ts || Date.now(),
+            currentPrice,
+            unrealizedPnl,
+            pnlPercentage: pnlPercent,
+            riskLevel,
+            rawData: assetPos
+        };
+    }
+
+    async function fetchPositionsForAddress(address) {
+        const res = await fetch(CONFIG.HL_INFO, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: 'clearinghouseState',
+                user: address
+            }) // clearinghouseState ile gerçek pozisyonlar :contentReference[oaicite:2]{index=2}
+        });
+
+        if (!res.ok) {
+            throw new Error(`clearinghouseState HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        const arr = Array.isArray(data.assetPositions)
+            ? data.assetPositions
+            : [];
+
+        const ts = typeof data.time === 'number' ? data.time : Date.now();
+
+        const positions = [];
+        arr.forEach(ap => {
+            const mapped = mapAssetPositionToLocal(ap, address, ts);
+            if (mapped) positions.push(mapped);
+        });
+
+        return positions;
+    }
+
+    // =========================
+    //  ANA TARAYICI → TÜM WHALE POZİSYONLARI
+    // =========================
+    async function fetchHyperliquidPositions() {
+        if (isLoading) return;
+        isLoading = true;
+
+        elements.refreshBtn.classList.add('loading');
+        elements.progressFill.style.width = '5%';
+        updateStatus('Veriler çekiliyor...', 'loading');
+
+        try {
+            // Leaderboard yoksa önce çek
+            if (!leaderboardAddresses.length) {
+                const addrs = await fetchLeaderboard();
+                showToast(
+                    'Leaderboard',
+                    `${addrs.length} adres tarama listesine alındı (en büyük traderlar)`,
+                    'info'
+                );
+            }
+
+            const addrs = leaderboardAddresses.slice(0, CONFIG.MAX_USERS);
+            const collected = [];
             let riskyCount = 0;
-            
-            allPositions.forEach(position => {
-                const currentPrice = currentPrices.get(position.coin) || position.entryPrice;
-                
-                // P&L hesapla
-                const { pnl, pnlPercent } = calculatePnl(
-                    position.entryPrice,
-                    currentPrice,
-                    position.size,
-                    position.side,
-                    position.leverage
-                );
-                
-                // Risk seviyesini güncelle (liquidation fiyatı vs. güncel fiyat)
-                position.riskLevel = calculateRiskLevel(
-                    position.liqPrice,
-                    currentPrice,
-                    position.side,
-                    position.leverage
-                );
-                
-                // Pozisyon değerini güncelle
-                position.positionValue = Math.abs(position.size * currentPrice);
-                position.currentPrice = currentPrice;
-                position.unrealizedPnl = pnl;
-                position.pnlPercentage = pnlPercent;
-                
-                if (position.riskLevel === 'high') riskyCount++;
-                totalPnl += pnl;
-            });
-            
-            // İstatistikleri güncelle
-            updateStats(allPositions.length, allPositions.reduce((sum, p) => sum + p.positionValue, 0), 
-                       new Set(allPositions.map(p => p.user)).size, riskyCount, totalPnl);
-            
-            // Tabloyu yeniden render et
+            let totalPnl = 0;
+            let totalVal = 0;
+
+            for (let i = 0; i < addrs.length; i++) {
+                const addr = addrs[i];
+                const progress = 5 + Math.floor(((i + 1) / addrs.length) * 85);
+                elements.progressFill.style.width = `${progress}%`;
+                elements.statusText.textContent = `Adres taranıyor ${i + 1}/${addrs.length}`;
+
+                try {
+                    const positions = await fetchPositionsForAddress(addr);
+                    positions.forEach(p => {
+                        collected.push(p);
+                        totalVal += p.positionValue;
+                        totalPnl += p.unrealizedPnl;
+                        if (p.riskLevel === 'high') riskyCount++;
+                    });
+                } catch (e) {
+                    console.warn('Adres tarama hatası', addr, e);
+                }
+            }
+
+            // Tüm ağı değil ama en büyük trader kümesini taramış oluyoruz
+            allPositions = collected;
+
+            const uniqueWhales = new Set(allPositions.map(p => p.user)).size;
+            updateStats(
+                allPositions.length,
+                totalVal,
+                uniqueWhales,
+                riskyCount,
+                totalPnl
+            );
+
             applyFilters();
-        }
 
-        // HYPERLIQUID API - Liquidation Fiyatlarını Çek
-        async function fetchHyperliquidPositions() {
-            if (isLoading) return;
-            
-            isLoading = true;
-            updateStatus('Veriler çekiliyor...', 'loading');
-            elements.refreshBtn.classList.add('loading');
-            elements.progressFill.style.width = '30%';
-            
-            try {
-                console.log('🔄 Hyperliquid pozisyon verileri çekiliyor...');
-                
-                // Örnek pozisyon verileri (gerçek Hyperliquid API'si yerine)
-                // Not: Hyperliquid API'si bireysel pozisyonları doğrudan vermeyebilir
-                const samplePositions = generateSamplePositions();
-                
-                elements.progressFill.style.width = '60%';
-                
-                // Verileri işle
-                const processedPositions = [];
-                const uniqueUsers = new Set();
-                uniqueCoins.clear();
-                
-                samplePositions.forEach(position => {
-                    const minValue = parseFloat(elements.filterMinSize.value) || CONFIG.DEFAULT_MIN_VALUE;
-                    
-                    if (position.positionValue >= minValue) {
-                        processedPositions.push({
-                            id: position.id,
-                            user: position.user,
-                            coin: position.coin,
-                            size: position.size,
-                            entryPrice: position.entryPrice,
-                            positionValue: position.positionValue,
-                            leverage: position.leverage,
-                            side: position.side,
-                            liqPrice: position.liqPrice, // Hyperliquid'den gelen liquidation fiyatı
-                            timestamp: position.timestamp,
-                            rawData: position
-                        });
-                        
-                        uniqueCoins.add(position.coin);
-                        uniqueUsers.add(position.user);
-                    }
-                });
-                
-                elements.progressFill.style.width = '80%';
-                
-                // State'i güncelle
-                allPositions = processedPositions;
-                
-                // Başarılı
-                if (processedPositions.length > 0) {
-                    updateStatus('Bağlı', 'connected');
-                    
-                    // Binance'ten fiyatları çek
-                    await fetchCurrentPrices();
-                    
-                    showToast('Başarılı', `${processedPositions.length} pozisyon yüklendi`, 'info');
-                } else {
-                    updateStatus('Veri Yok', 'connected');
-                    showToast('Bilgi', 'Minimum değeri karşılayan pozisyon bulunamadı', 'warning');
-                }
-                
-                elements.progressFill.style.width = '100%';
-                
-            } catch (error) {
-                console.error('❌ API hatası:', error);
-                
-                retryCount++;
-                const delay = CONFIG.RETRY_DELAY * Math.min(retryCount, 3);
-                
-                updateStatus(`Hata (${retryCount}. deneme)`, 'error');
-                showToast('API Hatası', `${error.message}. ${delay / 1000} saniye sonra tekrar denenecek.`, 'error');
-                
-                // Auto-retry
-                setTimeout(fetchHyperliquidPositions, delay);
-                
-            } finally {
-                isLoading = false;
-                updateLastUpdateTime();
-                elements.refreshBtn.classList.remove('loading');
-                
-                // Progress bar'ı sıfırla
-                setTimeout(() => elements.progressFill.style.width = '0%', 500);
-            }
-        }
-
-        // Örnek pozisyonlar oluştur (Hyperliquid'den gerçek veri alınamazsa)
-        function generateSamplePositions() {
-            const coins = ['BTC', 'ETH', 'SOL', 'ARB', 'OP', 'BNB', 'MATIC', 'AVAX', 'LINK', 'DOT'];
-            const positions = [];
-            const userCount = 8;
-            
-            for (let i = 0; i < 25; i++) {
-                const coin = coins[Math.floor(Math.random() * coins.length)];
-                const side = Math.random() > 0.5 ? 'LONG' : 'SHORT';
-                const size = side === 'LONG' ? 
-                    (Math.random() * 10 + 0.5) * (coin === 'BTC' ? 0.1 : coin === 'ETH' ? 0.5 : 10) :
-                    -(Math.random() * 10 + 0.5) * (coin === 'BTC' ? 0.1 : coin === 'ETH' ? 0.5 : 10);
-                
-                // Entry fiyatı (gerçeğe yakın)
-                const entryPrice = getRealisticPrice(coin);
-                
-                // Liquidation fiyatı (Hyperliquid'den geldiğini varsayalım)
-                const liqPrice = side === 'LONG' ? 
-                    entryPrice * (0.7 + Math.random() * 0.2) : // LONG için %70-90 arası
-                    entryPrice * (1.1 + Math.random() * 0.2); // SHORT için %110-130 arası
-                
-                const leverage = Math.floor(Math.random() * 15) + 3; // 3x - 18x
-                const positionValue = Math.abs(size * entryPrice);
-                
-                // Tüm pozisyonlar $50K üzeri olsun
-                if (positionValue < 50000) continue;
-                
-                positions.push({
-                    id: `pos-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 9)}`,
-                    user: `0x${Math.random().toString(16).substr(2, 8)}...${Math.random().toString(16).substr(2, 4)}`,
-                    coin: coin,
-                    size: Math.abs(size),
-                    entryPrice: entryPrice,
-                    positionValue: positionValue,
-                    leverage: leverage,
-                    side: side,
-                    liqPrice: liqPrice,
-                    timestamp: Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000 // Son 7 gün içinde
-                });
-            }
-            
-            return positions;
-        }
-
-        function getRealisticPrice(coin) {
-            const prices = {
-                'BTC': 45000 + Math.random() * 10000,
-                'ETH': 2500 + Math.random() * 500,
-                'SOL': 100 + Math.random() * 50,
-                'ARB': 1.5 + Math.random() * 0.5,
-                'OP': 2.5 + Math.random() * 1,
-                'BNB': 300 + Math.random() * 100,
-                'MATIC': 0.7 + Math.random() * 0.3,
-                'AVAX': 30 + Math.random() * 10,
-                'LINK': 15 + Math.random() * 5,
-                'DOT': 6 + Math.random() * 2
-            };
-            return prices[coin] || 100 + Math.random() * 50;
-        }
-
-        function updateStats(totalCount, totalVal, userCount, riskyCount, netPnl = 0) {
-            elements.totalPositions.textContent = totalCount.toLocaleString();
-            elements.totalValue.textContent = formatUSD(totalVal);
-            elements.activeWhales.textContent = userCount.toLocaleString();
-            elements.riskyPositions.textContent = riskyCount.toLocaleString();
-            elements.netPnl.textContent = formatUSD(netPnl);
-            elements.netPnl.className = `stat-value ${netPnl >= 0 ? 'positive' : 'negative'}`;
-            
-            // Calculate average leverage
             if (allPositions.length > 0) {
-                const avgLeverage = allPositions.reduce((sum, pos) => sum + pos.leverage, 0) / allPositions.length;
-                // elements.avgLeverage.textContent = avgLeverage.toFixed(1) + 'x';
+                updateStatus('Bağlı', 'connected');
+                showToast(
+                    'Tarama Tamamlandı',
+                    `${allPositions.length.toLocaleString()} büyük balina pozisyonu bulundu (≥ ${formatUSD(
+                        CONFIG.MIN_POSITION_USD
+                    )}).`,
+                    'info'
+                );
+            } else {
+                updateStatus('Veri yok', 'connected');
+                showToast(
+                    'Bilgi',
+                    `Şu anda ${formatUSD(
+                        CONFIG.MIN_POSITION_USD
+                    )} üzerinde açık pozisyon tespit edilemedi.`,
+                    'warning'
+                );
             }
-        }
 
-        // FILTER FUNCTIONS
-        function applyFilters() {
-            const sideFilter = elements.filterSide.value;
-            const minSize = parseFloat(elements.filterMinSize.value) || CONFIG.DEFAULT_MIN_VALUE;
-            const coinFilter = elements.filterCoin.value;
-            const pnlFilter = elements.filterPnl.value;
-            const sortBy = elements.filterSort.value;
-            
-            // Apply filters
-            filteredPositions = allPositions.filter(pos => {
-                // Minimum size filter
-                if (pos.positionValue < minSize) return false;
-                
-                // Side filter
-                if (sideFilter !== 'all' && pos.side !== sideFilter) return false;
-                
-                // Coin filter
-                if (coinFilter !== 'all' && pos.coin !== coinFilter) return false;
-                
-                // P&L filter
-                if (pnlFilter !== 'all') {
-                    if (pnlFilter === 'profit' && pos.unrealizedPnl <= 0) return false;
-                    if (pnlFilter === 'loss' && pos.unrealizedPnl >= 0) return false;
+            elements.progressFill.style.width = '100%';
+        } catch (error) {
+            console.error('Hyperliquid tarama hatası:', error);
+            retryCount++;
+            updateStatus('API hatası', 'error');
+            showToast(
+                'API Hatası',
+                (error && error.message) ||
+                    'Hyperliquid Info API yanıt vermedi.',
+                'error'
+            );
+
+            // Otomatik retry, ama veri üretmiyoruz
+            const delay =
+                CONFIG.RETRY_DELAY * Math.min(retryCount + 1, 4);
+            setTimeout(() => {
+                fetchHyperliquidPositions();
+            }, delay);
+        } finally {
+            isLoading = false;
+            updateLastUpdateTime();
+            elements.refreshBtn.classList.remove('loading');
+            setTimeout(() => {
+                elements.progressFill.style.width = '0%';
+            }, 800);
+        }
+    }
+
+    // =========================
+    //  İSTATİSTİKLER
+    // =========================
+    function updateStats(totalCount, totalVal, whaleCount, riskyCount, netPnl = 0) {
+        elements.totalPositions.textContent = totalCount.toLocaleString('en-US');
+        elements.totalValue.textContent = formatUSD(totalVal);
+        elements.activeWhales.textContent = whaleCount.toLocaleString('en-US');
+        elements.riskyPositions.textContent = riskyCount.toLocaleString('en-US');
+        elements.netPnl.textContent = formatUSD(netPnl);
+        elements.netPnl.className =
+            'stat-value ' + (netPnl >= 0 ? 'positive' : 'negative');
+    }
+
+    // =========================
+    //  FİLTRELER
+    // =========================
+    function applyFilters() {
+        const sideFilter = elements.filterSide.value;
+        const minSize =
+            parseFloat(elements.filterMinSize.value) ||
+            CONFIG.MIN_POSITION_USD;
+        const coinFilter = elements.filterCoin.value;
+        const pnlFilter = elements.filterPnl.value;
+        const sortBy = elements.filterSort.value;
+
+        filteredPositions = allPositions.filter(pos => {
+            if (pos.positionValue < minSize) return false;
+            if (sideFilter !== 'all' && pos.side !== sideFilter) return false;
+            if (coinFilter !== 'all' && pos.coin !== coinFilter) return false;
+
+            if (pnlFilter === 'profit' && pos.unrealizedPnl <= 0) return false;
+            if (pnlFilter === 'loss' && pos.unrealizedPnl >= 0) return false;
+
+            return true;
+        });
+
+        filteredPositions.sort((a, b) => {
+            switch (sortBy) {
+                case 'value_desc':
+                    return b.positionValue - a.positionValue;
+                case 'pnl_desc':
+                    return b.unrealizedPnl - a.unrealizedPnl;
+                case 'pnl_asc':
+                    return a.unrealizedPnl - b.unrealizedPnl;
+                case 'leverage_desc':
+                    return b.leverage - a.leverage;
+                case 'risk_desc': {
+                    const order = { high: 3, medium: 2, low: 1 };
+                    return (order[b.riskLevel] || 0) - (order[a.riskLevel] || 0);
                 }
-                
-                return true;
-            });
-            
-            // Apply sorting
-            filteredPositions.sort((a, b) => {
-                switch(sortBy) {
-                    case 'value_desc': return b.positionValue - a.positionValue;
-                    case 'pnl_desc': return b.unrealizedPnl - a.unrealizedPnl;
-                    case 'pnl_asc': return a.unrealizedPnl - b.unrealizedPnl;
-                    case 'leverage_desc': return b.leverage - a.leverage;
-                    case 'risk_desc': 
-                        const riskOrder = { high: 3, medium: 2, low: 1 };
-                        return riskOrder[b.riskLevel] - riskOrder[a.riskLevel];
-                    default: return b.positionValue - a.positionValue;
-                }
-            });
-            
-            // Update counts
-            elements.totalCount.textContent = allPositions.length.toLocaleString();
-            elements.filteredCount.textContent = filteredPositions.length.toLocaleString();
-            
-            // Render table
-            renderTable();
-            updateCoinFilterOptions();
+                default:
+                    return b.positionValue - a.positionValue;
+            }
+        });
+
+        elements.totalCount.textContent = allPositions.length.toLocaleString('en-US');
+        elements.filteredCount.textContent = filteredPositions.length.toLocaleString('en-US');
+
+        updateCoinFilterOptions();
+        renderTable();
+    }
+
+    function updateCoinFilterOptions() {
+        const coinSelect = elements.filterCoin;
+        const currentValue = coinSelect.value;
+
+        // mevcut optionları "all" harici sil
+        while (coinSelect.options.length > 1) {
+            coinSelect.remove(1);
         }
 
-        function updateCoinFilterOptions() {
-            const coinSelect = elements.filterCoin;
-            const currentValue = coinSelect.value;
-            
-            // Clear existing options except "all"
-            while (coinSelect.options.length > 1) {
-                coinSelect.remove(1);
-            }
-            
-            // Add sorted coin options
-            const sortedCoins = Array.from(uniqueCoins).sort();
-            sortedCoins.forEach(coin => {
-                const option = document.createElement('option');
-                option.value = coin;
-                option.textContent = coin;
-                coinSelect.appendChild(option);
-            });
-            
-            // Restore selection if still valid
-            if (sortedCoins.includes(currentValue)) {
-                coinSelect.value = currentValue;
-            }
-        }
+        const coins = Array.from(
+            new Set(allPositions.map(p => p.coin))
+        ).sort();
 
-        // TABLE RENDERING
-        function renderTable() {
-            const tbody = elements.tableBody;
-            
-            if (filteredPositions.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="12">
-                            <div class="empty-state">
-                                <div style="font-size: 48px;">🐋</div>
-                                <div>Filtrelerinizle eşleşen pozisyon bulunamadı</div>
-                                <div style="font-size: 12px; color: var(--warning);">
-                                    Minimum pozisyon değerini düşürmeyi veya filtreleri değiştirmeyi deneyin
-                                </div>
+        coins.forEach(coin => {
+            const opt = document.createElement('option');
+            opt.value = coin;
+            opt.textContent = coin;
+            coinSelect.appendChild(opt);
+        });
+
+        if (coins.includes(currentValue)) {
+            coinSelect.value = currentValue;
+        }
+    }
+
+    // =========================
+    //  TABLO RENDER
+    // =========================
+    function renderTable() {
+        const tbody = elements.tableBody;
+
+        if (!filteredPositions.length) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="12">
+                        <div class="empty-state">
+                            <div style="font-size: 48px;">🐋</div>
+                            <div>Filtrelerinizle eşleşen balina pozisyonu bulunamadı</div>
+                            <div style="font-size: 12px; color: var(--warning);">
+                                Minimum pozisyon değerini düşürmeyi veya filtreleri gevşetmeyi deneyebilirsiniz.
                             </div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            // Render positions
-            tbody.innerHTML = filteredPositions.map(pos => {
-                const currentPrice = currentPrices.get(pos.coin) || pos.entryPrice;
-                const priceChange = ((currentPrice - pos.entryPrice) / pos.entryPrice) * 100;
-                const priceIndicator = priceChange >= 0 ? 
-                    `<span class="price-up">↗ $${formatNumber(currentPrice)}</span>` :
-                    `<span class="price-down">↘ $${formatNumber(currentPrice)}</span>`;
-                
+                        </div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = filteredPositions
+            .map(pos => {
+                const priceChange =
+                    ((pos.currentPrice - pos.entryPrice) / pos.entryPrice) *
+                    100;
+
+                const priceIndicator =
+                    priceChange >= 0
+                        ? `<span class="price-up">↗ $${formatNumber(
+                              pos.currentPrice
+                          )}</span>`
+                        : `<span class="price-down">↘ $${formatNumber(
+                              pos.currentPrice
+                          )}</span>`;
+
+                const sizeDecimals =
+                    pos.coin === 'BTC'
+                        ? 4
+                        : pos.coin === 'ETH'
+                        ? 3
+                        : 2;
+
                 return `
-                <tr onclick="showPositionDetails('${pos.id}')" style="cursor: pointer;">
+                <tr onclick="showPositionDetails('${pos.id}')" style="cursor:pointer;">
                     <td>
                         <div class="coin-cell">
-                            <div class="coin-icon">${pos.coin.substring(0, 3)}</div>
+                            <div class="coin-icon">${pos.coin.substring(0,3)}</div>
                             <div class="coin-info">
                                 <div class="coin-name">${pos.coin}</div>
-                                <div class="coin-address">${pos.user.substring(0, 6)}...${pos.user.substring(pos.user.length - 4)}</div>
+                                <div class="coin-address">
+                                    ${pos.user.substring(0, 6)}...${pos.user.substring(
+                    pos.user.length - 4
+                )}
+                                </div>
                             </div>
                         </div>
                     </td>
                     <td>
                         <div class="coin-address" title="${pos.user}">
-                            ${pos.user.substring(0, 10)}...${pos.user.substring(pos.user.length - 8)}
+                            ${pos.user.substring(0, 10)}...${pos.user.substring(
+                    pos.user.length - 8
+                )}
                         </div>
                     </td>
-                    <td><span class="side-badge ${pos.side.toLowerCase()}">${pos.side} ${pos.leverage}x</span></td>
-                    <td class="value-cell">${formatNumber(pos.size, pos.coin === 'BTC' ? 4 : pos.coin === 'ETH' ? 3 : 2)}</td>
+                    <td>
+                        <span class="side-badge ${pos.side.toLowerCase()}">
+                            ${pos.side} ${formatNumber(pos.leverage, 1)}x
+                        </span>
+                    </td>
+                    <td class="value-cell">
+                        ${formatNumber(pos.size, sizeDecimals)}
+                    </td>
                     <td class="value-cell">
                         <div>$${formatNumber(pos.entryPrice)}</div>
-                        <div style="font-size: 11px; color: ${priceChange >= 0 ? 'var(--green)' : 'var(--red)'}">
+                        <div style="font-size: 11px; color: ${
+                            priceChange >= 0
+                                ? 'var(--green)'
+                                : 'var(--red)'
+                        }">
                             ${priceIndicator}
                         </div>
                     </td>
-                    <td class="value-cell">${formatUSD(pos.positionValue)}</td>
-                    <td class="value-cell">${pos.leverage.toFixed(1)}x</td>
-                    <td class="pnl-cell ${pos.unrealizedPnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">
-                        ${pos.unrealizedPnl >= 0 ? '+' : ''}${formatUSD(pos.unrealizedPnl)}
+                    <td class="value-cell">
+                        ${formatUSD(pos.positionValue)}
                     </td>
-                    <td class="pnl-cell ${pos.pnlPercentage >= 0 ? 'pnl-positive' : 'pnl-negative'}">
-                        ${pos.pnlPercentage >= 0 ? '+' : ''}${formatNumber(pos.pnlPercentage, 2)}%
+                    <td class="value-cell">
+                        ${formatNumber(pos.leverage, 1)}x
                     </td>
-                    <td class="value-cell">${pos.liqPrice > 0 ? '$' + formatNumber(pos.liqPrice) : '-'}</td>
-                    <td>${getRiskBadge(pos.riskLevel)}</td>
-                    <td class="time-cell">${formatTimeAgo(pos.timestamp)}</td>
+                    <td class="pnl-cell ${
+                        pos.unrealizedPnl >= 0
+                            ? 'pnl-positive'
+                            : 'pnl-negative'
+                    }">
+                        ${pos.unrealizedPnl >= 0 ? '+' : ''}${formatUSD(
+                    pos.unrealizedPnl
+                )}
+                    </td>
+                    <td class="pnl-cell ${
+                        pos.pnlPercentage >= 0
+                            ? 'pnl-positive'
+                            : 'pnl-negative'
+                    }">
+                        ${pos.pnlPercentage >= 0 ? '+' : ''}${formatNumber(
+                    pos.pnlPercentage,
+                    2
+                )}%
+                    </td>
+                    <td class="value-cell">
+                        ${
+                            pos.liqPrice > 0
+                                ? '$' + formatNumber(pos.liqPrice)
+                                : '-'
+                        }
+                    </td>
+                    <td>
+                        ${getRiskBadge(pos.riskLevel)}
+                    </td>
+                    <td class="time-cell">
+                        ${formatTimeAgo(pos.timestamp)}
+                    </td>
                 </tr>
-                `;
-            }).join('');
-        }
-
-        // MODAL FUNCTIONS
-        window.showPositionDetails = function(positionId) {
-            const position = [...allPositions, ...filteredPositions].find(p => p.id === positionId);
-            if (!position) return;
-            
-            const currentPrice = currentPrices.get(position.coin) || position.entryPrice;
-            const priceChange = ((currentPrice - position.entryPrice) / position.entryPrice) * 100;
-            const distanceToLiq = position.side === 'LONG' ? 
-                ((currentPrice - position.liqPrice) / currentPrice) * 100 :
-                ((position.liqPrice - currentPrice) / currentPrice) * 100;
-            
-            const riskText = {
-                'high': `Yüksek Risk - Liq. fiyatına ${formatNumber(Math.abs(distanceToLiq), 2)}% uzaklık`,
-                'medium': `Orta Risk - Liq. fiyatına ${formatNumber(Math.abs(distanceToLiq), 2)}% uzaklık`,
-                'low': `Düşük Risk - Liq. fiyatına ${formatNumber(Math.abs(distanceToLiq), 2)}% uzaklık`
-            }[position.riskLevel] || 'Bilinmeyen Risk';
-            
-            elements.modalTitle.textContent = `${position.coin} ${position.side} Pozisyonu`;
-            elements.modalSubtitle.textContent = `Cüzdan: ${position.user.substring(0, 10)}...${position.user.substring(position.user.length - 8)}`;
-            
-            elements.modalContent.innerHTML = `
-                <div class="modal-stat">
-                    <div class="label">Coin</div>
-                    <div class="value">${position.coin}</div>
-                </div>
-                <div class="modal-stat">
-                    <div class="label">Pozisyon Yönü</div>
-                    <div class="value">${position.side} ${position.leverage}x</div>
-                </div>
-                <div class="modal-stat">
-                    <div class="label">Miktar</div>
-                    <div class="value">${formatNumber(position.size, position.coin === 'BTC' ? 4 : position.coin === 'ETH' ? 3 : 2)} ${position.coin}</div>
-                </div>
-                <div class="modal-stat">
-                    <div class="label">Entry Fiyatı</div>
-                    <div class="value">$${formatNumber(position.entryPrice)}</div>
-                </div>
-                <div class="modal-stat">
-                    <div class="label">Güncel Fiyat (Binance)</div>
-                    <div class="value ${priceChange >= 0 ? 'positive' : 'negative'}">
-                        $${formatNumber(currentPrice)} (${priceChange >= 0 ? '+' : ''}${formatNumber(priceChange, 2)}%)
-                    </div>
-                </div>
-                <div class="modal-stat">
-                    <div class="label">Güncel Pozisyon Değeri</div>
-                    <div class="value">${formatUSD(position.positionValue)}</div>
-                </div>
-                <div class="modal-stat">
-                    <div class="label">Güncel P&L</div>
-                    <div class="value ${position.unrealizedPnl >= 0 ? 'positive' : 'negative'}">
-                        ${position.unrealizedPnl >= 0 ? '+' : ''}${formatUSD(position.unrealizedPnl)}
-                    </div>
-                </div>
-                <div class="modal-stat">
-                    <div class="label">P&L Yüzdesi</div>
-                    <div class="value ${position.pnlPercentage >= 0 ? 'positive' : 'negative'}">
-                        ${position.pnlPercentage >= 0 ? '+' : ''}${formatNumber(position.pnlPercentage, 2)}%
-                    </div>
-                </div>
-                <div class="modal-stat">
-                    <div class="label">Liquidation Fiyatı (Hyperliquid)</div>
-                    <div class="value">$${formatNumber(position.liqPrice)}</div>
-                </div>
-                <div class="modal-stat">
-                    <div class="label">Liq. Fiyatına Mesafe</div>
-                    <div class="value">${formatNumber(Math.abs(distanceToLiq), 2)}%</div>
-                </div>
-                <div class="modal-stat">
-                    <div class="label">Risk Seviyesi</div>
-                    <div class="value">${getRiskBadge(position.riskLevel)}</div>
-                </div>
-                <div class="modal-stat">
-                    <div class="label">Risk Analizi</div>
-                    <div class="value">${riskText}</div>
-                </div>
-                <div class="modal-stat">
-                    <div class="label">Cüzdan Adresi</div>
-                    <div class="value" style="font-size: 11px; word-break: break-all;">${position.user}</div>
-                </div>
-                <div class="modal-stat">
-                    <div class="label">Pozisyon Açılış</div>
-                    <div class="value">${formatTimestamp(position.timestamp)}</div>
-                </div>
-                <div class="modal-stat">
-                    <div class="label">Son Güncelleme</div>
-                    <div class="value">${formatTimestamp(Date.now())}</div>
-                </div>
             `;
-            
-            elements.modalOverlay.classList.add('show');
+            })
+            .join('');
+    }
+
+    // =========================
+    //  MODAL DETAY
+    // =========================
+    window.showPositionDetails = function (positionId) {
+        const position = filteredPositions.find(p => p.id === positionId) ||
+            allPositions.find(p => p.id === positionId);
+        if (!position) return;
+
+        const priceChange =
+            ((position.currentPrice - position.entryPrice) /
+                position.entryPrice) *
+            100;
+
+        const distanceToLiq =
+            position.liqPrice && position.currentPrice
+                ? position.side === 'LONG'
+                    ? ((position.currentPrice - position.liqPrice) /
+                          position.currentPrice) *
+                      100
+                    : ((position.liqPrice - position.currentPrice) /
+                          position.currentPrice) *
+                      100
+                : 0;
+
+        const riskTextMap = {
+            high: `Yüksek Risk - Liq. fiyata sadece ${formatNumber(
+                Math.abs(distanceToLiq),
+                2
+            )}% mesafe`,
+            medium: `Orta Risk - Liq. fiyata ${formatNumber(
+                Math.abs(distanceToLiq),
+                2
+            )}% mesafe`,
+            low: `Düşük Risk - Liq. fiyata ${formatNumber(
+                Math.abs(distanceToLiq),
+                2
+            )}% mesafe`
         };
 
-        // EVENT LISTENERS
-        function setupEventListeners() {
-            // Refresh button
-            elements.refreshBtn.addEventListener('click', () => {
-                if (!isLoading) {
-                    fetchHyperliquidPositions();
-                }
-            });
-            
-            // Filter changes
-            [elements.filterSide, elements.filterCoin, elements.filterPnl, elements.filterSort].forEach(el => {
-                el.addEventListener('change', applyFilters);
-            });
-            
-            // Min size input with debounce
-            let minSizeTimeout;
-            elements.filterMinSize.addEventListener('input', (e) => {
-                clearTimeout(minSizeTimeout);
-                minSizeTimeout = setTimeout(() => {
-                    const value = parseFloat(e.target.value);
-                    if (value >= 1000) {
-                        applyFilters();
-                    }
-                }, 500);
-            });
-            
-            // Modal close
-            elements.modalClose.addEventListener('click', () => {
-                elements.modalOverlay.classList.remove('show');
-            });
-            
-            // Close modal on overlay click
-            elements.modalOverlay.addEventListener('click', (e) => {
-                if (e.target === elements.modalOverlay) {
-                    elements.modalOverlay.classList.remove('show');
-                }
-            });
-            
-            // Auto-refresh positions
-            setInterval(() => {
-                if (!isLoading && document.visibilityState === 'visible') {
-                    fetchHyperliquidPositions();
-                }
-            }, CONFIG.REFRESH_INTERVAL);
-            
-            // Auto-refresh prices
-            priceUpdateInterval = setInterval(() => {
-                if (uniqueCoins.size > 0 && document.visibilityState === 'visible') {
-                    fetchCurrentPrices();
-                }
-            }, CONFIG.PRICE_UPDATE_INTERVAL);
-        }
+        const riskText =
+            riskTextMap[position.riskLevel] || 'Risk analizi bulunamadı';
 
-        // INITIALIZATION
-        async function initialize() {
-            console.log('🚀 Hyperliquid Balina Takip Paneli Başlatılıyor...');
-            
-            // Data source info
-            elements.dataSource.textContent = 'Veri Kaynakları: Hyperliquid (Liq. Price) + Binance (Gerçek Fiyat)';
-            
-            // Setup event listeners
-            setupEventListeners();
-            
-            // Initial data fetch
-            await fetchHyperliquidPositions();
-            
-            console.log('✅ Panel başlatıldı');
-        }
+        elements.modalTitle.textContent = `${position.coin} ${position.side} Pozisyonu`;
+        elements.modalSubtitle.textContent = `Cüzdan: ${position.user.substring(
+            0,
+            10
+        )}...${position.user.substring(position.user.length - 8)}`;
 
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', () => {
-            if (priceUpdateInterval) {
-                clearInterval(priceUpdateInterval);
+        const sizeDecimals =
+            position.coin === 'BTC'
+                ? 4
+                : position.coin === 'ETH'
+                ? 3
+                : 2;
+
+        elements.modalContent.innerHTML = `
+            <div class="modal-stat">
+                <div class="label">Coin</div>
+                <div class="value">${position.coin}</div>
+            </div>
+            <div class="modal-stat">
+                <div class="label">Pozisyon Yönü</div>
+                <div class="value">${position.side} ${formatNumber(
+            position.leverage,
+            1
+        )}x</div>
+            </div>
+            <div class="modal-stat">
+                <div class="label">Miktar</div>
+                <div class="value">${formatNumber(
+                    position.size,
+                    sizeDecimals
+                )} ${position.coin}</div>
+            </div>
+            <div class="modal-stat">
+                <div class="label">Entry Fiyatı</div>
+                <div class="value">$${formatNumber(position.entryPrice)}</div>
+            </div>
+            <div class="modal-stat">
+                <div class="label">Güncel Fiyat (HL Türev)</div>
+                <div class="value ${
+                    priceChange >= 0 ? 'positive' : 'negative'
+                }">
+                    $${formatNumber(position.currentPrice)} (${
+            priceChange >= 0 ? '+' : ''
+        }${formatNumber(priceChange, 2)}%)
+                </div>
+            </div>
+            <div class="modal-stat">
+                <div class="label">Pozisyon Değeri</div>
+                <div class="value">${formatUSD(position.positionValue)}</div>
+            </div>
+            <div class="modal-stat">
+                <div class="label">Unrealized P&L</div>
+                <div class="value ${
+                    position.unrealizedPnl >= 0 ? 'positive' : 'negative'
+                }">
+                    ${position.unrealizedPnl >= 0 ? '+' : ''}${formatUSD(
+            position.unrealizedPnl
+        )}
+                </div>
+            </div>
+            <div class="modal-stat">
+                <div class="label">P&L Yüzdesi</div>
+                <div class="value ${
+                    position.pnlPercentage >= 0 ? 'positive' : 'negative'
+                }">
+                    ${position.pnlPercentage >= 0 ? '+' : ''}${formatNumber(
+            position.pnlPercentage,
+            2
+        )}%
+                </div>
+            </div>
+            <div class="modal-stat">
+                <div class="label">Liquidation Fiyatı</div>
+                <div class="value">$${formatNumber(position.liqPrice)}</div>
+            </div>
+            <div class="modal-stat">
+                <div class="label">Liq. Mesafe</div>
+                <div class="value">${formatNumber(
+                    Math.abs(distanceToLiq),
+                    2
+                )}%</div>
+            </div>
+            <div class="modal-stat">
+                <div class="label">Risk Seviyesi</div>
+                <div class="value">${getRiskBadge(position.riskLevel)}</div>
+            </div>
+            <div class="modal-stat">
+                <div class="label">Risk Analizi</div>
+                <div class="value">${riskText}</div>
+            </div>
+            <div class="modal-stat">
+                <div class="label">Cüzdan Adresi</div>
+                <div class="value" style="font-size:11px; word-break:break-all;">
+                    ${position.user}
+                </div>
+            </div>
+            <div class="modal-stat">
+                <div class="label">Pozisyon Açılış (API zamanı tahmini)</div>
+                <div class="value">${formatTimestamp(position.timestamp)}</div>
+            </div>
+            <div class="modal-stat">
+                <div class="label">Son Güncelleme</div>
+                <div class="value">${formatTimestamp(Date.now())}</div>
+            </div>
+        `;
+
+        elements.modalOverlay.classList.add('show');
+    };
+
+    // =========================
+    //  EVENTLER & INIT
+    // =========================
+    function setupEventListeners() {
+        // Yenile butonu
+        elements.refreshBtn.addEventListener('click', () => {
+            if (!isLoading) {
+                fetchHyperliquidPositions();
             }
         });
 
-        // Start the application
-        document.addEventListener('DOMContentLoaded', initialize);
-    </script>
-</body>
-</html>
+        // Filtreler
+        [
+            elements.filterSide,
+            elements.filterCoin,
+            elements.filterPnl,
+            elements.filterSort
+        ].forEach(el => {
+            el.addEventListener('change', applyFilters);
+        });
+
+        // Min size input (debounce)
+        let minSizeTimeout;
+        elements.filterMinSize.addEventListener('input', e => {
+            clearTimeout(minSizeTimeout);
+            minSizeTimeout = setTimeout(() => {
+                const v = parseFloat(e.target.value);
+                if (v >= 1000) applyFilters();
+            }, 400);
+        });
+
+        // Modal kapatma
+        elements.modalClose.addEventListener('click', () => {
+            elements.modalOverlay.classList.remove('show');
+        });
+        elements.modalOverlay.addEventListener('click', e => {
+            if (e.target === elements.modalOverlay) {
+                elements.modalOverlay.classList.remove('show');
+            }
+        });
+
+        // Otomatik periyodik tarama
+        setInterval(() => {
+            if (!isLoading && document.visibilityState === 'visible') {
+                fetchHyperliquidPositions();
+            }
+        }, CONFIG.REFRESH_INTERVAL);
+    }
+
+    async function initialize() {
+        console.log('🚀 Hyperliquid Whale Scanner başlıyor...');
+        elements.dataSource.textContent =
+            'Veri Kaynakları: Hyperliquid Info API (leaderboard + clearinghouseState)';
+        elements.filterMinSize.value = CONFIG.MIN_POSITION_USD;
+
+        setupEventListeners();
+        await fetchHyperliquidPositions();
+
+        console.log('✅ Whale Scanner hazır (gerçek Hyperliquid verisi ile)');
+    }
+
+    document.addEventListener('DOMContentLoaded', initialize);
+</script>
+
