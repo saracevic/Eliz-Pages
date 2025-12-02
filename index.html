@@ -545,9 +545,58 @@ function updateCoinFilter() {
     });
 }
 
-// Cüzdan ekle
-function addWallet() {
+// Adresin açık pozisyonu var mı kontrol et
+async function checkPositionExists(address) {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                type: 'clearinghouseState',
+                user: address
+            })
+        });
+        
+        if (!response.ok) return { exists: false, count: 0 };
+        const data = await response.json();
+        
+        if (!data || !data.assetPositions) return { exists: false, count: 0 };
+        
+        let validPositions = 0;
+        let totalValue = 0;
+        
+        for (const pos of data.assetPositions) {
+            const position = pos.position;
+            if (position && position.szi !== '0') {
+                const szi = parseFloat(position.szi);
+                const size = Math.abs(szi);
+                const entryPx = parseFloat(position.entryPx || 0);
+                const value = size * entryPx;
+                
+                if (getWhaleCategory(value)) {
+                    validPositions++;
+                    totalValue += value;
+                }
+            }
+        }
+        
+        return { 
+            exists: validPositions > 0, 
+            count: validPositions,
+            totalValue: totalValue
+        };
+    } catch (error) {
+        console.error('Pozisyon kontrol hatası:', error);
+        return { exists: false, count: 0 };
+    }
+}
+
+// Cüzdan ekle (pozisyon kontrolü ile)
+async function addWallet() {
     const input = document.getElementById('walletInput');
+    const btn = document.getElementById('addWalletBtn');
     let address = input.value.trim();
     
     if (!address) {
@@ -569,19 +618,48 @@ function addWallet() {
         return;
     }
 
+    // Kontrol animasyonu
+    btn.textContent = '⏳ Kontrol ediliyor...';
+    btn.disabled = true;
+    
+    // Pozisyon kontrolü
+    const check = await checkPositionExists(address.toLowerCase());
+    
+    if (!check.exists) {
+        btn.textContent = '➕ Ekle';
+        btn.disabled = false;
+        alert('❌ Bu adreste $100K+ açık pozisyon bulunamadı!\n\nAdres geçerli ama whale kategorisine girmiyor.');
+        return;
+    }
+    
+    // Başarılı, ekle
     walletAddresses.push(address.toLowerCase());
     saveWalletsToStorage();
     updateWalletList();
     input.value = '';
+    
+    btn.textContent = '✅ Eklendi!';
+    setTimeout(() => {
+        btn.textContent = '➕ Ekle';
+        btn.disabled = false;
+    }, 2000);
+    
+    // Konfirmasyon mesajı
+    alert('✅ Adres eklendi!\n\n' + 
+          '📊 Pozisyon sayısı: ' + check.count + '\n' +
+          '💰 Toplam değer: $' + formatNumber(check.totalValue));
+    
     fetchAllPositions();
 }
 
 // Cüzdan sil - GLOBAL
 window.removeWallet = function(address) {
-    walletAddresses = walletAddresses.filter(w => w !== address);
-    saveWalletsToStorage();
-    updateWalletList();
-    fetchAllPositions();
+    if (confirm('Bu adresi silmek istediğinize emin misiniz?\n\n' + address)) {
+        walletAddresses = walletAddresses.filter(w => w !== address);
+        saveWalletsToStorage();
+        updateWalletList();
+        fetchAllPositions();
+    }
 };
 
 // Cüzdan listesini güncelle
@@ -735,12 +813,10 @@ function displayPositions() {
     
     let filteredPositions = allPositions;
     
-    // Whale kategorisi filtresi
     if (currentFilter !== 'all') {
         filteredPositions = filteredPositions.filter(p => p.category === currentFilter);
     }
     
-    // Coin filtresi
     if (currentCoinFilter !== 'all') {
         filteredPositions = filteredPositions.filter(p => p.coin === currentCoinFilter);
     }
@@ -780,7 +856,6 @@ function displayPositions() {
 function updateStats() {
     let filteredForStats = allPositions;
     
-    // Coin filtresi uygulanmışsa istatistiklerde de göster
     if (currentCoinFilter !== 'all') {
         filteredForStats = allPositions.filter(p => p.coin === currentCoinFilter);
     }
