@@ -401,8 +401,8 @@
             border-radius: 6px;
             padding: 12px;
             display: grid;
-            grid-template-columns: 80px 1fr auto;
-            gap: 12px;
+            grid-template-columns: 1fr;
+            gap: 8px;
             align-items: center;
             transition: all 0.2s;
         }
@@ -442,18 +442,9 @@
             color: #fff;
         }
 
-        .list-item-pnl {
-            text-align: right;
-        }
-
         .list-pnl-value {
             font-size: 16px;
             font-weight: 700;
-        }
-
-        .list-pnl-percent {
-            font-size: 11px;
-            color: #9ca3af;
         }
 
         .table-wrapper {
@@ -613,6 +604,39 @@
             font-size: 14px;
         }
 
+        /* === FILTER CSS (Excel tarzı satır) === */
+        .filter-row th {
+            padding: 6px 6px;
+            background: #050505;
+            border-bottom: 1px solid #2d2d2d;
+        }
+
+        .filter-input,
+        .filter-select {
+            width: 100%;
+            background: #000;
+            border: 1px solid #27272a;
+            border-radius: 4px;
+            padding: 4px 6px;
+            font-size: 10px;
+            color: #e5e7eb;
+            outline: none;
+        }
+
+        .filter-input:focus,
+        .filter-select:focus {
+            border-color: #3b82f6;
+        }
+
+        .filter-range {
+            display: flex;
+            gap: 4px;
+        }
+
+        .mini {
+            width: 100%;
+        }
+
         @media (max-width: 768px) {
             .header-stats {
                 grid-template-columns: repeat(2, 1fr);
@@ -623,6 +647,10 @@
             }
             .heatmap-grid {
                 grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            }
+            /* İstersen mobilde filtre satırını kapalı tut */
+            .filter-row {
+                display: none;
             }
         }
     </style>
@@ -739,7 +767,7 @@
         <div class="table-wrapper">
             <div class="table-header-section">
                 <div class="table-title">📈 All Positions Details</div>
-                <div class="ranking-subtitle">Complete position breakdown</div>
+                <div class="ranking-subtitle">Complete position breakdown (Excel style filters)</div>
             </div>
             <div class="table-container">
                 <table>
@@ -756,6 +784,56 @@
                             <th>PnL</th>
                             <th>ROE %</th>
                             <th>Liquidation</th>
+                        </tr>
+                        <!-- FILTER ROW -->
+                        <tr class="filter-row">
+                            <th><input id="fToken" class="filter-input" placeholder="Token"></th>
+                            <th><input id="fAddress" class="filter-input" placeholder="0x..."></th>
+                            <th>
+                                <select id="fSide" class="filter-select">
+                                    <option value="all">All</option>
+                                    <option value="long">Long</option>
+                                    <option value="short">Short</option>
+                                </select>
+                            </th>
+                            <th>
+                                <div class="filter-range">
+                                    <input id="fLevMin" class="filter-input mini" placeholder="min">
+                                    <input id="fLevMax" class="filter-input mini" placeholder="max">
+                                </div>
+                            </th>
+                            <th>
+                                <div class="filter-range">
+                                    <input id="fPosMin" class="filter-input mini" placeholder="min">
+                                    <input id="fPosMax" class="filter-input mini" placeholder="max">
+                                </div>
+                            </th>
+                            <th><input id="fSize" class="filter-input" placeholder=">= size"></th>
+                            <th>
+                                <div class="filter-range">
+                                    <input id="fEntryMin" class="filter-input mini" placeholder="min">
+                                    <input id="fEntryMax" class="filter-input mini" placeholder="max">
+                                </div>
+                            </th>
+                            <th>
+                                <div class="filter-range">
+                                    <input id="fMarkMin" class="filter-input mini" placeholder="min">
+                                    <input id="fMarkMax" class="filter-input mini" placeholder="max">
+                                </div>
+                            </th>
+                            <th>
+                                <div class="filter-range">
+                                    <input id="fPnlMin" class="filter-input mini" placeholder="min">
+                                    <input id="fPnlMax" class="filter-input mini" placeholder="max">
+                                </div>
+                            </th>
+                            <th>
+                                <div class="filter-range">
+                                    <input id="fRoeMin" class="filter-input mini" placeholder="min">
+                                    <input id="fRoeMax" class="filter-input mini" placeholder="max">
+                                </div>
+                            </th>
+                            <th><input id="fLiq" class="filter-input" placeholder="Search"></th>
                         </tr>
                     </thead>
                     <tbody id="detailTableBody">
@@ -821,7 +899,7 @@
 
         // Format price
         function formatPrice(price) {
-            if (!price) return '$0.00';
+            if (!price && price !== 0) return '$0.00';
             if (price >= 1000) {
                 return '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             } else if (price >= 1) {
@@ -833,16 +911,20 @@
             }
         }
 
-        // Get heatmap color
+        // Heatmap color (sadece yeşil / kırmızı, gri yok)
         function getHeatmapColor(pnlPercent, side) {
-            if (pnlPercent > 20) return side === 'long' ? 'rgba(16, 185, 129, 0.9)' : 'rgba(16, 185, 129, 0.7)';
-            if (pnlPercent > 10) return side === 'long' ? 'rgba(16, 185, 129, 0.7)' : 'rgba(16, 185, 129, 0.5)';
-            if (pnlPercent > 5) return side === 'long' ? 'rgba(16, 185, 129, 0.5)' : 'rgba(16, 185, 129, 0.3)';
-            if (pnlPercent > 0) return 'rgba(107, 114, 128, 0.5)';
-            if (pnlPercent > -5) return 'rgba(107, 114, 128, 0.6)';
-            if (pnlPercent > -10) return side === 'short' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(239, 68, 68, 0.3)';
-            if (pnlPercent > -20) return side === 'short' ? 'rgba(239, 68, 68, 0.7)' : 'rgba(239, 68, 68, 0.5)';
-            return side === 'short' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(239, 68, 68, 0.7)';
+            if (pnlPercent >= 0) {
+                if (pnlPercent > 20) return 'rgba(16, 185, 129, 0.95)';
+                if (pnlPercent > 10) return 'rgba(16, 185, 129, 0.8)';
+                if (pnlPercent > 5) return 'rgba(16, 185, 129, 0.65)';
+                return 'rgba(16, 185, 129, 0.45)';
+            } else {
+                const abs = Math.abs(pnlPercent);
+                if (abs > 20) return 'rgba(239, 68, 68, 0.95)';
+                if (abs > 10) return 'rgba(239, 68, 68, 0.8)';
+                if (abs > 5) return 'rgba(239, 68, 68, 0.65)';
+                return 'rgba(239, 68, 68, 0.45)';
+            }
         }
 
         // Render address list
@@ -1078,7 +1160,7 @@
             document.getElementById('barShort').textContent = shortPercent.toFixed(1) + '%';
         }
 
-// Update heatmap (YENİ VERSİYON - 2 büyük + 8 küçük grid)
+        // Heatmap (2 büyük + 8 küçük)
         function updateHeatmap() {
             const heatmapGrid = document.getElementById('heatmapGrid');
             
@@ -1101,10 +1183,9 @@
             
             heatmapGrid.innerHTML = topAssets.map((asset, index) => {
                 const pnlPercent = asset.totalValue > 0 ? (asset.pnl / asset.totalValue) * 100 : 0;
-                const dominantSide = asset.longValue > asset.shortValue ? 'long' : 'short';
+                const dominantSide = asset.longValue >= asset.shortValue ? 'long' : 'short';
                 const bgColor = getHeatmapColor(pnlPercent, dominantSide);
                 
-                // İlk 2 coin büyük (2x2), diğerleri küçük (1x1)
                 const isBig = index < 2;
                 const gridSpan = isBig ? 2 : 1;
                 const cellSize = isBig ? 200 : 120;
@@ -1127,7 +1208,7 @@
             }).join('');
         }
 
-        // Update list view (YENİ VERSİYON - 5 sol 5 sağ)
+        // List view
         function updateListView() {
             const listGrid = document.getElementById('listGrid');
             
@@ -1146,18 +1227,17 @@
                 .sort((a, b) => b.totalValue - a.totalValue)
                 .slice(0, 10);
             
-            // 2 kolonlu grid yap
             listGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
             listGrid.style.gap = '12px';
             
             listGrid.innerHTML = topAssets.map(asset => {
                 const pnlPercent = asset.totalValue > 0 ? (asset.pnl / asset.totalValue) * 100 : 0;
                 const pnlClass = asset.pnl >= 0 ? 'pnl-positive' : 'pnl-negative';
-                const dominantSide = asset.longValue > asset.shortValue ? 'Long' : 'Short';
+                const dominantSide = asset.longValue >= asset.shortValue ? 'Long' : 'Short';
                 const sideClass = dominantSide === 'Long' ? 'side-long' : 'side-short';
                 
                 return `
-                    <div class="list-item" style="grid-template-columns: 1fr;">
+                    <div class="list-item">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <div class="list-item-token">${asset.coin}</div>
                             <span class="side-badge ${sideClass}">${dominantSide}</span>
@@ -1197,6 +1277,95 @@
             }).join('');
         }
 
+        // --- EXCEL TARZI FİLTRE YARDIMCI ---
+        function parseFloatInput(id) {
+            const el = document.getElementById(id);
+            if (!el) return null;
+            const v = el.value.trim().replace(/[^0-9.\-]/g, '');
+            if (!v) return null;
+            const n = parseFloat(v);
+            return isNaN(n) ? null : n;
+        }
+
+        // Filtrelenmiş pozisyonları döndür
+        function getFilteredPositions() {
+            if (!state.positions || state.positions.length === 0) return [];
+
+            const token = (document.getElementById('fToken')?.value || '').toLowerCase().trim();
+            const address = (document.getElementById('fAddress')?.value || '').toLowerCase().trim();
+            const side = (document.getElementById('fSide')?.value || 'all');
+
+            const levMin = parseFloatInput('fLevMin');
+            const levMax = parseFloatInput('fLevMax');
+
+            const posMin = parseFloatInput('fPosMin');
+            const posMax = parseFloatInput('fPosMax');
+
+            const sizeMin = parseFloatInput('fSize');
+
+            const entryMin = parseFloatInput('fEntryMin');
+            const entryMax = parseFloatInput('fEntryMax');
+
+            const markMin = parseFloatInput('fMarkMin');
+            const markMax = parseFloatInput('fMarkMax');
+
+            const pnlMin = parseFloatInput('fPnlMin');
+            const pnlMax = parseFloatInput('fPnlMax');
+
+            const roeMin = parseFloatInput('fRoeMin');
+            const roeMax = parseFloatInput('fRoeMax');
+
+            const liqText = (document.getElementById('fLiq')?.value || '').toLowerCase().trim();
+
+            return state.positions.filter(pos => {
+                // Token
+                if (token && !pos.coin.toLowerCase().includes(token)) return false;
+
+                // Address
+                if (address && !pos.address.toLowerCase().includes(address)) return false;
+
+                // Side
+                if (side !== 'all' && pos.side !== side) return false;
+
+                // Leverage
+                if (levMin !== null && pos.leverage < levMin) return false;
+                if (levMax !== null && pos.leverage > levMax) return false;
+
+                // Position value
+                if (posMin !== null && pos.positionValue < posMin) return false;
+                if (posMax !== null && pos.positionValue > posMax) return false;
+
+                // Size (>=)
+                if (sizeMin !== null && pos.szi < sizeMin) return false;
+
+                // Entry
+                if (entryMin !== null && pos.entryPx < entryMin) return false;
+                if (entryMax !== null && pos.entryPx > entryMax) return false;
+
+                // Mark price (yaklaşık)
+                const mark = pos.entryPx + (pos.unrealizedPnl / pos.szi);
+                if (markMin !== null && mark < markMin) return false;
+                if (markMax !== null && mark > markMax) return false;
+
+                // PnL
+                if (pnlMin !== null && pos.unrealizedPnl < pnlMin) return false;
+                if (pnlMax !== null && pos.unrealizedPnl > pnlMax) return false;
+
+                // ROE%
+                const roePercent = pos.returnOnEquity * 100;
+                if (roeMin !== null && roePercent < roeMin) return false;
+                if (roeMax !== null && roePercent > roeMax) return false;
+
+                // Liquidation text search
+                if (liqText) {
+                    const liqStr = pos.liquidationPx > 0 ? formatPrice(pos.liquidationPx).toLowerCase() : 'n/a';
+                    if (!liqStr.includes(liqText)) return false;
+                }
+
+                return true;
+            });
+        }
+
         // Update detail table
         function updateDetailTable() {
             const tbody = document.getElementById('detailTableBody');
@@ -1213,10 +1382,26 @@
                 `;
                 return;
             }
+
+            const positions = getFilteredPositions();
             
-            tbody.innerHTML = state.positions.map(pos => {
+            if (positions.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="11" style="text-align: center; padding: 40px; color: #6b7280;">
+                            <div style="font-size: 32px; margin-bottom: 12px;">🧹</div>
+                            <div style="font-size: 14px; font-weight: 700; margin-bottom: 6px;">No Results</div>
+                            <div style="font-size: 12px;">Try adjusting your filters</div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = positions.map(pos => {
                 const pnlClass = pos.unrealizedPnl >= 0 ? 'pnl-positive' : 'pnl-negative';
                 const roePercent = pos.returnOnEquity * 100;
+                const markPrice = pos.entryPx + (pos.unrealizedPnl / pos.szi);
                 
                 return `
                     <tr>
@@ -1231,7 +1416,7 @@
                         <td style="font-weight: 700;">${formatCurrency(pos.positionValue)}</td>
                         <td>${formatNumber(pos.szi)}</td>
                         <td>${formatPrice(pos.entryPx)}</td>
-                        <td>${formatPrice(pos.entryPx + (pos.unrealizedPnl / pos.szi))}</td>
+                        <td>${formatPrice(markPrice)}</td>
                         <td class="${pnlClass}">
                             ${pos.unrealizedPnl >= 0 ? '+' : ''}${formatCurrency(pos.unrealizedPnl)}
                         </td>
@@ -1308,6 +1493,15 @@
             });
         }
 
+        // Filter inputs: her değişimde tabloyu yenile
+        function initFilters() {
+            const filterEls = document.querySelectorAll('.filter-input, .filter-select');
+            filterEls.forEach(el => {
+                el.addEventListener('input', updateDetailTable);
+                el.addEventListener('change', updateDetailTable);
+            });
+        }
+
         // Event listeners
         document.getElementById('loadBtn').addEventListener('click', fetchAllPositions);
         document.getElementById('addAddressBtn').addEventListener('click', addAddress);
@@ -1322,6 +1516,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadConfig();
             initViewToggle();
+            initFilters();
             console.log('🐋 Hyperliquid Portfolio Dashboard Ready!');
             console.log('📡 Using Hyperliquid Public API');
         });
