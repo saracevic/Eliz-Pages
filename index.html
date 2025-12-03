@@ -25,7 +25,6 @@
             margin: 0 auto;
         }
 
-        /* API Configuration Panel */
         .config-panel {
             background: #1a1a1a;
             border: 1px solid #2d2d2d;
@@ -66,17 +65,11 @@
             border: 1px solid #ef4444;
         }
 
-        .config-form {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+        .address-manager {
+            background: #111;
+            border: 1px solid #2d2d2d;
+            border-radius: 6px;
+            padding: 12px;
         }
 
         .input-label {
@@ -84,6 +77,13 @@
             color: #9ca3af;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+
+        .address-input-group {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+            margin-bottom: 10px;
         }
 
         .input-field {
@@ -109,7 +109,6 @@
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
-            align-self: flex-end;
         }
 
         .btn-primary {
@@ -131,20 +130,6 @@
         .btn-secondary:hover {
             background: #2d2d2d;
             color: #fff;
-        }
-
-        .address-manager {
-            background: #111;
-            border: 1px solid #2d2d2d;
-            border-radius: 6px;
-            padding: 12px;
-        }
-
-        .address-input-group {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 8px;
-            margin-bottom: 10px;
         }
 
         .address-list {
@@ -176,7 +161,6 @@
             line-height: 1;
         }
 
-        /* Header Stats */
         .header-stats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -217,47 +201,6 @@
             color: #3b82f6;
         }
 
-        /* View Toggle */
-        .view-toggle-wrapper {
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .view-toggle {
-            display: flex;
-            background: #111;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .view-btn {
-            padding: 8px 20px;
-            border: none;
-            background: transparent;
-            color: #9ca3af;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .view-btn.active {
-            background: #3b82f6;
-            color: #fff;
-        }
-
-        .refresh-info {
-            font-size: 11px;
-            color: #6b7280;
-        }
-
-        /* Long/Short Bar */
         .position-bar-wrapper {
             background: #1a1a1a;
             border: 1px solid #2d2d2d;
@@ -306,7 +249,45 @@
             transition: width 0.3s ease;
         }
 
-        /* Heatmap View */
+        .view-toggle-wrapper {
+            background: #1a1a1a;
+            border: 1px solid #2d2d2d;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: #111;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .view-btn {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            color: #9ca3af;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: #3b82f6;
+            color: #fff;
+        }
+
+        .refresh-info {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
         .heatmap-container {
             background: #1a1a1a;
             border: 1px solid #2d2d2d;
@@ -387,7 +368,6 @@
             font-weight: 700;
         }
 
-        /* List View */
         .list-container {
             background: #1a1a1a;
             border: 1px solid #2d2d2d;
@@ -476,7 +456,6 @@
             color: #9ca3af;
         }
 
-        /* Detail Table */
         .table-wrapper {
             background: #1a1a1a;
             border: 1px solid #2d2d2d;
@@ -638,16 +617,10 @@
             .header-stats {
                 grid-template-columns: repeat(2, 1fr);
             }
-
-            .config-form {
-                grid-template-columns: 1fr;
-            }
-
             .list-item {
                 grid-template-columns: 1fr;
                 gap: 8px;
             }
-
             .heatmap-grid {
                 grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
             }
@@ -656,25 +629,14 @@
 </head>
 <body>
     <div class="container">
+
         <!-- API Configuration Panel -->
         <div class="config-panel">
             <div class="config-header">
-                <div class="config-title">⚙️ API Configuration</div>
-                <span class="status-badge status-disconnected" id="statusBadge">Disconnected</span>
+                <div class="config-title">🐋 Hyperliquid Portfolio Dashboard</div>
+                <span class="status-badge status-disconnected" id="statusBadge">Ready</span>
             </div>
             
-            <div class="config-form">
-                <div class="input-group">
-                    <label class="input-label">API Endpoint URL</label>
-                    <input type="text" 
-                           class="input-field" 
-                           id="apiEndpoint" 
-                           placeholder="https://your-api.com/hyperliquid/positions"
-                           value="">
-                </div>
-                <button class="btn btn-primary" id="connectBtn">Connect</button>
-            </div>
-
             <div class="address-manager">
                 <div class="input-label" style="margin-bottom: 8px;">Wallet Addresses</div>
                 <div class="address-input-group">
@@ -685,6 +647,7 @@
                     <button class="btn btn-secondary" id="addAddressBtn">Add</button>
                 </div>
                 <div class="address-list" id="addressList"></div>
+                <button class="btn btn-primary" id="loadBtn" style="margin-top: 10px; width: 100%;">Load Positions</button>
             </div>
         </div>
 
@@ -752,7 +715,7 @@
                 <div class="empty-state">
                     <div class="empty-state-icon">📊</div>
                     <div class="empty-state-title">No Data Available</div>
-                    <div class="empty-state-text">Connect API and add addresses to view positions</div>
+                    <div class="empty-state-text">Add wallet addresses and click Load Positions</div>
                 </div>
             </div>
         </div>
@@ -767,7 +730,7 @@
                 <div class="empty-state">
                     <div class="empty-state-icon">📝</div>
                     <div class="empty-state-title">No Data Available</div>
-                    <div class="empty-state-text">Connect API and add addresses to view positions</div>
+                    <div class="empty-state-text">Add wallet addresses and click Load Positions</div>
                 </div>
             </div>
         </div>
@@ -791,7 +754,7 @@
                             <th>Entry Price</th>
                             <th>Mark Price</th>
                             <th>PnL</th>
-                            <th>Funding Fee</th>
+                            <th>ROE %</th>
                             <th>Liquidation</th>
                         </tr>
                     </thead>
@@ -800,7 +763,7 @@
                             <td colspan="11" style="text-align: center; padding: 40px; color: #6b7280;">
                                 <div style="font-size: 32px; margin-bottom: 12px;">🔍</div>
                                 <div style="font-size: 14px; font-weight: 700; margin-bottom: 6px;">No Positions Found</div>
-                                <div style="font-size: 12px;">Configure API endpoint and add wallet addresses</div>
+                                <div style="font-size: 12px;">Add wallet addresses to view positions</div>
                             </td>
                         </tr>
                     </tbody>
@@ -812,51 +775,45 @@
     <script>
         // Global State
         const state = {
-            apiEndpoint: '',
             addresses: [],
             positions: [],
             aggregatedData: {},
-            isConnected: false,
             autoRefresh: null
         };
 
-        // Load saved config from localStorage
+        const HYPERLIQUID_API = 'https://api.hyperliquid.xyz/info';
+
+        // Load saved addresses
         function loadConfig() {
-            const savedEndpoint = localStorage.getItem('apiEndpoint');
-            const savedAddresses = localStorage.getItem('addresses');
-            
-            if (savedEndpoint) {
-                state.apiEndpoint = savedEndpoint;
-                document.getElementById('apiEndpoint').value = savedEndpoint;
-            }
-            
+            const savedAddresses = localStorage.getItem('hl_addresses');
             if (savedAddresses) {
                 state.addresses = JSON.parse(savedAddresses);
                 renderAddressList();
             }
         }
 
-        // Save config to localStorage
+        // Save addresses
         function saveConfig() {
-            localStorage.setItem('apiEndpoint', state.apiEndpoint);
-            localStorage.setItem('addresses', JSON.stringify(state.addresses));
+            localStorage.setItem('hl_addresses', JSON.stringify(state.addresses));
         }
 
         // Format currency
         function formatCurrency(value) {
-            if (Math.abs(value) >= 1000000) {
-                return ' + (value / 1000000).toFixed(2) + 'M';
-            } else if (Math.abs(value) >= 1000) {
-                return ' + (value / 1000).toFixed(2) + 'K';
+            const absValue = Math.abs(value);
+            if (absValue >= 1000000) {
+                return '$' + (value / 1000000).toFixed(2) + 'M';
+            } else if (absValue >= 1000) {
+                return '$' + (value / 1000).toFixed(2) + 'K';
             }
-            return ' + value.toFixed(2);
+            return '$' + value.toFixed(2);
         }
 
         // Format number
         function formatNumber(value) {
-            if (Math.abs(value) >= 1000000) {
+            const absValue = Math.abs(value);
+            if (absValue >= 1000000) {
                 return (value / 1000000).toFixed(2) + 'M';
-            } else if (Math.abs(value) >= 1000) {
+            } else if (absValue >= 1000) {
                 return (value / 1000).toFixed(2) + 'K';
             }
             return value.toFixed(4);
@@ -866,26 +823,26 @@
         function formatPrice(price) {
             if (!price) return '$0.00';
             if (price >= 1000) {
-                return ' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                return '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             } else if (price >= 1) {
-                return ' + price.toFixed(2);
+                return '$' + price.toFixed(2);
             } else if (price >= 0.01) {
-                return ' + price.toFixed(4);
+                return '$' + price.toFixed(4);
             } else {
-                return ' + price.toFixed(6);
+                return '$' + price.toFixed(6);
             }
         }
 
-        // Get heatmap color based on PnL
+        // Get heatmap color
         function getHeatmapColor(pnlPercent, side) {
-            if (pnlPercent > 20) return side === 'Long' ? 'rgba(16, 185, 129, 0.9)' : 'rgba(16, 185, 129, 0.7)';
-            if (pnlPercent > 10) return side === 'Long' ? 'rgba(16, 185, 129, 0.7)' : 'rgba(16, 185, 129, 0.5)';
-            if (pnlPercent > 5) return side === 'Long' ? 'rgba(16, 185, 129, 0.5)' : 'rgba(16, 185, 129, 0.3)';
+            if (pnlPercent > 20) return side === 'long' ? 'rgba(16, 185, 129, 0.9)' : 'rgba(16, 185, 129, 0.7)';
+            if (pnlPercent > 10) return side === 'long' ? 'rgba(16, 185, 129, 0.7)' : 'rgba(16, 185, 129, 0.5)';
+            if (pnlPercent > 5) return side === 'long' ? 'rgba(16, 185, 129, 0.5)' : 'rgba(16, 185, 129, 0.3)';
             if (pnlPercent > 0) return 'rgba(107, 114, 128, 0.5)';
             if (pnlPercent > -5) return 'rgba(107, 114, 128, 0.6)';
-            if (pnlPercent > -10) return side === 'Short' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(239, 68, 68, 0.3)';
-            if (pnlPercent > -20) return side === 'Short' ? 'rgba(239, 68, 68, 0.7)' : 'rgba(239, 68, 68, 0.5)';
-            return side === 'Short' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(239, 68, 68, 0.7)';
+            if (pnlPercent > -10) return side === 'short' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(239, 68, 68, 0.3)';
+            if (pnlPercent > -20) return side === 'short' ? 'rgba(239, 68, 68, 0.7)' : 'rgba(239, 68, 68, 0.5)';
+            return side === 'short' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(239, 68, 68, 0.7)';
         }
 
         // Render address list
@@ -915,7 +872,7 @@
                 return;
             }
             
-            if (!address.startsWith('0x') || address.length < 42) {
+            if (!address.startsWith('0x') || address.length !== 42) {
                 alert('Invalid Ethereum address format');
                 return;
             }
@@ -938,1168 +895,97 @@
             saveConfig();
         }
 
-        // Connect to API
-        async function connectAPI() {
-            const endpoint = document.getElementById('apiEndpoint').value.trim();
-            
-            if (!endpoint) {
-                alert('Please enter API endpoint URL');
-                return;
-            }
-            
-            if (!endpoint.startsWith('http://') && !endpoint.startsWith('https://')) {
-                alert('Invalid URL format. Must start with http:// or https://');
-                return;
-            }
-            
-            state.apiEndpoint = endpoint;
-            saveConfig();
-            
-            // Test connection
-            showLoading(true);
+        // Fetch user state from Hyperliquid API
+        async function fetchUserState(address) {
             try {
-                const response = await fetch(endpoint + '/health', {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                
-                if (response.ok) {
-                    state.isConnected = true;
-                    updateConnectionStatus(true);
-                    await fetchPositions();
-                    startAutoRefresh();
-                } else {
-                    throw new Error('API connection failed');
-                }
-            } catch (error) {
-                state.isConnected = false;
-                updateConnectionStatus(false);
-                alert('Failed to connect to API: ' + error.message);
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        // Update connection status
-        function updateConnectionStatus(connected) {
-            const badge = document.getElementById('statusBadge');
-            const btn = document.getElementById('connectBtn');
-            
-            if (connected) {
-                badge.textContent = 'Connected';
-                badge.className = 'status-badge status-connected';
-                btn.textContent = 'Refresh';
-            } else {
-                badge.textContent = 'Disconnected';
-                badge.className = 'status-badge status-disconnected';
-                btn.textContent = 'Connect';
-            }
-        }
-
-        // Fetch positions from API
-        async function fetchPositions() {
-            if (!state.apiEndpoint || state.addresses.length === 0) {
-                console.log('No API endpoint or addresses configured');
-                return;
-            }
-            
-            showLoading(true);
-            
-            try {
-                const response = await fetch(state.apiEndpoint + '/positions', {
+                const response = await fetch(HYPERLIQUID_API, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ addresses: state.addresses })
+                    body: JSON.stringify({
+                        type: 'clearinghouseState',
+                        user: address
+                    })
                 });
                 
-                if (!response.ok) throw new Error('Failed to fetch positions');
+                if (!response.ok) throw new Error('API request failed');
                 
                 const data = await response.json();
-                state.positions = data.positions || [];
-                
-                aggregateData();
-                updateDashboard();
-                updateLastUpdateTime();
-                
+                return data;
             } catch (error) {
-                console.error('Error fetching positions:', error);
-                alert('Error fetching positions: ' + error.message);
-            } finally {
-                showLoading(false);
+                console.error('Error fetching user state:', error);
+                return null;
             }
         }
 
-        // Aggregate position data
-        function aggregateData() {
-            const aggregated = {};
-            
-            state.positions.forEach(pos => {
-                if (!aggregated[pos.token]) {
-                    aggregated[pos.token] = {
-                        token: pos.token,
-                        longValue: 0,
-                        shortValue: 0,
-                        totalValue: 0,
-                        pnl: 0,
-                        positions: []
-                    };
-                }
-                
-                const data = aggregated[pos.token];
-                
-                if (pos.side === 'Long') {
-                    data.longValue += pos.value;
-                } else {
-                    data.shortValue += pos.value;
-                }
-                
-                data.totalValue += pos.value;
-                data.pnl += pos.pnl || 0;
-                data.positions.push(pos);
-            });
-            
-            state.aggregatedData = aggregated;
-        }
-
-        <!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyperliquid Portfolio Dashboard 🐋</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: #0a0a0a;
-            color: #e5e7eb;
-            padding: 12px;
-            min-height: 100vh;
-            font-size: 13px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* API Configuration Panel */
-        .config-panel {
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-
-        .config-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .config-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .status-connected {
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
-            border: 1px solid #10b981;
-        }
-
-        .status-disconnected {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border: 1px solid #ef4444;
-        }
-
-        .config-form {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .input-label {
-            font-size: 11px;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .input-field {
-            background: #111;
-            border: 1px solid #2d2d2d;
-            border-radius: 6px;
-            padding: 10px 12px;
-            color: #fff;
-            font-size: 12px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .input-field:focus {
-            border-color: #3b82f6;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border-radius: 6px;
-            border: none;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            align-self: flex-end;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: #fff;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-        }
-
-        .btn-secondary {
-            background: #1f1f1f;
-            color: #9ca3af;
-            border: 1px solid #2d2d2d;
-        }
-
-        .btn-secondary:hover {
-            background: #2d2d2d;
-            color: #fff;
-        }
-
-        .address-manager {
-            background: #111;
-            border: 1px solid #2d2d2d;
-            border-radius: 6px;
-            padding: 12px;
-        }
-
-        .address-input-group {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .address-list {
-            max-height: 120px;
-            overflow-y: auto;
-            margin-top: 10px;
-        }
-
-        .address-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #1f1f1f;
-            border: 1px solid #2d2d2d;
-            border-radius: 4px;
-            padding: 6px 10px;
-            margin: 4px;
-            font-size: 11px;
-            font-family: monospace;
-        }
-
-        .address-chip .remove-btn {
-            background: none;
-            border: none;
-            color: #ef4444;
-            cursor: pointer;
-            font-size: 14px;
-            padding: 0;
-            line-height: 1;
-        }
-
-        /* Header Stats */
-        .header-stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .stat-card {
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 8px;
-            padding: 12px;
-        }
-
-        .stat-label {
-            font-size: 11px;
-            color: #9ca3af;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .stat-value.long {
-            color: #10b981;
-        }
-
-        .stat-value.short {
-            color: #ef4444;
-        }
-
-        .stat-value.neutral {
-            color: #3b82f6;
-        }
-
-        /* View Toggle */
-        .view-toggle-wrapper {
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .view-toggle {
-            display: flex;
-            background: #111;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .view-btn {
-            padding: 8px 20px;
-            border: none;
-            background: transparent;
-            color: #9ca3af;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .view-btn.active {
-            background: #3b82f6;
-            color: #fff;
-        }
-
-        .refresh-info {
-            font-size: 11px;
-            color: #6b7280;
-        }
-
-        /* Long/Short Bar */
-        .position-bar-wrapper {
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-        }
-
-        .bar-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 11px;
-            color: #9ca3af;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .position-bar {
-            display: flex;
-            height: 32px;
-            border-radius: 6px;
-            overflow: hidden;
-            background: #111;
-        }
-
-        .bar-long {
-            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-            color: #fff;
-            transition: width 0.3s ease;
-        }
-
-        .bar-short {
-            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-            color: #fff;
-            transition: width 0.3s ease;
-        }
-
-        /* Heatmap View */
-        .heatmap-container {
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 12px;
-            display: none;
-        }
-
-        .heatmap-container.active {
-            display: block;
-        }
-
-        .heatmap-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #2d2d2d;
-        }
-
-        .heatmap-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .heatmap-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 4px;
-            min-height: 400px;
-        }
-
-        .heatmap-cell {
-            position: relative;
-            border-radius: 4px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.2s;
-            cursor: pointer;
-            overflow: hidden;
-        }
-
-        .heatmap-cell:hover {
-            transform: scale(1.05);
-            z-index: 10;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-
-        .heatmap-cell-token {
-            font-size: 14px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 4px;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-        }
-
-        .heatmap-cell-value {
-            font-size: 11px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.9);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-        }
-
-        .heatmap-cell-side {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            font-size: 9px;
-            padding: 2px 6px;
-            border-radius: 3px;
-            background: rgba(0,0,0,0.3);
-            font-weight: 700;
-        }
-
-        /* List View */
-        .list-container {
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 12px;
-            display: none;
-        }
-
-        .list-container.active {
-            display: block;
-        }
-
-        .list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #2d2d2d;
-        }
-
-        .list-grid {
-            display: grid;
-            gap: 8px;
-        }
-
-        .list-item {
-            background: #111;
-            border: 1px solid #2d2d2d;
-            border-radius: 6px;
-            padding: 12px;
-            display: grid;
-            grid-template-columns: 80px 1fr auto;
-            gap: 12px;
-            align-items: center;
-            transition: all 0.2s;
-        }
-
-        .list-item:hover {
-            border-color: #3b82f6;
-            transform: translateX(4px);
-        }
-
-        .list-item-token {
-            font-size: 16px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .list-item-details {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .list-detail-item {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .list-detail-label {
-            font-size: 9px;
-            color: #6b7280;
-            text-transform: uppercase;
-        }
-
-        .list-detail-value {
-            font-size: 12px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .list-item-pnl {
-            text-align: right;
-        }
-
-        .list-pnl-value {
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .list-pnl-percent {
-            font-size: 11px;
-            color: #9ca3af;
-        }
-
-        /* Detail Table */
-        .table-wrapper {
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .table-header-section {
-            padding: 14px;
-            border-bottom: 2px solid #2d2d2d;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .table-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 1200px;
-        }
-
-        thead {
-            background: #111;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        th {
-            padding: 12px 10px;
-            text-align: left;
-            font-size: 11px;
-            font-weight: 700;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid #2d2d2d;
-            white-space: nowrap;
-        }
-
-        tbody tr {
-            border-bottom: 1px solid #1f1f1f;
-            transition: background 0.2s ease;
-        }
-
-        tbody tr:hover {
-            background: #1f1f1f;
-        }
-
-        td {
-            padding: 12px 10px;
-            font-size: 12px;
-            color: #e5e7eb;
-            white-space: nowrap;
-        }
-
-        .token-cell {
-            font-weight: 700;
-            font-size: 13px;
-            color: #fff;
-        }
-
-        .side-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 700;
-            border: 1px solid;
-        }
-
-        .side-long {
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
-            border-color: #10b981;
-        }
-
-        .side-short {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border-color: #ef4444;
-        }
-
-        .pnl-positive {
-            color: #10b981;
-            font-weight: 700;
-        }
-
-        .pnl-negative {
-            color: #ef4444;
-            font-weight: 700;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            display: none;
-        }
-
-        .loading-overlay.active {
-            display: flex;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #2d2d2d;
-            border-top-color: #3b82f6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #6b7280;
-        }
-
-        .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
-
-        .empty-state-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #9ca3af;
-            margin-bottom: 8px;
-        }
-
-        .empty-state-text {
-            font-size: 14px;
-        }
-
-        @media (max-width: 768px) {
-            .header-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .config-form {
-                grid-template-columns: 1fr;
-            }
-
-            .list-item {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
-
-            .heatmap-grid {
-                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- API Configuration Panel -->
-        <div class="config-panel">
-            <div class="config-header">
-                <div class="config-title">⚙️ API Configuration</div>
-                <span class="status-badge status-disconnected" id="statusBadge">Disconnected</span>
-            </div>
-            
-            <div class="config-form">
-                <div class="input-group">
-                    <label class="input-label">API Endpoint URL</label>
-                    <input type="text" 
-                           class="input-field" 
-                           id="apiEndpoint" 
-                           placeholder="https://your-api.com/hyperliquid/positions"
-                           value="">
-                </div>
-                <button class="btn btn-primary" id="connectBtn">Connect</button>
-            </div>
-
-            <div class="address-manager">
-                <div class="input-label" style="margin-bottom: 8px;">Wallet Addresses</div>
-                <div class="address-input-group">
-                    <input type="text" 
-                           class="input-field" 
-                           id="addressInput" 
-                           placeholder="Enter wallet address (0x...)">
-                    <button class="btn btn-secondary" id="addAddressBtn">Add</button>
-                </div>
-                <div class="address-list" id="addressList"></div>
-            </div>
-        </div>
-
-        <!-- Loading Overlay -->
-        <div class="loading-overlay" id="loadingOverlay">
-            <div class="loading-spinner"></div>
-        </div>
-
-        <!-- Header Stats -->
-        <div class="header-stats">
-            <div class="stat-card">
-                <div class="stat-label">Long Position</div>
-                <div class="stat-value long" id="longPosition">$0.00</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Short Position</div>
-                <div class="stat-value short" id="shortPosition">$0.00</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Total Positions</div>
-                <div class="stat-value neutral" id="totalPositions">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Net PnL</div>
-                <div class="stat-value" id="netPnl">$0.00</div>
-            </div>
-        </div>
-
-        <!-- Long/Short Bar -->
-        <div class="position-bar-wrapper">
-            <div class="bar-header">
-                <div>
-                    <span>Long: <strong id="longPosValue">$0.00</strong></span>
-                    <span style="margin-left: 15px;">Short: <strong id="shortPosValue">$0.00</strong></span>
-                </div>
-                <div>
-                    <span>Profit: <strong id="profitCount">0</strong></span>
-                    <span style="margin-left: 15px;">Loss: <strong id="lossCount">0</strong></span>
-                </div>
-            </div>
-            <div class="position-bar">
-                <div class="bar-long" id="barLong" style="width: 50%;">50%</div>
-                <div class="bar-short" id="barShort" style="width: 50%;">50%</div>
-            </div>
-        </div>
-
-        <!-- View Toggle -->
-        <div class="view-toggle-wrapper">
-            <div class="view-toggle">
-                <button class="view-btn active" data-view="heatmap">🔥 Heatmap</button>
-                <button class="view-btn" data-view="list">📋 List View</button>
-            </div>
-            <div class="refresh-info">
-                Last updated: <span id="lastUpdate">Never</span>
-            </div>
-        </div>
-
-        <!-- Heatmap View -->
-        <div class="heatmap-container active" id="heatmapView">
-            <div class="heatmap-header">
-                <div class="heatmap-title">🔥 Top 10 Open Positions - Heatmap</div>
-                <div class="ranking-subtitle">Sorted by position size</div>
-            </div>
-            <div class="heatmap-grid" id="heatmapGrid">
-                <div class="empty-state">
-                    <div class="empty-state-icon">📊</div>
-                    <div class="empty-state-title">No Data Available</div>
-                    <div class="empty-state-text">Connect API and add addresses to view positions</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- List View -->
-        <div class="list-container" id="listView">
-            <div class="list-header">
-                <div class="heatmap-title">📋 Top 10 Open Positions - List</div>
-                <div class="ranking-subtitle">Sorted by position size</div>
-            </div>
-            <div class="list-grid" id="listGrid">
-                <div class="empty-state">
-                    <div class="empty-state-icon">📝</div>
-                    <div class="empty-state-title">No Data Available</div>
-                    <div class="empty-state-text">Connect API and add addresses to view positions</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Detail Table -->
-        <div class="table-wrapper">
-            <div class="table-header-section">
-                <div class="table-title">📈 All Positions Details</div>
-                <div class="ranking-subtitle">Complete position breakdown</div>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Token</th>
-                            <th>Address</th>
-                            <th>Side</th>
-                            <th>Leverage</th>
-                            <th>Position Value</th>
-                            <th>Size</th>
-                            <th>Entry Price</th>
-                            <th>Mark Price</th>
-                            <th>PnL</th>
-                            <th>Funding Fee</th>
-                            <th>Liquidation</th>
-                        </tr>
-                    </thead>
-                    <tbody id="detailTableBody">
-                        <tr>
-                            <td colspan="11" style="text-align: center; padding: 40px; color: #6b7280;">
-                                <div style="font-size: 32px; margin-bottom: 12px;">🔍</div>
-                                <div style="font-size: 14px; font-weight: 700; margin-bottom: 6px;">No Positions Found</div>
-                                <div style="font-size: 12px;">Configure API endpoint and add wallet addresses</div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Global State
-        const state = {
-            apiEndpoint: '',
-            addresses: [],
-            positions: [],
-            aggregatedData: {},
-            isConnected: false,
-            autoRefresh: null
-        };
-
-        // Load saved config from localStorage
-        function loadConfig() {
-            const savedEndpoint = localStorage.getItem('apiEndpoint');
-            const savedAddresses = localStorage.getItem('addresses');
-            
-            if (savedEndpoint) {
-                state.apiEndpoint = savedEndpoint;
-                document.getElementById('apiEndpoint').value = savedEndpoint;
-            }
-            
-            if (savedAddresses) {
-                state.addresses = JSON.parse(savedAddresses);
-                renderAddressList();
-            }
-        }
-
-        // Save config to localStorage
-        function saveConfig() {
-            localStorage.setItem('apiEndpoint', state.apiEndpoint);
-            localStorage.setItem('addresses', JSON.stringify(state.addresses));
-        }
-
-        // Format currency
-        function formatCurrency(value) {
-            if (Math.abs(value) >= 1000000) {
-                return ' + (value / 1000000).toFixed(2) + 'M';
-            } else if (Math.abs(value) >= 1000) {
-                return ' + (value / 1000).toFixed(2) + 'K';
-            }
-            return ' + value.toFixed(2);
-        }
-
-        // Format number
-        function formatNumber(value) {
-            if (Math.abs(value) >= 1000000) {
-                return (value / 1000000).toFixed(2) + 'M';
-            } else if (Math.abs(value) >= 1000) {
-                return (value / 1000).toFixed(2) + 'K';
-            }
-            return value.toFixed(4);
-        }
-
-        // Format price
-        function formatPrice(price) {
-            if (!price) return '$0.00';
-            if (price >= 1000) {
-                return ' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            } else if (price >= 1) {
-                return ' + price.toFixed(2);
-            } else if (price >= 0.01) {
-                return ' + price.toFixed(4);
-            } else {
-                return ' + price.toFixed(6);
-            }
-        }
-
-        // Get heatmap color based on PnL
-        function getHeatmapColor(pnlPercent, side) {
-            if (pnlPercent > 20) return side === 'Long' ? 'rgba(16, 185, 129, 0.9)' : 'rgba(16, 185, 129, 0.7)';
-            if (pnlPercent > 10) return side === 'Long' ? 'rgba(16, 185, 129, 0.7)' : 'rgba(16, 185, 129, 0.5)';
-            if (pnlPercent > 5) return side === 'Long' ? 'rgba(16, 185, 129, 0.5)' : 'rgba(16, 185, 129, 0.3)';
-            if (pnlPercent > 0) return 'rgba(107, 114, 128, 0.5)';
-            if (pnlPercent > -5) return 'rgba(107, 114, 128, 0.6)';
-            if (pnlPercent > -10) return side === 'Short' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(239, 68, 68, 0.3)';
-            if (pnlPercent > -20) return side === 'Short' ? 'rgba(239, 68, 68, 0.7)' : 'rgba(239, 68, 68, 0.5)';
-            return side === 'Short' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(239, 68, 68, 0.7)';
-        }
-
-        // Render address list
-        function renderAddressList() {
-            const addressList = document.getElementById('addressList');
-            
+        // Fetch all positions
+        async function fetchAllPositions() {
             if (state.addresses.length === 0) {
-                addressList.innerHTML = '<div style="text-align: center; color: #6b7280; padding: 20px; font-size: 11px;">No addresses added yet</div>';
+                alert('Please add at least one wallet address');
                 return;
             }
             
-            addressList.innerHTML = state.addresses.map(addr => `
-                <div class="address-chip">
-                    <span>${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}</span>
-                    <button class="remove-btn" onclick="removeAddress('${addr}')">×</button>
-                </div>
-            `).join('');
-        }
-
-        // Add address
-        function addAddress() {
-            const input = document.getElementById('addressInput');
-            const address = input.value.trim();
-            
-            if (!address) {
-                alert('Please enter a wallet address');
-                return;
-            }
-            
-            if (!address.startsWith('0x') || address.length < 42) {
-                alert('Invalid Ethereum address format');
-                return;
-            }
-            
-            if (state.addresses.includes(address)) {
-                alert('Address already added');
-                return;
-            }
-            
-            state.addresses.push(address);
-            input.value = '';
-            renderAddressList();
-            saveConfig();
-        }
-
-        // Remove address
-        function removeAddress(address) {
-            state.addresses = state.addresses.filter(addr => addr !== address);
-            renderAddressList();
-            saveConfig();
-        }
-
-        // Connect to API
-        async function connectAPI() {
-            const endpoint = document.getElementById('apiEndpoint').value.trim();
-            
-            if (!endpoint) {
-                alert('Please enter API endpoint URL');
-                return;
-            }
-            
-            if (!endpoint.startsWith('http://') && !endpoint.startsWith('https://')) {
-                alert('Invalid URL format. Must start with http:// or https://');
-                return;
-            }
-            
-            state.apiEndpoint = endpoint;
-            saveConfig();
-            
-            // Test connection
             showLoading(true);
+            updateStatus('Loading...');
+            
             try {
-                const response = await fetch(endpoint + '/health', {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                });
+                const allPositions = [];
                 
-                if (response.ok) {
-                    state.isConnected = true;
-                    updateConnectionStatus(true);
-                    await fetchPositions();
-                    startAutoRefresh();
-                } else {
-                    throw new Error('API connection failed');
+                for (const address of state.addresses) {
+                    const userData = await fetchUserState(address);
+                    
+                    if (userData && userData.assetPositions) {
+                        userData.assetPositions.forEach(pos => {
+                            const position = pos.position;
+                            const szi = parseFloat(position.szi);
+                            
+                            if (szi !== 0) {
+                                const entryPx = parseFloat(position.entryPx);
+                                const positionValue = Math.abs(szi) * entryPx;
+                                const unrealizedPnl = parseFloat(position.unrealizedPnl);
+                                const leverage = parseFloat(position.leverage.value);
+                                const liquidationPx = parseFloat(position.liquidationPx || 0);
+                                
+                                allPositions.push({
+                                    address: address,
+                                    coin: pos.position.coin,
+                                    side: szi > 0 ? 'long' : 'short',
+                                    szi: Math.abs(szi),
+                                    entryPx: entryPx,
+                                    positionValue: positionValue,
+                                    unrealizedPnl: unrealizedPnl,
+                                    returnOnEquity: parseFloat(position.returnOnEquity),
+                                    leverage: leverage,
+                                    liquidationPx: liquidationPx,
+                                    marginUsed: parseFloat(position.marginUsed)
+                                });
+                            }
+                        });
+                    }
                 }
-            } catch (error) {
-                state.isConnected = false;
-                updateConnectionStatus(false);
-                alert('Failed to connect to API: ' + error.message);
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        // Update connection status
-        function updateConnectionStatus(connected) {
-            const badge = document.getElementById('statusBadge');
-            const btn = document.getElementById('connectBtn');
-            
-            if (connected) {
-                badge.textContent = 'Connected';
-                badge.className = 'status-badge status-connected';
-                btn.textContent = 'Refresh';
-            } else {
-                badge.textContent = 'Disconnected';
-                badge.className = 'status-badge status-disconnected';
-                btn.textContent = 'Connect';
-            }
-        }
-
-        // Fetch positions from API
-        async function fetchPositions() {
-            if (!state.apiEndpoint || state.addresses.length === 0) {
-                console.log('No API endpoint or addresses configured');
-                return;
-            }
-            
-            showLoading(true);
-            
-            try {
-                const response = await fetch(state.apiEndpoint + '/positions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ addresses: state.addresses })
-                });
                 
-                if (!response.ok) throw new Error('Failed to fetch positions');
-                
-                const data = await response.json();
-                state.positions = data.positions || [];
-                
+                state.positions = allPositions;
                 aggregateData();
                 updateDashboard();
                 updateLastUpdateTime();
+                updateStatus('Connected');
                 
             } catch (error) {
-                console.error('Error fetching positions:', error);
-                alert('Error fetching positions: ' + error.message);
+                console.error('Error:', error);
+                alert('Error loading positions: ' + error.message);
+                updateStatus('Error');
             } finally {
                 showLoading(false);
             }
         }
 
-        // Aggregate position data
+        // Aggregate data
         function aggregateData() {
             const aggregated = {};
             
             state.positions.forEach(pos => {
-                if (!aggregated[pos.token]) {
-                    aggregated[pos.token] = {
-                        token: pos.token,
+                if (!aggregated[pos.coin]) {
+                    aggregated[pos.coin] = {
+                        coin: pos.coin,
                         longValue: 0,
                         shortValue: 0,
                         totalValue: 0,
@@ -2108,23 +994,23 @@
                     };
                 }
                 
-                const data = aggregated[pos.token];
+                const data = aggregated[pos.coin];
                 
-                if (pos.side === 'Long') {
-                    data.longValue += pos.value;
+                if (pos.side === 'long') {
+                    data.longValue += pos.positionValue;
                 } else {
-                    data.shortValue += pos.value;
+                    data.shortValue += pos.positionValue;
                 }
                 
-                data.totalValue += pos.value;
-                data.pnl += pos.pnl || 0;
+                data.totalValue += pos.positionValue;
+                data.pnl += pos.unrealizedPnl;
                 data.positions.push(pos);
             });
             
             state.aggregatedData = aggregated;
         }
 
-        // Update entire dashboard
+        // Update dashboard
         function updateDashboard() {
             updateHeaderStats();
             updatePositionBar();
@@ -2142,16 +1028,16 @@
             let lossCount = 0;
             
             state.positions.forEach(pos => {
-                if (pos.side === 'Long') {
-                    longTotal += pos.value;
+                if (pos.side === 'long') {
+                    longTotal += pos.positionValue;
                 } else {
-                    shortTotal += pos.value;
+                    shortTotal += pos.positionValue;
                 }
                 
-                netPnl += pos.pnl || 0;
+                netPnl += pos.unrealizedPnl;
                 
-                if (pos.pnl > 0) profitCount++;
-                else if (pos.pnl < 0) lossCount++;
+                if (pos.unrealizedPnl > 0) profitCount++;
+                else if (pos.unrealizedPnl < 0) lossCount++;
             });
             
             document.getElementById('longPosition').textContent = formatCurrency(longTotal);
@@ -2172,10 +1058,10 @@
             let shortTotal = 0;
             
             state.positions.forEach(pos => {
-                if (pos.side === 'Long') {
-                    longTotal += pos.value;
+                if (pos.side === 'long') {
+                    longTotal += pos.positionValue;
                 } else {
-                    shortTotal += pos.value;
+                    shortTotal += pos.positionValue;
                 }
             });
             
@@ -2192,7 +1078,7 @@
             document.getElementById('barShort').textContent = shortPercent.toFixed(1) + '%';
         }
 
-        // Update heatmap view
+        // Update heatmap
         function updateHeatmap() {
             const heatmapGrid = document.getElementById('heatmapGrid');
             
@@ -2201,7 +1087,7 @@
                     <div class="empty-state">
                         <div class="empty-state-icon">📊</div>
                         <div class="empty-state-title">No Data Available</div>
-                        <div class="empty-state-text">Connect API and add addresses to view positions</div>
+                        <div class="empty-state-text">Add wallet addresses and click Load Positions</div>
                     </div>
                 `;
                 return;
@@ -2213,10 +1099,9 @@
             
             heatmapGrid.innerHTML = topAssets.map(asset => {
                 const pnlPercent = asset.totalValue > 0 ? (asset.pnl / asset.totalValue) * 100 : 0;
-                const dominantSide = asset.longValue > asset.shortValue ? 'Long' : 'Short';
+                const dominantSide = asset.longValue > asset.shortValue ? 'long' : 'short';
                 const bgColor = getHeatmapColor(pnlPercent, dominantSide);
                 
-                // Calculate size for grid (larger values get more space)
                 const maxValue = topAssets[0].totalValue;
                 const sizeRatio = asset.totalValue / maxValue;
                 const minSize = 100;
@@ -2229,8 +1114,8 @@
                         min-height: ${cellSize}px;
                         grid-column: span ${Math.ceil(sizeRatio * 2)};
                     ">
-                        <div class="heatmap-cell-side">${dominantSide}</div>
-                        <div class="heatmap-cell-token">${asset.token}</div>
+                        <div class="heatmap-cell-side">${dominantSide.toUpperCase()}</div>
+                        <div class="heatmap-cell-token">${asset.coin}</div>
                         <div class="heatmap-cell-value">${formatCurrency(asset.totalValue)}</div>
                         <div class="heatmap-cell-value" style="font-size: 10px; margin-top: 4px;">
                             ${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%
@@ -2249,7 +1134,7 @@
                     <div class="empty-state">
                         <div class="empty-state-icon">📝</div>
                         <div class="empty-state-title">No Data Available</div>
-                        <div class="empty-state-text">Connect API and add addresses to view positions</div>
+                        <div class="empty-state-text">Add wallet addresses and click Load Positions</div>
                     </div>
                 `;
                 return;
@@ -2267,7 +1152,7 @@
                 
                 return `
                     <div class="list-item">
-                        <div class="list-item-token">${asset.token}</div>
+                        <div class="list-item-token">${asset.coin}</div>
                         <div class="list-item-details">
                             <div class="list-detail-item">
                                 <div class="list-detail-label">Side</div>
@@ -2315,7 +1200,7 @@
                         <td colspan="11" style="text-align: center; padding: 40px; color: #6b7280;">
                             <div style="font-size: 32px; margin-bottom: 12px;">🔍</div>
                             <div style="font-size: 14px; font-weight: 700; margin-bottom: 6px;">No Positions Found</div>
-                            <div style="font-size: 12px;">Configure API endpoint and add wallet addresses</div>
+                            <div style="font-size: 12px;">Add wallet addresses to view positions</div>
                         </td>
                     </tr>
                 `;
@@ -2323,37 +1208,52 @@
             }
             
             tbody.innerHTML = state.positions.map(pos => {
-                const pnlClass = (pos.pnl || 0) >= 0 ? 'pnl-positive' : 'pnl-negative';
-                const fundingClass = (pos.fundingFee || 0) >= 0 ? 'pnl-positive' : 'pnl-negative';
-                const pnlPercent = pos.value > 0 ? ((pos.pnl || 0) / pos.value) * 100 : 0;
+                const pnlClass = pos.unrealizedPnl >= 0 ? 'pnl-positive' : 'pnl-negative';
+                const roePercent = pos.returnOnEquity * 100;
                 
                 return `
                     <tr>
-                        <td class="token-cell">${pos.token}</td>
+                        <td class="token-cell">${pos.coin}</td>
                         <td style="font-family: monospace; font-size: 11px;">
                             ${pos.address.substring(0, 6)}...${pos.address.substring(pos.address.length - 4)}
                         </td>
                         <td>
-                            <span class="side-badge side-${pos.side.toLowerCase()}">${pos.side}</span>
+                            <span class="side-badge side-${pos.side}">${pos.side.toUpperCase()}</span>
                         </td>
-                        <td style="color: #9ca3af; font-size: 11px;">${pos.leverage || 'N/A'}</td>
-                        <td style="font-weight: 700;">${formatCurrency(pos.value)}</td>
-                        <td>${formatNumber(pos.size || pos.amount || 0)}</td>
-                        <td>${formatPrice(pos.entryPrice)}</td>
-                        <td>${formatPrice(pos.markPrice || pos.entryPrice)}</td>
+                        <td style="color: #9ca3af; font-size: 11px;">${pos.leverage.toFixed(2)}x</td>
+                        <td style="font-weight: 700;">${formatCurrency(pos.positionValue)}</td>
+                        <td>${formatNumber(pos.szi)}</td>
+                        <td>${formatPrice(pos.entryPx)}</td>
+                        <td>${formatPrice(pos.entryPx + (pos.unrealizedPnl / pos.szi))}</td>
                         <td class="${pnlClass}">
-                            ${(pos.pnl || 0) >= 0 ? '+' : ''}${formatCurrency(pos.pnl || 0)}
-                            <div style="font-size: 10px; color: #6b7280; margin-top: 2px;">
-                                ${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%
-                            </div>
+                            ${pos.unrealizedPnl >= 0 ? '+' : ''}${formatCurrency(pos.unrealizedPnl)}
                         </td>
-                        <td class="${fundingClass}">
-                            ${(pos.fundingFee || 0) >= 0 ? '+' : ''}${formatCurrency(pos.fundingFee || 0)}
+                        <td class="${pnlClass}">
+                            ${roePercent >= 0 ? '+' : ''}${roePercent.toFixed(2)}%
                         </td>
-                        <td>${formatPrice(pos.liqPrice || 0)}</td>
+                        <td>${pos.liquidationPx > 0 ? formatPrice(pos.liquidationPx) : 'N/A'}</td>
                     </tr>
                 `;
             }).join('');
+        }
+
+        // Update status
+        function updateStatus(status) {
+            const badge = document.getElementById('statusBadge');
+            
+            if (status === 'Connected') {
+                badge.textContent = 'Connected';
+                badge.className = 'status-badge status-connected';
+            } else if (status === 'Loading...') {
+                badge.textContent = 'Loading...';
+                badge.className = 'status-badge status-disconnected';
+            } else if (status === 'Error') {
+                badge.textContent = 'Error';
+                badge.className = 'status-badge status-disconnected';
+            } else {
+                badge.textContent = 'Ready';
+                badge.className = 'status-badge status-disconnected';
+            }
         }
 
         // Update last update time
@@ -2367,7 +1267,7 @@
             document.getElementById('lastUpdate').textContent = timeStr;
         }
 
-        // Show/hide loading overlay
+        // Show/hide loading
         function showLoading(show) {
             const overlay = document.getElementById('loadingOverlay');
             if (show) {
@@ -2377,28 +1277,7 @@
             }
         }
 
-        // Start auto refresh
-        function startAutoRefresh() {
-            if (state.autoRefresh) {
-                clearInterval(state.autoRefresh);
-            }
-            
-            state.autoRefresh = setInterval(() => {
-                if (state.isConnected) {
-                    fetchPositions();
-                }
-            }, 30000); // 30 seconds
-        }
-
-        // Stop auto refresh
-        function stopAutoRefresh() {
-            if (state.autoRefresh) {
-                clearInterval(state.autoRefresh);
-                state.autoRefresh = null;
-            }
-        }
-
-        // View toggle functionality
+        // View toggle
         function initViewToggle() {
             const viewButtons = document.querySelectorAll('.view-btn');
             const heatmapView = document.getElementById('heatmapView');
@@ -2408,11 +1287,9 @@
                 btn.addEventListener('click', () => {
                     const view = btn.dataset.view;
                     
-                    // Update button states
                     viewButtons.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     
-                    // Toggle views
                     if (view === 'heatmap') {
                         heatmapView.classList.add('active');
                         listView.classList.remove('active');
@@ -2425,14 +1302,7 @@
         }
 
         // Event listeners
-        document.getElementById('connectBtn').addEventListener('click', () => {
-            if (state.isConnected) {
-                fetchPositions();
-            } else {
-                connectAPI();
-            }
-        });
-
+        document.getElementById('loadBtn').addEventListener('click', fetchAllPositions);
         document.getElementById('addAddressBtn').addEventListener('click', addAddress);
 
         document.getElementById('addressInput').addEventListener('keypress', (e) => {
@@ -2441,44 +1311,16 @@
             }
         });
 
-        // Initialize on page load
+        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadConfig();
             initViewToggle();
-            console.log('🐋 Hyperliquid Portfolio Dashboard Loaded!');
-            console.log('📡 Ready for API connection');
+            console.log('🐋 Hyperliquid Portfolio Dashboard Ready!');
+            console.log('📡 Using Hyperliquid Public API');
         });
 
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', () => {
-            stopAutoRefresh();
-        });
-
-        // Expose functions to global scope for inline handlers
+        // Expose to global
         window.removeAddress = removeAddress;
-
-        console.log('✅ Dashboard initialized');
-        console.log('💡 API Expected Response Format:');
-        console.log(`
-{
-  "positions": [
-    {
-      "token": "BTC",
-      "address": "0x1234...5678",
-      "side": "Long",
-      "leverage": "50x",
-      "value": 100000,
-      "size": 1.5,
-      "entryPrice": 65000,
-      "markPrice": 66000,
-      "pnl": 1500,
-      "pnlPercent": 1.5,
-      "fundingFee": -50,
-      "liqPrice": 60000
-    }
-  ]
-}
-        `);
     </script>
 </body>
 </html>
