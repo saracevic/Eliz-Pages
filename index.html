@@ -139,31 +139,6 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
-        .filter-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 12px;
-        }
-
-        select {
-            flex: 1;
-            min-width: 200px;
-            padding: 8px;
-            background: #ffffff;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            color: #1f2937;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
         .whale-filters {
             display: flex;
             gap: 8px;
@@ -240,7 +215,7 @@
         .top-positions-section {
             background: #f9fafb;
             border-radius: 4px;
-            padding: 15px;
+            padding: 12px;
             margin-bottom: 15px;
             border: 1px solid #e5e7eb;
         }
@@ -249,27 +224,32 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
             border-bottom: 2px solid #e5e7eb;
         }
 
         .top-positions-header h3 {
-            font-size: 14px;
+            font-size: 13px;
             color: #111827;
             font-weight: 600;
         }
 
         .category-info {
-            font-size: 12px;
+            font-size: 11px;
             color: #6b7280;
+        }
+
+        .top-positions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
         }
 
         .top-position-item {
             background: #ffffff;
             border-radius: 4px;
-            padding: 12px;
-            margin-bottom: 10px;
+            padding: 8px;
             border: 1px solid #e5e7eb;
         }
 
@@ -277,17 +257,17 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .coin-name {
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 600;
             color: #111827;
         }
 
         .total-value {
-            font-size: 16px;
+            font-size: 12px;
             font-weight: 600;
             color: #3b82f6;
         }
@@ -295,18 +275,19 @@
         .position-stats {
             display: flex;
             justify-content: space-between;
-            font-size: 11px;
+            font-size: 9px;
             color: #6b7280;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
 
         .position-bar {
             display: flex;
-            height: 24px;
-            border-radius: 4px;
+            height: 18px;
+            border-radius: 3px;
             overflow: hidden;
             background: #f3f4f6;
             border: 1px solid #e5e7eb;
+            margin-bottom: 3px;
         }
 
         .position-long {
@@ -314,7 +295,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 9px;
             font-weight: 600;
             color: #047857;
         }
@@ -324,17 +305,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 9px;
             font-weight: 600;
             color: #dc2626;
         }
 
         .profit-loss-bar {
             display: flex;
-            height: 20px;
-            border-radius: 4px;
+            height: 16px;
+            border-radius: 3px;
             overflow: hidden;
-            margin-top: 6px;
+            margin-top: 4px;
             background: #f3f4f6;
             border: 1px solid #e5e7eb;
         }
@@ -344,7 +325,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 8px;
             font-weight: 600;
             color: #047857;
         }
@@ -354,9 +335,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 8px;
             font-weight: 600;
             color: #dc2626;
+        }
+
+        .position-values {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            font-weight: 600;
+            margin-top: 2px;
         }
 
         .table-container {
@@ -637,6 +626,12 @@
             color: #dc2626;
         }
 
+        @media (max-width: 1200px) {
+            .top-positions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 768px) {
             .stats-row {
                 grid-template-columns: repeat(2, 1fr);
@@ -674,7 +669,6 @@
                 <div class="short-bar" style="width: 50%;">50.0% Short</div>
             </div>
         </div>
-
         <div class="controls-section">
             <div class="control-group">
                 <label>📍 Wallet Addresses (her satıra bir adres)</label>
@@ -682,15 +676,6 @@
                     id="walletInput" 
                     placeholder="0x1234...&#10;0x5678...&#10;0xabcd..."
                 ></textarea>
-            </div>
-
-            <div class="filter-row">
-                <div style="flex: 1;">
-                    <label style="display: block; margin-bottom: 6px; color: #374151; font-size: 12px; font-weight: 600;">🪙 Coin Filter</label>
-                    <select id="coinFilter">
-                        <option value="all">All Coins</option>
-                    </select>
-                </div>
             </div>
 
             <div class="control-group">
@@ -722,7 +707,7 @@
                 <h3>📊 Top 10 Asset Position Ranking</h3>
                 <div class="category-info" id="categoryInfo">All Categories</div>
             </div>
-            <div id="topPositionsList"></div>
+            <div class="top-positions-grid" id="topPositionsList"></div>
         </div>
 
         <div id="loadingIndicator" class="loading" style="display: none;">
@@ -778,7 +763,6 @@
 // Global değişkenler
 let walletAddresses = [];
 let allPositions = [];
-let currentCoinFilter = 'all';
 let currentCategoryFilter = 'all';
 let tableFilters = {
     category: [],
@@ -882,7 +866,6 @@ function clearAllWallets() {
     allPositions = [];
     saveWalletsToStorage();
     updateWalletList();
-    updateCoinFilter();
     displayPositions();
     updateStats();
     updateTopPositions();
@@ -910,16 +893,6 @@ function updateWalletList() {
         '<span class="wallet-chip-remove" onclick="removeWallet(\'' + address + '\')">✕</span>' +
         '</div>'
     ).join('');
-}
-
-function updateCoinFilter() {
-    const coins = [...new Set(allPositions.map(p => p.coin))].sort();
-    const select = document.getElementById('coinFilter');
-    
-    select.innerHTML = '<option value="all">All Coins (' + coins.length + ')</option>' +
-        coins.map(coin => '<option value="' + coin + '">' + coin + '</option>').join('');
-    
-    select.value = currentCoinFilter;
 }
 
 // Excel-style filtre sistemi
@@ -1091,82 +1064,83 @@ async function fetchAllPositions() {
     showLoading(true);
     allPositions = [];
 
-    for (const address of walletAddresses) {
-        const data = await fetchUserPositions(address);
+    // Paralel istekler için Promise.all kullan (HIZLANDIRMA)
+    const batchSize = 5; // Aynı anda 5 istek
+    for (let i = 0; i < walletAddresses.length; i += batchSize) {
+        const batch = walletAddresses.slice(i, i + batchSize);
+        const results = await Promise.all(batch.map(address => fetchUserPositions(address)));
         
-        if (data && data.assetPositions) {
-            for (const pos of data.assetPositions) {
-                const position = pos.position;
-                if (!position || position.szi === '0') continue;
+        results.forEach((data, index) => {
+            if (data && data.assetPositions) {
+                for (const pos of data.assetPositions) {
+                    const position = pos.position;
+                    if (!position || position.szi === '0') continue;
 
-                const coin = position.coin;
-                const szi = parseFloat(position.szi);
-                const side = szi > 0 ? 'Long' : 'Short';
-                const size = Math.abs(szi);
-                
-                const entryPx = parseFloat(position.entryPx || 0);
-                const leverage = parseFloat(position.leverage?.value || 0);
-                const leverageType = position.leverage?.type || 'cross';
-                const unrealizedPnl = parseFloat(position.unrealizedPnl || 0);
-                const returnOnEquity = parseFloat(position.returnOnEquity || 0);
-                const liquidationPx = parseFloat(position.liquidationPx || 0);
-                const cumFunding = parseFloat(position.cumFunding?.total || 0);
-                const positionValue = parseFloat(position.positionValue || 0);
-                
-                let currentPrice = entryPx;
-                if (size > 0 && unrealizedPnl !== 0) {
-                    if (side === 'Long') {
-                        currentPrice = entryPx + (unrealizedPnl / size);
-                    } else {
-                        currentPrice = entryPx - (unrealizedPnl / size);
+                    const coin = position.coin;
+                    const szi = parseFloat(position.szi);
+                    const side = szi > 0 ? 'Long' : 'Short';
+                    const size = Math.abs(szi);
+                    
+                    const entryPx = parseFloat(position.entryPx || 0);
+                    const leverage = parseFloat(position.leverage?.value || 0);
+                    const leverageType = position.leverage?.type || 'cross';
+                    const unrealizedPnl = parseFloat(position.unrealizedPnl || 0);
+                    const returnOnEquity = parseFloat(position.returnOnEquity || 0);
+                    const liquidationPx = parseFloat(position.liquidationPx || 0);
+                    const cumFunding = parseFloat(position.cumFunding?.total || 0);
+                    const positionValue = parseFloat(position.positionValue || 0);
+                    
+                    let currentPrice = entryPx;
+                    if (size > 0 && unrealizedPnl !== 0) {
+                        if (side === 'Long') {
+                            currentPrice = entryPx + (unrealizedPnl / size);
+                        } else {
+                            currentPrice = entryPx - (unrealizedPnl / size);
+                        }
                     }
-                }
 
-                const value = positionValue || (size * currentPrice);
+                    const value = positionValue || (size * currentPrice);
 
-                let liqDistance = 0;
-                if (liquidationPx > 0) {
-                    liqDistance = ((currentPrice - liquidationPx) / currentPrice) * 100;
-                    if (side === 'Short') {
-                        liqDistance = ((liquidationPx - currentPrice) / currentPrice) * 100;
+                    let liqDistance = 0;
+                    if (liquidationPx > 0) {
+                        liqDistance = ((currentPrice - liquidationPx) / currentPrice) * 100;
+                        if (side === 'Short') {
+                            liqDistance = ((liquidationPx - currentPrice) / currentPrice) * 100;
+                        }
                     }
+
+                    const category = getWhaleCategory(value);
+
+                    allPositions.push({
+                        wallet: batch[index],
+                        coin: coin,
+                        side: side,
+                        leverage: leverage,
+                        leverageType: leverageType,
+                        size: size,
+                        entryPrice: entryPx,
+                        currentPrice: currentPrice,
+                        value: value,
+                        pnl: unrealizedPnl,
+                        pnlPercent: returnOnEquity * 100,
+                        fundingFee: cumFunding,
+                        liquidationPrice: liquidationPx,
+                        liqDistance: liqDistance,
+                        category: category
+                    });
                 }
-
-                const category = getWhaleCategory(value);
-
-                allPositions.push({
-                    wallet: address,
-                    coin: coin,
-                    side: side,
-                    leverage: leverage,
-                    leverageType: leverageType,
-                    size: size,
-                    entryPrice: entryPx,
-                    currentPrice: currentPrice,
-                    value: value,
-                    pnl: unrealizedPnl,
-                    pnlPercent: returnOnEquity * 100,
-                    fundingFee: cumFunding,
-                    liquidationPrice: liquidationPx,
-                    liqDistance: liqDistance,
-                    category: category
-                });
             }
-        }
-
-        await new Promise(resolve => setTimeout(resolve, 100));
+        });
     }
 
     allPositions.sort((a, b) => b.value - a.value);
 
     showLoading(false);
-    updateCoinFilter();
     displayPositions();
     updateStats();
     updateTopPositions();
 }
-
-        // Top 10 pozisyonları güncelle
+        // Top 10 pozisyonları güncelle (2 SÜTUN GRID)
 function updateTopPositions() {
     const section = document.getElementById('topPositionsSection');
     const container = document.getElementById('topPositionsList');
@@ -1176,13 +1150,9 @@ function updateTopPositions() {
     if (currentCategoryFilter !== 'all') {
         filteredPositions = filteredPositions.filter(p => p.category === currentCategoryFilter);
         const catInfo = WHALE_CATEGORIES[currentCategoryFilter];
-        document.getElementById('categoryInfo').textContent = catInfo.emoji + ' ' + catInfo.name + ' (' + formatCurrency(catInfo.min) + ' - ' + formatCurrency(catInfo.max) + ')';
+        document.getElementById('categoryInfo').textContent = catInfo.emoji + ' ' + catInfo.name;
     } else {
         document.getElementById('categoryInfo').textContent = 'All Categories';
-    }
-    
-    if (currentCoinFilter !== 'all') {
-        filteredPositions = filteredPositions.filter(p => p.coin === currentCoinFilter);
     }
     
     if (tableFilters.category.length > 0) {
@@ -1218,7 +1188,6 @@ function updateTopPositions() {
                 totalValue: 0,
                 longValue: 0,
                 shortValue: 0,
-                positions: [],
                 profitCount: 0,
                 lossCount: 0
             };
@@ -1234,7 +1203,6 @@ function updateTopPositions() {
         } else if (pos.pnl < 0) {
             coinGroups[pos.coin].lossCount++;
         }
-        coinGroups[pos.coin].positions.push(pos);
     });
     
     const topCoins = Object.values(coinGroups)
@@ -1253,39 +1221,25 @@ function updateTopPositions() {
             '<div class="coin-name">' + coin.coin + '</div>' +
             '<div class="total-value">' + formatCurrency(coin.totalValue) + '</div>' +
             '</div>' +
-            '<div class="position-stats">' +
-            '<span>Wallets: ' + coin.positions.length + '</span>' +
-            '<span>Total Position: ' + formatCurrency(coin.totalValue) + '</span>' +
-            '</div>' +
-            '<div style="font-size: 10px; color: #6b7280; margin-bottom: 4px;">' +
-            coin.positions.length + ' Traders</div>' +
             '<div class="position-bar">' +
             '<div class="position-long" style="width: ' + longPercent + '%;">' +
-            (longPercent > 10 ? formatCurrency(coin.longValue) : '') + '</div>' +
+            (longPercent > 15 ? longPercent.toFixed(0) + '%' : '') + '</div>' +
             '<div class="position-short" style="width: ' + shortPercent + '%;">' +
-            (shortPercent > 10 ? formatCurrency(coin.shortValue) : '') + '</div>' +
+            (shortPercent > 15 ? shortPercent.toFixed(0) + '%' : '') + '</div>' +
             '</div>' +
-            '<div style="display: flex; justify-content: space-between; font-size: 10px; color: #6b7280; margin-top: 4px;">' +
-            '<span>Long Position</span>' +
-            '<span>Short Position</span>' +
-            '</div>' +
-            '<div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; margin-top: 2px;">' +
-            '<span style="color: #059669;">' + formatCurrency(coin.longValue) + '</span>' +
-            '<span style="color: #dc2626;">' + formatCurrency(coin.shortValue) + '</span>' +
+            '<div class="position-values">' +
+            '<span style="color: #047857;">L: ' + formatCurrency(coin.longValue) + '</span>' +
+            '<span style="color: #dc2626;">S: ' + formatCurrency(coin.shortValue) + '</span>' +
             '</div>' +
             '<div class="profit-loss-bar">' +
             '<div class="profit-bar" style="width: ' + profitPercent + '%;">' +
-            (profitPercent > 15 ? coin.profitCount : '') + '</div>' +
+            (profitPercent > 20 ? coin.profitCount : '') + '</div>' +
             '<div class="loss-bar" style="width: ' + lossPercent + '%;">' +
-            (lossPercent > 15 ? coin.lossCount : '') + '</div>' +
+            (lossPercent > 20 ? coin.lossCount : '') + '</div>' +
             '</div>' +
-            '<div style="display: flex; justify-content: space-between; font-size: 10px; color: #6b7280; margin-top: 4px;">' +
-            '<span>Profit</span>' +
-            '<span>Loss</span>' +
-            '</div>' +
-            '<div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; margin-top: 2px;">' +
-            '<span style="color: #059669;">' + coin.profitCount + '</span>' +
-            '<span style="color: #dc2626;">' + coin.lossCount + '</span>' +
+            '<div class="position-values">' +
+            '<span style="color: #047857;">Profit: ' + coin.profitCount + '</span>' +
+            '<span style="color: #dc2626;">Loss: ' + coin.lossCount + '</span>' +
             '</div>' +
             '</div>';
     }).join('');
@@ -1295,10 +1249,6 @@ function displayPositions() {
     const tbody = document.getElementById('positionsBody');
     
     let filteredPositions = allPositions;
-    
-    if (currentCoinFilter !== 'all') {
-        filteredPositions = filteredPositions.filter(p => p.coin === currentCoinFilter);
-    }
     
     if (currentCategoryFilter !== 'all') {
         filteredPositions = filteredPositions.filter(p => p.category === currentCategoryFilter);
@@ -1370,12 +1320,8 @@ function displayPositions() {
 function updateStats() {
     let filteredForStats = allPositions;
     
-    if (currentCoinFilter !== 'all') {
-        filteredForStats = allPositions.filter(p => p.coin === currentCoinFilter);
-    }
-    
     if (currentCategoryFilter !== 'all') {
-        filteredForStats = filteredForStats.filter(p => p.category === currentCategoryFilter);
+        filteredForStats = allPositions.filter(p => p.category === currentCategoryFilter);
     }
     
     if (tableFilters.category.length > 0) {
@@ -1461,13 +1407,6 @@ function showLoading(show) {
 document.getElementById('addWalletsBtn').addEventListener('click', addWallets);
 document.getElementById('refreshBtn').addEventListener('click', fetchAllPositions);
 document.getElementById('clearBtn').addEventListener('click', clearAllWallets);
-
-document.getElementById('coinFilter').addEventListener('change', function(e) {
-    currentCoinFilter = e.target.value;
-    displayPositions();
-    updateStats();
-    updateTopPositions();
-});
 
 document.getElementById('walletInput').addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.key === 'Enter') {
