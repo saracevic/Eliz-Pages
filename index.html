@@ -1078,7 +1078,7 @@
             document.getElementById('barShort').textContent = shortPercent.toFixed(1) + '%';
         }
 
-        // Update heatmap
+// Update heatmap (YENİ VERSİYON - 2 büyük + 8 küçük grid)
         function updateHeatmap() {
             const heatmapGrid = document.getElementById('heatmapGrid');
             
@@ -1097,27 +1097,29 @@
                 .sort((a, b) => b.totalValue - a.totalValue)
                 .slice(0, 10);
             
-            heatmapGrid.innerHTML = topAssets.map(asset => {
+            heatmapGrid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+            
+            heatmapGrid.innerHTML = topAssets.map((asset, index) => {
                 const pnlPercent = asset.totalValue > 0 ? (asset.pnl / asset.totalValue) * 100 : 0;
                 const dominantSide = asset.longValue > asset.shortValue ? 'long' : 'short';
                 const bgColor = getHeatmapColor(pnlPercent, dominantSide);
                 
-                const maxValue = topAssets[0].totalValue;
-                const sizeRatio = asset.totalValue / maxValue;
-                const minSize = 100;
-                const maxSize = 250;
-                const cellSize = minSize + (maxSize - minSize) * sizeRatio;
+                // İlk 2 coin büyük (2x2), diğerleri küçük (1x1)
+                const isBig = index < 2;
+                const gridSpan = isBig ? 2 : 1;
+                const cellSize = isBig ? 200 : 120;
                 
                 return `
                     <div class="heatmap-cell" style="
                         background: ${bgColor};
                         min-height: ${cellSize}px;
-                        grid-column: span ${Math.ceil(sizeRatio * 2)};
+                        grid-column: span ${gridSpan};
+                        grid-row: span ${gridSpan};
                     ">
                         <div class="heatmap-cell-side">${dominantSide.toUpperCase()}</div>
-                        <div class="heatmap-cell-token">${asset.coin}</div>
-                        <div class="heatmap-cell-value">${formatCurrency(asset.totalValue)}</div>
-                        <div class="heatmap-cell-value" style="font-size: 10px; margin-top: 4px;">
+                        <div class="heatmap-cell-token" style="font-size: ${isBig ? '18px' : '14px'};">${asset.coin}</div>
+                        <div class="heatmap-cell-value" style="font-size: ${isBig ? '13px' : '11px'};">${formatCurrency(asset.totalValue)}</div>
+                        <div class="heatmap-cell-value" style="font-size: ${isBig ? '11px' : '10px'}; margin-top: 4px;">
                             ${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%
                         </div>
                     </div>
@@ -1125,7 +1127,7 @@
             }).join('');
         }
 
-        // Update list view
+        // Update list view (YENİ VERSİYON - 5 sol 5 sağ)
         function updateListView() {
             const listGrid = document.getElementById('listGrid');
             
@@ -1144,6 +1146,10 @@
                 .sort((a, b) => b.totalValue - a.totalValue)
                 .slice(0, 10);
             
+            // 2 kolonlu grid yap
+            listGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+            listGrid.style.gap = '12px';
+            
             listGrid.innerHTML = topAssets.map(asset => {
                 const pnlPercent = asset.totalValue > 0 ? (asset.pnl / asset.totalValue) * 100 : 0;
                 const pnlClass = asset.pnl >= 0 ? 'pnl-positive' : 'pnl-negative';
@@ -1151,38 +1157,39 @@
                 const sideClass = dominantSide === 'Long' ? 'side-long' : 'side-short';
                 
                 return `
-                    <div class="list-item">
-                        <div class="list-item-token">${asset.coin}</div>
-                        <div class="list-item-details">
-                            <div class="list-detail-item">
-                                <div class="list-detail-label">Side</div>
-                                <div class="list-detail-value">
-                                    <span class="side-badge ${sideClass}">${dominantSide}</span>
+                    <div class="list-item" style="grid-template-columns: 1fr;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <div class="list-item-token">${asset.coin}</div>
+                            <span class="side-badge ${sideClass}">${dominantSide}</span>
+                        </div>
+                        <div class="list-item-details" style="flex-direction: column; gap: 8px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div class="list-detail-item">
+                                    <div class="list-detail-label">Position Value</div>
+                                    <div class="list-detail-value">${formatCurrency(asset.totalValue)}</div>
+                                </div>
+                                <div class="list-detail-item" style="text-align: right;">
+                                    <div class="list-detail-label">PnL</div>
+                                    <div class="list-detail-value ${pnlClass}">
+                                        ${asset.pnl >= 0 ? '+' : ''}${formatCurrency(asset.pnl)}
+                                    </div>
                                 </div>
                             </div>
-                            <div class="list-detail-item">
-                                <div class="list-detail-label">Position Value</div>
-                                <div class="list-detail-value">${formatCurrency(asset.totalValue)}</div>
-                            </div>
-                            <div class="list-detail-item">
-                                <div class="list-detail-label">Long Value</div>
-                                <div class="list-detail-value" style="color: #10b981;">${formatCurrency(asset.longValue)}</div>
-                            </div>
-                            <div class="list-detail-item">
-                                <div class="list-detail-label">Short Value</div>
-                                <div class="list-detail-value" style="color: #ef4444;">${formatCurrency(asset.shortValue)}</div>
-                            </div>
-                            <div class="list-detail-item">
-                                <div class="list-detail-label">Positions</div>
-                                <div class="list-detail-value">${asset.positions.length}</div>
-                            </div>
-                        </div>
-                        <div class="list-item-pnl">
-                            <div class="list-pnl-value ${pnlClass}">
-                                ${asset.pnl >= 0 ? '+' : ''}${formatCurrency(asset.pnl)}
-                            </div>
-                            <div class="list-pnl-percent">
-                                ${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%
+                            <div style="display: flex; justify-content: space-between; gap: 12px;">
+                                <div class="list-detail-item">
+                                    <div class="list-detail-label">Long</div>
+                                    <div class="list-detail-value" style="color: #10b981; font-size: 11px;">${formatCurrency(asset.longValue)}</div>
+                                </div>
+                                <div class="list-detail-item">
+                                    <div class="list-detail-label">Short</div>
+                                    <div class="list-detail-value" style="color: #ef4444; font-size: 11px;">${formatCurrency(asset.shortValue)}</div>
+                                </div>
+                                <div class="list-detail-item" style="text-align: right;">
+                                    <div class="list-detail-label">ROE</div>
+                                    <div class="list-detail-value ${pnlClass}" style="font-size: 11px;">
+                                        ${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
