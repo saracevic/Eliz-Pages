@@ -12,9 +12,9 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0a0e1a;
-            color: #e8e8e8;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Calibri', sans-serif;
+            background: #ffffff;
+            color: #1f2937;
             padding: 15px;
             min-height: 100vh;
             font-size: 13px;
@@ -26,80 +26,86 @@
         }
 
         .header-section {
-            background: #151923;
-            border-radius: 8px;
+            background: #f9fafb;
+            border-radius: 4px;
             padding: 15px;
-            margin-bottom: 20px;
-            border: 1px solid #1f2937;
+            margin-bottom: 15px;
+            border: 1px solid #e5e7eb;
         }
 
         .stats-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 12px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .stat-item {
             text-align: center;
             padding: 8px;
+            background: #ffffff;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
         }
 
         .stat-label {
             font-size: 11px;
             color: #6b7280;
             margin-bottom: 4px;
+            font-weight: 500;
         }
 
         .stat-value {
             font-size: 16px;
             font-weight: 600;
+            color: #111827;
         }
 
         .stat-value.positive {
-            color: #10b981;
+            color: #059669;
         }
 
         .stat-value.negative {
-            color: #ef4444;
+            color: #dc2626;
         }
 
         .long-short-bar {
             display: flex;
             height: 28px;
-            border-radius: 6px;
+            border-radius: 4px;
             overflow: hidden;
             margin-top: 10px;
-            background: #1f2937;
+            background: #e5e7eb;
+            border: 1px solid #d1d5db;
         }
 
         .long-bar {
-            background: rgba(16, 185, 129, 0.3);
+            background: #d1fae5;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #10b981;
+            color: #047857;
             font-size: 12px;
             font-weight: 600;
-            border-right: 1px solid #1f2937;
+            border-right: 1px solid #d1d5db;
         }
 
         .short-bar {
-            background: rgba(239, 68, 68, 0.3);
+            background: #fee2e2;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #ef4444;
+            color: #dc2626;
             font-size: 12px;
             font-weight: 600;
         }
 
         .controls-section {
-            background: #151923;
-            border-radius: 8px;
+            background: #f9fafb;
+            border-radius: 4px;
             padding: 15px;
             margin-bottom: 15px;
-            border: 1px solid #1f2937;
+            border: 1px solid #e5e7eb;
         }
 
         .control-group {
@@ -109,18 +115,19 @@
         .control-group label {
             display: block;
             margin-bottom: 6px;
-            color: #6b7280;
+            color: #374151;
             font-size: 12px;
+            font-weight: 600;
         }
 
         textarea {
             width: 100%;
             min-height: 90px;
-            background: #0a0e1a;
-            border: 1px solid #1f2937;
-            border-radius: 6px;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
             padding: 10px;
-            color: #e8e8e8;
+            color: #1f2937;
             font-family: monospace;
             font-size: 12px;
             resize: vertical;
@@ -129,6 +136,7 @@
         textarea:focus {
             outline: none;
             border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         .filter-row {
@@ -142,10 +150,10 @@
             flex: 1;
             min-width: 200px;
             padding: 8px;
-            background: #0a0e1a;
-            border: 1px solid #1f2937;
-            border-radius: 6px;
-            color: #e8e8e8;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            color: #1f2937;
             font-size: 12px;
             cursor: pointer;
         }
@@ -153,6 +161,7 @@
         select:focus {
             outline: none;
             border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         .whale-filters {
@@ -164,9 +173,9 @@
 
         .whale-filter-btn {
             padding: 6px 12px;
-            background: #1f2937;
-            border: 1px solid #1f2937;
-            border-radius: 6px;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
             color: #6b7280;
             font-size: 11px;
             cursor: pointer;
@@ -176,12 +185,13 @@
 
         .whale-filter-btn:hover {
             border-color: #3b82f6;
+            color: #3b82f6;
         }
 
         .whale-filter-btn.active {
-            background: rgba(59, 130, 246, 0.2);
+            background: #3b82f6;
             border-color: #3b82f6;
-            color: #3b82f6;
+            color: #ffffff;
         }
 
         .button-group {
@@ -193,7 +203,7 @@
         .btn {
             padding: 8px 16px;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
@@ -210,12 +220,12 @@
         }
 
         .btn-secondary {
-            background: #1f2937;
-            color: #e8e8e8;
+            background: #6b7280;
+            color: #fff;
         }
 
         .btn-secondary:hover {
-            background: #374151;
+            background: #4b5563;
         }
 
         .btn-danger {
@@ -228,11 +238,11 @@
         }
 
         .top-positions-section {
-            background: #151923;
-            border-radius: 8px;
+            background: #f9fafb;
+            border-radius: 4px;
             padding: 15px;
             margin-bottom: 15px;
-            border: 1px solid #1f2937;
+            border: 1px solid #e5e7eb;
         }
 
         .top-positions-header {
@@ -240,11 +250,14 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
         }
 
         .top-positions-header h3 {
             font-size: 14px;
-            color: #e8e8e8;
+            color: #111827;
+            font-weight: 600;
         }
 
         .category-info {
@@ -253,11 +266,11 @@
         }
 
         .top-position-item {
-            background: #0a0e1a;
-            border-radius: 6px;
+            background: #ffffff;
+            border-radius: 4px;
             padding: 12px;
             margin-bottom: 10px;
-            border: 1px solid #1f2937;
+            border: 1px solid #e5e7eb;
         }
 
         .top-position-header {
@@ -270,7 +283,7 @@
         .coin-name {
             font-size: 16px;
             font-weight: 600;
-            color: #e8e8e8;
+            color: #111827;
         }
 
         .total-value {
@@ -292,27 +305,28 @@
             height: 24px;
             border-radius: 4px;
             overflow: hidden;
-            background: #1f2937;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
         }
 
         .position-long {
-            background: rgba(16, 185, 129, 0.3);
+            background: #d1fae5;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 11px;
             font-weight: 600;
-            color: #10b981;
+            color: #047857;
         }
 
         .position-short {
-            background: rgba(239, 68, 68, 0.3);
+            background: #fee2e2;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 11px;
             font-weight: 600;
-            color: #ef4444;
+            color: #dc2626;
         }
 
         .profit-loss-bar {
@@ -321,33 +335,34 @@
             border-radius: 4px;
             overflow: hidden;
             margin-top: 6px;
-            background: #1f2937;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
         }
 
         .profit-bar {
-            background: rgba(16, 185, 129, 0.3);
+            background: #d1fae5;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 10px;
             font-weight: 600;
-            color: #10b981;
+            color: #047857;
         }
 
         .loss-bar {
-            background: rgba(239, 68, 68, 0.3);
+            background: #fee2e2;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 10px;
             font-weight: 600;
-            color: #ef4444;
+            color: #dc2626;
         }
 
         .table-container {
-            background: #151923;
-            border-radius: 8px;
-            border: 1px solid #1f2937;
+            background: #ffffff;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
             overflow-x: auto;
         }
 
@@ -358,7 +373,7 @@
         }
 
         thead {
-            background: #0a0e1a;
+            background: #f9fafb;
             position: sticky;
             top: 0;
             z-index: 10;
@@ -369,64 +384,193 @@
             text-align: left;
             font-size: 11px;
             font-weight: 600;
-            color: #6b7280;
-            border-bottom: 1px solid #1f2937;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
             white-space: nowrap;
         }
 
         tbody tr {
-            border-bottom: 1px solid #1f2937;
+            border-bottom: 1px solid #f3f4f6;
             transition: background 0.2s;
         }
 
         tbody tr:hover {
-            background: rgba(59, 130, 246, 0.05);
+            background: #f9fafb;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        tbody tr:nth-child(even):hover {
+            background: #f3f4f6;
         }
 
         td {
             padding: 10px 8px;
             font-size: 12px;
+            color: #1f2937;
         }
 
         .token-cell {
             font-weight: 600;
             font-size: 13px;
+            color: #111827;
         }
 
         .category-badge {
             padding: 3px 8px;
-            border-radius: 4px;
+            border-radius: 3px;
             font-size: 10px;
             font-weight: 600;
             display: inline-block;
             white-space: nowrap;
+            border: 1px solid;
         }
 
-        .cat-shrimp { background: rgba(107, 114, 128, 0.2); color: #6b7280; }
-        .cat-fish { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
-        .cat-dolphin { background: rgba(34, 211, 238, 0.2); color: #22d3ee; }
-        .cat-apex { background: rgba(168, 85, 247, 0.2); color: #a855f7; }
-        .cat-smallwhale { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
-        .cat-whale { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
-        .cat-tidal { background: rgba(251, 146, 60, 0.2); color: #fb923c; }
-        .cat-leviathan { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .cat-shrimp { background: #f3f4f6; color: #6b7280; border-color: #d1d5db; }
+        .cat-fish { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+        .cat-dolphin { background: #cffafe; color: #0e7490; border-color: #67e8f9; }
+        .cat-apex { background: #ede9fe; color: #6b21a8; border-color: #c4b5fd; }
+        .cat-smallwhale { background: #f3e8ff; color: #7c3aed; border-color: #d8b4fe; }
+        .cat-whale { background: #fce7f3; color: #be185d; border-color: #f9a8d4; }
+        .cat-tidal { background: #fed7aa; color: #c2410c; border-color: #fdba74; }
+        .cat-leviathan { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
 
         .side-long {
-            color: #10b981;
+            color: #059669;
             font-weight: 600;
         }
 
         .side-short {
-            color: #ef4444;
+            color: #dc2626;
             font-weight: 600;
         }
 
         .pnl-positive {
-            color: #10b981;
+            color: #059669;
         }
 
         .pnl-negative {
-            color: #ef4444;
+            color: #dc2626;
+        }
+
+        .filter-header {
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .filter-header:hover {
+            color: #3b82f6;
+        }
+
+        .filter-icon {
+            margin-left: 4px;
+            font-size: 9px;
+            color: #9ca3af;
+        }
+
+        .filter-header.filtered .filter-icon {
+            color: #3b82f6;
+        }
+
+        .filter-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 8px;
+            min-width: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-dropdown.active {
+            display: block;
+        }
+
+        .filter-search {
+            width: 100%;
+            padding: 6px 8px;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            color: #1f2937;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .filter-search:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .filter-options {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            padding: 4px 6px;
+            font-size: 11px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: background 0.2s;
+            color: #374151;
+        }
+
+        .filter-option:hover {
+            background: #f3f4f6;
+        }
+
+        .filter-option input[type="checkbox"] {
+            margin-right: 6px;
+            cursor: pointer;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .filter-btn {
+            flex: 1;
+            padding: 5px 8px;
+            border: none;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .filter-btn-apply {
+            background: #3b82f6;
+            color: #fff;
+        }
+
+        .filter-btn-apply:hover {
+            background: #2563eb;
+        }
+
+        .filter-btn-clear {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .filter-btn-clear:hover {
+            background: #d1d5db;
         }
 
         .loading {
@@ -436,7 +580,7 @@
         }
 
         .spinner {
-            border: 3px solid rgba(59, 130, 246, 0.1);
+            border: 3px solid #e5e7eb;
             border-top: 3px solid #3b82f6;
             border-radius: 50%;
             width: 35px;
@@ -465,9 +609,9 @@
             max-height: 120px;
             overflow-y: auto;
             padding: 8px;
-            background: #0a0e1a;
-            border-radius: 6px;
-            border: 1px solid #1f2937;
+            background: #ffffff;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
         }
 
         .wallet-chip {
@@ -475,10 +619,11 @@
             align-items: center;
             gap: 5px;
             padding: 4px 8px;
-            background: #1f2937;
-            border-radius: 4px;
+            background: #f3f4f6;
+            border-radius: 3px;
             font-size: 11px;
             font-family: monospace;
+            border: 1px solid #e5e7eb;
         }
 
         .wallet-chip-remove {
@@ -529,6 +674,7 @@
                 <div class="short-bar" style="width: 50%;">50.0% Short</div>
             </div>
         </div>
+
         <div class="controls-section">
             <div class="control-group">
                 <label>📍 Wallet Addresses (her satıra bir adres)</label>
@@ -540,7 +686,7 @@
 
             <div class="filter-row">
                 <div style="flex: 1;">
-                    <label style="display: block; margin-bottom: 6px; color: #6b7280; font-size: 12px;">🪙 Coin Filter</label>
+                    <label style="display: block; margin-bottom: 6px; color: #374151; font-size: 12px; font-weight: 600;">🪙 Coin Filter</label>
                     <select id="coinFilter">
                         <option value="all">All Coins</option>
                     </select>
@@ -588,10 +734,22 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Category</th>
-                        <th>Token</th>
-                        <th>Side</th>
-                        <th>Leverage</th>
+                        <th class="filter-header" data-column="category">
+                            Category <span class="filter-icon">▼</span>
+                            <div class="filter-dropdown" id="filter-category"></div>
+                        </th>
+                        <th class="filter-header" data-column="coin">
+                            Token <span class="filter-icon">▼</span>
+                            <div class="filter-dropdown" id="filter-coin"></div>
+                        </th>
+                        <th class="filter-header" data-column="side">
+                            Side <span class="filter-icon">▼</span>
+                            <div class="filter-dropdown" id="filter-side"></div>
+                        </th>
+                        <th class="filter-header" data-column="leverage">
+                            Leverage <span class="filter-icon">▼</span>
+                            <div class="filter-dropdown" id="filter-leverage"></div>
+                        </th>
                         <th>Value</th>
                         <th>Amount</th>
                         <th>Avg Entry</th>
@@ -599,7 +757,10 @@
                         <th>PNL/ROE</th>
                         <th>Funding</th>
                         <th>Dist. to Liq</th>
-                        <th>Wallet</th>
+                        <th class="filter-header" data-column="wallet">
+                            Wallet <span class="filter-icon">▼</span>
+                            <div class="filter-dropdown" id="filter-wallet"></div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody id="positionsBody">
@@ -619,6 +780,13 @@ let walletAddresses = [];
 let allPositions = [];
 let currentCoinFilter = 'all';
 let currentCategoryFilter = 'all';
+let tableFilters = {
+    category: [],
+    coin: [],
+    side: [],
+    leverage: [],
+    wallet: []
+};
 const API_URL = 'https://api.hyperliquid.xyz/info';
 
 // Whale kategorileri
@@ -754,6 +922,144 @@ function updateCoinFilter() {
     select.value = currentCoinFilter;
 }
 
+// Excel-style filtre sistemi
+function initTableFilters() {
+    document.querySelectorAll('.filter-header').forEach(header => {
+        header.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const column = this.dataset.column;
+            const dropdown = document.getElementById('filter-' + column);
+            
+            document.querySelectorAll('.filter-dropdown').forEach(d => {
+                if (d !== dropdown) d.classList.remove('active');
+            });
+            
+            dropdown.classList.toggle('active');
+            
+            if (dropdown.classList.contains('active')) {
+                populateFilterDropdown(column, dropdown);
+            }
+        });
+    });
+    
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.filter-dropdown').forEach(d => {
+            d.classList.remove('active');
+        });
+    });
+}
+
+function populateFilterDropdown(column, dropdown) {
+    const values = new Set();
+    
+    allPositions.forEach(pos => {
+        let value;
+        switch(column) {
+            case 'category':
+                value = WHALE_CATEGORIES[pos.category].name;
+                break;
+            case 'coin':
+                value = pos.coin;
+                break;
+            case 'side':
+                value = pos.side;
+                break;
+            case 'leverage':
+                value = pos.leverage.toFixed(0) + 'x';
+                break;
+            case 'wallet':
+                value = shortenAddress(pos.wallet);
+                break;
+        }
+        if (value) values.add(value);
+    });
+    
+    const sortedValues = Array.from(values).sort();
+    
+    let html = '<input type="text" class="filter-search" placeholder="Search..." onkeyup="filterDropdownSearch(this)">';
+    html += '<div class="filter-options">';
+    html += '<label class="filter-option"><input type="checkbox" value="__all__" ' + 
+            (tableFilters[column].length === 0 ? 'checked' : '') + 
+            ' onchange="toggleAllFilters(this, \'' + column + '\')"> <strong>(Select All)</strong></label>';
+    
+    sortedValues.forEach(value => {
+        const checked = tableFilters[column].length === 0 || tableFilters[column].includes(value);
+        html += '<label class="filter-option">' +
+                '<input type="checkbox" value="' + value + '" ' + (checked ? 'checked' : '') + '> ' +
+                value + '</label>';
+    });
+    
+    html += '</div>';
+    html += '<div class="filter-actions">' +
+            '<button class="filter-btn filter-btn-apply" onclick="applyTableFilter(\'' + column + '\')">Apply</button>' +
+            '<button class="filter-btn filter-btn-clear" onclick="clearTableFilter(\'' + column + '\')">Clear</button>' +
+            '</div>';
+    
+    dropdown.innerHTML = html;
+    dropdown.onclick = function(e) { e.stopPropagation(); };
+}
+
+window.toggleAllFilters = function(checkbox, column) {
+    const dropdown = document.getElementById('filter-' + column);
+    const checkboxes = dropdown.querySelectorAll('.filter-options input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+        if (cb.value !== '__all__') {
+            cb.checked = checkbox.checked;
+        }
+    });
+};
+
+window.filterDropdownSearch = function(input) {
+    const searchTerm = input.value.toLowerCase();
+    const options = input.parentElement.querySelectorAll('.filter-option');
+    
+    options.forEach(option => {
+        const text = option.textContent.toLowerCase();
+        if (text.includes(searchTerm) || option.querySelector('input').value === '__all__') {
+            option.style.display = 'flex';
+        } else {
+            option.style.display = 'none';
+        }
+    });
+};
+
+window.applyTableFilter = function(column) {
+    const dropdown = document.getElementById('filter-' + column);
+    const checkboxes = dropdown.querySelectorAll('.filter-options input[type="checkbox"]:not([value="__all__"])');
+    
+    tableFilters[column] = [];
+    checkboxes.forEach(cb => {
+        if (cb.checked) {
+            tableFilters[column].push(cb.value);
+        }
+    });
+    
+    const header = document.querySelector('.filter-header[data-column="' + column + '"]');
+    if (tableFilters[column].length > 0 && tableFilters[column].length < checkboxes.length) {
+        header.classList.add('filtered');
+    } else {
+        header.classList.remove('filtered');
+    }
+    
+    dropdown.classList.remove('active');
+    displayPositions();
+    updateStats();
+    updateTopPositions();
+};
+
+window.clearTableFilter = function(column) {
+    tableFilters[column] = [];
+    const header = document.querySelector('.filter-header[data-column="' + column + '"]');
+    header.classList.remove('filtered');
+    
+    const dropdown = document.getElementById('filter-' + column);
+    dropdown.classList.remove('active');
+    
+    displayPositions();
+    updateStats();
+    updateTopPositions();
+};
+
 async function fetchUserPositions(userAddress) {
     try {
         const response = await fetch(API_URL, {
@@ -860,14 +1166,13 @@ async function fetchAllPositions() {
     updateTopPositions();
 }
 
-// Top 10 pozisyonları güncelle
+        // Top 10 pozisyonları güncelle
 function updateTopPositions() {
     const section = document.getElementById('topPositionsSection');
     const container = document.getElementById('topPositionsList');
     
     let filteredPositions = allPositions;
     
-    // Kategori filtresini uygula
     if (currentCategoryFilter !== 'all') {
         filteredPositions = filteredPositions.filter(p => p.category === currentCategoryFilter);
         const catInfo = WHALE_CATEGORIES[currentCategoryFilter];
@@ -876,9 +1181,26 @@ function updateTopPositions() {
         document.getElementById('categoryInfo').textContent = 'All Categories';
     }
     
-    // Coin filtresini uygula
     if (currentCoinFilter !== 'all') {
         filteredPositions = filteredPositions.filter(p => p.coin === currentCoinFilter);
+    }
+    
+    if (tableFilters.category.length > 0) {
+        filteredPositions = filteredPositions.filter(p => 
+            tableFilters.category.includes(WHALE_CATEGORIES[p.category].name)
+        );
+    }
+    
+    if (tableFilters.coin.length > 0) {
+        filteredPositions = filteredPositions.filter(p => 
+            tableFilters.coin.includes(p.coin)
+        );
+    }
+    
+    if (tableFilters.side.length > 0) {
+        filteredPositions = filteredPositions.filter(p => 
+            tableFilters.side.includes(p.side)
+        );
     }
     
     if (filteredPositions.length === 0) {
@@ -888,7 +1210,6 @@ function updateTopPositions() {
     
     section.style.display = 'block';
     
-    // Coin bazında grupla
     const coinGroups = {};
     filteredPositions.forEach(pos => {
         if (!coinGroups[pos.coin]) {
@@ -916,7 +1237,6 @@ function updateTopPositions() {
         coinGroups[pos.coin].positions.push(pos);
     });
     
-    // Toplam değere göre sırala ve top 10 al
     const topCoins = Object.values(coinGroups)
         .sort((a, b) => b.totalValue - a.totalValue)
         .slice(0, 10);
@@ -950,8 +1270,8 @@ function updateTopPositions() {
             '<span>Short Position</span>' +
             '</div>' +
             '<div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; margin-top: 2px;">' +
-            '<span style="color: #10b981;">' + formatCurrency(coin.longValue) + '</span>' +
-            '<span style="color: #ef4444;">' + formatCurrency(coin.shortValue) + '</span>' +
+            '<span style="color: #059669;">' + formatCurrency(coin.longValue) + '</span>' +
+            '<span style="color: #dc2626;">' + formatCurrency(coin.shortValue) + '</span>' +
             '</div>' +
             '<div class="profit-loss-bar">' +
             '<div class="profit-bar" style="width: ' + profitPercent + '%;">' +
@@ -964,8 +1284,8 @@ function updateTopPositions() {
             '<span>Loss</span>' +
             '</div>' +
             '<div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; margin-top: 2px;">' +
-            '<span style="color: #10b981;">' + coin.profitCount + '</span>' +
-            '<span style="color: #ef4444;">' + coin.lossCount + '</span>' +
+            '<span style="color: #059669;">' + coin.profitCount + '</span>' +
+            '<span style="color: #dc2626;">' + coin.lossCount + '</span>' +
             '</div>' +
             '</div>';
     }).join('');
@@ -982,6 +1302,36 @@ function displayPositions() {
     
     if (currentCategoryFilter !== 'all') {
         filteredPositions = filteredPositions.filter(p => p.category === currentCategoryFilter);
+    }
+    
+    if (tableFilters.category.length > 0) {
+        filteredPositions = filteredPositions.filter(p => 
+            tableFilters.category.includes(WHALE_CATEGORIES[p.category].name)
+        );
+    }
+    
+    if (tableFilters.coin.length > 0) {
+        filteredPositions = filteredPositions.filter(p => 
+            tableFilters.coin.includes(p.coin)
+        );
+    }
+    
+    if (tableFilters.side.length > 0) {
+        filteredPositions = filteredPositions.filter(p => 
+            tableFilters.side.includes(p.side)
+        );
+    }
+    
+    if (tableFilters.leverage.length > 0) {
+        filteredPositions = filteredPositions.filter(p => 
+            tableFilters.leverage.includes(p.leverage.toFixed(0) + 'x')
+        );
+    }
+    
+    if (tableFilters.wallet.length > 0) {
+        filteredPositions = filteredPositions.filter(p => 
+            tableFilters.wallet.includes(shortenAddress(p.wallet))
+        );
     }
     
     if (filteredPositions.length === 0) {
@@ -1026,6 +1376,24 @@ function updateStats() {
     
     if (currentCategoryFilter !== 'all') {
         filteredForStats = filteredForStats.filter(p => p.category === currentCategoryFilter);
+    }
+    
+    if (tableFilters.category.length > 0) {
+        filteredForStats = filteredForStats.filter(p => 
+            tableFilters.category.includes(WHALE_CATEGORIES[p.category].name)
+        );
+    }
+    
+    if (tableFilters.coin.length > 0) {
+        filteredForStats = filteredForStats.filter(p => 
+            tableFilters.coin.includes(p.coin)
+        );
+    }
+    
+    if (tableFilters.side.length > 0) {
+        filteredForStats = filteredForStats.filter(p => 
+            tableFilters.side.includes(p.side)
+        );
     }
     
     const longValue = filteredForStats.filter(p => p.side === 'Long').reduce((sum, p) => sum + p.value, 0);
@@ -1123,6 +1491,11 @@ loadWalletsFromStorage();
 if (walletAddresses.length > 0) {
     fetchAllPositions();
 }
+
+// Tablo filtrelerini başlat
+setTimeout(() => {
+    initTableFilters();
+}, 100);
 
 console.log('🐋 Hyperliquid Whale Tracker Pro Ready!');
     </script>
