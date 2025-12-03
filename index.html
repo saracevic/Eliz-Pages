@@ -2,640 +2,150 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Hyperliquid Portfolio Dashboard 🐋</title>
+    <meta name="theme-color" content="#0a0a0a">
+
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-
-        body {
-            font-family:-apple-system, BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;
-            background:#0a0a0a;
-            color:#e5e7eb;
-            padding:12px;
-            min-height:100vh;
-            font-size:13px;
-        }
-
-        .container {
-            max-width:1400px;
-            margin:0 auto;
-        }
-
-        .config-panel {
-            background:#1a1a1a;
-            border:1px solid #2d2d2d;
-            border-radius:8px;
-            padding:16px;
-            margin-bottom:12px;
-        }
-
-        .config-header {
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-bottom:12px;
-        }
-
-        .config-title {
-            font-size:14px;
-            font-weight:700;
-            color:#fff;
-        }
-
-        .status-badge {
-            padding:4px 12px;
-            border-radius:4px;
-            font-size:11px;
-            font-weight:700;
-        }
-
-        .status-connected {
-            background:rgba(16,185,129,0.15);
-            color:#10b981;
-            border:1px solid #10b981;
-        }
-
-        .status-disconnected {
-            background:rgba(239,68,68,0.15);
-            color:#ef4444;
-            border:1px solid #ef4444;
-        }
-
-        .address-manager {
-            background:#111;
-            border:1px solid #2d2d2d;
-            border-radius:6px;
-            padding:12px;
-        }
-
-        .input-label {
-            font-size:11px;
-            color:#9ca3af;
-            text-transform:uppercase;
-            letter-spacing:0.5px;
-        }
-
-        .address-input-group {
-            display:grid;
-            grid-template-columns:1fr auto;
-            gap:8px;
-            margin-bottom:10px;
-        }
-
-        .input-field {
-            background:#111;
-            border:1px solid #2d2d2d;
-            border-radius:6px;
-            padding:10px 12px;
-            color:#fff;
-            font-size:12px;
-            outline:none;
-            transition:border-color 0.2s;
-        }
-
-        .input-field:focus {
-            border-color:#3b82f6;
-        }
-
-        .btn {
-            padding:10px 20px;
-            border-radius:6px;
-            border:none;
-            font-size:12px;
-            font-weight:700;
-            cursor:pointer;
-            transition:all 0.2s;
-        }
-
-        .btn-primary {
-            background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%);
-            color:#fff;
-        }
-
-        .btn-primary:hover {
-            transform:translateY(-2px);
-            box-shadow:0 4px 12px rgba(59,130,246,0.4);
-        }
-
-        .btn-secondary {
-            background:#1f1f1f;
-            color:#9ca3af;
-            border:1px solid #2d2d2d;
-        }
-
-        .btn-secondary:hover {
-            background:#2d2d2d;
-            color:#fff;
-        }
-
-        .address-list {
-            max-height:120px;
-            overflow-y:auto;
-            margin-top:10px;
-        }
-
-        .address-chip {
-            display:inline-flex;
-            align-items:center;
-            gap:8px;
-            background:#1f1f1f;
-            border:1px solid #2d2d2d;
-            border-radius:4px;
-            padding:6px 10px;
-            margin:4px;
-            font-size:11px;
-            font-family:monospace;
-        }
-
-        .address-chip .remove-btn {
-            background:none;
-            border:none;
-            color:#ef4444;
-            cursor:pointer;
-            font-size:14px;
-            padding:0;
-            line-height:1;
-        }
-
-        .header-stats {
-            display:grid;
-            grid-template-columns:repeat(4,1fr);
-            gap:10px;
-            margin-bottom:12px;
-        }
-
-        .stat-card {
-            background:#1a1a1a;
-            border:1px solid #2d2d2d;
-            border-radius:8px;
-            padding:12px;
-        }
-
-        .stat-label {
-            font-size:11px;
-            color:#9ca3af;
-            margin-bottom:6px;
-            text-transform:uppercase;
-            letter-spacing:0.5px;
-        }
-
-        .stat-value {
-            font-size:20px;
-            font-weight:700;
-            color:#fff;
-        }
-
-        .stat-value.long { color:#10b981; }
-        .stat-value.short { color:#ef4444; }
-        .stat-value.neutral { color:#3b82f6; }
-
-        .position-bar-wrapper {
-            background:#1a1a1a;
-            border:1px solid #2d2d2d;
-            border-radius:8px;
-            padding:12px;
-            margin-bottom:12px;
-        }
-
-        .bar-header {
-            display:flex;
-            justify-content:space-between;
-            margin-bottom:8px;
-            font-size:11px;
-            color:#9ca3af;
-            flex-wrap:wrap;
-            gap:10px;
-        }
-
-        .position-bar {
-            display:flex;
-            height:32px;
-            border-radius:6px;
-            overflow:hidden;
-            background:#111;
-        }
-
-        .bar-long {
-            background:linear-gradient(90deg,#10b981 0%,#059669 100%);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:12px;
-            font-weight:700;
-            color:#fff;
-            transition:width 0.3s ease;
-        }
-
-        .bar-short {
-            background:linear-gradient(90deg,#ef4444 0%,#dc2626 100%);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:12px;
-            font-weight:700;
-            color:#fff;
-            transition:width 0.3s ease;
-        }
-
-        .view-toggle-wrapper {
-            background:#1a1a1a;
-            border:1px solid #2d2d2d;
-            border-radius:8px;
-            padding:12px;
-            margin-bottom:12px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-        }
-
-        .view-toggle {
-            display:flex;
-            background:#111;
-            border-radius:6px;
-            overflow:hidden;
-        }
-
-        .view-btn {
-            padding:8px 20px;
-            border:none;
-            background:transparent;
-            color:#9ca3af;
-            font-size:12px;
-            font-weight:700;
-            cursor:pointer;
-            transition:all 0.2s;
-        }
-
-        .view-btn.active {
-            background:#3b82f6;
-            color:#fff;
-        }
-
-        .refresh-info {
-            font-size:11px;
-            color:#6b7280;
-        }
-
-        .heatmap-container,
-        .list-container {
-            background:#1a1a1a;
-            border:1px solid #2d2d2d;
-            border-radius:8px;
-            padding:14px;
-            margin-bottom:12px;
-            display:none;
-        }
-
-        .heatmap-container.active,
-        .list-container.active {
-            display:block;
-        }
-
-        .heatmap-header,
-        .list-header {
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-bottom:12px;
-            padding-bottom:10px;
-            border-bottom:2px solid #2d2d2d;
-        }
-
-        .heatmap-title {
-            font-size:14px;
-            font-weight:700;
-            color:#fff;
-        }
-
-        .heatmap-grid {
-            display:grid;
-            grid-template-columns:repeat(4,1fr);
-            gap:4px;
-            min-height:260px;
-        }
-
-        .heatmap-cell {
-            position:relative;
-            border-radius:4px;
-            padding:12px;
-            display:flex;
-            flex-direction:column;
-            justify-content:center;
-            align-items:center;
-            transition:all 0.2s;
-            cursor:pointer;
-            overflow:hidden;
-        }
-
-        .heatmap-cell:hover {
-            transform:scale(1.05);
-            z-index:10;
-            box-shadow:0 4px 20px rgba(0,0,0,0.5);
-        }
-
-        .heatmap-cell-token {
-            font-size:14px;
-            font-weight:700;
-            color:#fff;
-            margin-bottom:4px;
-            text-shadow:0 1px 3px rgba(0,0,0,0.5);
-        }
-
-        .heatmap-cell-value {
-            font-size:11px;
-            font-weight:600;
-            color:rgba(255,255,255,0.9);
-            text-shadow:0 1px 2px rgba(0,0,0,0.5);
-        }
-
-        .heatmap-cell-side {
-            position:absolute;
-            top:4px;
-            right:4px;
-            font-size:9px;
-            padding:2px 6px;
-            border-radius:3px;
-            background:rgba(0,0,0,0.3);
-            font-weight:700;
-        }
-
-        .list-grid {
-            display:grid;
-            grid-template-columns:repeat(2,1fr);
-            gap:12px;
-        }
-
-        .list-item {
-            background:#111;
-            border:1px solid #2d2d2d;
-            border-radius:6px;
-            padding:12px;
-            display:grid;
-            grid-template-columns:1fr;
-            gap:8px;
-            transition:all 0.2s;
-        }
-
-        .list-item:hover {
-            border-color:#3b82f6;
-            transform:translateX(4px);
-        }
-
-        .list-item-token {
-            font-size:16px;
-            font-weight:700;
-            color:#fff;
-        }
-
-        .list-detail-item {
-            display:flex;
-            flex-direction:column;
-            gap:2px;
-        }
-
-        .list-detail-label {
-            font-size:9px;
-            color:#6b7280;
-            text-transform:uppercase;
-        }
-
-        .list-detail-value {
-            font-size:12px;
-            font-weight:700;
-            color:#fff;
-        }
-
-        .table-wrapper {
-            background:#1a1a1a;
-            border:1px solid #2d2d2d;
-            border-radius:8px;
-            overflow:hidden;
-        }
-
-        .table-header-section {
-            padding:14px;
-            border-bottom:2px solid #2d2d2d;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-        }
-
-        .table-title {
-            font-size:14px;
-            font-weight:700;
-            color:#fff;
-        }
-
-        .table-container {
-            overflow-x:auto;
-            -webkit-overflow-scrolling:touch;
-        }
-
-        table {
-            width:100%;
-            border-collapse:collapse;
-            min-width:1200px;
-        }
-
-        thead {
-            background:#111;
-            position:sticky;
-            top:0;
-            z-index:10;
-        }
-
-        th {
-            padding:12px 10px;
-            text-align:left;
-            font-size:11px;
-            font-weight:700;
-            color:#9ca3af;
-            text-transform:uppercase;
-            letter-spacing:0.5px;
-            border-bottom:2px solid #2d2d2d;
-            white-space:nowrap;
-        }
-
-        tbody tr {
-            border-bottom:1px solid #1f1f1f;
-            transition:background 0.2s ease;
-        }
-
-        tbody tr:hover {
-            background:#1f1f1f;
-        }
-
-        td {
-            padding:12px 10px;
-            font-size:12px;
-            color:#e5e7eb;
-            white-space:nowrap;
-        }
-
-        .token-cell {
-            font-weight:700;
-            font-size:13px;
-            color:#fff;
-        }
-
-        .side-badge {
-            display:inline-block;
-            padding:4px 10px;
-            border-radius:4px;
-            font-size:11px;
-            font-weight:700;
-            border:1px solid;
-        }
-
-        .side-long {
-            background:rgba(16,185,129,0.15);
-            color:#10b981;
-            border-color:#10b981;
-        }
-
-        .side-short {
-            background:rgba(239,68,68,0.15);
-            color:#ef4444;
-            border-color:#ef4444;
-        }
-
-        .pnl-positive {
-            color:#10b981;
-            font-weight:700;
-        }
-
-        .pnl-negative {
-            color:#ef4444;
-            font-weight:700;
-        }
-
-        .age-cell {
-            color:#fbbf24;
-            font-weight:700;
-        }
-
-        .filter-row th {
-            padding:6px 6px;
-            background:#050505;
-            border-bottom:1px solid #2d2d2d;
-        }
-
-        .filter-input,
-        .filter-select {
-            width:100%;
-            background:#000;
-            border:1px solid #27272a;
-            border-radius:4px;
-            padding:4px 6px;
-            font-size:10px;
-            color:#e5e7eb;
-            outline:none;
-        }
-
-        .filter-input:focus,
-        .filter-select:focus {
-            border-color:#3b82f6;
-        }
-
-        .filter-range {
-            display:flex;
-            gap:4px;
-        }
-
-        .mini { width:100%; }
-
-        .loading-overlay {
-            position:fixed;
-            inset:0;
-            background:rgba(0,0,0,0.8);
-            display:none;
-            align-items:center;
-            justify-content:center;
-            z-index:1000;
-        }
-
-        .loading-overlay.active { display:flex; }
-
-        .loading-spinner {
-            width:50px;
-            height:50px;
-            border:4px solid #2d2d2d;
-            border-top-color:#3b82f6;
-            border-radius:50%;
-            animation:spin 1s linear infinite;
-        }
-
-        @keyframes spin { to { transform:rotate(360deg); } }
-
-        .empty-state {
-            text-align:center;
-            padding:60px 20px;
-            color:#6b7280;
-        }
-
-        .empty-state-icon {
-            font-size:48px;
-            margin-bottom:16px;
-        }
-
-        .empty-state-title {
-            font-size:18px;
-            font-weight:700;
-            color:#9ca3af;
-            margin-bottom:8px;
-        }
-
-        .empty-state-text {
-            font-size:14px;
-        }
-
-        @media (max-width:768px) {
-            .header-stats {
-                grid-template-columns:repeat(2,1fr);
-            }
-            .list-grid {
-                grid-template-columns:1fr;
-            }
-            .heatmap-grid {
-                grid-template-columns:repeat(2,1fr);
-            }
-            .filter-row {
-                display:none; /* istersen gösterirsin */
-            }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;
+            background:#0a0a0a;color:#e5e7eb;
+            padding:12px;min-height:100vh;font-size:13px;
+        }
+        .container{max-width:1400px;margin:0 auto;}
+
+        .config-panel{background:#1a1a1a;border:1px solid #2d2d2d;border-radius:8px;padding:16px;margin-bottom:12px;}
+        .config-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+        .config-title{font-size:14px;font-weight:700;color:#fff;}
+        .status-badge{padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700;}
+        .status-connected{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid #10b981;}
+        .status-disconnected{background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid #ef4444;}
+
+        .address-manager{background:#111;border:1px solid #2d2d2d;border-radius:6px;padding:12px;}
+        .input-label{font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+        .address-input-group{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px;}
+        .input-field{background:#111;border:1px solid #2d2d2d;border-radius:6px;padding:10px 12px;color:#fff;font-size:12px;outline:none;}
+        .input-field:focus{border-color:#3b82f6;}
+        .btn{padding:8px 14px;border-radius:6px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+        .btn-primary{background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%);color:#fff;width:100%;margin-top:8px;}
+        .btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(59,130,246,.4);}
+        .btn-secondary{background:#1f1f1f;color:#9ca3af;border:1px solid #2d2d2d;width:100%;margin-top:6px;}
+        .btn-secondary:hover{background:#2d2d2d;color:#fff;}
+        .address-list{max-height:120px;overflow-y:auto;margin-top:6px;}
+        .address-chip{display:inline-flex;align-items:center;gap:8px;background:#1f1f1f;border:1px solid #2d2d2d;border-radius:4px;padding:6px 10px;margin:4px;font-size:11px;font-family:monospace;}
+        .address-chip .remove-btn{background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px;line-height:1;}
+
+        .header-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
+        .stat-card{background:#1a1a1a;border:1px solid #2d2d2d;border-radius:8px;padding:12px;}
+        .stat-label{font-size:11px;color:#9ca3af;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+        .stat-value{font-size:20px;font-weight:700;color:#fff;}
+        .stat-value.long{color:#10b981;}
+        .stat-value.short{color:#ef4444;}
+        .stat-value.neutral{color:#3b82f6;}
+
+        .position-bar-wrapper{background:#1a1a1a;border:1px solid #2d2d2d;border-radius:8px;padding:12px;margin-bottom:12px;}
+        .bar-header{display:flex;justify-content:space-between;margin-bottom:8px;font-size:11px;color:#9ca3af;flex-wrap:wrap;gap:8px;}
+        .position-bar{display:flex;height:32px;border-radius:6px;overflow:hidden;background:#111;}
+        .bar-long,.bar-short{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;transition:width .3s ease;}
+        .bar-long{background:linear-gradient(90deg,#10b981 0%,#059669 100%);}
+        .bar-short{background:linear-gradient(90deg,#ef4444 0%,#dc2626 100%);}
+
+        .view-toggle-wrapper{background:#1a1a1a;border:1px solid #2d2d2d;border-radius:8px;padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+        .view-toggle{display:flex;background:#111;border-radius:6px;overflow:hidden;}
+        .view-btn{padding:8px 16px;border:none;background:transparent;color:#9ca3af;font-size:12px;font-weight:700;cursor:pointer;}
+        .view-btn.active{background:#3b82f6;color:#fff;}
+        .refresh-info{font-size:11px;color:#6b7280;text-align:right;}
+        .refresh-info label{font-size:10px;}
+
+        .heatmap-container,.list-container{background:#1a1a1a;border:1px solid #2d2d2d;border-radius:8px;padding:14px;margin-bottom:12px;display:none;}
+        .heatmap-container.active,.list-container.active{display:block;}
+        .heatmap-header,.list-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:2px solid #2d2d2d;}
+        .heatmap-title{font-size:14px;font-weight:700;color:#fff;}
+        .heatmap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;min-height:260px;}
+        .heatmap-cell{position:relative;border-radius:4px;padding:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;transition:all .2s;overflow:hidden;}
+        .heatmap-cell:hover{transform:scale(1.05);z-index:10;box-shadow:0 4px 20px rgba(0,0,0,.5);}
+        .heatmap-cell-token{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;text-shadow:0 1px 3px rgba(0,0,0,.5);}
+        .heatmap-cell-value{font-size:11px;font-weight:600;color:rgba(255,255,255,.9);text-shadow:0 1px 2px rgba(0,0,0,.5);}
+        .heatmap-cell-side{position:absolute;top:4px;right:4px;font-size:9px;padding:2px 6px;border-radius:3px;background:rgba(0,0,0,.3);font-weight:700;}
+
+        .list-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+        .list-item{background:#111;border:1px solid #2d2d2d;border-radius:6px;padding:12px;display:grid;grid-template-columns:1fr;gap:8px;transition:all .2s;}
+        .list-item:hover{border-color:#3b82f6;transform:translateX(4px);}
+        .list-item-token{font-size:16px;font-weight:700;color:#fff;}
+        .list-detail-item{display:flex;flex-direction:column;gap:2px;}
+        .list-detail-label{font-size:9px;color:#6b7280;text-transform:uppercase;}
+        .list-detail-value{font-size:12px;font-weight:700;color:#fff;}
+
+        .table-wrapper{background:#1a1a1a;border:1px solid #2d2d2d;border-radius:8px;overflow:hidden;}
+        .table-header-section{padding:14px;border-bottom:2px solid #2d2d2d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+        .table-title{font-size:14px;font-weight:700;color:#fff;}
+        .table-actions{display:flex;gap:8px;flex-wrap:wrap;}
+        .table-container{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+        table{width:100%;border-collapse:collapse;min-width:1200px;}
+        thead{background:#111;position:sticky;top:0;z-index:10;}
+        th{padding:10px;text-align:left;font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #2d2d2d;white-space:nowrap;}
+        tbody tr{border-bottom:1px solid #1f1f1f;transition:background .2s;}
+        tbody tr:hover{background:#1f1f1f;}
+        td{padding:10px;font-size:12px;color:#e5e7eb;white-space:nowrap;}
+        .token-cell{font-weight:700;font-size:13px;color:#fff;}
+
+        .side-badge{display:inline-block;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;border:1px solid;}
+        .side-long{background:rgba(16,185,129,.15);color:#10b981;border-color:#10b981;}
+        .side-short{background:rgba(239,68,68,.15);color:#ef4444;border-color:#ef4444;}
+        .pnl-positive{color:#10b981;font-weight:700;}
+        .pnl-negative{color:#ef4444;font-weight:700;}
+        .age-cell{color:#fbbf24;font-weight:700;}
+
+        .filter-row th{padding:6px;background:#050505;border-bottom:1px solid #2d2d2d;}
+        .filter-input,.filter-select{width:100%;background:#000;border:1px solid #27272a;border-radius:4px;padding:4px 6px;font-size:10px;color:#e5e7eb;outline:none;}
+        .filter-input:focus,.filter-select:focus{border-color:#3b82f6;}
+        .filter-range{display:flex;gap:4px;}
+        .mini{width:100%;}
+
+        .loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:1000;}
+        .loading-overlay.active{display:flex;}
+        .loading-spinner{width:50px;height:50px;border:4px solid #2d2d2d;border-top-color:#3b82f6;border-radius:50%;animation:spin 1s linear infinite;}
+        @keyframes spin{to{transform:rotate(360deg);}}
+
+        .empty-state{text-align:center;padding:40px 20px;color:#6b7280;}
+        .empty-state-icon{font-size:36px;margin-bottom:10px;}
+        .empty-state-title{font-size:16px;font-weight:700;color:#9ca3af;margin-bottom:6px;}
+        .empty-state-text{font-size:13px;}
+
+        @media(max-width:768px){
+            .header-stats{grid-template-columns:repeat(2,1fr);}
+            .list-grid{grid-template-columns:1fr;}
+            .heatmap-grid{grid-template-columns:repeat(2,1fr);}
         }
     </style>
 </head>
 <body>
 <div class="container">
 
-    <!-- Config -->
     <div class="config-panel">
         <div class="config-header">
             <div class="config-title">🐋 Hyperliquid Portfolio Dashboard</div>
             <span class="status-badge status-disconnected" id="statusBadge">Ready</span>
         </div>
-
         <div class="address-manager">
-            <div class="input-label" style="margin-bottom:8px;">Wallet Addresses (çoklu: virgül / boşluk / satır)</div>
+            <div class="input-label">Wallet Addresses (çoklu: virgül / boşluk / satır)</div>
             <div class="address-input-group">
-                <textarea id="addressInput"
-                          class="input-field"
-                          style="height:70px;resize:vertical;"
-                          placeholder="0xAAA..., 0xBBB..., 0xCCC..."></textarea>
+                <textarea id="addressInput" class="input-field" style="height:70px;resize:vertical;"
+                    placeholder="0xAAA..., 0xBBB..., 0xCCC..."></textarea>
                 <button class="btn btn-secondary" id="addAddressBtn">Add</button>
             </div>
             <div class="address-list" id="addressList"></div>
-            <button class="btn btn-primary" id="loadBtn" style="margin-top:10px;width:100%;">Load Positions</button>
-            <button class="btn btn-secondary" id="refreshBtn" style="margin-top:6px;width:100%;">🔄 Refresh Positions</button>
+            <button class="btn btn-primary" id="loadBtn">Load Positions</button>
+            <button class="btn btn-secondary" id="refreshBtn">🔄 Refresh Positions</button>
+            <button class="btn btn-secondary" id="clearBtn">🧹 Clear & Reset</button>
         </div>
     </div>
 
-    <!-- Loading -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- Header Stats -->
     <div class="header-stats">
         <div class="stat-card">
             <div class="stat-label">Long Position</div>
@@ -655,7 +165,6 @@
         </div>
     </div>
 
-    <!-- Long/Short Bar -->
     <div class="position-bar-wrapper">
         <div class="bar-header">
             <div>
@@ -673,18 +182,26 @@
         </div>
     </div>
 
-    <!-- View Toggle -->
     <div class="view-toggle-wrapper">
         <div class="view-toggle">
             <button class="view-btn active" data-view="heatmap">🔥 Heatmap</button>
             <button class="view-btn" data-view="list">📋 List View</button>
         </div>
         <div class="refresh-info">
-            Last updated: <span id="lastUpdate">Never</span>
+            <div>Last updated: <span id="lastUpdate">Never</span></div>
+            <div style="margin-top:4px;">
+                <label>Auto refresh:
+                    <select id="autoRefreshSelect" class="filter-select" style="width:auto;display:inline-block;">
+                        <option value="0">Off</option>
+                        <option value="10">10s</option>
+                        <option value="30">30s</option>
+                        <option value="60">60s</option>
+                    </select>
+                </label>
+            </div>
         </div>
     </div>
 
-    <!-- Heatmap -->
     <div class="heatmap-container active" id="heatmapView">
         <div class="heatmap-header">
             <div class="heatmap-title">🔥 Top 10 Open Positions - Heatmap</div>
@@ -699,7 +216,6 @@
         </div>
     </div>
 
-    <!-- List View -->
     <div class="list-container" id="listView">
         <div class="list-header">
             <div class="heatmap-title">📋 Top 10 Open Positions - List</div>
@@ -714,11 +230,12 @@
         </div>
     </div>
 
-    <!-- Detail Table -->
     <div class="table-wrapper">
         <div class="table-header-section">
             <div class="table-title">📈 All Positions Details</div>
-            <div class="ranking-subtitle">Excel-style filters + AGE (days)</div>
+            <div class="table-actions">
+                <button class="btn btn-secondary" id="exportBtn">⬇️ Export CSV</button>
+            </div>
         </div>
         <div class="table-container">
             <table>
@@ -755,6 +272,7 @@
                         <th><div class="filter-range"><input id="fPnlMin" class="filter-input mini" placeholder="min"><input id="fPnlMax" class="filter-input mini" placeholder="max"></div></th>
                         <th><input id="fAge" class="filter-input" placeholder=">= days"></th>
                         <th><input id="fLiq" class="filter-input" placeholder="Search"></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody id="detailTableBody">
@@ -770,225 +288,212 @@
         </div>
     </div>
 </div>
-<script>
 
-        // Global State
+<script>
+    // PWA manifest + SW tek dosyada
+    (function(){
+        const manifest = {
+            name:"Hyperliquid Portfolio Dashboard",
+            short_name:"HL Dashboard",
+            start_url:"./",
+            display:"standalone",
+            background_color:"#0a0a0a",
+            theme_color:"#0a0a0a",
+            icons:[]
+        };
+        const blob = new Blob([JSON.stringify(manifest)],{type:"application/json"});
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("link");
+        link.rel="manifest";
+        link.href=url;
+        document.head.appendChild(link);
+
+        if("serviceWorker" in navigator){
+            const swCode = `
+                const CACHE_NAME='hl-dashboard-cache-v1';
+                self.addEventListener('install',e=>{self.skipWaiting();});
+                self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});
+            `;
+            const swBlob = new Blob([swCode],{type:'application/javascript'});
+            const swUrl = URL.createObjectURL(swBlob);
+            navigator.serviceWorker.register(swUrl).catch(()=>{});
+        }
+    })();
+
     const state = {
         addresses: [],
         positions: [],
         aggregatedData: {},
-        autoRefresh: null
+        autoRefreshTimer: null
     };
-
     const HYPERLIQUID_API = 'https://api.hyperliquid.xyz/info';
 
-    // Load & Save addresses
-    function loadConfig() {
-        const savedAddresses = localStorage.getItem('hl_addresses');
-        if (savedAddresses) {
-            state.addresses = JSON.parse(savedAddresses);
+    function loadConfig(){
+        const saved = localStorage.getItem('hl_addresses');
+        if(saved){
+            state.addresses = JSON.parse(saved);
             renderAddressList();
         }
     }
+    function saveConfig(){localStorage.setItem('hl_addresses',JSON.stringify(state.addresses));}
 
-    function saveConfig() {
-        localStorage.setItem('hl_addresses', JSON.stringify(state.addresses));
+    function formatCurrency(v){
+        const a = Math.abs(v);
+        if(a>=1_000_000) return '$'+(v/1_000_000).toFixed(2)+'M';
+        if(a>=1_000) return '$'+(v/1_000).toFixed(2)+'K';
+        return '$'+v.toFixed(2);
     }
-
-    function formatCurrency(value) {
-        const absValue = Math.abs(value);
-        if (absValue >= 1_000_000) return '$' + (value / 1_000_000).toFixed(2) + 'M';
-        if (absValue >= 1_000) return '$' + (value / 1_000).toFixed(2) + 'K';
-        return '$' + value.toFixed(2);
+    function formatNumber(v){
+        const a = Math.abs(v);
+        if(a>=1_000_000) return (v/1_000_000).toFixed(2)+'M';
+        if(a>=1_000) return (v/1_000).toFixed(2)+'K';
+        return v.toFixed(4);
     }
-
-    function formatNumber(value) {
-        const absValue = Math.abs(value);
-        if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(2) + 'M';
-        if (absValue >= 1_000) return (value / 1_000).toFixed(2) + 'K';
-        return value.toFixed(4);
+    function formatPrice(p){
+        if(p===undefined||p===null) return '$0.00';
+        if(p>=1000) return '$'+p.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+        if(p>=1) return '$'+p.toFixed(2);
+        if(p>=0.01) return '$'+p.toFixed(4);
+        return '$'+p.toFixed(6);
     }
-
-    function formatPrice(price) {
-        if (!price && price !== 0) return '$0.00';
-        if (price >= 1000) return '$' + price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-        if (price >= 1) return '$' + price.toFixed(2);
-        if (price >= 0.01) return '$' + price.toFixed(4);
-        return '$' + price.toFixed(6);
-    }
-
-    // Heatmap renkleri (sadece yeşil / kırmızı)
-    function getHeatmapColor(pnlPercent, side) {
-        if (pnlPercent >= 0) {
-            if (pnlPercent > 20) return 'rgba(16,185,129,0.95)';
-            if (pnlPercent > 10) return 'rgba(16,185,129,0.8)';
-            if (pnlPercent > 5)  return 'rgba(16,185,129,0.65)';
+    function getHeatmapColor(pnlPercent){
+        if(pnlPercent>=0){
+            if(pnlPercent>20) return 'rgba(16,185,129,0.95)';
+            if(pnlPercent>10) return 'rgba(16,185,129,0.8)';
+            if(pnlPercent>5) return 'rgba(16,185,129,0.65)';
             return 'rgba(16,185,129,0.45)';
-        } else {
-            const abs = Math.abs(pnlPercent);
-            if (abs > 20) return 'rgba(239,68,68,0.95)';
-            if (abs > 10) return 'rgba(239,68,68,0.8)';
-            if (abs > 5)  return 'rgba(239,68,68,0.65)';
+        }else{
+            const abs=Math.abs(pnlPercent);
+            if(abs>20) return 'rgba(239,68,68,0.95)';
+            if(abs>10) return 'rgba(239,68,68,0.8)';
+            if(abs>5) return 'rgba(239,68,68,0.65)';
             return 'rgba(239,68,68,0.45)';
         }
     }
 
-    function renderAddressList() {
-        const list = document.getElementById('addressList');
-        if (!state.addresses.length) {
-            list.innerHTML = '<div style="text-align:center;color:#6b7280;padding:10px;font-size:11px;">No addresses added yet</div>';
+    function renderAddressList(){
+        const list=document.getElementById('addressList');
+        if(!state.addresses.length){
+            list.innerHTML='<div style="text-align:center;color:#6b7280;padding:10px;font-size:11px;">No addresses added yet</div>';
             return;
         }
-        list.innerHTML = state.addresses.map(addr => `
+        list.innerHTML=state.addresses.map(a=>`
             <div class="address-chip">
-                <span>${addr.substring(0,6)}...${addr.substring(addr.length-4)}</span>
-                <button class="remove-btn" onclick="removeAddress('${addr}')">×</button>
+                <span>${a.substring(0,6)}...${a.substring(a.length-4)}</span>
+                <button class="remove-btn" onclick="removeAddress('${a}')">×</button>
             </div>
         `).join('');
     }
 
-    // Multi address add
-    function addAddress() {
-        const textarea = document.getElementById('addressInput');
-        const raw = textarea.value.trim();
-        if (!raw) {
-            alert('Please enter at least one wallet address');
-            return;
-        }
-
-        // virgül, boşluk, satır, ; hepsini böl
-        const parts = raw.split(/[\s,;]+/).filter(Boolean);
-        let addedCount = 0;
-        parts.forEach(p => {
-            const addr = p.trim();
-            if (addr.startsWith('0x') && addr.length === 42 && !state.addresses.includes(addr)) {
+    function addAddress(){
+        const ta=document.getElementById('addressInput');
+        const raw=ta.value.trim();
+        if(!raw){alert('Please enter at least one wallet address');return;}
+        const parts=raw.split(/[\s,;]+/).filter(Boolean);
+        let added=0;
+        parts.forEach(p=>{
+            const addr=p.trim();
+            if(addr.startsWith('0x')&&addr.length===42&&!state.addresses.includes(addr)){
                 state.addresses.push(addr);
-                addedCount++;
+                added++;
             }
         });
-
-        if (!addedCount) {
-            alert('No new valid addresses found');
-            return;
-        }
-
-        textarea.value = '';
+        if(!added){alert('No new valid addresses found');return;}
+        ta.value='';
+        renderAddressList();
+        saveConfig();
+    }
+    function removeAddress(addr){
+        state.addresses=state.addresses.filter(a=>a!==addr);
         renderAddressList();
         saveConfig();
     }
 
-    function removeAddress(address) {
-        state.addresses = state.addresses.filter(a => a !== address);
-        renderAddressList();
-        saveConfig();
-    }
-
-    async function fetchUserState(address) {
-        try {
-            const response = await fetch(HYPERLIQUID_API,{
+    async function fetchUserState(address){
+        try{
+            const res=await fetch(HYPERLIQUID_API,{
                 method:'POST',
                 headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({
-                    type:'clearinghouseState',
-                    user:address
-                })
+                body:JSON.stringify({type:'clearinghouseState',user:address})
             });
-            if (!response.ok) throw new Error('API request failed');
-            return await response.json();
-        } catch (e) {
+            if(!res.ok) throw new Error('API request failed');
+            return await res.json();
+        }catch(e){
             console.error('Error fetching user state',e);
             return null;
         }
     }
 
-    async function fetchAllPositions() {
-        if (!state.addresses.length) {
-            alert('Please add at least one wallet address');
+    async function fetchAllPositions(fromAuto=false){
+        if(!state.addresses.length){
+            if(!fromAuto) alert('Please add at least one wallet address');
             return;
         }
         showLoading(true);
         updateStatus('Loading...');
-
-        try {
-            const allPositions = [];
-
-            for (const address of state.addresses) {
-                const userData = await fetchUserState(address);
-                if (userData && userData.assetPositions) {
-                    userData.assetPositions.forEach(pos => {
-                        const position = pos.position;
-                        const szi = parseFloat(position.szi);
-                        if (szi === 0) return;
-
-                        const entryPx = parseFloat(position.entryPx);
-                        const positionValue = Math.abs(szi) * entryPx;
-                        const unrealizedPnl = parseFloat(position.unrealizedPnl);
-                        const leverage = parseFloat(position.leverage.value);
-                        const liquidationPx = parseFloat(position.liquidationPx || 0);
-                        // AGE kaynağı – çeşitli field isimlerini dener
-                        const openedAtMs = Number(
-                            position.lastUpdateTime ||
-                            position.time ||
-                            position.timestamp ||
-                            0
-                        );
-
-                        allPositions.push({
+        try{
+            const all=[];
+            for(const address of state.addresses){
+                const data=await fetchUserState(address);
+                if(data&&data.assetPositions){
+                    data.assetPositions.forEach(pos=>{
+                        const p=pos.position;
+                        const szi=parseFloat(p.szi);
+                        if(szi===0) return;
+                        const entryPx=parseFloat(p.entryPx);
+                        const positionValue=Math.abs(szi)*entryPx;
+                        const unrealizedPnl=parseFloat(p.unrealizedPnl);
+                        const leverage=parseFloat(p.leverage.value);
+                        const liquidationPx=parseFloat(p.liquidationPx||0);
+                        const openedAtMs=Number(p.lastUpdateTime||p.time||p.timestamp||0);
+                        all.push({
                             address,
-                            coin:pos.coin,
-                            side:szi > 0 ? 'long' : 'short',
+                            coin:pos.coin||p.coin,
+                            side:szi>0?'long':'short',
                             szi:Math.abs(szi),
                             entryPx,
                             positionValue,
                             unrealizedPnl,
-                            returnOnEquity:parseFloat(position.returnOnEquity),
+                            returnOnEquity:parseFloat(p.returnOnEquity),
                             leverage,
                             liquidationPx,
-                            marginUsed:parseFloat(position.marginUsed),
-                            openedAt: openedAtMs
+                            marginUsed:parseFloat(p.marginUsed),
+                            openedAt:openedAtMs
                         });
                     });
                 }
             }
-
-            state.positions = allPositions;
+            state.positions=all;
             aggregateData();
             updateDashboard();
             updateLastUpdateTime();
             updateStatus('Connected');
-        } catch (e) {
+        }catch(e){
             console.error(e);
-            alert('Error loading positions: ' + e.message);
+            if(!fromAuto) alert('Error loading positions: '+e.message);
             updateStatus('Error');
-        } finally {
+        }finally{
             showLoading(false);
         }
     }
 
-    function aggregateData() {
-        const aggregated = {};
-        state.positions.forEach(pos => {
-            if (!aggregated[pos.coin]) {
-                aggregated[pos.coin] = {
-                    coin:pos.coin,
-                    longValue:0,
-                    shortValue:0,
-                    totalValue:0,
-                    pnl:0,
-                    positions:[]
-                };
+    function aggregateData(){
+        const agg={};
+        state.positions.forEach(pos=>{
+            if(!agg[pos.coin]){
+                agg[pos.coin]={coin:pos.coin,longValue:0,shortValue:0,totalValue:0,pnl:0,positions:[]};
             }
-            const data = aggregated[pos.coin];
-            if (pos.side === 'long') data.longValue += pos.positionValue;
-            else data.shortValue += pos.positionValue;
-            data.totalValue += pos.positionValue;
-            data.pnl += pos.unrealizedPnl;
-            data.positions.push(pos);
+            const a=agg[pos.coin];
+            if(pos.side==='long') a.longValue+=pos.positionValue;
+            else a.shortValue+=pos.positionValue;
+            a.totalValue+=pos.positionValue;
+            a.pnl+=pos.unrealizedPnl;
+            a.positions.push(pos);
         });
-        state.aggregatedData = aggregated;
+        state.aggregatedData=agg;
     }
 
-    function updateDashboard() {
+    function updateDashboard(){
         updateHeaderStats();
         updatePositionBar();
         updateHeatmap();
@@ -996,154 +501,118 @@
         updateDetailTable();
     }
 
-    function updateHeaderStats() {
-        let longTotal = 0;
-        let shortTotal = 0;
-        let netPnl = 0;
-        let profitCount = 0;
-        let lossCount = 0;
-
-        state.positions.forEach(pos => {
-            if (pos.side === 'long') longTotal += pos.positionValue;
-            else shortTotal += pos.positionValue;
-
-            netPnl += pos.unrealizedPnl;
-            if (pos.unrealizedPnl > 0) profitCount++;
-            else if (pos.unrealizedPnl < 0) lossCount++;
+    function updateHeaderStats(){
+        let longTotal=0,shortTotal=0,netPnl=0,profit=0,loss=0;
+        state.positions.forEach(p=>{
+            if(p.side==='long') longTotal+=p.positionValue;
+            else shortTotal+=p.positionValue;
+            netPnl+=p.unrealizedPnl;
+            if(p.unrealizedPnl>0) profit++;
+            else if(p.unrealizedPnl<0) loss++;
         });
-
-        document.getElementById('longPosition').textContent = formatCurrency(longTotal);
-        document.getElementById('shortPosition').textContent = formatCurrency(shortTotal);
-        document.getElementById('totalPositions').textContent = state.positions.length;
-
-        const pnlEl = document.getElementById('netPnl');
-        pnlEl.textContent = formatCurrency(netPnl);
-        pnlEl.className = 'stat-value ' + (netPnl >= 0 ? 'long' : 'short');
-
-        document.getElementById('profitCount').textContent = profitCount;
-        document.getElementById('lossCount').textContent = lossCount;
+        document.getElementById('longPosition').textContent=formatCurrency(longTotal);
+        document.getElementById('shortPosition').textContent=formatCurrency(shortTotal);
+        document.getElementById('totalPositions').textContent=state.positions.length;
+        const pnlEl=document.getElementById('netPnl');
+        pnlEl.textContent=formatCurrency(netPnl);
+        pnlEl.className='stat-value '+(netPnl>=0?'long':'short');
+        document.getElementById('profitCount').textContent=profit;
+        document.getElementById('lossCount').textContent=loss;
     }
 
-    function updatePositionBar() {
-        let longTotal = 0;
-        let shortTotal = 0;
-        state.positions.forEach(pos => {
-            if (pos.side === 'long') longTotal += pos.positionValue;
-            else shortTotal += pos.positionValue;
+    function updatePositionBar(){
+        let longTotal=0,shortTotal=0;
+        state.positions.forEach(p=>{
+            if(p.side==='long') longTotal+=p.positionValue;
+            else shortTotal+=p.positionValue;
         });
-        document.getElementById('longPosValue').textContent = formatCurrency(longTotal);
-        document.getElementById('shortPosValue').textContent = formatCurrency(shortTotal);
-
-        const totalValue = longTotal + shortTotal;
-        const longPercent = totalValue > 0 ? (longTotal / totalValue) * 100 : 50;
-        const shortPercent = 100 - longPercent;
-
-        const barLong = document.getElementById('barLong');
-        const barShort = document.getElementById('barShort');
-
-        barLong.style.width = longPercent + '%';
-        barShort.style.width = shortPercent + '%';
-        barLong.textContent = longPercent.toFixed(1) + '%';
-        barShort.textContent = shortPercent.toFixed(1) + '%';
+        const total=longTotal+shortTotal;
+        const longPct=total>0?(longTotal/total)*100:50;
+        const shortPct=100-longPct;
+        document.getElementById('longPosValue').textContent=formatCurrency(longTotal);
+        document.getElementById('shortPosValue').textContent=formatCurrency(shortTotal);
+        const bl=document.getElementById('barLong'),bs=document.getElementById('barShort');
+        bl.style.width=longPct+'%';bs.style.width=shortPct+'%';
+        bl.textContent=longPct.toFixed(1)+'%';bs.textContent=shortPct.toFixed(1)+'%';
     }
 
-    function updateHeatmap() {
-        const grid = document.getElementById('heatmapGrid');
-        if (!Object.keys(state.aggregatedData).length) {
-            grid.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">📊</div>
-                    <div class="empty-state-title">No Data Available</div>
-                    <div class="empty-state-text">Add wallet addresses and click Load Positions</div>
-                </div>
-            `;
+    function updateHeatmap(){
+        const grid=document.getElementById('heatmapGrid');
+        if(!Object.keys(state.aggregatedData).length){
+            grid.innerHTML=`<div class="empty-state">
+                <div class="empty-state-icon">📊</div>
+                <div class="empty-state-title">No Data Available</div>
+                <div class="empty-state-text">Add wallet addresses and click Load Positions</div>
+            </div>`;
             return;
         }
-
-        const topAssets = Object.values(state.aggregatedData)
-            .sort((a,b) => b.totalValue - a.totalValue)
-            .slice(0,10);
-
-        grid.innerHTML = topAssets.map((asset,index) => {
-            const pnlPercent = asset.totalValue > 0 ? (asset.pnl / asset.totalValue) * 100 : 0;
-            const dominantSide = asset.longValue >= asset.shortValue ? 'long' : 'short';
-            const bg = getHeatmapColor(pnlPercent,dominantSide);
-            const isBig = index < 2;
-            const span = isBig ? 2 : 1;
-            const size = isBig ? 180 : 110;
+        const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
+        grid.innerHTML=top.map((a,i)=>{
+            const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
+            const domSide=a.longValue>=a.shortValue?'long':'short';
+            const bg=getHeatmapColor(pnlPct);
+            const isBig=i<2, span=isBig?2:1, size=isBig?180:110;
             return `
-                <div class="heatmap-cell" style="
-                    background:${bg};
-                    min-height:${size}px;
-                    grid-column:span ${span};
-                    grid-row:span ${span};
-                ">
-                    <div class="heatmap-cell-side">${dominantSide.toUpperCase()}</div>
-                    <div class="heatmap-cell-token" style="font-size:${isBig ? '18px' : '14px'};">${asset.coin}</div>
-                    <div class="heatmap-cell-value">${formatCurrency(asset.totalValue)}</div>
-                    <div class="heatmap-cell-value" style="margin-top:4px;font-size:${isBig ? '11px' : '10px'};">
-                        ${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%
+                <div class="heatmap-cell" style="background:${bg};min-height:${size}px;grid-column:span ${span};grid-row:span ${span};">
+                    <div class="heatmap-cell-side">${domSide.toUpperCase()}</div>
+                    <div class="heatmap-cell-token" style="font-size:${isBig?'18px':'14px'};">${a.coin}</div>
+                    <div class="heatmap-cell-value">${formatCurrency(a.totalValue)}</div>
+                    <div class="heatmap-cell-value" style="margin-top:4px;font-size:${isBig?'11px':'10px'};">
+                        ${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%
                     </div>
                 </div>
             `;
         }).join('');
     }
 
-    function updateListView() {
-        const listGrid = document.getElementById('listGrid');
-        if (!Object.keys(state.aggregatedData).length) {
-            listGrid.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">📝</div>
-                    <div class="empty-state-title">No Data Available</div>
-                    <div class="empty-state-text">Add wallet addresses and click Load Positions</div>
-                </div>
-            `;
+    function updateListView(){
+        const grid=document.getElementById('listGrid');
+        if(!Object.keys(state.aggregatedData).length){
+            grid.innerHTML=`<div class="empty-state">
+                <div class="empty-state-icon">📝</div>
+                <div class="empty-state-title">No Data Available</div>
+                <div class="empty-state-text">Add wallet addresses and click Load Positions</div>
+            </div>`;
             return;
         }
-
-        const topAssets = Object.values(state.aggregatedData)
-            .sort((a,b) => b.totalValue - a.totalValue)
-            .slice(0,10);
-
-        listGrid.innerHTML = topAssets.map(asset => {
-            const pnlPercent = asset.totalValue > 0 ? (asset.pnl / asset.totalValue) * 100 : 0;
-            const pnlClass = asset.pnl >= 0 ? 'pnl-positive' : 'pnl-negative';
-            const dominantSide = asset.longValue >= asset.shortValue ? 'Long' : 'Short';
-            const sideClass = dominantSide === 'Long' ? 'side-long' : 'side-short';
-
+        const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
+        grid.innerHTML=top.map(a=>{
+            const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
+            const pnlClass=a.pnl>=0?'pnl-positive':'pnl-negative';
+            const dom=a.longValue>=a.shortValue?'Long':'Short';
+            const sideClass=dom==='Long'?'side-long':'side-short';
             return `
                 <div class="list-item">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                        <div class="list-item-token">${asset.coin}</div>
-                        <span class="side-badge ${sideClass}">${dominantSide}</span>
+                        <div class="list-item-token">${a.coin}</div>
+                        <span class="side-badge ${sideClass}">${dom}</span>
                     </div>
                     <div style="display:flex;flex-direction:column;gap:8px;">
                         <div style="display:flex;justify-content:space-between;">
                             <div class="list-detail-item">
                                 <div class="list-detail-label">Position Value</div>
-                                <div class="list-detail-value">${formatCurrency(asset.totalValue)}</div>
+                                <div class="list-detail-value">${formatCurrency(a.totalValue)}</div>
                             </div>
                             <div class="list-detail-item" style="text-align:right;">
                                 <div class="list-detail-label">PnL</div>
                                 <div class="list-detail-value ${pnlClass}">
-                                    ${asset.pnl >= 0 ? '+' : ''}${formatCurrency(asset.pnl)}
+                                    ${a.pnl>=0?'+':''}${formatCurrency(a.pnl)}
                                 </div>
                             </div>
                         </div>
                         <div style="display:flex;justify-content:space-between;gap:12px;">
                             <div class="list-detail-item">
                                 <div class="list-detail-label">Long</div>
-                                <div class="list-detail-value" style="color:#10b981;font-size:11px;">${formatCurrency(asset.longValue)}</div>
+                                <div class="list-detail-value" style="color:#10b981;font-size:11px;">${formatCurrency(a.longValue)}</div>
                             </div>
                             <div class="list-detail-item">
                                 <div class="list-detail-label">Short</div>
-                                <div class="list-detail-value" style="color:#ef4444;font-size:11px;">${formatCurrency(asset.shortValue)}</div>
+                                <div class="list-detail-value" style="color:#ef4444;font-size:11px;">${formatCurrency(a.shortValue)}</div>
                             </div>
                             <div class="list-detail-item" style="text-align:right;">
                                 <div class="list-detail-label">ROE</div>
                                 <div class="list-detail-value ${pnlClass}" style="font-size:11px;">
-                                    ${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%
+                                    ${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%
                                 </div>
                             </div>
                         </div>
@@ -1153,226 +622,236 @@
         }).join('');
     }
 
-        // === Helpers for filters & AGE ===
-    function parseFloatInput(id) {
-        const el = document.getElementById(id);
-        if (!el) return null;
-        const v = el.value.trim().replace(/[^0-9.\-]/g,'');
-        if (!v) return null;
-        const n = parseFloat(v);
-        return isNaN(n) ? null : n;
+    function parseFloatInput(id){
+        const el=document.getElementById(id);
+        if(!el) return null;
+        const v=el.value.trim().replace(/[^0-9.\-]/g,'');
+        if(!v) return null;
+        const n=parseFloat(v);
+        return isNaN(n)?null:n;
     }
 
-    function getAgeDays(openedAtMs) {
-        if (!openedAtMs || openedAtMs <= 0) return null;
-        const diff = Date.now() - openedAtMs;
-        if (diff <= 0) return 0;
-        return diff / (1000 * 60 * 60 * 24);
+    function getAgeDays(ms){
+        if(!ms||ms<=0) return null;
+        const diff=Date.now()-ms;
+        if(diff<=0) return 0;
+        return diff/(1000*60*60*24);
     }
 
-    function getFilteredPositions() {
-        if (!state.positions.length) return [];
+    function getFilteredPositions(){
+        if(!state.positions.length) return [];
+        const token=(document.getElementById('fToken')?.value||'').toLowerCase().trim();
+        const addr=(document.getElementById('fAddress')?.value||'').toLowerCase().trim();
+        const side=(document.getElementById('fSide')?.value||'all');
 
-        const token = (document.getElementById('fToken')?.value || '').toLowerCase().trim();
-        const address = (document.getElementById('fAddress')?.value || '').toLowerCase().trim();
-        const side = (document.getElementById('fSide')?.value || 'all');
+        const levMin=parseFloatInput('fLevMin'),levMax=parseFloatInput('fLevMax');
+        const posMin=parseFloatInput('fPosMin'),posMax=parseFloatInput('fPosMax');
+        const sizeMin=parseFloatInput('fSize');
+        const entryMin=parseFloatInput('fEntryMin'),entryMax=parseFloatInput('fEntryMax');
+        const markMin=parseFloatInput('fMarkMin'),markMax=parseFloatInput('fMarkMax');
+        const pnlMin=parseFloatInput('fPnlMin'),pnlMax=parseFloatInput('fPnlMax');
+        const roeMin=parseFloatInput('fRoeMin'),roeMax=parseFloatInput('fRoeMax');
+        const ageMin=parseFloatInput('fAge');
+        const liqText=(document.getElementById('fLiq')?.value||'').toLowerCase().trim();
 
-        const levMin = parseFloatInput('fLevMin');
-        const levMax = parseFloatInput('fLevMax');
-        const posMin = parseFloatInput('fPosMin');
-        const posMax = parseFloatInput('fPosMax');
-        const sizeMin = parseFloatInput('fSize');
-        const entryMin = parseFloatInput('fEntryMin');
-        const entryMax = parseFloatInput('fEntryMax');
-        const markMin = parseFloatInput('fMarkMin');
-        const markMax = parseFloatInput('fMarkMax');
-        const pnlMin = parseFloatInput('fPnlMin');
-        const pnlMax = parseFloatInput('fPnlMax');
-        const roeMin = parseFloatInput('fRoeMin');
-        const roeMax = parseFloatInput('fRoeMax');
-        const ageMin = parseFloatInput('fAge');
-        const liqText = (document.getElementById('fLiq')?.value || '').toLowerCase().trim();
+        return state.positions.filter(p=>{
+            if(token && !p.coin.toLowerCase().includes(token)) return false;
+            if(addr && !p.address.toLowerCase().includes(addr)) return false;
+            if(side!=='all' && p.side!==side) return false;
 
-        return state.positions.filter(pos => {
-            if (token && !pos.coin.toLowerCase().includes(token)) return false;
-            if (address && !pos.address.toLowerCase().includes(address)) return false;
-            if (side !== 'all' && pos.side !== side) return false;
+            if(levMin!==null && p.leverage<levMin) return false;
+            if(levMax!==null && p.leverage>levMax) return false;
 
-            if (levMin !== null && pos.leverage < levMin) return false;
-            if (levMax !== null && pos.leverage > levMax) return false;
+            if(posMin!==null && p.positionValue<posMin) return false;
+            if(posMax!==null && p.positionValue>posMax) return false;
 
-            if (posMin !== null && pos.positionValue < posMin) return false;
-            if (posMax !== null && pos.positionValue > posMax) return false;
+            if(sizeMin!==null && p.szi<sizeMin) return false;
 
-            if (sizeMin !== null && pos.szi < sizeMin) return false;
+            if(entryMin!==null && p.entryPx<entryMin) return false;
+            if(entryMax!==null && p.entryPx>entryMax) return false;
 
-            if (entryMin !== null && pos.entryPx < entryMin) return false;
-            if (entryMax !== null && pos.entryPx > entryMax) return false;
+            const mark=p.entryPx+(p.unrealizedPnl/p.szi);
+            if(markMin!==null && mark<markMin) return false;
+            if(markMax!==null && mark>markMax) return false;
 
-            const markPrice = pos.entryPx + (pos.unrealizedPnl / pos.szi);
-            if (markMin !== null && markPrice < markMin) return false;
-            if (markMax !== null && markPrice > markMax) return false;
+            if(pnlMin!==null && p.unrealizedPnl<pnlMin) return false;
+            if(pnlMax!==null && p.unrealizedPnl>pnlMax) return false;
 
-            if (pnlMin !== null && pos.unrealizedPnl < pnlMin) return false;
-            if (pnlMax !== null && pos.unrealizedPnl > pnlMax) return false;
+            const roe=p.returnOnEquity*100;
+            if(roeMin!==null && roe<roeMin) return false;
+            if(roeMax!==null && roe>roeMax) return false;
 
-            const roePercent = pos.returnOnEquity * 100;
-            if (roeMin !== null && roePercent < roeMin) return false;
-            if (roeMax !== null && roePercent > roeMax) return false;
+            const age=getAgeDays(p.openedAt);
+            if(ageMin!==null && (age===null||age<ageMin)) return false;
 
-            const ageDays = getAgeDays(pos.openedAt);
-            if (ageMin !== null && (ageDays === null || ageDays < ageMin)) return false;
-
-            if (liqText) {
-                const liqStr = pos.liquidationPx > 0
-                    ? formatPrice(pos.liquidationPx).toLowerCase()
-                    : 'n/a';
-                if (!liqStr.includes(liqText)) return false;
+            if(liqText){
+                const liqStr=p.liquidationPx>0?formatPrice(p.liquidationPx).toLowerCase():'n/a';
+                if(!liqStr.includes(liqText)) return false;
             }
-
             return true;
         });
     }
 
-    function updateDetailTable() {
-        const tbody = document.getElementById('detailTableBody');
-        if (!state.positions.length) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="12" style="text-align:center;padding:40px;color:#6b7280;">
-                        <div style="font-size:32px;margin-bottom:12px;">🔍</div>
-                        <div style="font-size:14px;font-weight:700;margin-bottom:6px;">No Positions Found</div>
-                        <div style="font-size:12px;">Add wallet addresses to view positions</div>
-                    </td>
-                </tr>
-            `;
+    function updateDetailTable(){
+        const tbody=document.getElementById('detailTableBody');
+        if(!state.positions.length){
+            tbody.innerHTML=`<tr>
+                <td colspan="12" style="text-align:center;padding:40px;color:#6b7280;">
+                    <div style="font-size:32px;margin-bottom:12px;">🔍</div>
+                    <div style="font-size:14px;font-weight:700;margin-bottom:6px;">No Positions Found</div>
+                    <div style="font-size:12px;">Add wallet addresses to view positions</div>
+                </td>
+            </tr>`;
             return;
         }
-
-        const positions = getFilteredPositions();
-        if (!positions.length) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="12" style="text-align:center;padding:40px;color:#6b7280;">
-                        <div style="font-size:32px;margin-bottom:12px;">🧹</div>
-                        <div style="font-size:14px;font-weight:700;margin-bottom:6px;">No Results</div>
-                        <div style="font-size:12px;">Try adjusting your filters</div>
-                    </td>
-                </tr>
-            `;
+        const arr=getFilteredPositions();
+        if(!arr.length){
+            tbody.innerHTML=`<tr>
+                <td colspan="12" style="text-align:center;padding:40px;color:#6b7280;">
+                    <div style="font-size:32px;margin-bottom:12px;">🧹</div>
+                    <div style="font-size:14px;font-weight:700;margin-bottom:6px;">No Results</div>
+                    <div style="font-size:12px;">Try adjusting your filters</div>
+                </td>
+            </tr>`;
             return;
         }
-
-        tbody.innerHTML = positions.map(pos => {
-            const pnlClass = pos.unrealizedPnl >= 0 ? 'pnl-positive' : 'pnl-negative';
-            const roePercent = pos.returnOnEquity * 100;
-            const markPrice = pos.entryPx + (pos.unrealizedPnl / pos.szi);
-            const ageDays = getAgeDays(pos.openedAt);
-            const ageText = ageDays === null ? '–' : ageDays.toFixed(1);
-
+        tbody.innerHTML=arr.map(p=>{
+            const pnlClass=p.unrealizedPnl>=0?'pnl-positive':'pnl-negative';
+            const roe=p.returnOnEquity*100;
+            const mark=p.entryPx+(p.unrealizedPnl/p.szi);
+            const age=getAgeDays(p.openedAt);
+            const ageText=age===null?'–':age.toFixed(1);
             return `
                 <tr>
-                    <td class="token-cell">${pos.coin}</td>
-                    <td style="font-family:monospace;font-size:11px;">
-                        ${pos.address.substring(0,6)}...${pos.address.substring(pos.address.length-4)}
-                    </td>
-                    <td><span class="side-badge side-${pos.side}">${pos.side.toUpperCase()}</span></td>
-                    <td style="color:#9ca3af;font-size:11px;">${pos.leverage.toFixed(2)}x</td>
-                    <td style="font-weight:700;">${formatCurrency(pos.positionValue)}</td>
-                    <td>${formatNumber(pos.szi)}</td>
-                    <td>${formatPrice(pos.entryPx)}</td>
-                    <td>${formatPrice(markPrice)}</td>
-                    <td class="${pnlClass}">${pos.unrealizedPnl >= 0 ? '+' : ''}${formatCurrency(pos.unrealizedPnl)}</td>
-                    <td class="${pnlClass}">${roePercent >= 0 ? '+' : ''}${roePercent.toFixed(2)}%</td>
+                    <td class="token-cell">${p.coin}</td>
+                    <td style="font-family:monospace;font-size:11px;">${p.address.substring(0,6)}...${p.address.substring(p.address.length-4)}</td>
+                    <td><span class="side-badge side-${p.side}">${p.side.toUpperCase()}</span></td>
+                    <td style="color:#9ca3af;font-size:11px;">${p.leverage.toFixed(2)}x</td>
+                    <td style="font-weight:700;">${formatCurrency(p.positionValue)}</td>
+                    <td>${formatNumber(p.szi)}</td>
+                    <td>${formatPrice(p.entryPx)}</td>
+                    <td>${formatPrice(mark)}</td>
+                    <td class="${pnlClass}">${p.unrealizedPnl>=0?'+':''}${formatCurrency(p.unrealizedPnl)}</td>
+                    <td class="${pnlClass}">${roe>=0?'+':''}${roe.toFixed(2)}%</td>
                     <td class="age-cell">${ageText}</td>
-                    <td>${pos.liquidationPx > 0 ? formatPrice(pos.liquidationPx) : 'N/A'}</td>
+                    <td>${p.liquidationPx>0?formatPrice(p.liquidationPx):'N/A'}</td>
                 </tr>
             `;
         }).join('');
     }
 
-    function updateStatus(status) {
-        const badge = document.getElementById('statusBadge');
-        if (status === 'Connected') {
-            badge.textContent = 'Connected';
-            badge.className = 'status-badge status-connected';
-        } else if (status === 'Loading...') {
-            badge.textContent = 'Loading...';
-            badge.className = 'status-badge status-disconnected';
-        } else if (status === 'Error') {
-            badge.textContent = 'Error';
-            badge.className = 'status-badge status-disconnected';
-        } else {
-            badge.textContent = 'Ready';
-            badge.className = 'status-badge status-disconnected';
-        }
+    function updateStatus(status){
+        const badge=document.getElementById('statusBadge');
+        if(status==='Connected'){badge.textContent='Connected';badge.className='status-badge status-connected';}
+        else if(status==='Loading...'){badge.textContent='Loading...';badge.className='status-badge status-disconnected';}
+        else if(status==='Error'){badge.textContent='Error';badge.className='status-badge status-disconnected';}
+        else{badge.textContent='Ready';badge.className='status-badge status-disconnected';}
     }
 
-    function updateLastUpdateTime() {
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString('en-US',{
-            hour:'2-digit',
-            minute:'2-digit',
-            second:'2-digit'
-        });
-        document.getElementById('lastUpdate').textContent = timeStr;
+    function updateLastUpdateTime(){
+        const now=new Date();
+        document.getElementById('lastUpdate').textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
     }
 
-    function showLoading(show) {
-        const overlay = document.getElementById('loadingOverlay');
-        overlay.classList.toggle('active', !!show);
+    function showLoading(show){
+        document.getElementById('loadingOverlay').classList.toggle('active',!!show);
     }
 
-    function initViewToggle() {
-        const viewButtons = document.querySelectorAll('.view-btn');
-        const heatmapView = document.getElementById('heatmapView');
-        const listView = document.getElementById('listView');
-
-        viewButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const view = btn.dataset.view;
-                viewButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-
-                if (view === 'heatmap') {
-                    heatmapView.classList.add('active');
-                    listView.classList.remove('active');
-                } else {
-                    heatmapView.classList.remove('active');
-                    listView.classList.add('active');
-                }
+    function initViewToggle(){
+        const btns=document.querySelectorAll('.view-btn');
+        const heat=document.getElementById('heatmapView');
+        const list=document.getElementById('listView');
+        btns.forEach(b=>{
+            b.addEventListener('click',()=>{
+                const v=b.dataset.view;
+                btns.forEach(x=>x.classList.remove('active'));
+                b.classList.add('active');
+                if(v==='heatmap'){heat.classList.add('active');list.classList.remove('active');}
+                else{heat.classList.remove('active');list.classList.add('active');}
             });
         });
     }
 
-    function initFilters() {
-        const filterEls = document.querySelectorAll('.filter-input, .filter-select');
-        filterEls.forEach(el => {
-            el.addEventListener('input', updateDetailTable);
-            el.addEventListener('change', updateDetailTable);
+    function initFilters(){
+        const els=document.querySelectorAll('.filter-input,.filter-select');
+        els.forEach(el=>{
+            el.addEventListener('input',updateDetailTable);
+            el.addEventListener('change',updateDetailTable);
         });
     }
 
-    // Events
-    document.getElementById('addAddressBtn').addEventListener('click', addAddress);
-    document.getElementById('loadBtn').addEventListener('click', fetchAllPositions);
-    document.getElementById('refreshBtn').addEventListener('click', fetchAllPositions);
+    function clearAll(){
+        state.addresses=[];
+        state.positions=[];
+        state.aggregatedData={};
+        saveConfig();
+        renderAddressList();
+        updateDashboard();
+        updateStatus('Ready');
+        document.getElementById('lastUpdate').textContent='Never';
+    }
 
-    document.getElementById('addressInput').addEventListener('keypress', e => {
-        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-            addAddress();
-        }
+    function exportCSV(){
+        if(!state.positions.length){alert('No positions to export');return;}
+        const rows=getFilteredPositions();
+        if(!rows.length){alert('No rows match current filters');return;}
+        const header=['token','address','side','leverage','positionValue','size','entryPrice','markPrice','unrealizedPnl','roePercent','ageDays','liquidationPx'];
+        const csv=[header.join(',')];
+        rows.forEach(p=>{
+            const mark=p.entryPx+(p.unrealizedPnl/p.szi);
+            const age=getAgeDays(p.openedAt);
+            const roe=p.returnOnEquity*100;
+            const line=[
+                p.coin,
+                p.address,
+                p.side,
+                p.leverage.toFixed(2),
+                p.positionValue,
+                p.szi,
+                p.entryPx,
+                mark,
+                p.unrealizedPnl,
+                roe,
+                age===null?'':age.toFixed(4),
+                p.liquidationPx
+            ].map(v=>String(v).replace(/"/g,'""'));
+            csv.push('"'+line.join('","')+'"');
+        });
+        const blob=new Blob([csv.join('\n')],{type:'text/csv;charset=utf-8;'});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=url;a.download='hyperliquid_positions.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+    }
+
+    function initAutoRefresh(){
+        const sel=document.getElementById('autoRefreshSelect');
+        sel.addEventListener('change',()=>{
+            if(state.autoRefreshTimer){clearInterval(state.autoRefreshTimer);state.autoRefreshTimer=null;}
+            const sec=parseInt(sel.value,10);
+            if(sec>0){
+                state.autoRefreshTimer=setInterval(()=>fetchAllPositions(true),sec*1000);
+            }
+        });
+    }
+
+    document.getElementById('addAddressBtn').addEventListener('click',addAddress);
+    document.getElementById('loadBtn').addEventListener('click',()=>fetchAllPositions(false));
+    document.getElementById('refreshBtn').addEventListener('click',()=>fetchAllPositions(false));
+    document.getElementById('clearBtn').addEventListener('click',clearAll);
+    document.getElementById('exportBtn').addEventListener('click',exportCSV);
+    document.getElementById('addressInput').addEventListener('keydown',e=>{
+        if(e.key==='Enter' && (e.ctrlKey||e.metaKey)){e.preventDefault();addAddress();}
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded',()=>{
         loadConfig();
         initViewToggle();
         initFilters();
+        initAutoRefresh();
         console.log('🐋 Hyperliquid Dashboard ready');
     });
 
-    // global
-    window.removeAddress = removeAddress;
+    window.removeAddress=removeAddress;
 </script>
 </body>
 </html>
