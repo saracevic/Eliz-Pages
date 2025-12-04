@@ -3,799 +3,786 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyperliquid Portfolio Dashboard 🐋</title>
+    <title>Hyperliquid Portfolio Dashboard + Discover Wallets 🐋</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: #0a0a0a;
-            color: #e5e7eb;
-            padding: 12px;
-            min-height: 100vh;
-            font-size: 13px;
+            font-family:-apple-system, BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;
+            background:#050816;
+            color:#e5e7eb;
+            padding:12px;
+            min-height:100vh;
+            font-size:13px;
         }
 
         .container {
-            max-width: 1400px;
-            margin: 0 auto;
+            max-width:1400px;
+            margin:0 auto;
         }
 
         .config-panel {
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
+            background:#0b1020;
+            border:1px solid #1f2937;
+            border-radius:10px;
+            padding:16px;
+            margin-bottom:12px;
+            box-shadow:0 18px 40px rgba(15,23,42,0.85);
         }
 
         .config-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            gap: 10px;
-            flex-wrap: wrap;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:12px;
         }
 
         .config-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: #fff;
+            font-size:15px;
+            font-weight:700;
+            color:#f9fafb;
         }
 
         .status-badge {
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 700;
+            padding:4px 12px;
+            border-radius:999px;
+            font-size:11px;
+            font-weight:700;
         }
 
         .status-connected {
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
-            border: 1px solid #10b981;
+            background:rgba(16,185,129,0.16);
+            color:#6ee7b7;
+            border:1px solid #10b981;
         }
 
         .status-disconnected {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border: 1px solid #ef4444;
+            background:rgba(239,68,68,0.12);
+            color:#fecaca;
+            border:1px solid #ef4444;
         }
 
-        .address-manager {
-            background: #111;
-            border: 1px solid #2d2d2d;
-            border-radius: 6px;
-            padding: 12px;
+        .status-discover {
+            background:rgba(59,130,246,0.12);
+            color:#bfdbfe;
+            border:1px solid #3b82f6;
+        }
+
+        .grid-layout {
+            display:grid;
+            grid-template-columns:2.2fr 1.8fr;
+            gap:12px;
+        }
+
+        .address-manager,
+        .discover-panel {
+            background:#020617;
+            border:1px solid #111827;
+            border-radius:8px;
+            padding:12px;
+        }
+
+        .panel-title {
+            font-size:13px;
+            font-weight:600;
+            color:#e5e7eb;
+            margin-bottom:8px;
+            display:flex;
+            align-items:center;
+            gap:6px;
         }
 
         .input-label {
-            font-size: 11px;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size:11px;
+            color:#9ca3af;
+            text-transform:uppercase;
+            letter-spacing:0.5px;
+            margin-bottom:6px;
         }
 
         .address-input-group {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 8px;
-            margin-bottom: 10px;
+            display:grid;
+            grid-template-columns:1fr;
+            gap:8px;
+            margin-bottom:8px;
         }
 
-        .input-field, .textarea-field {
-            background: #111;
-            border: 1px solid #2d2d2d;
-            border-radius: 6px;
-            padding: 10px 12px;
-            color: #fff;
-            font-size: 12px;
-            outline: none;
-            transition: border-color 0.2s;
-            width: 100%;
-            resize: vertical;
+        .input-field,
+        .input-textarea,
+        .select-field {
+            width:100%;
+            padding:9px 10px;
+            background:#020617;
+            border:1px solid #1f2937;
+            color:#e5e7eb;
+            border-radius:6px;
+            font-size:12px;
+            outline:none;
+            transition:border-color 0.2s, box-shadow 0.2s, background 0.2s;
         }
 
-        .input-field:focus, .textarea-field:focus {
-            border-color: #3b82f6;
+        .input-textarea {
+            min-height:70px;
+            resize:vertical;
+        }
+
+        .input-field:focus,
+        .input-textarea:focus,
+        .select-field:focus {
+            border-color:#3b82f6;
+            box-shadow:0 0 0 1px rgba(59,130,246,0.35);
+            background:#020617;
+        }
+
+        .btn-row {
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
         }
 
         .btn {
-            padding: 10px 16px;
-            border-radius: 6px;
-            border: none;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
+            padding:9px 14px;
+            border-radius:999px;
+            border:none;
+            font-size:12px;
+            font-weight:600;
+            cursor:pointer;
+            transition:all 0.18s ease;
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            white-space:nowrap;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: #fff;
+            background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%);
+            color:#f9fafb;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            transform:translateY(-1px) scale(1.01);
+            box-shadow:0 10px 25px rgba(37,99,235,0.55);
         }
 
         .btn-secondary {
-            background: #1f1f1f;
-            color: #9ca3af;
-            border: 1px solid #2d2d2d;
+            background:#020617;
+            color:#9ca3af;
+            border:1px solid #1f2937;
         }
 
         .btn-secondary:hover {
-            background: #2d2d2d;
-            color: #fff;
+            background:#0b1020;
+            color:#e5e7eb;
         }
 
         .btn-danger {
-            background: #7f1d1d;
-            color: #fecaca;
-            border: 1px solid #b91c1c;
+            background:rgba(239,68,68,0.12);
+            color:#fecaca;
+            border:1px solid #ef4444;
         }
 
         .btn-danger:hover {
-            background: #991b1b;
-            color: #fee2e2;
+            background:rgba(248,113,113,0.22);
         }
 
-        .btn-small {
-            padding: 8px 12px;
-            font-size: 11px;
+        .btn-ghost {
+            background:transparent;
+            color:#9ca3af;
+            border:1px dashed #374151;
+        }
+
+        .btn-ghost:hover {
+            border-style:solid;
+            color:#e5e7eb;
+        }
+
+        .btn:disabled {
+            opacity:0.55;
+            cursor:not-allowed;
+            box-shadow:none;
+            transform:none;
         }
 
         .address-list {
-            max-height: 120px;
-            overflow-y: auto;
-            margin-top: 10px;
+            max-height:120px;
+            overflow-y:auto;
+            margin-top:8px;
+            padding:4px 2px 0;
         }
 
         .address-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #1f1f1f;
-            border: 1px solid #2d2d2d;
-            border-radius: 4px;
-            padding: 6px 10px;
-            margin: 4px;
-            font-size: 11px;
-            font-family: monospace;
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            background:#020617;
+            border:1px solid #1f2937;
+            border-radius:999px;
+            padding:5px 9px;
+            margin:3px;
+            font-size:11px;
+            font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+            color:#e5e7eb;
+        }
+
+        .address-chip span {
+            opacity:0.95;
         }
 
         .address-chip .remove-btn {
-            background: none;
-            border: none;
-            color: #ef4444;
-            cursor: pointer;
-            font-size: 14px;
-            padding: 0;
-            line-height: 1;
+            background:none;
+            border:none;
+            color:#fca5a5;
+            cursor:pointer;
+            font-size:14px;
+            padding:0;
+            line-height:1;
+        }
+
+        .tag {
+            font-size:10px;
+            padding:2px 6px;
+            border-radius:999px;
+            background:#111827;
+            color:#9ca3af;
         }
 
         .header-stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 12px;
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:10px;
+            margin:10px 0 12px;
         }
 
         .stat-card {
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 8px;
-            padding: 12px;
+            background:#020617;
+            border:1px solid #111827;
+            border-radius:10px;
+            padding:10px 11px;
         }
 
         .stat-label {
-            font-size: 11px;
-            color: #9ca3af;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size:10px;
+            color:#9ca3af;
+            margin-bottom:4px;
+            text-transform:uppercase;
+            letter-spacing:0.5px;
         }
 
         .stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: #fff;
+            font-size:18px;
+            font-weight:700;
+            color:#e5e7eb;
         }
 
-        .stat-value.long {
-            color: #10b981;
-        }
-
-        .stat-value.short {
-            color: #ef4444;
-        }
-
-        .stat-value.neutral {
-            color: #3b82f6;
-        }
+        .stat-value.long { color:#6ee7b7; }
+        .stat-value.short { color:#fecaca; }
+        .stat-value.neutral { color:#93c5fd; }
 
         .position-bar-wrapper {
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
+            background:#020617;
+            border:1px solid #111827;
+            border-radius:10px;
+            padding:10px 12px;
+            margin-bottom:12px;
         }
 
         .bar-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 11px;
-            color: #9ca3af;
-            flex-wrap: wrap;
-            gap: 10px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:8px;
+            font-size:11px;
+            color:#9ca3af;
+            flex-wrap:wrap;
+            gap:6px 12px;
         }
 
         .position-bar {
-            display: flex;
-            height: 32px;
-            border-radius: 6px;
-            overflow: hidden;
-            background: #111;
+            display:flex;
+            height:30px;
+            border-radius:999px;
+            overflow:hidden;
+            background:#020617;
+            border:1px solid #111827;
+        }
+
+        .bar-long,
+        .bar-short {
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:11px;
+            font-weight:700;
+            color:#f9fafb;
+            transition:width 0.3s ease;
         }
 
         .bar-long {
-            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-            color: #fff;
-            transition: width 0.3s ease;
+            background:linear-gradient(90deg,#16a34a 0%,#22c55e 48%,#4ade80 100%);
         }
 
         .bar-short {
-            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-            color: #fff;
-            transition: width 0.3s ease;
+            background:linear-gradient(90deg,#f97373 0%,#ef4444 45%,#b91c1c 100%);
         }
 
         .view-toggle-wrapper {
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
+            background:#020617;
+            border:1px solid #111827;
+            border-radius:10px;
+            padding:10px 12px;
+            margin-bottom:12px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:10px;
         }
 
         .view-toggle {
-            display: flex;
-            background: #111;
-            border-radius: 6px;
-            overflow: hidden;
+            display:inline-flex;
+            background:#020617;
+            border-radius:999px;
+            padding:3px;
+            border:1px solid #111827;
         }
 
         .view-btn {
-            padding: 8px 20px;
-            border: none;
-            background: transparent;
-            color: #9ca3af;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
+            padding:6px 14px;
+            border:none;
+            background:transparent;
+            color:#9ca3af;
+            font-size:11px;
+            font-weight:600;
+            cursor:pointer;
+            border-radius:999px;
+            transition:all 0.16s ease;
         }
 
         .view-btn.active {
-            background: #3b82f6;
-            color: #fff;
+            background:#1d4ed8;
+            color:#f9fafb;
+            box-shadow:0 0 0 1px rgba(59,130,246,0.55);
         }
 
         .refresh-info {
-            font-size: 11px;
-            color: #6b7280;
+            font-size:10px;
+            color:#6b7280;
+            white-space:nowrap;
         }
 
-        .heatmap-container {
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 12px;
-            display: none;
+        .heatmap-container,
+        .list-container {
+            background:#020617;
+            border:1px solid #111827;
+            border-radius:10px;
+            padding:12px;
+            margin-bottom:12px;
+            display:none;
         }
 
-        .heatmap-container.active {
-            display: block;
+        .heatmap-container.active,
+        .list-container.active {
+            display:block;
         }
 
-        .heatmap-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #2d2d2d;
+        .heatmap-header,
+        .list-header {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:10px;
+            padding-bottom:8px;
+            border-bottom:1px solid #111827;
         }
 
         .heatmap-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: #fff;
+            font-size:13px;
+            font-weight:600;
+            color:#e5e7eb;
+            display:flex;
+            align-items:center;
+            gap:6px;
         }
 
         .heatmap-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 4px;
-            min-height: 300px;
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:4px;
+            min-height:220px;
         }
 
         .heatmap-cell {
-            position: relative;
-            border-radius: 4px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.2s;
-            cursor: pointer;
-            overflow: hidden;
+            position:relative;
+            border-radius:8px;
+            padding:10px;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            align-items:center;
+            transition:all 0.18s;
+            cursor:pointer;
+            overflow:hidden;
         }
 
         .heatmap-cell:hover {
-            transform: scale(1.05);
-            z-index: 10;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            transform:translateY(-2px) scale(1.02);
+            box-shadow:0 14px 28px rgba(0,0,0,0.65);
+            z-index:5;
         }
 
         .heatmap-cell-token {
-            font-size: 14px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 4px;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            font-size:13px;
+            font-weight:700;
+            color:#f9fafb;
+            margin-bottom:3px;
+            text-shadow:0 2px 6px rgba(0,0,0,0.6);
         }
 
         .heatmap-cell-value {
-            font-size: 11px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.9);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            font-size:11px;
+            font-weight:600;
+            color:rgba(249,250,251,0.88);
+            text-shadow:0 1px 3px rgba(0,0,0,0.6);
         }
 
         .heatmap-cell-side {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            font-size: 9px;
-            padding: 2px 6px;
-            border-radius: 3px;
-            background: rgba(0,0,0,0.3);
-            font-weight: 700;
-        }
-
-        .list-container {
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 12px;
-            display: none;
-        }
-
-        .list-container.active {
-            display: block;
-        }
-
-        .list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #2d2d2d;
+            position:absolute;
+            top:5px;
+            right:6px;
+            font-size:9px;
+            padding:2px 7px;
+            border-radius:999px;
+            background:rgba(15,23,42,0.82);
+            color:#e5e7eb;
+            font-weight:600;
+            border:1px solid rgba(148,163,184,0.5);
         }
 
         .list-grid {
-            display: grid;
-            gap: 8px;
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:10px;
         }
 
         .list-item {
-            background: #111;
-            border: 1px solid #2d2d2d;
-            border-radius: 6px;
-            padding: 12px;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 8px;
-            align-items: center;
-            transition: all 0.2s;
+            background:#020617;
+            border:1px solid #111827;
+            border-radius:10px;
+            padding:10px;
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+            transition:all 0.18s;
         }
 
         .list-item:hover {
-            border-color: #3b82f6;
-            transform: translateX(4px);
+            border-color:#2563eb;
+            box-shadow:0 12px 28px rgba(15,23,42,0.75);
+            transform:translateY(-2px);
+        }
+
+        .list-item-header {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
         }
 
         .list-item-token {
-            font-size: 16px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .list-item-details {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .list-detail-item {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
+            font-size:15px;
+            font-weight:700;
+            color:#f9fafb;
         }
 
         .list-detail-label {
-            font-size: 9px;
-            color: #6b7280;
-            text-transform: uppercase;
+            font-size:10px;
+            color:#6b7280;
+            text-transform:uppercase;
         }
 
         .list-detail-value {
-            font-size: 12px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .table-wrapper {
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-top: 12px;
-        }
-
-        .table-header-section {
-            padding: 14px;
-            border-bottom: 2px solid #2d2d2d;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .table-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .table-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 1200px;
-        }
-
-        thead {
-            background: #111;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        th {
-            padding: 12px 10px;
-            text-align: left;
-            font-size: 11px;
-            font-weight: 700;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid #2d2d2d;
-            white-space: nowrap;
-        }
-
-        tbody tr {
-            border-bottom: 1px solid #1f1f1f;
-            transition: background 0.2s ease;
-        }
-
-        tbody tr:hover {
-            background: #1f1f1f;
-        }
-
-        td {
-            padding: 12px 10px;
-            font-size: 12px;
-            color: #e5e7eb;
-            white-space: nowrap;
-        }
-
-        .token-cell {
-            font-weight: 700;
-            font-size: 13px;
-            color: #fff;
+            font-size:12px;
+            font-weight:600;
+            color:#e5e7eb;
         }
 
         .side-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 700;
-            border: 1px solid;
+            display:inline-flex;
+            align-items:center;
+            gap:4px;
+            padding:3px 9px;
+            border-radius:999px;
+            font-size:10px;
+            font-weight:600;
+            border:1px solid;
         }
 
         .side-long {
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
-            border-color: #10b981;
+            background:rgba(34,197,94,0.12);
+            color:#6ee7b7;
+            border-color:#22c55e;
         }
 
         .side-short {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border-color: #ef4444;
+            background:rgba(248,113,113,0.12);
+            color:#fecaca;
+            border-color:#ef4444;
         }
 
         .pnl-positive {
-            color: #10b981;
-            font-weight: 700;
+            color:#6ee7b7;
+            font-weight:700;
         }
 
         .pnl-negative {
-            color: #ef4444;
-            font-weight: 700;
+            color:#fecaca;
+            font-weight:700;
         }
+
+        .age-cell {
+            color:#facc15;
+            font-weight:600;
+        }
+
+        .table-wrapper {
+            background:#020617;
+            border:1px solid #111827;
+            border-radius:10px;
+            overflow:hidden;
+        }
+
+        .table-header-section {
+            padding:10px 12px;
+            border-bottom:1px solid #111827;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:10px;
+        }
+
+        .table-title {
+            font-size:13px;
+            font-weight:600;
+            color:#e5e7eb;
+            display:flex;
+            align-items:center;
+            gap:6px;
+        }
+
+        .table-container {
+            overflow-x:auto;
+            -webkit-overflow-scrolling:touch;
+        }
+
+        table {
+            width:100%;
+            border-collapse:collapse;
+            min-width:1200px;
+        }
+
+        thead {
+            background:#020617;
+            position:sticky;
+            top:0;
+            z-index:5;
+        }
+
+        th {
+            padding:9px 8px;
+            text-align:left;
+            font-size:10px;
+            font-weight:700;
+            color:#9ca3af;
+            text-transform:uppercase;
+            letter-spacing:0.4px;
+            border-bottom:1px solid #111827;
+            white-space:nowrap;
+            background:#020617;
+        }
+
+        tbody tr {
+            border-bottom:1px solid #020617;
+            transition:background 0.16s ease;
+        }
+
+        tbody tr:hover {
+            background:#020617;
+        }
+
+        td {
+            padding:8px 8px;
+            font-size:12px;
+            color:#e5e7eb;
+            white-space:nowrap;
+        }
+
+        .token-cell {
+            font-weight:700;
+            font-size:13px;
+            color:#f9fafb;
+        }
+
+        .filter-row th {
+            padding:4px 6px;
+            border-bottom:1px solid #111827;
+        }
+
+        .filter-input,
+        .filter-select {
+            width:100%;
+            background:#020617;
+            border:1px solid #111827;
+            border-radius:999px;
+            padding:3px 7px;
+            font-size:10px;
+            color:#e5e7eb;
+            outline:none;
+        }
+
+        .filter-input:focus,
+        .filter-select:focus {
+            border-color:#3b82f6;
+        }
+
+        .filter-range {
+            display:flex;
+            gap:4px;
+        }
+
+        .mini { width:100%; }
 
         .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            display: none;
+            position:fixed;
+            inset:0;
+            background:rgba(15,23,42,0.92);
+            display:none;
+            align-items:center;
+            justify-content:center;
+            z-index:50;
         }
 
-        .loading-overlay.active {
-            display: flex;
-        }
+        .loading-overlay.active { display:flex; }
 
         .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #2d2d2d;
-            border-top-color: #3b82f6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+            width:50px;
+            height:50px;
+            border:4px solid #111827;
+            border-top-color:#3b82f6;
+            border-radius:50%;
+            animation:spin 1s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform:rotate(360deg); } }
 
         .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #6b7280;
+            text-align:center;
+            padding:40px 12px;
+            color:#6b7280;
         }
 
         .empty-state-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
+            font-size:32px;
+            margin-bottom:10px;
         }
 
         .empty-state-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: #9ca3af;
-            margin-bottom: 6px;
+            font-size:14px;
+            font-weight:600;
+            color:#9ca3af;
+            margin-bottom:4px;
         }
 
         .empty-state-text {
-            font-size: 12px;
+            font-size:12px;
         }
 
-        /* DISCOVER WALLET PANEL */
+        .discover-results {
+            margin-top:8px;
+            max-height:170px;
+            overflow-y:auto;
+            padding-right:4px;
+        }
 
-        .discover-panel {
-            background: #111827;
-            border: 1px solid #374151;
-            border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 12px;
+        .discover-item {
+            background:#020617;
+            border:1px solid #111827;
+            border-radius:8px;
+            padding:8px;
+            margin-bottom:6px;
+            display:flex;
+            flex-direction:column;
+            gap:4px;
         }
 
         .discover-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-        }
-
-        .discover-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .discover-status {
-            font-size: 11px;
-            padding: 3px 10px;
-            border-radius: 999px;
-            background: #111;
-            border: 1px solid #374151;
-            color: #9ca3af;
-        }
-
-        .discover-status.busy {
-            border-color: #f59e0b;
-            color: #f59e0b;
-        }
-
-        .discover-status.ok {
-            border-color: #10b981;
-            color: #10b981;
-        }
-
-        .discover-controls {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0,1fr));
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .discover-field label {
-            font-size: 11px;
-            color: #9ca3af;
-            margin-bottom: 4px;
-            display: block;
-        }
-
-        .discover-field input,
-        .discover-field select {
-            background: #020617;
-            border: 1px solid #374151;
-            border-radius: 6px;
-            padding: 8px 10px;
-            color: #e5e7eb;
-            font-size: 12px;
-            outline: none;
-            width: 100%;
-        }
-
-        .discover-field input:focus,
-        .discover-field select:focus {
-            border-color: #3b82f6;
-        }
-
-        .discover-buttons {
-            display: flex;
-            gap: 8px;
-            align-items: flex-end;
-        }
-
-        .discover-table-wrapper {
-            background: #020617;
-            border-radius: 6px;
-            border: 1px solid #1f2933;
-            overflow-x: auto;
-        }
-
-        .discover-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
-
-        .discover-table th,
-        .discover-table td {
-            padding: 8px 8px;
-            font-size: 11px;
-            border-bottom: 1px solid #111827;
-            white-space: nowrap;
-        }
-
-        .discover-table th {
-            background: #020617;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            font-weight: 700;
-            position: sticky;
-            top: 0;
-        }
-
-        .discover-table tr:hover td {
-            background: #020617;
-        }
-
-        .discover-side-long {
-            color: #10b981;
-            font-weight: 700;
-        }
-
-        .discover-side-short {
-            color: #ef4444;
-            font-weight: 700;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:6px;
         }
 
         .discover-address {
-            font-family: monospace;
-            font-size: 11px;
+            font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+            font-size:11px;
+            color:#e5e7eb;
         }
 
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 2px 8px;
-            border-radius: 999px;
-            font-size: 10px;
-            border: 1px solid #4b5563;
-            color: #9ca3af;
+        .discover-meta {
+            display:flex;
+            flex-wrap:wrap;
+            gap:6px 10px;
+            margin-top:2px;
+            font-size:10px;
+            color:#9ca3af;
         }
 
-        .badge-green {
-            border-color: #10b981;
-            color: #10b981;
+        .pill {
+            padding:2px 7px;
+            border-radius:999px;
+            background:#020617;
+            border:1px solid #111827;
         }
 
-        .badge-red {
-            border-color: #ef4444;
-            color: #ef4444;
+        .checkbox {
+            width:14px;
+            height:14px;
         }
 
-        .badge-yellow {
-            border-color: #f59e0b;
-            color: #f59e0b;
+        .discover-footer {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-top:4px;
         }
 
-        @media (max-width: 768px) {
+        .discover-count {
+            font-size:10px;
+            color:#9ca3af;
+        }
+
+        @media (max-width:1024px) {
+            .grid-layout {
+                grid-template-columns:1fr;
+            }
+        }
+
+        @media (max-width:768px) {
             .header-stats {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns:repeat(2,1fr);
             }
+
+            .list-grid {
+                grid-template-columns:1fr;
+            }
+
             .heatmap-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns:repeat(2,1fr);
             }
-            .discover-controls {
-                grid-template-columns: repeat(2, minmax(0,1fr));
+
+            .filter-row {
+                display:none;
+            }
+
+            body {
+                padding:10px 8px 16px;
             }
         }
     </style>
@@ -803,101 +790,102 @@
 <body>
 <div class="container">
 
-    <!-- API Configuration Panel -->
     <div class="config-panel">
         <div class="config-header">
-            <div class="config-title">🐋 Hyperliquid Portfolio Dashboard</div>
+            <div class="config-title">🐋 Hyperliquid Portfolio Dashboard + Discover Wallets</div>
             <span class="status-badge status-disconnected" id="statusBadge">Ready</span>
         </div>
 
-        <div class="address-manager">
-            <div class="input-label" style="margin-bottom: 8px;">Wallet Addresses</div>
-
-            <div class="address-input-group" style="margin-bottom: 8px;">
-                <textarea
-                    id="addressInput"
-                    class="textarea-field"
-                    rows="2"
-                    placeholder="Tek satırda 1 adres olacak şekilde birden fazla 0x... adresi girin (Enter ile ayırın)"></textarea>
-                <button class="btn btn-secondary" id="addAddressBtn">Add</button>
+        <div class="grid-layout">
+            <!-- Address Manager -->
+            <div class="address-manager">
+                <div class="panel-title">
+                    📂 İzlenecek Wallet Adresleri
+                    <span class="tag">Dashboard</span>
+                </div>
+                <div class="input-label">Wallet Addresses (çoklu: virgül / boşluk / satır)</div>
+                <div class="address-input-group">
+                    <textarea id="addressInput" class="input-textarea" placeholder="0xAAA..., 0xBBB..., 0xCCC..."></textarea>
+                </div>
+                <div class="btn-row" style="margin-bottom:6px;">
+                    <button class="btn btn-secondary" id="addAddressBtn">+ Add Addresses</button>
+                    <button class="btn btn-primary" id="loadBtn">📡 Load Positions</button>
+                    <button class="btn btn-secondary" id="refreshBtn">🔄 Refresh</button>
+                    <button class="btn btn-danger" id="clearBtn">🧹 Clear All</button>
+                </div>
+                <div class="address-list" id="addressList"></div>
             </div>
 
-            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
-                <button class="btn btn-primary" id="loadBtn" style="flex:1;">Load Positions</button>
-                <button class="btn btn-secondary btn-small" id="refreshBtn">Refresh</button>
-                <button class="btn btn-danger btn-small" id="clearBtn">Clear</button>
-            </div>
+            <!-- Discover Wallets Panel -->
+            <div class="discover-panel">
+                <div class="panel-title">
+                    🔍 Discover Wallets
+                    <span class="tag">Leaderboard Scanner</span>
+                </div>
+                <div class="input-label">Coin Filter (örn: XLM, ETH, BTC)</div>
+                <input id="discoverCoin" class="input-field" value="XLM" placeholder="Coin symbol">
 
-            <div class="address-list" id="addressList"></div>
+                <div style="display:grid;grid-template-columns:1.1fr 0.9fr;gap:8px;margin-top:8px;">
+                    <div>
+                        <div class="input-label">Top N Leaderboard</div>
+                        <select id="discoverLimit" class="select-field">
+                            <option value="100">Top 100</option>
+                            <option value="200">Top 200</option>
+                            <option value="300">Top 300</option>
+                            <option value="500" selected>Top 500</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div class="input-label">Side Filter</div>
+                        <select id="discoverSide" class="select-field">
+                            <option value="all">All (Long + Short)</option>
+                            <option value="long">Long Only</option>
+                            <option value="short">Short Only</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-top:8px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">
+                    <div>
+                        <div class="input-label">Min Position Value ($)</div>
+                        <input id="discoverMinValue" class="input-field" placeholder="örn: 1000">
+                    </div>
+                    <div>
+                        <div class="input-label">Min PnL ($)</div>
+                        <input id="discoverMinPnl" class="input-field" placeholder="örn: 0">
+                    </div>
+                </div>
+
+                <div class="btn-row" style="margin-top:10px;">
+                    <button class="btn btn-primary" id="discoverBtn">🚀 Search Wallets</button>
+                    <button class="btn btn-ghost" id="importSelectedBtn">📥 Import Selected</button>
+                </div>
+                <div style="margin-top:6px;font-size:10px;color:#6b7280;">
+                    Leaderboard API: <span style="color:#93c5fd;">/Mainnet/leaderboard</span>,
+                    User State API: <span style="color:#93c5fd;">/info (clearinghouseState)</span>
+                </div>
+
+                <div class="discover-results" id="discoverResults">
+                    <div class="empty-state" style="padding:18px 4px;">
+                        <div class="empty-state-icon">🧭</div>
+                        <div class="empty-state-title">Henüz tarama yapılmadı</div>
+                        <div class="empty-state-text">Coin girip "Search Wallets" butonuna basın</div>
+                    </div>
+                </div>
+                <div class="discover-footer" id="discoverFooter" style="display:none;">
+                    <div class="discover-count" id="discoverCountLabel">0 wallet bulundu</div>
+                    <label style="font-size:10px;color:#9ca3af;display:flex;align-items:center;gap:4px;cursor:pointer;">
+                        <input type="checkbox" id="selectAllDiscover" class="checkbox">
+                        <span>Tümünü seç</span>
+                    </label>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
-    </div>
-    <!-- Discover Wallets / Leaderboard Scanner -->
-    <div class="discover-panel">
-        <div class="discover-header">
-            <div class="discover-title">🔍 Discover Wallets (Leaderboard Scanner)</div>
-            <div class="discover-status" id="discoverStatus">Idle</div>
-        </div>
-
-        <div class="discover-controls">
-            <div class="discover-field">
-                <label>Coin (örn: XLM, ETH, BTC)</label>
-                <input type="text" id="discoverCoin" value="XLM" placeholder="XLM">
-            </div>
-            <div class="discover-field">
-                <label>Top Trader Sayısı</label>
-                <select id="discoverLimit">
-                    <option value="100">Top 100</option>
-                    <option value="250">Top 250</option>
-                    <option value="500">Top 500</option>
-                </select>
-            </div>
-            <div class="discover-field">
-                <label>Pozisyon Yönü</label>
-                <select id="discoverSide">
-                    <option value="all">Long + Short</option>
-                    <option value="long">Sadece Long</option>
-                    <option value="short">Sadece Short</option>
-                </select>
-            </div>
-            <div class="discover-buttons">
-                <button class="btn btn-secondary btn-small" id="discoverSearchBtn">Search Wallets</button>
-                <button class="btn btn-primary btn-small" id="discoverImportSelectedBtn" disabled>Import Selected</button>
-                <button class="btn btn-secondary btn-small" id="discoverImportAllBtn" disabled>Import All</button>
-            </div>
-        </div>
-
-        <div class="discover-table-wrapper">
-            <table class="discover-table">
-                <thead>
-                    <tr>
-                        <th><input type="checkbox" id="discoverSelectAll"></th>
-                        <th>Rank</th>
-                        <th>Address</th>
-                        <th>Coin</th>
-                        <th>Side</th>
-                        <th>Pos. Value</th>
-                        <th>PnL</th>
-                        <th>ROE %</th>
-                    </tr>
-                </thead>
-                <tbody id="discoverTableBody">
-                    <tr>
-                        <td colspan="8">
-                            <div class="empty-state">
-                                <div class="empty-state-icon">📡</div>
-                                <div class="empty-state-title">Henüz tarama yapılmadı</div>
-                                <div class="empty-state-text">Coin girip "Search Wallets" butonuna tıklayın</div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
     </div>
 
     <!-- Header Stats -->
@@ -925,16 +913,16 @@
         <div class="bar-header">
             <div>
                 <span>Long: <strong id="longPosValue">$0.00</strong></span>
-                <span style="margin-left: 15px;">Short: <strong id="shortPosValue">$0.00</strong></span>
+                <span style="margin-left:14px;">Short: <strong id="shortPosValue">$0.00</strong></span>
             </div>
             <div>
                 <span>Profit: <strong id="profitCount">0</strong></span>
-                <span style="margin-left: 15px;">Loss: <strong id="lossCount">0</strong></span>
+                <span style="margin-left:14px;">Loss: <strong id="lossCount">0</strong></span>
             </div>
         </div>
         <div class="position-bar">
-            <div class="bar-long" id="barLong" style="width: 50%;">50%</div>
-            <div class="bar-short" id="barShort" style="width: 50%;">50%</div>
+            <div class="bar-long" id="barLong" style="width:50%;">50%</div>
+            <div class="bar-short" id="barShort" style="width:50%;">50%</div>
         </div>
     </div>
 
@@ -953,7 +941,9 @@
     <div class="heatmap-container active" id="heatmapView">
         <div class="heatmap-header">
             <div class="heatmap-title">🔥 Top 10 Open Positions - Heatmap</div>
-            <div class="ranking-subtitle">Sorted by position size</div>
+
+
+                        <div class="ranking-subtitle" style="font-size:11px;color:#9ca3af;">Sorted by position size</div>
         </div>
         <div class="heatmap-grid" id="heatmapGrid">
             <div class="empty-state">
@@ -968,7 +958,7 @@
     <div class="list-container" id="listView">
         <div class="list-header">
             <div class="heatmap-title">📋 Top 10 Open Positions - List</div>
-            <div class="ranking-subtitle">Sorted by position size</div>
+            <div class="ranking-subtitle" style="font-size:11px;color:#9ca3af;">Sorted by position size</div>
         </div>
         <div class="list-grid" id="listGrid">
             <div class="empty-state">
@@ -983,8 +973,8 @@
     <div class="table-wrapper">
         <div class="table-header-section">
             <div class="table-title">📈 All Positions Details</div>
-            <div class="table-actions">
-                <button class="btn btn-secondary btn-small" id="exportCsvBtn">Export CSV</button>
+            <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#6b7280;">
+                <span style="width:8px;height:8px;border-radius:999px;background:#22c55e;display:inline-block;"></span> Live from Hyperliquid API
             </div>
         </div>
         <div class="table-container">
@@ -1001,15 +991,60 @@
                         <th>Mark Price</th>
                         <th>PnL</th>
                         <th>ROE %</th>
+                        <th>Age (Days)</th>
                         <th>Liquidation</th>
+                    </tr>
+                    <tr class="filter-row">
+                        <th><input id="fToken" class="filter-input" placeholder="Token"></th>
+                        <th><input id="fAddress" class="filter-input" placeholder="0x..."></th>
+                        <th>
+                            <select id="fSide" class="filter-select">
+                                <option value="all">All</option>
+                                <option value="long">Long</option>
+                                <option value="short">Short</option>
+                            </select>
+                        </th>
+                        <th>
+                            <div class="filter-range">
+                                <input id="fLevMin" class="filter-input mini" placeholder="min">
+                                <input id="fLevMax" class="filter-input mini" placeholder="max">
+                            </div>
+                        </th>
+                        <th>
+                            <div class="filter-range">
+                                <input id="fPosMin" class="filter-input mini" placeholder="min">
+                                <input id="fPosMax" class="filter-input mini" placeholder="max">
+                            </div>
+                        </th>
+                        <th><input id="fSize" class="filter-input" placeholder=">= size"></th>
+                        <th>
+                            <div class="filter-range">
+                                <input id="fEntryMin" class="filter-input mini" placeholder="min">
+                                <input id="fEntryMax" class="filter-input mini" placeholder="max">
+                            </div>
+                        </th>
+                        <th>
+                            <div class="filter-range">
+                                <input id="fMarkMin" class="filter-input mini" placeholder="min">
+                                <input id="fMarkMax" class="filter-input mini" placeholder="max">
+                            </div>
+                        </th>
+                        <th>
+                            <div class="filter-range">
+                                <input id="fPnlMin" class="filter-input mini" placeholder="min">
+                                <input id="fPnlMax" class="filter-input mini" placeholder="max">
+                            </div>
+                        </th>
+                        <th><input id="fAge" class="filter-input" placeholder=">= days"></th>
+                        <th><input id="fLiq" class="filter-input" placeholder="Search"></th>
                     </tr>
                 </thead>
                 <tbody id="detailTableBody">
                     <tr>
-                        <td colspan="11" style="text-align: center; padding: 40px; color: #6b7280;">
-                            <div style="font-size: 32px; margin-bottom: 12px;">🔍</div>
-                            <div style="font-size: 14px; font-weight: 700; margin-bottom: 6px;">No Positions Found</div>
-                            <div style="font-size: 12px;">Add wallet addresses to view positions</div>
+                        <td colspan="12" style="text-align:center;padding:40px;color:#6b7280;">
+                            <div style="font-size:32px;margin-bottom:12px;">🔍</div>
+                            <div style="font-size:14px;font-weight:700;margin-bottom:6px;">No Positions Found</div>
+                            <div style="font-size:12px;">Add wallet addresses to view positions</div>
                         </td>
                     </tr>
                 </tbody>
@@ -1018,156 +1053,139 @@
     </div>
 </div>
 
-    <script>
-    // Global State
+<script>
+    // ==== GLOBAL STATE ====
     const state = {
         addresses: [],
         positions: [],
         aggregatedData: {},
-        autoRefresh: null,
         discoveredWallets: []
     };
 
-    const HYPERLIQUID_API = 'https://api.hyperliquid.xyz/info';
-    const LEADERBOARD_API = 'https://stats-data.hyperliquid.xyz/Mainnet/leaderboard';
+    const HYPERLIQUID_INFO_API = 'https://api.hyperliquid.xyz/info';
+    const HYPERLIQUID_LEADERBOARD_API = 'https://stats-data.hyperliquid.xyz/Mainnet/leaderboard';
 
-    // Load saved addresses
+    // ==== STORAGE ====
     function loadConfig() {
-        const savedAddresses = localStorage.getItem('hl_addresses');
-        if (savedAddresses) {
-            state.addresses = JSON.parse(savedAddresses);
-            renderAddressList();
+        try {
+            const savedAddresses = localStorage.getItem('hl_addresses_v2');
+            if (savedAddresses) {
+                state.addresses = JSON.parse(savedAddresses);
+            }
+        } catch (e) {
+            console.warn('loadConfig error', e);
+        }
+        renderAddressList();
+    }
+
+    function saveConfig() {
+        try {
+            localStorage.setItem('hl_addresses_v2', JSON.stringify(state.addresses));
+        } catch (e) {
+            console.warn('saveConfig error', e);
         }
     }
 
-    // Save addresses
-    function saveConfig() {
-        localStorage.setItem('hl_addresses', JSON.stringify(state.addresses));
-    }
-
-    // Format helpers
+    // ==== FORMAT HELPERS ====
     function formatCurrency(value) {
         if (!isFinite(value)) value = 0;
         const absValue = Math.abs(value);
-        if (absValue >= 1_000_000) {
-            return '$' + (value / 1_000_000).toFixed(2) + 'M';
-        } else if (absValue >= 1_000) {
-            return '$' + (value / 1_000).toFixed(2) + 'K';
-        }
+        if (absValue >= 1_000_000) return '$' + (value / 1_000_000).toFixed(2) + 'M';
+        if (absValue >= 1_000) return '$' + (value / 1_000).toFixed(2) + 'K';
         return '$' + value.toFixed(2);
     }
 
     function formatNumber(value) {
         if (!isFinite(value)) value = 0;
         const absValue = Math.abs(value);
-        if (absValue >= 1_000_000) {
-            return (value / 1_000_000).toFixed(2) + 'M';
-        } else if (absValue >= 1_000) {
-            return (value / 1_000).toFixed(2) + 'K';
-        }
+        if (absValue >= 1_000_000) return (value / 1_000_000).toFixed(2) + 'M';
+        if (absValue >= 1_000) return (value / 1_000).toFixed(2) + 'K';
         return value.toFixed(4);
     }
 
     function formatPrice(price) {
-        if (!isFinite(price) || price === 0) return '$0.00';
-        if (price >= 1000) {
-            return '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        } else if (price >= 1) {
-            return '$' + price.toFixed(2);
-        } else if (price >= 0.01) {
-            return '$' + price.toFixed(4);
-        } else {
-            return '$' + price.toFixed(6);
-        }
+        if (!isFinite(price)) return '$0.00';
+        if (price >= 1000) return '$' + price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+        if (price >= 1) return '$' + price.toFixed(2);
+        if (price >= 0.01) return '$' + price.toFixed(4);
+        return '$' + price.toFixed(6);
     }
 
-    // Heatmap color
-    function getHeatmapColor(pnlPercent, side) {
-        if (pnlPercent > 20) return side === 'long' ? 'rgba(16, 185, 129, 0.9)' : 'rgba(16, 185, 129, 0.7)';
-        if (pnlPercent > 10) return side === 'long' ? 'rgba(16, 185, 129, 0.7)' : 'rgba(16, 185, 129, 0.5)';
-        if (pnlPercent > 5) return side === 'long' ? 'rgba(16, 185, 129, 0.5)' : 'rgba(16, 185, 129, 0.3)';
-        if (pnlPercent > 0) return 'rgba(107, 114, 128, 0.5)';
-        if (pnlPercent > -5) return 'rgba(107, 114, 128, 0.6)';
-        if (pnlPercent > -10) return side === 'short' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(239, 68, 68, 0.3)';
-        if (pnlPercent > -20) return side === 'short' ? 'rgba(239, 68, 68, 0.7)' : 'rgba(239, 68, 68, 0.5)';
-        return side === 'short' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(239, 68, 68, 0.7)';
+    // === Simple parse of float input ===
+    function parseFloatInput(id) {
+        const el = document.getElementById(id);
+        if (!el) return null;
+        const v = el.value.trim().replace(/[^0-9.\-]/g, '');
+        if (!v) return null;
+        const n = parseFloat(v);
+        return isNaN(n) ? null : n;
     }
 
-    // Render address list
+    // ==== ADDRESS HANDLING ====
     function renderAddressList() {
-        const addressList = document.getElementById('addressList');
-
-        if (state.addresses.length === 0) {
-            addressList.innerHTML = '<div style="text-align: center; color: #6b7280; padding: 10px; font-size: 11px;">No addresses added yet</div>';
+        const list = document.getElementById('addressList');
+        if (!state.addresses.length) {
+            list.innerHTML = '<div style="text-align:center;color:#6b7280;padding:10px;font-size:11px;">No addresses added yet</div>';
             return;
         }
-
-        addressList.innerHTML = state.addresses.map(addr => `
+        list.innerHTML = state.addresses.map(addr => \`
             <div class="address-chip">
-                <span>${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}</span>
-                <button class="remove-btn" onclick="removeAddress('${addr}')">×</button>
+                <span>\${addr.substring(0, 8)}...\${addr.substring(addr.length - 6)}</span>
+                <button class="remove-btn" onclick="removeAddress('\${addr}')">×</button>
             </div>
-        `).join('');
+        \`).join('');
     }
 
-    // Add addresses (multi-line)
     function addAddress() {
-        const input = document.getElementById('addressInput');
-        const raw = input.value.trim();
-
+        const textarea = document.getElementById('addressInput');
+        const raw = textarea.value.trim();
         if (!raw) {
             alert('Please enter at least one wallet address');
             return;
         }
 
-        const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-        let added = 0;
-        let invalid = 0;
-        lines.forEach(line => {
-            if (!line.startsWith('0x') || line.length !== 42) {
-                invalid++;
-                return;
-            }
-            if (!state.addresses.includes(line)) {
-                state.addresses.push(line);
-                added++;
+        const parts = raw.split(/[\s,;]+/).filter(Boolean);
+        let addedCount = 0;
+        parts.forEach(p => {
+            const addr = p.trim();
+            if (addr.startsWith('0x') && addr.length === 42 && !state.addresses.includes(addr)) {
+                state.addresses.push(addr);
+                addedCount++;
             }
         });
 
-        if (added === 0 && invalid > 0) {
-            alert('No valid 0x... (42 chars) addresses found');
+        if (!addedCount) {
+            alert('No new valid 0x... (42 char) addresses found');
+            return;
         }
 
-        input.value = '';
+        textarea.value = '';
         renderAddressList();
         saveConfig();
     }
 
-    // Remove address
     function removeAddress(address) {
-        state.addresses = state.addresses.filter(addr => addr !== address);
+        state.addresses = state.addresses.filter(a => a !== address);
         renderAddressList();
         saveConfig();
     }
 
-    // Clear all
     function clearAll() {
-        if (!confirm('Tüm kayıtlı adresler ve pozisyonlar temizlensin mi?')) return;
+        if (!confirm('Tüm kayıtlı adresleri ve pozisyonları silmek istiyor musun?')) return;
         state.addresses = [];
         state.positions = [];
         state.aggregatedData = {};
         state.discoveredWallets = [];
-        localStorage.removeItem('hl_addresses');
+        saveConfig();
         renderAddressList();
         updateDashboard();
-        renderDiscoverTable();
-        updateStatus('Ready');
+        updateDiscoverResults([]);
     }
 
-    // Fetch user state
+    // ==== API CALLS ====
     async function fetchUserState(address) {
         try {
-            const response = await fetch(HYPERLIQUID_API, {
+            const response = await fetch(HYPERLIQUID_INFO_API, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1175,79 +1193,269 @@
                     user: address
                 })
             });
-
-            if (!response.ok) throw new Error('API request failed');
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error('Error fetching user state:', error);
+            if (!response.ok) {
+                console.warn('clearinghouseState HTTP error', response.status);
+                return null;
+            }
+            return await response.json();
+        } catch (e) {
+            console.error('Error fetchUserState', e);
             return null;
         }
     }
 
-    // Fetch all positions for saved addresses
     async function fetchAllPositions() {
-        if (state.addresses.length === 0) {
+        if (!state.addresses.length) {
             alert('Please add at least one wallet address');
             return;
         }
-
         showLoading(true);
-        updateStatus('Loading...');
+        updateStatus('Loading...', 'loading');
 
         try {
             const allPositions = [];
-
             for (const address of state.addresses) {
                 const userData = await fetchUserState(address);
+                if (!userData || !userData.assetPositions) continue;
 
-                if (userData && userData.assetPositions) {
-                    userData.assetPositions.forEach(pos => {
-                        const position = pos.position;
-                        const szi = parseFloat(position.szi);
+                userData.assetPositions.forEach(pos => {
+                    const p = pos.position;
+                    const szi = parseFloat(p.szi);
+                    if (!szi) return;
 
-                        if (szi !== 0) {
-                            const entryPx = parseFloat(position.entryPx);
-                            const positionValue = Math.abs(szi) * entryPx;
-                            const unrealizedPnl = parseFloat(position.unrealizedPnl);
-                            const leverage = parseFloat(position.leverage?.value || 0);
-                            const liquidationPx = parseFloat(position.liquidationPx || 0);
+                    const entryPx = parseFloat(p.entryPx);
+                    const positionValue = Math.abs(szi) * entryPx;
+                    const unrealizedPnl = parseFloat(p.unrealizedPnl);
+                    const leverage = parseFloat(p.leverage && p.leverage.value) || 0;
+                    const liquidationPx = parseFloat(p.liquidationPx || 0);
+                    const openedAtMs = Number(
+                        p.lastUpdateTime ||
+                        p.time ||
+                        p.timestamp ||
+                        0
+                    );
 
-                            allPositions.push({
-                                address: address,
-                                coin: pos.position.coin,
-                                side: szi > 0 ? 'long' : 'short',
-                                szi: Math.abs(szi),
-                                entryPx: entryPx,
-                                positionValue: positionValue,
-                                unrealizedPnl: unrealizedPnl,
-                                returnOnEquity: parseFloat(position.returnOnEquity || 0),
-                                leverage: leverage,
-                                liquidationPx: liquidationPx
-                            });
-                        }
+                    allPositions.push({
+                        address,
+                        coin: pos.coin || p.coin,
+                        side: szi > 0 ? 'long' : 'short',
+                        szi: Math.abs(szi),
+                        entryPx,
+                        positionValue,
+                        unrealizedPnl,
+                        returnOnEquity: parseFloat(p.returnOnEquity || 0),
+                        leverage,
+                        liquidationPx,
+                        marginUsed: parseFloat(p.marginUsed || 0),
+                        openedAt: openedAtMs
                     });
-                }
+                });
             }
 
             state.positions = allPositions;
             aggregateData();
             updateDashboard();
             updateLastUpdateTime();
-            updateStatus('Connected');
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error loading positions: ' + error.message);
-            updateStatus('Error');
+            updateStatus('Connected', 'ok');
+        } catch (e) {
+            console.error(e);
+            alert('Error loading positions: ' + e.message);
+            updateStatus('Error', 'error');
         } finally {
             showLoading(false);
         }
     }
 
-    // Aggregate data
+    // ==== DISCOVER WALLETS FROM LEADERBOARD ====
+    async function discoverWallets() {
+        const coin = (document.getElementById('discoverCoin').value || '').trim().toUpperCase();
+        const limit = parseInt(document.getElementById('discoverLimit').value || '100', 10);
+        const sideFilter = document.getElementById('discoverSide').value;
+        const minValue = parseFloatInput('discoverMinValue');
+        const minPnl = parseFloatInput('discoverMinPnl');
+
+        if (!coin) {
+            alert('Lütfen bir coin gir (örn: XLM)');
+            return;
+        }
+
+        showLoading(true);
+        updateStatus('Discovering...', 'discover');
+        updateDiscoverResults([], 'loading');
+
+        try {
+            const res = await fetch(HYPERLIQUID_LEADERBOARD_API, { method: 'GET' });
+            if (!res.ok) {
+                throw new Error('Leaderboard HTTP ' + res.status);
+            }
+            const data = await res.json();
+
+            let entries = [];
+            if (Array.isArray(data)) {
+                entries = data;
+            } else if (Array.isArray(data.users)) {
+                entries = data.users;
+            } else if (Array.isArray(data.leaderboard)) {
+                entries = data.leaderboard;
+            } else {
+                console.warn('Unexpected leaderboard format', data);
+            }
+
+            if (!entries.length) {
+                updateDiscoverResults([], 'empty');
+                alert('Leaderboard boş veya format beklenenden farklı');
+                updateStatus('Error', 'error');
+                return;
+            }
+
+            const sliced = entries.slice(0, Math.min(entries.length, limit));
+            const found = [];
+
+            for (let i = 0; i < sliced.length; i++) {
+                const row = sliced[i];
+                const addr = row.addr || row.address || row.user || row.wallet || row.account || null;
+
+                if (typeof addr !== 'string') continue;
+                if (!addr.startsWith('0x') || addr.length !== 42) continue;
+
+                const userData = await fetchUserState(addr);
+                if (!userData || !userData.assetPositions) continue;
+
+                for (const pos of userData.assetPositions) {
+                    const p = pos.position;
+                    const coinSymbol = (pos.coin || p.coin || '').toUpperCase();
+                    const szi = parseFloat(p.szi);
+                    if (!szi) continue;
+                    if (coinSymbol !== coin) continue;
+
+                    const side = szi > 0 ? 'long' : 'short';
+                    if (sideFilter !== 'all' && side !== sideFilter) continue;
+
+                    const entryPx = parseFloat(p.entryPx);
+                    const positionValue = Math.abs(szi) * entryPx;
+                    const pnl = parseFloat(p.unrealizedPnl || 0);
+
+                    if (minValue !== null && positionValue < minValue) continue;
+                    if (minPnl !== null && pnl < minPnl) continue;
+
+                    found.push({
+                        address: addr,
+                        coin: coinSymbol,
+                        side,
+                        szi: Math.abs(szi),
+                        positionValue,
+                        pnl,
+                        leverage: parseFloat(p.leverage && p.leverage.value) || 0,
+                        fromLeaderboard: true
+                    });
+
+                    break; // aynı wallet içinde aynı coin için bir pozisyon yeter
+                }
+            }
+
+            state.discoveredWallets = found;
+            updateDiscoverResults(found, 'ok');
+            updateStatus('Connected', 'ok');
+        } catch (e) {
+            console.error('Discover error', e);
+            alert('Discover Wallets hata: ' + e.message);
+            updateDiscoverResults([], 'error');
+            updateStatus('Error', 'error');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function updateDiscoverResults(list, mode) {
+        const container = document.getElementById('discoverResults');
+        const footer = document.getElementById('discoverFooter');
+        const countLabel = document.getElementById('discoverCountLabel');
+        const selectAll = document.getElementById('selectAllDiscover');
+
+        if (!list || !list.length) {
+            footer.style.display = 'none';
+            container.innerHTML = \`
+                <div class="empty-state" style="padding:18px 4px;">
+                    <div class="empty-state-icon">\${mode === 'loading' ? '⏳' : '🧭'}</div>
+                    <div class="empty-state-title">\${mode === 'error' ? 'Discover Wallets hata' : 'Sonuç yok'}</div>
+                    <div class="empty-state-text">\${mode === 'loading'
+                        ? 'Leaderboard taranıyor...'
+                        : (mode === 'error' ? 'Lütfen ayarları kontrol edin ve tekrar deneyin.' : 'Seçili filtrelerle pozisyon bulunan wallet yok.')}</div>
+                </div>
+            \`;
+            return;
+        }
+
+        footer.style.display = 'flex';
+        countLabel.textContent = list.length + ' wallet bulundu';
+        selectAll.checked = false;
+
+        container.innerHTML = list.map((w, idx) => {
+            const pnlClass = w.pnl >= 0 ? 'pnl-positive' : 'pnl-negative';
+            const sideClass = w.side === 'long' ? 'side-long' : 'side-short';
+            return \`
+                <div class="discover-item">
+                    <div class="discover-header">
+                        <div class="discover-address">\${w.address}</div>
+                        <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:#9ca3af;cursor:pointer;">
+                            <input type="checkbox" class="checkbox discover-checkbox" data-idx="\${idx}">
+                            <span>Import</span>
+                        </label>
+                    </div>
+                    <div class="discover-meta">
+                        <span class="pill">\${w.coin}</span>
+                        <span class="pill \${sideClass}">\${w.side.toUpperCase()}</span>
+                        <span class="pill">Size: \${formatNumber(w.szi)}</span>
+                        <span class="pill">Value: \${formatCurrency(w.positionValue)}</span>
+                        <span class="pill \${pnlClass}">PnL: \${formatCurrency(w.pnl)}</span>
+                        <span class="pill">Lev: \${w.leverage.toFixed(2)}x</span>
+                    </div>
+                </div>
+            \`;
+        }).join('');
+    }
+
+    function importSelectedWallets() {
+        if (!state.discoveredWallets.length) {
+            alert('Önce Discover Wallets ile tarama yapmalısın.');
+            return;
+        }
+        const checkboxes = document.querySelectorAll('.discover-checkbox');
+        const selected = [];
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                const idx = parseInt(cb.getAttribute('data-idx'), 10);
+                const w = state.discoveredWallets[idx];
+                if (w) selected.push(w.address);
+            }
+        });
+
+        if (!selected.length) {
+            alert('Lütfen import etmek istediğin en az bir wallet seç.');
+            return;
+        }
+
+        let added = 0;
+        selected.forEach(addr => {
+            if (!state.addresses.includes(addr)) {
+                state.addresses.push(addr);
+                added++;
+            }
+        });
+
+        if (!added) {
+            alert('Seçilen adreslerin hepsi zaten dashboard'a ekli.');
+            return;
+        }
+
+        saveConfig();
+        renderAddressList();
+        alert(added + ' wallet dashboard'a import edildi.');
+    }
+
+    // ==== AGGREGATION & DASHBOARD ====
     function aggregateData() {
         const aggregated = {};
-
         state.positions.forEach(pos => {
             if (!aggregated[pos.coin]) {
                 aggregated[pos.coin] = {
@@ -1259,24 +1467,23 @@
                     positions: []
                 };
             }
-
             const data = aggregated[pos.coin];
-
-            if (pos.side === 'long') {
-                data.longValue += pos.positionValue;
-            } else {
-                data.shortValue += pos.positionValue;
-            }
-
+            if (pos.side === 'long') data.longValue += pos.positionValue;
+            else data.shortValue += pos.positionValue;
             data.totalValue += pos.positionValue;
             data.pnl += pos.unrealizedPnl;
             data.positions.push(pos);
         });
-
         state.aggregatedData = aggregated;
     }
 
-    // Update dashboard
+    function getAgeDays(openedAtMs) {
+        if (!openedAtMs || openedAtMs <= 0) return null;
+        const diff = Date.now() - openedAtMs;
+        if (diff <= 0) return 0;
+        return diff / (1000 * 60 * 60 * 24);
+    }
+
     function updateDashboard() {
         updateHeaderStats();
         updatePositionBar();
@@ -1293,14 +1500,10 @@
         let lossCount = 0;
 
         state.positions.forEach(pos => {
-            if (pos.side === 'long') {
-                longTotal += pos.positionValue;
-            } else {
-                shortTotal += pos.positionValue;
-            }
+            if (pos.side === 'long') longTotal += pos.positionValue;
+            else shortTotal += pos.positionValue;
 
             netPnl += pos.unrealizedPnl;
-
             if (pos.unrealizedPnl > 0) profitCount++;
             else if (pos.unrealizedPnl < 0) lossCount++;
         });
@@ -1309,9 +1512,9 @@
         document.getElementById('shortPosition').textContent = formatCurrency(shortTotal);
         document.getElementById('totalPositions').textContent = state.positions.length;
 
-        const pnlElement = document.getElementById('netPnl');
-        pnlElement.textContent = formatCurrency(netPnl);
-        pnlElement.className = 'stat-value ' + (netPnl >= 0 ? 'long' : 'short');
+        const pnlEl = document.getElementById('netPnl');
+        pnlEl.textContent = formatCurrency(netPnl);
+        pnlEl.className = 'stat-value ' + (netPnl >= 0 ? 'long' : 'short');
 
         document.getElementById('profitCount').textContent = profitCount;
         document.getElementById('lossCount').textContent = lossCount;
@@ -1320,13 +1523,9 @@
     function updatePositionBar() {
         let longTotal = 0;
         let shortTotal = 0;
-
         state.positions.forEach(pos => {
-            if (pos.side === 'long') {
-                longTotal += pos.positionValue;
-            } else {
-                shortTotal += pos.positionValue;
-            }
+            if (pos.side === 'long') longTotal += pos.positionValue;
+            else shortTotal += pos.positionValue;
         });
 
         document.getElementById('longPosValue').textContent = formatCurrency(longTotal);
@@ -1336,210 +1535,292 @@
         const longPercent = totalValue > 0 ? (longTotal / totalValue) * 100 : 50;
         const shortPercent = 100 - longPercent;
 
-        document.getElementById('barLong').style.width = longPercent + '%';
-        document.getElementById('barShort').style.width = shortPercent + '%';
-        document.getElementById('barLong').textContent = longPercent.toFixed(1) + '%';
-        document.getElementById('barShort').textContent = shortPercent.toFixed(1) + '%';
+        const barLong = document.getElementById('barLong');
+        const barShort = document.getElementById('barShort');
+
+        barLong.style.width = longPercent + '%';
+        barShort.style.width = shortPercent + '%';
+        barLong.textContent = longPercent.toFixed(1) + '%';
+        barShort.textContent = shortPercent.toFixed(1) + '%';
     }
 
-    // Heatmap (2 büyük + 8 küçük)
-    function updateHeatmap() {
-        const heatmapGrid = document.getElementById('heatmapGrid');
+    function getHeatmapColor(pnlPercent) {
+        if (pnlPercent >= 0) {
+            if (pnlPercent > 20) return 'linear-gradient(145deg,#16a34a,#22c55e,#4ade80)';
+            if (pnlPercent > 10) return 'linear-gradient(145deg,#16a34a,#22c55e)';
+            if (pnlPercent > 5)  return 'linear-gradient(145deg,#15803d,#22c55e)';
+            return 'linear-gradient(145deg,#166534,#22c55e)';
+        } else {
+            const abs = Math.abs(pnlPercent);
+            if (abs > 20) return 'linear-gradient(145deg,#f97373,#ef4444,#b91c1c)';
+            if (abs > 10) return 'linear-gradient(145deg,#f97373,#ef4444)';
+            if (abs > 5)  return 'linear-gradient(145deg,#ef4444,#b91c1c)';
+            return 'linear-gradient(145deg,#dc2626,#b91c1c)';
+        }
+    }
 
-        if (Object.keys(state.aggregatedData).length === 0) {
-            heatmapGrid.innerHTML = `
+    function updateHeatmap() {
+        const grid = document.getElementById('heatmapGrid');
+        const agg = state.aggregatedData;
+
+        if (!agg || !Object.keys(agg).length) {
+            grid.innerHTML = \`
                 <div class="empty-state">
                     <div class="empty-state-icon">📊</div>
                     <div class="empty-state-title">No Data Available</div>
                     <div class="empty-state-text">Add wallet addresses and click Load Positions</div>
                 </div>
-            `;
+            \`;
             return;
         }
 
-        const topAssets = Object.values(state.aggregatedData)
+        const topAssets = Object.values(agg)
             .sort((a, b) => b.totalValue - a.totalValue)
             .slice(0, 10);
 
-        heatmapGrid.innerHTML = topAssets.map((asset, index) => {
+        grid.innerHTML = topAssets.map((asset, index) => {
             const pnlPercent = asset.totalValue > 0 ? (asset.pnl / asset.totalValue) * 100 : 0;
-            const dominantSide = asset.longValue > asset.shortValue ? 'long' : 'short';
-            const bgColor = getHeatmapColor(pnlPercent, dominantSide);
-
+            const dominantSide = asset.longValue >= asset.shortValue ? 'long' : 'short';
+            const bg = getHeatmapColor(pnlPercent);
             const isBig = index < 2;
-            const gridSpan = isBig ? 2 : 1;
-            const cellSize = isBig ? 180 : 110;
-
-            return `
+            const span = isBig ? 2 : 1;
+            const size = isBig ? 170 : 110;
+            return \`
                 <div class="heatmap-cell" style="
-                    background: ${bgColor};
-                    min-height: ${cellSize}px;
-                    grid-column: span ${gridSpan};
-                    grid-row: span ${gridSpan};
+                    background:\${bg};
+                    min-height:\${size}px;
+                    grid-column:span \${span};
+                    grid-row:span \${span};
                 ">
-                    <div class="heatmap-cell-side">${dominantSide.toUpperCase()}</div>
-                    <div class="heatmap-cell-token" style="font-size: ${isBig ? '18px' : '14px'};">${asset.coin}</div>
-                    <div class="heatmap-cell-value" style="font-size: ${isBig ? '13px' : '11px'};">${formatCurrency(asset.totalValue)}</div>
-                    <div class="heatmap-cell-value" style="font-size: ${isBig ? '11px' : '10px'}; margin-top: 4px;">
-                        ${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%
+                    <div class="heatmap-cell-side">\${dominantSide.toUpperCase()}</div>
+                    <div class="heatmap-cell-token" style="font-size:\${isBig ? '15px' : '13px'};">
+                        \${asset.coin}
+                    </div>
+                    <div class="heatmap-cell-value">\${formatCurrency(asset.totalValue)}</div>
+                    <div class="heatmap-cell-value" style="margin-top:3px;font-size:\${isBig ? '11px' : '10px'};">
+                        \${pnlPercent >= 0 ? '+' : ''}\${pnlPercent.toFixed(2)}%
                     </div>
                 </div>
-            `;
+            \`;
         }).join('');
     }
 
-    // List view (2 kolon grid)
     function updateListView() {
         const listGrid = document.getElementById('listGrid');
+        const agg = state.aggregatedData;
 
-        if (Object.keys(state.aggregatedData).length === 0) {
-            listGrid.innerHTML = `
+        if (!agg || !Object.keys(agg).length) {
+            listGrid.innerHTML = \`
                 <div class="empty-state">
                     <div class="empty-state-icon">📝</div>
                     <div class="empty-state-title">No Data Available</div>
                     <div class="empty-state-text">Add wallet addresses and click Load Positions</div>
                 </div>
-            `;
+            \`;
             return;
         }
 
-        const topAssets = Object.values(state.aggregatedData)
+        const topAssets = Object.values(agg)
             .sort((a, b) => b.totalValue - a.totalValue)
             .slice(0, 10);
-
-        listGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
-        listGrid.style.gap = '12px';
 
         listGrid.innerHTML = topAssets.map(asset => {
             const pnlPercent = asset.totalValue > 0 ? (asset.pnl / asset.totalValue) * 100 : 0;
             const pnlClass = asset.pnl >= 0 ? 'pnl-positive' : 'pnl-negative';
-            const dominantSide = asset.longValue > asset.shortValue ? 'Long' : 'Short';
+            const dominantSide = asset.longValue >= asset.shortValue ? 'Long' : 'Short';
             const sideClass = dominantSide === 'Long' ? 'side-long' : 'side-short';
-
-            return `
+            return \`
                 <div class="list-item">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <div class="list-item-token">${asset.coin}</div>
-                        <span class="side-badge ${sideClass}">${dominantSide}</span>
+                    <div class="list-item-header">
+                        <div class="list-item-token">\${asset.coin}</div>
+                        <span class="side-badge \${sideClass}">\${dominantSide}</span>
                     </div>
-                    <div class="list-item-details" style="flex-direction: column; gap: 8px;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <div class="list-detail-item">
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <div style="display:flex;justify-content:space-between;">
+                            <div>
                                 <div class="list-detail-label">Position Value</div>
-                                <div class="list-detail-value">${formatCurrency(asset.totalValue)}</div>
+                                <div class="list-detail-value">\${formatCurrency(asset.totalValue)}</div>
                             </div>
-                            <div class="list-detail-item" style="text-align: right;">
+                            <div style="text-align:right;">
                                 <div class="list-detail-label">PnL</div>
-                                <div class="list-detail-value ${pnlClass}">
-                                    ${asset.pnl >= 0 ? '+' : ''}${formatCurrency(asset.pnl)}
+                                <div class="list-detail-value \${pnlClass}">
+                                    \${asset.pnl >= 0 ? '+' : ''}\${formatCurrency(asset.pnl)}
                                 </div>
                             </div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; gap: 12px;">
-                            <div class="list-detail-item">
+                        <div style="display:flex;justify-content:space-between;gap:10px;">
+                            <div>
                                 <div class="list-detail-label">Long</div>
-                                <div class="list-detail-value" style="color: #10b981; font-size: 11px;">${formatCurrency(asset.longValue)}</div>
+                                <div class="list-detail-value" style="color:#6ee7b7;font-size:11px;">
+                                    \${formatCurrency(asset.longValue)}
+                                </div>
                             </div>
-                            <div class="list-detail-item">
+                            <div>
                                 <div class="list-detail-label">Short</div>
-                                <div class="list-detail-value" style="color: #ef4444; font-size: 11px;">${formatCurrency(asset.shortValue)}</div>
+                                <div class="list-detail-value" style="color:#fecaca;font-size:11px;">
+                                    \${formatCurrency(asset.shortValue)}
+                                </div>
                             </div>
-                            <div class="list-detail-item" style="text-align: right;">
+                            <div style="text-align:right;">
                                 <div class="list-detail-label">ROE</div>
-                                <div class="list-detail-value ${pnlClass}" style="font-size: 11px;">
-                                    ${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%
+                                <div class="list-detail-value \${pnlClass}" style="font-size:11px;">
+                                    \${pnlPercent >= 0 ? '+' : ''}\${pnlPercent.toFixed(2)}%
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            `;
+            \`;
         }).join('');
     }
 
-    // Detail table
+    function getFilteredPositions() {
+        if (!state.positions.length) return [];
+
+        const token = (document.getElementById('fToken')?.value || '').toLowerCase().trim();
+        const address = (document.getElementById('fAddress')?.value || '').toLowerCase().trim();
+        const side = (document.getElementById('fSide')?.value || 'all');
+
+        const levMin = parseFloatInput('fLevMin');
+        const levMax = parseFloatInput('fLevMax');
+        const posMin = parseFloatInput('fPosMin');
+        const posMax = parseFloatInput('fPosMax');
+        const sizeMin = parseFloatInput('fSize');
+        const entryMin = parseFloatInput('fEntryMin');
+        const entryMax = parseFloatInput('fEntryMax');
+        const markMin = parseFloatInput('fMarkMin');
+        const markMax = parseFloatInput('fMarkMax');
+        const pnlMin = parseFloatInput('fPnlMin');
+        const pnlMax = parseFloatInput('fPnlMax');
+        const ageMin = parseFloatInput('fAge');
+        const liqText = (document.getElementById('fLiq')?.value || '').toLowerCase().trim();
+
+        return state.positions.filter(pos => {
+            if (token && !pos.coin.toLowerCase().includes(token)) return false;
+            if (address && !pos.address.toLowerCase().includes(address)) return false;
+            if (side !== 'all' && pos.side !== side) return false;
+
+            if (levMin !== null && pos.leverage < levMin) return false;
+            if (levMax !== null && pos.leverage > levMax) return false;
+
+            if (posMin !== null && pos.positionValue < posMin) return false;
+            if (posMax !== null && pos.positionValue > posMax) return false;
+
+            if (sizeMin !== null && pos.szi < sizeMin) return false;
+
+            if (entryMin !== null && pos.entryPx < entryMin) return false;
+            if (entryMax !== null && pos.entryPx > entryMax) return false;
+
+            const markPrice = pos.entryPx + (pos.unrealizedPnl / pos.szi);
+            if (markMin !== null && markPrice < markMin) return false;
+            if (markMax !== null && markPrice > markMax) return false;
+
+            if (pnlMin !== null && pos.unrealizedPnl < pnlMin) return false;
+            if (pnlMax !== null && pos.unrealizedPnl > pnlMax) return false;
+
+            const ageDays = getAgeDays(pos.openedAt);
+            if (ageMin !== null && (ageDays === null || ageDays < ageMin)) return false;
+
+            if (liqText) {
+                const liqStr = pos.liquidationPx > 0
+                    ? formatPrice(pos.liquidationPx).toLowerCase()
+                    : 'n/a';
+                if (!liqStr.includes(liqText)) return false;
+            }
+
+            return true;
+        });
+    }
+
     function updateDetailTable() {
         const tbody = document.getElementById('detailTableBody');
-
-        if (state.positions.length === 0) {
-            tbody.innerHTML = `
+        if (!state.positions.length) {
+            tbody.innerHTML = \`
                 <tr>
-                    <td colspan="11" style="text-align: center; padding: 40px; color: #6b7280;">
-                        <div style="font-size: 32px; margin-bottom: 12px;">🔍</div>
-                        <div style="font-size: 14px; font-weight: 700; margin-bottom: 6px;">No Positions Found</div>
-                        <div style="font-size: 12px;">Add wallet addresses to view positions</div>
+                    <td colspan="12" style="text-align:center;padding:40px;color:#6b7280;">
+                        <div style="font-size:32px;margin-bottom:12px;">🔍</div>
+                        <div style="font-size:14px;font-weight:700;margin-bottom:6px;">No Positions Found</div>
+                        <div style="font-size:12px;">Add wallet addresses to view positions</div>
                     </td>
                 </tr>
-            `;
+            \`;
             return;
         }
 
-        tbody.innerHTML = state.positions.map(pos => {
+        const positions = getFilteredPositions();
+        if (!positions.length) {
+            tbody.innerHTML = \`
+                <tr>
+                    <td colspan="12" style="text-align:center;padding:40px;color:#6b7280;">
+                        <div style="font-size:32px;margin-bottom:12px;">🧹</div>
+                        <div style="font-size:14px;font-weight:700;margin-bottom:6px;">No Results</div>
+                        <div style="font-size:12px;">Try adjusting your filters</div>
+                    </td>
+                </tr>
+            \`;
+            return;
+        }
+
+        tbody.innerHTML = positions.map(pos => {
             const pnlClass = pos.unrealizedPnl >= 0 ? 'pnl-positive' : 'pnl-negative';
             const roePercent = pos.returnOnEquity * 100;
-
-            return `
+            const markPrice = pos.entryPx + (pos.unrealizedPnl / pos.szi);
+            const ageDays = getAgeDays(pos.openedAt);
+            const ageText = ageDays === null ? '–' : ageDays.toFixed(1);
+            return \`
                 <tr>
-                    <td class="token-cell">${pos.coin}</td>
-                    <td style="font-family: monospace; font-size: 11px;">
-                        ${pos.address.substring(0, 6)}...${pos.address.substring(pos.address.length - 4)}
+                    <td class="token-cell">\${pos.coin}</td>
+                    <td style="font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono','Courier New', monospace;font-size:11px;">
+                        \${pos.address.substring(0, 8)}...\${pos.address.substring(pos.address.length - 6)}
                     </td>
-                    <td>
-                        <span class="side-badge side-${pos.side}">${pos.side.toUpperCase()}</span>
+                    <td><span class="side-badge side-\${pos.side}">\${pos.side.toUpperCase()}</span></td>
+                    <td style="color:#9ca3af;font-size:11px;">\${pos.leverage.toFixed(2)}x</td>
+                    <td style="font-weight:700;">\${formatCurrency(pos.positionValue)}</td>
+                    <td>\${formatNumber(pos.szi)}</td>
+                    <td>\${formatPrice(pos.entryPx)}</td>
+                    <td>\${formatPrice(markPrice)}</td>
+                    <td class="\${pnlClass}">\${pos.unrealizedPnl >= 0 ? '+' : ''}\${formatCurrency(pos.unrealizedPnl)}</td>
+                    <td class="\${pnlClass}">
+                        \${roePercent >= 0 ? '+' : ''}\${roePercent.toFixed(2)}%
                     </td>
-                    <td style="color: #9ca3af; font-size: 11px;">${pos.leverage.toFixed(2)}x</td>
-                    <td style="font-weight: 700;">${formatCurrency(pos.positionValue)}</td>
-                    <td>${formatNumber(pos.szi)}</td>
-                    <td>${formatPrice(pos.entryPx)}</td>
-                    <td>${formatPrice(pos.entryPx + (pos.unrealizedPnl / pos.szi))}</td>
-                    <td class="${pnlClass}">
-                        ${pos.unrealizedPnl >= 0 ? '+' : ''}${formatCurrency(pos.unrealizedPnl)}
-                    </td>
-                    <td class="${pnlClass}">
-                        ${roePercent >= 0 ? '+' : ''}${roePercent.toFixed(2)}%
-                    </td>
-                    <td>${pos.liquidationPx > 0 ? formatPrice(pos.liquidationPx) : 'N/A'}</td>
+                    <td class="age-cell">\${ageText}</td>
+                    <td>\${pos.liquidationPx > 0 ? formatPrice(pos.liquidationPx) : 'N/A'}</td>
                 </tr>
-            `;
+            \`;
         }).join('');
     }
 
-    // Status + time + loading
-    function updateStatus(status) {
+    // ==== STATUS / LOADING ====
+    function updateStatus(text, mode) {
         const badge = document.getElementById('statusBadge');
-
-        if (status === 'Connected') {
-            badge.textContent = 'Connected';
+        badge.textContent = text || 'Ready';
+        if (mode === 'ok') {
             badge.className = 'status-badge status-connected';
-        } else if (status === 'Loading...') {
-            badge.textContent = 'Loading...';
-            badge.className = 'status-badge status-disconnected';
-        } else if (status === 'Error') {
-            badge.textContent = 'Error';
+        } else if (mode === 'loading') {
+            badge.className = 'status-badge status-discover';
+        } else if (mode === 'error') {
             badge.className = 'status-badge status-disconnected';
         } else {
-            badge.textContent = 'Ready';
             badge.className = 'status-badge status-disconnected';
         }
     }
 
     function updateLastUpdateTime() {
         const now = new Date();
-        const timeStr = now.toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
+        const timeStr = now.toLocaleTimeString('en-US',{
+            hour:'2-digit',
+            minute:'2-digit',
+            second:'2-digit'
         });
         document.getElementById('lastUpdate').textContent = timeStr;
     }
 
     function showLoading(show) {
         const overlay = document.getElementById('loadingOverlay');
-        if (show) overlay.classList.add('active');
-        else overlay.classList.remove('active');
+        overlay.classList.toggle('active', !!show);
     }
 
-    // View toggle
+    // ==== VIEW TOGGLE & FILTER INIT ====
     function initViewToggle() {
         const viewButtons = document.querySelectorAll('.view-btn');
         const heatmapView = document.getElementById('heatmapView');
@@ -1548,10 +1829,8 @@
         viewButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 const view = btn.dataset.view;
-
                 viewButtons.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-
                 if (view === 'heatmap') {
                     heatmapView.classList.add('active');
                     listView.classList.remove('active');
@@ -1563,251 +1842,16 @@
         });
     }
 
-    // CSV Export
-    function exportCsv() {
-        if (state.positions.length === 0) {
-            alert('No positions to export');
-            return;
-        }
-
-        const headers = [
-            'coin', 'address', 'side', 'leverage',
-            'positionValue', 'size', 'entryPrice', 'markPrice',
-            'unrealizedPnl', 'roePercent', 'liquidation'
-        ];
-
-        const rows = state.positions.map(p => {
-            const markPrice = p.entryPx + (p.unrealizedPnl / p.szi);
-            const roePercent = p.returnOnEquity * 100;
-            return [
-                p.coin,
-                p.address,
-                p.side,
-                p.leverage.toFixed(2),
-                p.positionValue,
-                p.szi,
-                p.entryPx,
-                markPrice,
-                p.unrealizedPnl,
-                roePercent,
-                p.liquidationPx
-            ];
+    function initFilters() {
+        const filterEls = document.querySelectorAll('.filter-input, .filter-select');
+        filterEls.forEach(el => {
+            el.addEventListener('input', updateDetailTable);
+            el.addEventListener('change', updateDetailTable);
         });
-
-        let csv = headers.join(',') + '\n';
-        rows.forEach(r => {
-            csv += r.join(',') + '\n';
-        });
-
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'hyperliquid_positions.csv';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
-    // DISCOVER WALLET HELPERS
-
-    function setDiscoverStatus(text, mode = 'idle') {
-        const el = document.getElementById('discoverStatus');
-        el.textContent = text;
-        el.classList.remove('busy', 'ok');
-        if (mode === 'busy') el.classList.add('busy');
-        if (mode === 'ok') el.classList.add('ok');
-    }
-
-    function getAddressFromLeaderboardItem(item) {
-        // Farklı JSON yapıları için esnek deneme
-        return item.address || item.user || item.wallet || item.account || null;
-    }
-
-    function renderDiscoverTable() {
-        const tbody = document.getElementById('discoverTableBody');
-        const importSelectedBtn = document.getElementById('discoverImportSelectedBtn');
-        const importAllBtn = document.getElementById('discoverImportAllBtn');
-
-        if (!state.discoveredWallets.length) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="8">
-                        <div class="empty-state">
-                            <div class="empty-state-icon">📡</div>
-                            <div class="empty-state-title">Sonuç bulunamadı</div>
-                            <div class="empty-state-text">Coin veya filtre ayarlarını değiştirip tekrar deneyin</div>
-                        </div>
-                    </td>
-                </tr>
-            `;
-            importSelectedBtn.disabled = true;
-            importAllBtn.disabled = true;
-            return;
-        }
-
-        importSelectedBtn.disabled = false;
-        importAllBtn.disabled = false;
-
-        tbody.innerHTML = state.discoveredWallets.map((w, idx) => {
-            const sideClass = w.side === 'long' ? 'discover-side-long' : 'discover-side-short';
-            const pnlClass = w.pnl >= 0 ? 'badge-green' : 'badge-red';
-            const roeClass = w.roePercent >= 0 ? 'badge-green' : 'badge-red';
-
-            return `
-                <tr>
-                    <td><input type="checkbox" class="discover-checkbox" data-index="${idx}" checked></td>
-                    <td>${w.rank ?? (idx + 1)}</td>
-                    <td class="discover-address">${w.address}</td>
-                    <td>${w.coin}</td>
-                    <td class="${sideClass}">${w.side.toUpperCase()}</td>
-                    <td>${formatCurrency(w.positionValue)}</td>
-                    <td><span class="badge ${pnlClass}">${w.pnl >= 0 ? '+' : ''}${w.pnl.toFixed(2)}</span></td>
-                    <td><span class="badge ${roeClass}">${w.roePercent >= 0 ? '+' : ''}${w.roePercent.toFixed(2)}%</span></td>
-                </tr>
-            `;
-        }).join('');
-    }
-
-    async function discoverWallets() {
-        const coinInput = document.getElementById('discoverCoin');
-        const limitSelect = document.getElementById('discoverLimit');
-        const sideSelect = document.getElementById('discoverSide');
-
-        const coin = coinInput.value.trim().toUpperCase();
-        if (!coin) {
-            alert('Lütfen coin ismi girin (ör: XLM)');
-            return;
-        }
-
-        const limit = parseInt(limitSelect.value, 10);
-        const sideFilter = sideSelect.value; // all | long | short
-
-        setDiscoverStatus('Fetching leaderboard...', 'busy');
-        showLoading(true);
-
-        try {
-            const res = await fetch(LEADERBOARD_API);
-            if (!res.ok) {
-                throw new Error('Leaderboard API error: ' + res.status);
-            }
-            const data = await res.json();
-
-            // Data şekli belirsiz, ama genelde array veya { leaderboard: [...] } olur
-            const list = Array.isArray(data) ? data : (data.leaderboard || data.traders || []);
-            if (!Array.isArray(list) || list.length === 0) {
-                throw new Error('Leaderboard boş veya format beklenenden farklı');
-            }
-
-            const topTraders = list.slice(0, limit);
-            const results = [];
-
-            let index = 0;
-            for (const item of topTraders) {
-                index++;
-                const address = getAddressFromLeaderboardItem(item);
-                if (!address || !address.startsWith('0x')) continue;
-
-                setDiscoverStatus(`Scanning ${index}/${topTraders.length}...`, 'busy');
-
-                const userData = await fetchUserState(address);
-                if (!userData || !userData.assetPositions) continue;
-
-                for (const posWrap of userData.assetPositions) {
-                    const position = posWrap.position;
-                    const coinName = position.coin?.toUpperCase();
-                    const szi = parseFloat(position.szi);
-
-                    if (!coinName || szi === 0) continue;
-                    if (coinName !== coin) continue;
-
-                    const side = szi > 0 ? 'long' : 'short';
-                    if (sideFilter === 'long' && side !== 'long') continue;
-                    if (sideFilter === 'short' && side !== 'short') continue;
-
-                    const entryPx = parseFloat(position.entryPx || 0);
-                    const positionValue = Math.abs(szi) * entryPx;
-                    const pnl = parseFloat(position.unrealizedPnl || 0);
-                    const roe = parseFloat(position.returnOnEquity || 0) * 100;
-
-                    results.push({
-                        rank: item.rank ?? index,
-                        address,
-                        coin: coinName,
-                        side,
-                        positionValue,
-                        pnl,
-                        roePercent: roe
-                    });
-
-                    // Aynı traderda aynı coin tekrar varsa ilkini alıp devam
-                    break;
-                }
-            }
-
-            state.discoveredWallets = results;
-            renderDiscoverTable();
-            setDiscoverStatus(`Done. Found ${results.length} wallets.`, 'ok');
-        } catch (err) {
-            console.error(err);
-            setDiscoverStatus('Error while scanning', 'idle');
-            alert('Discover Wallets hata: ' + err.message);
-        } finally {
-            showLoading(false);
-        }
-    }
-
-    function importSelectedWallets() {
-        const checkboxes = document.querySelectorAll('.discover-checkbox:checked');
-        if (!checkboxes.length) {
-            alert('Hiç adres seçilmedi');
-            return;
-        }
-        let added = 0;
-        checkboxes.forEach(cb => {
-            const idx = parseInt(cb.dataset.index, 10);
-            const w = state.discoveredWallets[idx];
-            if (!w) return;
-            if (!state.addresses.includes(w.address)) {
-                state.addresses.push(w.address);
-                added++;
-            }
-        });
-
-        if (added === 0) {
-            alert('Seçilen adreslerin hepsi zaten kayıtlı');
-        } else {
-            saveConfig();
-            renderAddressList();
-            alert(`${added} yeni wallet dashboard'a eklendi`);
-        }
-    }
-
-    function importAllWallets() {
-        if (!state.discoveredWallets.length) {
-            alert('Import edilecek wallet yok');
-            return;
-        }
-        let added = 0;
-        state.discoveredWallets.forEach(w => {
-            if (!state.addresses.includes(w.address)) {
-                state.addresses.push(w.address);
-                added++;
-            }
-        });
-
-        if (added === 0) {
-            alert('Tüm discovered walletlar zaten listede');
-        } else {
-            saveConfig();
-            renderAddressList();
-            alert(`${added} wallet dashboard'a eklendi`);
-        }
     }
 
     function initDiscoverSelectAll() {
-        const selectAll = document.getElementById('discoverSelectAll');
+        const selectAll = document.getElementById('selectAllDiscover');
         selectAll.addEventListener('change', () => {
             const checked = selectAll.checked;
             document.querySelectorAll('.discover-checkbox').forEach(cb => {
@@ -1816,37 +1860,30 @@
         });
     }
 
-    // Event listeners
-    document.getElementById('loadBtn').addEventListener('click', fetchAllPositions);
+    // ==== EVENTS ====
     document.getElementById('addAddressBtn').addEventListener('click', addAddress);
+    document.getElementById('loadBtn').addEventListener('click', fetchAllPositions);
     document.getElementById('refreshBtn').addEventListener('click', fetchAllPositions);
     document.getElementById('clearBtn').addEventListener('click', clearAll);
-    document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
+    document.getElementById('discoverBtn').addEventListener('click', discoverWallets);
+    document.getElementById('importSelectedBtn').addEventListener('click', importSelectedWallets);
 
-    document.getElementById('discoverSearchBtn').addEventListener('click', discoverWallets);
-    document.getElementById('discoverImportSelectedBtn').addEventListener('click', importSelectedWallets);
-    document.getElementById('discoverImportAllBtn').addEventListener('click', importAllWallets);
-
-    document.getElementById('addressInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && e.ctrlKey) {
-            // Ctrl+Enter ile adres ekle
+    document.getElementById('addressInput').addEventListener('keypress', e => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
             addAddress();
         }
     });
 
-    // Init
     document.addEventListener('DOMContentLoaded', () => {
         loadConfig();
         initViewToggle();
+        initFilters();
         initDiscoverSelectAll();
-        console.log('🐋 Hyperliquid Portfolio Dashboard + Discover Wallets Ready');
+        console.log('🐋 Hyperliquid Dashboard + Discover Wallets ready');
     });
 
-    // Expose removeAddress to global
+    // expose removeAddress for inline onclick
     window.removeAddress = removeAddress;
 </script>
 </body>
 </html>
-
-
-    
