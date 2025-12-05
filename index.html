@@ -2,336 +2,223 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Hyperliquid Portfolio Dashboard 🐋</title>
-    <meta name="theme-color" content="#0a0a0a">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HL Dashboard 🐋</title>
+    <meta name="theme-color" content="#000">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
-        body{
-            font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;
-            background:#0a0a0a;color:#e5e7eb;
-            padding:12px;min-height:100vh;font-size:13px;
-        }
+        body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#000;color:#ddd;padding:8px;font-size:12px;-webkit-font-smoothing:antialiased;}
         .container{max-width:1400px;margin:0 auto;}
-
-        .config-panel{background:#1a1a1a;border:1px solid #2d2d2d;border-radius:8px;padding:16px;margin-bottom:12px;}
-        .config-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-        .config-title{font-size:14px;font-weight:700;color:#fff;}
-        .status-badge{padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700;}
-        .status-connected{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid #10b981;}
-        .status-disconnected{background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid #ef4444;}
-
-        .address-manager{background:#111;border:1px solid #2d2d2d;border-radius:6px;padding:12px;}
-        .input-label{font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
-        .address-input-group{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px;}
-        .input-field{background:#111;border:1px solid #2d2d2d;border-radius:6px;padding:10px 12px;color:#fff;font-size:12px;outline:none;}
-        .input-field:focus{border-color:#3b82f6;}
-        .btn{padding:8px 14px;border-radius:6px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
-        .btn-primary{background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%);color:#fff;width:100%;margin-top:8px;}
-        .btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(59,130,246,.4);}
-        .btn-secondary{background:#1f1f1f;color:#9ca3af;border:1px solid #2d2d2d;width:100%;margin-top:6px;}
-        .btn-secondary:hover{background:#2d2d2d;color:#fff;}
-        .btn-success{background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:#fff;width:100%;margin-top:6px;}
-        .btn-success:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(16,185,129,.4);}
-        .address-list{max-height:120px;overflow-y:auto;margin-top:6px;}
-        .address-chip{display:inline-flex;align-items:center;gap:8px;background:#1f1f1f;border:1px solid #2d2d2d;border-radius:4px;padding:6px 10px;margin:4px;font-size:11px;font-family:monospace;}
-        .address-chip .remove-btn{background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px;line-height:1;}
-
-        .wallet-finder{background:#111;border:1px solid #2d2d2d;border-radius:6px;padding:12px;margin-top:12px;}
-        .finder-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-        .finder-title{font-size:12px;font-weight:700;color:#10b981;}
-        .coin-search-group{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px;}
-        .search-results{max-height:300px;overflow-y:auto;margin-top:10px;}
-        .wallet-result-item{background:#1f1f1f;border:1px solid #2d2d2d;border-radius:4px;padding:10px;margin-bottom:6px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;}
-        .wallet-result-info{display:flex;flex-direction:column;gap:4px;}
-        .wallet-result-address{font-family:monospace;font-size:11px;color:#3b82f6;}
-        .wallet-result-details{font-size:10px;color:#9ca3af;}
-        .wallet-result-coin{font-weight:700;color:#fff;font-size:12px;margin-bottom:2px;}
-        .import-checkbox{width:18px;height:18px;cursor:pointer;}
-        .search-stats{display:flex;gap:15px;margin-top:10px;padding:8px;background:#0a0a0a;border-radius:4px;font-size:11px;}
-        .search-stat-item{display:flex;flex-direction:column;gap:2px;}
-        .search-stat-label{color:#6b7280;font-size:10px;}
-        .search-stat-value{color:#fff;font-weight:700;}
-
-        .header-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
-        .stat-card{background:#1a1a1a;border:1px solid #2d2d2d;border-radius:8px;padding:12px;}
-        .stat-label{font-size:11px;color:#9ca3af;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
-        .stat-value{font-size:20px;font-weight:700;color:#fff;}
-        .stat-value.long{color:#10b981;}
-        .stat-value.short{color:#ef4444;}
-        .stat-value.neutral{color:#3b82f6;}
-
-        .position-bar-wrapper{background:#1a1a1a;border:1px solid #2d2d2d;border-radius:8px;padding:12px;margin-bottom:12px;}
-        .bar-header{display:flex;justify-content:space-between;margin-bottom:8px;font-size:11px;color:#9ca3af;flex-wrap:wrap;gap:8px;}
-        .position-bar{display:flex;height:32px;border-radius:6px;overflow:hidden;background:#111;}
-        .bar-long,.bar-short{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;transition:width .3s ease;}
-        .bar-long{background:linear-gradient(90deg,#10b981 0%,#059669 100%);}
-        .bar-short{background:linear-gradient(90deg,#ef4444 0%,#dc2626 100%);}
-
-        .view-toggle-wrapper{background:#1a1a1a;border:1px solid #2d2d2d;border-radius:8px;padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
-        .view-toggle{display:flex;background:#111;border-radius:6px;overflow:hidden;}
-        .view-btn{padding:8px 16px;border:none;background:transparent;color:#9ca3af;font-size:12px;font-weight:700;cursor:pointer;}
-        .view-btn.active{background:#3b82f6;color:#fff;}
-        .refresh-info{font-size:11px;color:#6b7280;text-align:right;}
-        .refresh-info label{font-size:10px;}
-
-        .heatmap-container,.list-container{background:#1a1a1a;border:1px solid #2d2d2d;border-radius:8px;padding:14px;margin-bottom:12px;display:none;}
-        .heatmap-container.active,.list-container.active{display:block;}
-        .heatmap-header,.list-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:2px solid #2d2d2d;}
-        .heatmap-title{font-size:14px;font-weight:700;color:#fff;}
-        .heatmap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;min-height:260px;}
-        .heatmap-cell{position:relative;border-radius:4px;padding:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;transition:all .2s;overflow:hidden;}
-        .heatmap-cell:hover{transform:scale(1.05);z-index:10;box-shadow:0 4px 20px rgba(0,0,0,.5);}
-        .heatmap-cell-token{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;text-shadow:0 1px 3px rgba(0,0,0,.5);}
-        .heatmap-cell-value{font-size:11px;font-weight:600;color:rgba(255,255,255,.9);text-shadow:0 1px 2px rgba(0,0,0,.5);}
-        .heatmap-cell-side{position:absolute;top:4px;right:4px;font-size:9px;padding:2px 6px;border-radius:3px;background:rgba(0,0,0,.3);font-weight:700;}
-
-        .list-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
-        .list-item{background:#111;border:1px solid #2d2d2d;border-radius:6px;padding:12px;display:grid;grid-template-columns:1fr;gap:8px;transition:all .2s;}
-        .list-item:hover{border-color:#3b82f6;transform:translateX(4px);}
-        .list-item-token{font-size:16px;font-weight:700;color:#fff;}
-        .list-detail-item{display:flex;flex-direction:column;gap:2px;}
-        .list-detail-label{font-size:9px;color:#6b7280;text-transform:uppercase;}
-        .list-detail-value{font-size:12px;font-weight:700;color:#fff;}
-
-        .table-wrapper{background:#1a1a1a;border:1px solid #2d2d2d;border-radius:8px;overflow:hidden;}
-        .table-header-section{padding:14px;border-bottom:2px solid #2d2d2d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
-        .table-title{font-size:14px;font-weight:700;color:#fff;}
-        .table-actions{display:flex;gap:8px;flex-wrap:wrap;}
-        .table-container{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-        table{width:100%;border-collapse:collapse;min-width:1200px;}
-        thead{background:#111;position:sticky;top:0;z-index:10;}
-        th{padding:10px;text-align:left;font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #2d2d2d;white-space:nowrap;}
-        tbody tr{border-bottom:1px solid #1f1f1f;transition:background .2s;}
-        tbody tr:hover{background:#1f1f1f;}
-        td{padding:10px;font-size:12px;color:#e5e7eb;white-space:nowrap;}
-        .token-cell{font-weight:700;font-size:13px;color:#fff;}
-
-        .side-badge{display:inline-block;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;border:1px solid;}
-        .side-long{background:rgba(16,185,129,.15);color:#10b981;border-color:#10b981;}
-        .side-short{background:rgba(239,68,68,.15);color:#ef4444;border-color:#ef4444;}
-        .pnl-positive{color:#10b981;font-weight:700;}
-        .pnl-negative{color:#ef4444;font-weight:700;}
-        .age-cell{color:#fbbf24;font-weight:700;}
-
-        .filter-row th{padding:6px;background:#050505;border-bottom:1px solid #2d2d2d;}
-        .filter-input,.filter-select{width:100%;background:#000;border:1px solid #27272a;border-radius:4px;padding:4px 6px;font-size:10px;color:#e5e7eb;outline:none;}
-        .filter-input:focus,.filter-select:focus{border-color:#3b82f6;}
-        .filter-range{display:flex;gap:4px;}
-        .mini{width:100%;}
-
-        .loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;gap:15px;}
-        .loading-overlay.active{display:flex;}
-        .loading-spinner{width:50px;height:50px;border:4px solid #2d2d2d;border-top-color:#3b82f6;border-radius:50%;animation:spin 1s linear infinite;}
-        .loading-text{color:#9ca3af;font-size:13px;font-weight:600;}
+        .panel{background:#111;border:1px solid #222;border-radius:6px;padding:10px;margin-bottom:8px;}
+        .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+        .title{font-size:13px;font-weight:700;color:#fff;}
+        .badge{padding:3px 8px;border-radius:3px;font-size:10px;font-weight:700;}
+        .badge-ok{background:#10b981;color:#000;}
+        .badge-err{background:#ef4444;color:#fff;}
+        .input{background:#000;border:1px solid #333;border-radius:4px;padding:8px;color:#fff;font-size:11px;width:100%;}
+        .btn{padding:7px 12px;border-radius:4px;border:none;font-size:11px;font-weight:700;cursor:pointer;width:100%;margin-top:6px;}
+        .btn-primary{background:#3b82f6;color:#fff;}
+        .btn-secondary{background:#222;color:#aaa;border:1px solid #333;}
+        .btn-success{background:#10b981;color:#000;}
+        .chips{max-height:100px;overflow-y:auto;margin-top:6px;}
+        .chip{display:inline-flex;align-items:center;gap:6px;background:#222;border:1px solid #333;border-radius:3px;padding:4px 8px;margin:3px;font-size:10px;font-family:monospace;}
+        .chip button{background:none;border:none;color:#ef4444;cursor:pointer;font-size:12px;}
+        .finder{background:#0a0a0a;border:1px solid #222;border-radius:4px;padding:10px;margin-top:8px;}
+        .finder-title{font-size:11px;font-weight:700;color:#10b981;margin-bottom:6px;}
+        .search-row{display:flex;gap:6px;margin-bottom:8px;}
+        .search-row input{flex:1;}
+        .search-row button{width:auto;padding:7px 14px;margin:0;}
+        .stats{display:flex;gap:10px;margin-top:8px;padding:6px;background:#000;border-radius:3px;font-size:10px;}
+        .stat-item{display:flex;flex-direction:column;}
+        .stat-label{color:#666;font-size:9px;}
+        .stat-value{color:#fff;font-weight:700;}
+        .results{max-height:250px;overflow-y:auto;margin-top:8px;}
+        .result-item{background:#1a1a1a;border:1px solid #222;border-radius:3px;padding:8px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+        .result-info{flex:1;font-size:10px;}
+        .result-coin{font-weight:700;color:#fff;margin-bottom:2px;}
+        .result-addr{font-family:monospace;color:#3b82f6;font-size:9px;}
+        .result-details{color:#888;margin-top:3px;}
+        .cb{width:16px;height:16px;}
+        .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+        .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+        .card{background:#111;border:1px solid #222;border-radius:4px;padding:8px;}
+        .card-label{font-size:9px;color:#666;margin-bottom:4px;text-transform:uppercase;}
+        .card-value{font-size:16px;font-weight:700;color:#fff;}
+        .long{color:#10b981!important;}
+        .short{color:#ef4444!important;}
+        .bar-wrap{background:#111;border:1px solid #222;border-radius:4px;padding:8px;margin-bottom:8px;}
+        .bar-info{display:flex;justify-content:space-between;margin-bottom:6px;font-size:10px;color:#888;}
+        .bar{display:flex;height:24px;border-radius:3px;overflow:hidden;background:#000;}
+        .bar-long,.bar-short{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;}
+        .bar-long{background:#10b981;}
+        .bar-short{background:#ef4444;}
+        .heat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;min-height:200px;}
+        .heat-cell{position:relative;border-radius:3px;padding:8px;display:flex;flex-direction:column;justify-content:center;align-items:center;}
+        .heat-token{font-size:12px;font-weight:700;color:#fff;margin-bottom:3px;}
+        .heat-value{font-size:9px;font-weight:600;color:#fff;}
+        .heat-side{position:absolute;top:3px;right:3px;font-size:8px;padding:2px 4px;border-radius:2px;background:rgba(0,0,0,.5);font-weight:700;}
+        .list-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+        .list-item{background:#111;border:1px solid #222;border-radius:4px;padding:8px;}
+        .list-token{font-size:14px;font-weight:700;color:#fff;margin-bottom:6px;}
+        .list-row{display:flex;justify-content:space-between;margin-top:4px;font-size:10px;}
+        .list-label{color:#666;font-size:9px;}
+        .list-value{color:#fff;font-weight:700;}
+        table{width:100%;border-collapse:collapse;font-size:10px;}
+        th{padding:6px;text-align:left;background:#0a0a0a;color:#666;font-size:9px;border-bottom:1px solid #222;}
+        td{padding:6px;border-bottom:1px solid #111;color:#ddd;}
+        .token-cell{font-weight:700;color:#fff;}
+        .side-badge{padding:2px 6px;border-radius:2px;font-size:9px;font-weight:700;}
+        .side-long{background:rgba(16,185,129,.2);color:#10b981;}
+        .side-short{background:rgba(239,68,68,.2);color:#ef4444;}
+        .loading{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:10px;}
+        .loading.active{display:flex;}
+        .spinner{width:40px;height:40px;border:3px solid #222;border-top-color:#3b82f6;border-radius:50%;animation:spin .8s linear infinite;}
         @keyframes spin{to{transform:rotate(360deg);}}
-
-        .empty-state{text-align:center;padding:40px 20px;color:#6b7280;}
-        .empty-state-icon{font-size:36px;margin-bottom:10px;}
-        .empty-state-title{font-size:16px;font-weight:700;color:#9ca3af;margin-bottom:6px;}
-        .empty-state-text{font-size:13px;}
-
+        .loading-text{color:#888;font-size:11px;}
+        .empty{text-align:center;padding:30px;color:#666;}
+        .empty-icon{font-size:28px;margin-bottom:8px;}
+        .empty-title{font-size:13px;font-weight:700;color:#888;margin-bottom:4px;}
+        .hidden{display:none;}
         @media(max-width:768px){
-            .header-stats{grid-template-columns:repeat(2,1fr);}
-            .list-grid{grid-template-columns:1fr;}
-            .heatmap-grid{grid-template-columns:repeat(2,1fr);}
+            .grid-4{grid-template-columns:repeat(2,1fr);}
+            .heat-grid{grid-template-columns:repeat(2,1fr);}
         }
     </style>
 </head>
 <body>
 <div class="container">
-
-    <div class="config-panel">
-        <div class="config-header">
-            <div class="config-title">🐋 Hyperliquid Portfolio Dashboard</div>
-            <span class="status-badge status-disconnected" id="statusBadge">Ready</span>
+    <div class="panel">
+        <div class="row">
+            <div class="title">🐋 HL Dashboard</div>
+            <span class="badge badge-err" id="status">Ready</span>
         </div>
-        <div class="address-manager">
-            <div class="input-label">Wallet Addresses (çoklu: virgül / boşluk / satır)</div>
-            <div class="address-input-group">
-                <textarea id="addressInput" class="input-field" style="height:70px;resize:vertical;"
-                    placeholder="0xAAA..., 0xBBB..., 0xCCC..."></textarea>
-                <button class="btn btn-secondary" id="addAddressBtn">Add</button>
-            </div>
-            <div class="address-list" id="addressList"></div>
+        <div style="background:#0a0a0a;border:1px solid #222;border-radius:4px;padding:8px;">
+            <div style="font-size:9px;color:#666;margin-bottom:4px;">WALLET ADDRESSES</div>
+            <textarea id="addrInput" class="input" style="height:60px;resize:vertical;" placeholder="0xAAA..., 0xBBB..."></textarea>
+            <button class="btn btn-secondary" id="addBtn" style="margin-top:4px;">Add</button>
+            <div class="chips" id="addrList"></div>
             <button class="btn btn-primary" id="loadBtn">Load Positions</button>
-            <button class="btn btn-secondary" id="refreshBtn">🔄 Refresh Positions</button>
-            <button class="btn btn-secondary" id="clearBtn">🧹 Clear & Reset</button>
+            <button class="btn btn-secondary" id="refreshBtn">🔄 Refresh</button>
+            <button class="btn btn-secondary" id="clearBtn">🧹 Clear</button>
         </div>
 
-        <div class="wallet-finder">
-            <div class="finder-header">
-                <div class="finder-title">🔍 Coin Wallet Finder</div>
+        <div class="finder">
+            <div class="finder-title">🔍 COIN WALLET FINDER</div>
+            <div class="search-row">
+                <input type="text" id="coinInput" class="input" placeholder="XLM" style="text-transform:uppercase;">
+                <button class="btn btn-secondary" id="searchBtn">🔎 Search</button>
             </div>
-            <div class="input-label">Coin Symbol (örn: XLM, BTC, ETH)</div>
-            <div class="coin-search-group">
-                <input type="text" id="coinSearchInput" class="input-field" placeholder="XLM" style="text-transform:uppercase;">
-                <button class="btn btn-secondary" id="searchWalletsBtn" style="width:auto;padding:8px 20px;">🔎 Search</button>
-            </div>
-            <div id="searchStats" class="search-stats" style="display:none;">
-                <div class="search-stat-item">
-                    <div class="search-stat-label">Found Wallets</div>
-                    <div class="search-stat-value" id="foundWalletsCount">0</div>
+            <div id="searchStats" class="stats hidden">
+                <div class="stat-item">
+                    <div class="stat-label">Found</div>
+                    <div class="stat-value" id="foundCount">0</div>
                 </div>
-                <div class="search-stat-item">
-                    <div class="search-stat-label">Long</div>
-                    <div class="search-stat-value" style="color:#10b981;" id="foundLongCount">0</div>
+                <div class="stat-item">
+                    <div class="stat-label">Long</div>
+                    <div class="stat-value long" id="foundLong">0</div>
                 </div>
-                <div class="search-stat-item">
-                    <div class="search-stat-label">Short</div>
-                    <div class="search-stat-value" style="color:#ef4444;" id="foundShortCount">0</div>
+                <div class="stat-item">
+                    <div class="stat-label">Short</div>
+                    <div class="stat-value short" id="foundShort">0</div>
                 </div>
-                <div class="search-stat-item">
-                    <div class="search-stat-label">Total Size</div>
-                    <div class="search-stat-value" id="foundTotalSize">$0</div>
+                <div class="stat-item">
+                    <div class="stat-label">Size</div>
+                    <div class="stat-value" id="foundSize">$0</div>
                 </div>
             </div>
-            <div class="search-results" id="searchResults"></div>
-            <button class="btn btn-success" id="importSelectedBtn" style="display:none;">✅ Import Selected Wallets</button>
+            <div class="results" id="searchResults"></div>
+            <button class="btn btn-success hidden" id="importBtn">✅ Import Selected</button>
         </div>
     </div>
 
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
         <div class="loading-text" id="loadingText">Loading...</div>
     </div>
 
-    <div class="header-stats">
-        <div class="stat-card">
-            <div class="stat-label">Long Position</div>
-            <div class="stat-value long" id="longPosition">$0.00</div>
+    <div class="grid-4" style="margin-bottom:8px;">
+        <div class="card">
+            <div class="card-label">Long</div>
+            <div class="card-value long" id="longPos">$0</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-label">Short Position</div>
-            <div class="stat-value short" id="shortPosition">$0.00</div>
+        <div class="card">
+            <div class="card-label">Short</div>
+            <div class="card-value short" id="shortPos">$0</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-label">Total Positions</div>
-            <div class="stat-value neutral" id="totalPositions">0</div>
+        <div class="card">
+            <div class="card-label">Total</div>
+            <div class="card-value" id="totalPos">0</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-label">Net PnL</div>
-            <div class="stat-value" id="netPnl">$0.00</div>
-        </div>
-    </div>
-
-    <div class="position-bar-wrapper">
-        <div class="bar-header">
-            <div>
-                <span>Long: <strong id="longPosValue">$0.00</strong></span>
-                <span style="margin-left:15px;">Short: <strong id="shortPosValue">$0.00</strong></span>
-            </div>
-            <div>
-                <span>Profit: <strong id="profitCount">0</strong></span>
-                <span style="margin-left:15px;">Loss: <strong id="lossCount">0</strong></span>
-            </div>
-        </div>
-        <div class="position-bar">
-            <div class="bar-long" id="barLong" style="width:50%;">50%</div>
-            <div class="bar-short" id="barShort" style="width:50%;">50%</div>
+        <div class="card">
+            <div class="card-label">PnL</div>
+            <div class="card-value" id="netPnl">$0</div>
         </div>
     </div>
 
-    <div class="view-toggle-wrapper">
-        <div class="view-toggle">
-            <button class="view-btn active" data-view="heatmap">🔥 Heatmap</button>
-            <button class="view-btn" data-view="list">📋 List View</button>
+    <div class="bar-wrap">
+        <div class="bar-info">
+            <span>L: <strong id="longVal">$0</strong></span>
+            <span>S: <strong id="shortVal">$0</strong></span>
+            <span>P: <strong id="profitCnt">0</strong></span>
+            <span>L: <strong id="lossCnt">0</strong></span>
         </div>
-        <div class="refresh-info">
-            <div>Last updated: <span id="lastUpdate">Never</span></div>
-            <div style="margin-top:4px;">
-                <label>Auto refresh:
-                    <select id="autoRefreshSelect" class="filter-select" style="width:auto;display:inline-block;">
-                        <option value="0">Off</option>
-                        <option value="60">1m</option>
-                        <option value="300">5m</option>
-                        <option value="600">10m</option>
-                    </select>
-                </label>
+        <div class="bar">
+            <div class="bar-long" id="barL" style="width:50%;">50%</div>
+            <div class="bar-short" id="barS" style="width:50%;">50%</div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="row" style="margin-bottom:10px;">
+            <div class="title">🔥 TOP 10 POSITIONS</div>
+            <div style="font-size:9px;color:#666;">Updated: <span id="lastUpdate">Never</span></div>
+        </div>
+        <div class="heat-grid" id="heatGrid">
+            <div class="empty">
+                <div class="empty-icon">📊</div>
+                <div class="empty-title">No Data</div>
             </div>
         </div>
     </div>
 
-    <div class="heatmap-container active" id="heatmapView">
-        <div class="heatmap-header">
-            <div class="heatmap-title">🔥 Top 10 Open Positions - Heatmap</div>
-            <div class="ranking-subtitle">Sorted by position size</div>
-        </div>
-        <div class="heatmap-grid" id="heatmapGrid">
-            <div class="empty-state">
-                <div class="empty-state-icon">📊</div>
-                <div class="empty-state-title">No Data Available</div>
-                <div class="empty-state-text">Add wallet addresses and click Load Positions</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="list-container" id="listView">
-        <div class="list-header">
-            <div class="heatmap-title">📋 Top 10 Open Positions - List</div>
-            <div class="ranking-subtitle">Sorted by position size</div>
+    <div class="panel">
+        <div class="row" style="margin-bottom:10px;">
+            <div class="title">📋 LIST VIEW</div>
         </div>
         <div class="list-grid" id="listGrid">
-            <div class="empty-state">
-                <div class="empty-state-icon">📝</div>
-                <div class="empty-state-title">No Data Available</div>
-                <div class="empty-state-text">Add wallet addresses and click Load Positions</div>
+            <div class="empty">
+                <div class="empty-icon">📝</div>
+                <div class="empty-title">No Data</div>
             </div>
         </div>
     </div>
 
-    <div class="table-wrapper">
-        <div class="table-header-section">
-            <div class="table-title">📈 All Positions Details</div>
-            <div class="table-actions">
-                <button class="btn btn-secondary" id="exportBtn">⬇️ Export CSV</button>
-            </div>
+    <div class="panel">
+        <div class="row" style="margin-bottom:10px;">
+            <div class="title">📈 ALL POSITIONS</div>
+            <button class="btn btn-secondary" id="exportBtn" style="width:auto;padding:6px 12px;margin:0;">CSV</button>
         </div>
-        <div class="table-container">
+        <div style="overflow-x:auto;">
             <table>
                 <thead>
                     <tr>
                         <th>Token</th>
                         <th>Address</th>
                         <th>Side</th>
-                        <th>Leverage</th>
-                        <th>Position Value</th>
+                        <th>Lev</th>
+                        <th>Value</th>
                         <th>Size</th>
-                        <th>Entry Price</th>
-                        <th>Mark Price</th>
+                        <th>Entry</th>
+                        <th>Mark</th>
                         <th>PnL</th>
-                        <th>ROE %</th>
-                        <th>Age (Days)</th>
-                        <th>Liquidation</th>
-                    </tr>
-                    <tr class="filter-row">
-                        <th><input id="fToken" class="filter-input" placeholder="Token"></th>
-                        <th><input id="fAddress" class="filter-input" placeholder="0x..."></th>
-                        <th>
-                            <select id="fSide" class="filter-select">
-                                <option value="all">All</option>
-                                <option value="long">Long</option>
-                                <option value="short">Short</option>
-                            </select>
-                        </th>
-                        <th><div class="filter-range"><input id="fLevMin" class="filter-input mini" placeholder="min"><input id="fLevMax" class="filter-input mini" placeholder="max"></div></th>
-                        <th><div class="filter-range"><input id="fPosMin" class="filter-input mini" placeholder="min"><input id="fPosMax" class="filter-input mini" placeholder="max"></div></th>
-                        <th><input id="fSize" class="filter-input" placeholder=">= size"></th>
-                        <th><div class="filter-range"><input id="fEntryMin" class="filter-input mini" placeholder="min"><input id="fEntryMax" class="filter-input mini" placeholder="max"></div></th>
-                        <th><div class="filter-range"><input id="fMarkMin" class="filter-input mini" placeholder="min"><input id="fMarkMax" class="filter-input mini" placeholder="max"></div></th>
-                        <th><div class="filter-range"><input id="fPnlMin" class="filter-input mini" placeholder="min"><input id="fPnlMax" class="filter-input mini" placeholder="max"></div></th>
-                        <th><input id="fAge" class="filter-input" placeholder=">= days"></th>
-                        <th><input id="fLiq" class="filter-input" placeholder="Search"></th>
-                        <th></th>
+                        <th>ROE%</th>
                     </tr>
                 </thead>
-                <tbody id="detailTableBody">
+                <tbody id="tableBody">
                     <tr>
-                        <td colspan="12" style="text-align:center;padding:40px;color:#6b7280;">
-                            <div style="font-size:32px;margin-bottom:12px;">🔍</div>
-                            <div style="font-size:14px;font-weight:700;margin-bottom:6px;">No Positions Found</div>
-                            <div style="font-size:12px;">Add wallet addresses to view positions</div>
+                        <td colspan="10" style="text-align:center;padding:30px;color:#666;">
+                            <div style="font-size:24px;margin-bottom:8px;">🔍</div>
+                            <div style="font-weight:700;margin-bottom:4px;">No Positions</div>
                         </td>
                     </tr>
                 </tbody>
@@ -341,773 +228,577 @@
 </div>
 
 <script>
-    // PWA manifest + SW tek dosyada
-    (function(){
-        const manifest = {
-            name:"Hyperliquid Portfolio Dashboard",
-            short_name:"HL Dashboard",
-            start_url:"./",
-            display:"standalone",
-            background_color:"#0a0a0a",
-            theme_color:"#0a0a0a",
-            icons:[]
-        };
-        const blob = new Blob([JSON.stringify(manifest)],{type:"application/json"});
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("link");
-        link.rel="manifest";
-        link.href=url;
-        document.head.appendChild(link);
+const state={addresses:[],positions:[],aggregatedData:{},searchResults:[],selectedWallets:new Set()};
+const API='https://api.hyperliquid.xyz/info';
+const LB_API='https://stats-data.hyperliquid.xyz/Mainnet/leaderboard';
 
-        if("serviceWorker" in navigator){
-            const swCode = `
-                const CACHE_NAME='hl-dashboard-cache-v1';
-                self.addEventListener('install',e=>{self.skipWaiting();});
-                self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});
-            `;
-            const swBlob = new Blob([swCode],{type:'application/javascript'});
-            const swUrl = URL.createObjectURL(swBlob);
-            navigator.serviceWorker.register(swUrl).catch(()=>{});
+function loadCfg(){
+    const s=localStorage.getItem('hl_addrs');
+    if(s){state.addresses=JSON.parse(s);renderAddrs();}
+}
+function saveCfg(){localStorage.setItem('hl_addrs',JSON.stringify(state.addresses));}
+
+function fmt$(v){
+    const a=Math.abs(v);
+    if(a>=1e6)return'$'+(v/1e6).toFixed(2)+'M';
+    if(a>=1e3)return'$'+(v/1e3).toFixed(2)+'K';
+    return'$'+v.toFixed(2);
+}
+function fmtN(v){
+    const a=Math.abs(v);
+    if(a>=1e6)return(v/1e6).toFixed(2)+'M';
+    if(a>=1e3)return(v/1e3).toFixed(2)+'K';
+    return v.toFixed(4);
+}
+function fmtP(p){
+    if(!p)return'$0';
+    if(p>=1000)return'$'+p.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    if(p>=1)return'$'+p.toFixed(2);
+    if(p>=0.01)return'$'+p.toFixed(4);
+    return'$'+p.toFixed(6);
+}
+function getColor(pnl){
+    if(pnl>=0){
+        if(pnl>20)return'rgba(16,185,129,0.9)';
+        if(pnl>10)return'rgba(16,185,129,0.7)';
+        if(pnl>5)return'rgba(16,185,129,0.5)';
+        return'rgba(16,185,129,0.3)';
+    }
+    const a=Math.abs(pnl);
+    if(a>20)return'rgba(239,68,68,0.9)';
+    if(a>10)return'rgba(239,68,68,0.7)';
+    if(a>5)return'rgba(239,68,68,0.5)';
+    return'rgba(239,68,68,0.3)';
+}
+
+function renderAddrs(){
+    const el=$('addrList');
+    if(!state.addresses.length){
+        el.innerHTML='<div style="text-align:center;color:#666;padding:8px;font-size:10px;">No addresses</div>';
+        return;
+    }
+    el.innerHTML=state.addresses.map(a=>`
+        <div class="chip">
+            <span>${a.substring(0,6)}...${a.substring(a.length-4)}</span>
+            <button onclick="rmAddr('${a}')">×</button>
+        </div>
+    `).join('');
+}
+
+function addAddr(){
+    const raw=$('addrInput').value.trim();
+    if(!raw){alert('Enter address');return;}
+    const parts=raw.split(/[\s,;]+/).filter(Boolean);
+    let added=0;
+    parts.forEach(p=>{
+        const addr=p.trim();
+        if(addr.startsWith('0x')&&addr.length===42&&!state.addresses.includes(addr)){
+            state.addresses.push(addr);
+            added++;
         }
-    })();
+    });
+    if(!added){alert('No new valid addresses');return;}
+    $('addrInput').value='';
+    renderAddrs();
+    saveCfg();
+}
+function rmAddr(addr){
+    state.addresses=state.addresses.filter(a=>a!==addr);
+    renderAddrs();
+    saveCfg();
+}
 
-    const state = {
-        addresses: [],
-        positions: [],
-        aggregatedData: {},
-        autoRefreshTimer: null,
-        searchResults: [],
-        selectedWallets: new Set()
-    };
-    const HYPERLIQUID_API = 'https://api.hyperliquid.xyz/info';
-    const LEADERBOARD_API = 'https://stats-data.hyperliquid.xyz/Mainnet/leaderboard';
-
-    function loadConfig(){
-        const saved = localStorage.getItem('hl_addresses');
-        if(saved){
-            state.addresses = JSON.parse(saved);
-            renderAddressList();
-        }
-    }
-    function saveConfig(){localStorage.setItem('hl_addresses',JSON.stringify(state.addresses));}
-
-    function formatCurrency(v){
-        const a = Math.abs(v);
-        if(a>=1_000_000) return '$'+(v/1_000_000).toFixed(2)+'M';
-        if(a>=1_000) return '$'+(v/1_000).toFixed(2)+'K';
-        return '$'+v.toFixed(2);
-    }
-    function formatNumber(v){
-        const a = Math.abs(v);
-        if(a>=1_000_000) return (v/1_000_000).toFixed(2)+'M';
-        if(a>=1_000) return (v/1_000).toFixed(2)+'K';
-        return v.toFixed(4);
-    }
-    function formatPrice(p){
-        if(p===undefined||p===null) return '$0.00';
-        if(p>=1000) return '$'+p.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-        if(p>=1) return '$'+p.toFixed(2);
-        if(p>=0.01) return '$'+p.toFixed(4);
-        return '$'+p.toFixed(6);
-    }
-    function getHeatmapColor(pnlPercent){
-        if(pnlPercent>=0){
-            if(pnlPercent>20) return 'rgba(16,185,129,0.95)';
-            if(pnlPercent>10) return 'rgba(16,185,129,0.8)';
-            if(pnlPercent>5) return 'rgba(16,185,129,0.65)';
-            return 'rgba(16,185,129,0.45)';
-        }else{
-            const abs=Math.abs(pnlPercent);
-            if(abs>20) return 'rgba(239,68,68,0.95)';
-            if(abs>10) return 'rgba(239,68,68,0.8)';
-            if(abs>5) return 'rgba(239,68,68,0.65)';
-            return 'rgba(239,68,68,0.45)';
-        }
-    }
-
-    function renderAddressList(){
-        const list=document.getElementById('addressList');
-        if(!state.addresses.length){
-            list.innerHTML='<div style="text-align:center;color:#6b7280;padding:10px;font-size:11px;">No addresses added yet</div>';
-            return;
-        }
-        list.innerHTML=state.addresses.map(a=>`
-            <div class="address-chip">
-                <span>${a.substring(0,6)}...${a.substring(a.length-4)}</span>
-                <button class="remove-btn" onclick="removeAddress('${a}')">×</button>
-            </div>
-        `).join('');
-    }
-
-    function addAddress(){
-        const ta=document.getElementById('addressInput');
-        const raw=ta.value.trim();
-        if(!raw){alert('Please enter at least one wallet address');return;}
-        const parts=raw.split(/[\s,;]+/).filter(Boolean);
-        let added=0;
-        parts.forEach(p=>{
-            const addr=p.trim();
-            if(addr.startsWith('0x')&&addr.length===42&&!state.addresses.includes(addr)){
-                state.addresses.push(addr);
-                added++;
-            }
+async function fetchUser(addr){
+    try{
+        const res=await fetch(API,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({type:'clearinghouseState',user:addr})
         });
-        if(!added){alert('No new valid addresses found');return;}
-        ta.value='';
-        renderAddressList();
-        saveConfig();
+        if(!res.ok)throw new Error('API fail');
+        return await res.json();
+    }catch(e){
+        console.error('fetchUser error',e);
+        return null;
     }
-    function removeAddress(addr){
-        state.addresses=state.addresses.filter(a=>a!==addr);
-        renderAddressList();
-        saveConfig();
+}
+
+async function fetchLB(){
+    try{
+        const res=await fetch(LB_API);
+        if(!res.ok)throw new Error('LB fail');
+        const data=await res.json();
+        return data.leaderboardRows||[];
+    }catch(e){
+        console.error('fetchLB error',e);
+        return[];
     }
+}
 
-    async function fetchUserState(address){
-        try{
-            const res=await fetch(HYPERLIQUID_API,{
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({type:'clearinghouseState',user:address})
-            });
-            if(!res.ok) throw new Error('API request failed');
-            return await res.json();
-        }catch(e){
-            console.error('Error fetching user state',e);
-            return null;
-        }
-    }
+async function searchCoin(){
+    const coin=$('coinInput').value.trim().toUpperCase();
+    if(!coin){alert('Enter coin symbol');return;}
 
-    async function fetchLeaderboard(){
-        try{
-            const res=await fetch(LEADERBOARD_API);
-            if(!res.ok) throw new Error('Leaderboard API failed');
-            const data=await res.json();
-            return data.leaderboardRows || [];
-        }catch(e){
-            console.error('Error fetching leaderboard',e);
-            return [];
-        }
-    }
+    showLoad(true,'Searching '+coin+'...');
+    setStatus('Searching...');
+    state.searchResults=[];
+    state.selectedWallets.clear();
 
-    async function searchWalletsByCoin(){
-        const coinInput=document.getElementById('coinSearchInput');
-        const coin=coinInput.value.trim().toUpperCase();
-        if(!coin){
-            alert('Please enter a coin symbol (e.g., XLM, BTC, ETH)');
-            return;
-        }
+    try{
+        const lb=await fetchLB();
+        if(!lb.length){alert('LB data fail');showLoad(false);return;}
 
-        showLoading(true,'Searching wallets for '+coin+'...');
-        updateStatus('Searching...');
-        state.searchResults=[];
-        state.selectedWallets.clear();
+        const results=[];
+        let scanned=0;
+        const total=Math.min(lb.length,300); // Reduced to 300 for speed
 
-        try{
-            const leaderboard=await fetchLeaderboard();
-            if(!leaderboard.length){
-                alert('Could not fetch leaderboard data');
-                showLoading(false);
-                return;
+        for(const row of lb.slice(0,total)){
+            scanned++;
+            if(scanned%10===0){
+                $('loadingText').textContent=`Scanning ${scanned}/${total}...`;
             }
 
-            const results=[];
-            let scanned=0;
-            const total=Math.min(leaderboard.length, 500); // Limit to top 500
+            const addr=row.ethAddress;
+            if(!addr)continue;
 
-            for(const row of leaderboard.slice(0,total)){
-                scanned++;
-                if(scanned % 10 === 0){
-                    document.getElementById('loadingText').textContent=
-                        `Scanning ${scanned}/${total} wallets...`;
-                }
+            const data=await fetchUser(addr);
+            if(!data||!data.assetPositions)continue;
 
-                const address=row.ethAddress;
-                if(!address) continue;
+            for(const pos of data.assetPositions){
+                const p=pos.position;
+                const c=(pos.coin||p.coin||'').toUpperCase();
+                
+                if(c===coin){
+                    const szi=parseFloat(p.szi);
+                    if(szi===0)continue;
 
-                const userData=await fetchUserState(address);
-                if(!userData || !userData.assetPositions) continue;
+                    const entryPx=parseFloat(p.entryPx);
+                    const posVal=Math.abs(szi)*entryPx;
+                    const pnl=parseFloat(p.unrealizedPnl);
+                    const lev=parseFloat(p.leverage.value);
 
-                for(const pos of userData.assetPositions){
-                    const p=pos.position;
-                    const positionCoin=(pos.coin || p.coin || '').toUpperCase();
-                    
-                    if(positionCoin === coin){
-                        const szi=parseFloat(p.szi);
-                        if(szi===0) continue;
-
-                        const entryPx=parseFloat(p.entryPx);
-                        const positionValue=Math.abs(szi)*entryPx;
-                        const unrealizedPnl=parseFloat(p.unrealizedPnl);
-                        const leverage=parseFloat(p.leverage.value);
-
-                        results.push({
-                            address,
-                            coin:positionCoin,
-                            side:szi>0?'long':'short',
-                            szi:Math.abs(szi),
-                            entryPx,
-                            positionValue,
-                            unrealizedPnl,
-                            leverage,
-                            returnOnEquity:parseFloat(p.returnOnEquity)
-                        });
-                    }
-                }
-
-                // Rate limiting - small delay every 10 requests
-                if(scanned % 10 === 0){
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                }
-            }
-
-            state.searchResults=results;
-            renderSearchResults();
-            updateStatus('Connected');
-        }catch(e){
-            console.error(e);
-            alert('Error searching wallets: '+e.message);
-            updateStatus('Error');
-        }finally{
-            showLoading(false);
-        }
-    }
-
-    function renderSearchResults(){
-        const container=document.getElementById('searchResults');
-        const statsDiv=document.getElementById('searchStats');
-        const importBtn=document.getElementById('importSelectedBtn');
-
-        if(!state.searchResults.length){
-            container.innerHTML=`<div class="empty-state">
-                <div class="empty-state-icon">🔍</div>
-                <div class="empty-state-title">No Wallets Found</div>
-                <div class="empty-state-text">Try a different coin symbol</div>
-            </div>`;
-            statsDiv.style.display='none';
-            importBtn.style.display='none';
-            return;
-        }
-
-        // Calculate stats
-        let longCount=0, shortCount=0, totalSize=0;
-        state.searchResults.forEach(r=>{
-            if(r.side==='long') longCount++;
-            else shortCount++;
-            totalSize+=r.positionValue;
-        });
-
-        // Update stats
-        document.getElementById('foundWalletsCount').textContent=state.searchResults.length;
-        document.getElementById('foundLongCount').textContent=longCount;
-        document.getElementById('foundShortCount').textContent=shortCount;
-        document.getElementById('foundTotalSize').textContent=formatCurrency(totalSize);
-        statsDiv.style.display='flex';
-        importBtn.style.display='block';
-
-        // Render results
-        container.innerHTML=state.searchResults.map((r,i)=>{
-            const pnlClass=r.unrealizedPnl>=0?'pnl-positive':'pnl-negative';
-            const roe=r.returnOnEquity*100;
-            return `
-                <div class="wallet-result-item">
-                    <div class="wallet-result-info">
-                        <div class="wallet-result-coin">${r.coin} - ${r.side.toUpperCase()}</div>
-                        <div class="wallet-result-address">${r.address}</div>
-                        <div class="wallet-result-details">
-                            Position: ${formatCurrency(r.positionValue)} | 
-                            Size: ${formatNumber(r.szi)} | 
-                            Leverage: ${r.leverage.toFixed(1)}x | 
-                            PnL: <span class="${pnlClass}">${r.unrealizedPnl>=0?'+':''}${formatCurrency(r.unrealizedPnl)}</span> | 
-                            ROE: <span class="${pnlClass}">${roe>=0?'+':''}${roe.toFixed(2)}%</span>
-                        </div>
-                    </div>
-                    <input type="checkbox" class="import-checkbox" data-address="${r.address}" 
-                           ${state.selectedWallets.has(r.address)?'checked':''}>
-                </div>
-            `;
-        }).join('');
-
-        // Add checkbox listeners
-        container.querySelectorAll('.import-checkbox').forEach(cb=>{
-            cb.addEventListener('change',(e)=>{
-                const addr=e.target.dataset.address;
-                if(e.target.checked){
-                    state.selectedWallets.add(addr);
-                }else{
-                    state.selectedWallets.delete(addr);
-                }
-            });
-        });
-    }
-
-    function importSelectedWallets(){
-        if(!state.selectedWallets.size){
-            alert('Please select at least one wallet to import');
-            return;
-        }
-
-        let added=0;
-        state.selectedWallets.forEach(addr=>{
-            if(!state.addresses.includes(addr)){
-                state.addresses.push(addr);
-                added++;
-            }
-        });
-
-        if(added>0){
-            renderAddressList();
-            saveConfig();
-            alert(`✅ Successfully imported ${added} new wallet(s)!\n\nClick "Load Positions" to view their positions.`);
-            
-            // Clear search results
-            state.searchResults=[];
-            state.selectedWallets.clear();
-            document.getElementById('coinSearchInput').value='';
-            renderSearchResults();
-        }else{
-            alert('All selected wallets were already in your list');
-        }
-    }
-
-    async function fetchAllPositions(fromAuto=false){
-        if(!state.addresses.length){
-            if(!fromAuto) alert('Please add at least one wallet address');
-            return;
-        }
-        showLoading(true,'Loading positions...');
-        updateStatus('Loading...');
-        try{
-            const all=[];
-            for(const address of state.addresses){
-                const data=await fetchUserState(address);
-                if(data&&data.assetPositions){
-                    data.assetPositions.forEach(pos=>{
-                        const p=pos.position;
-                        const szi=parseFloat(p.szi);
-                        if(szi===0) return;
-                        const entryPx=parseFloat(p.entryPx);
-                        const positionValue=Math.abs(szi)*entryPx;
-                        const unrealizedPnl=parseFloat(p.unrealizedPnl);
-                        const leverage=parseFloat(p.leverage.value);
-                        const liquidationPx=parseFloat(p.liquidationPx||0);
-                        const openedAtMs=Number(p.lastUpdateTime||p.time||p.timestamp||0);
-                        all.push({
-                            address,
-                            coin:pos.coin||p.coin,
-                            side:szi>0?'long':'short',
-                            szi:Math.abs(szi),
-                            entryPx,
-                            positionValue,
-                            unrealizedPnl,
-                            returnOnEquity:parseFloat(p.returnOnEquity),
-                            leverage,
-                            liquidationPx,
-                            marginUsed:parseFloat(p.marginUsed),
-                            openedAt:openedAtMs
-                        });
+                    results.push({
+                        address:addr,
+                        coin:c,
+                        side:szi>0?'long':'short',
+                        szi:Math.abs(szi),
+                        entryPx,
+                        positionValue:posVal,
+                        unrealizedPnl:pnl,
+                        leverage:lev,
+                        returnOnEquity:parseFloat(p.returnOnEquity)
                     });
                 }
             }
-            state.positions=all;
-            aggregateData();
-            updateDashboard();
-            updateLastUpdateTime();
-            updateStatus('Connected');
-        }catch(e){
-            console.error(e);
-            if(!fromAuto) alert('Error loading positions: '+e.message);
-            updateStatus('Error');
-        }finally{
-            showLoading(false);
-        }
-    }
 
-    function aggregateData(){
-        const agg={};
-        state.positions.forEach(pos=>{
-            if(!agg[pos.coin]){
-                agg[pos.coin]={coin:pos.coin,longValue:0,shortValue:0,totalValue:0,pnl:0,positions:[]};
+            if(scanned%10===0){
+                await new Promise(r=>setTimeout(r,50)); // Reduced delay
             }
-            const a=agg[pos.coin];
-            if(pos.side==='long') a.longValue+=pos.positionValue;
-            else a.shortValue+=pos.positionValue;
-            a.totalValue+=pos.positionValue;
-            a.pnl+=pos.unrealizedPnl;
-            a.positions.push(pos);
-        });
-        state.aggregatedData=agg;
-    }
-
-    function updateDashboard(){
-        updateHeaderStats();
-        updatePositionBar();
-        updateHeatmap();
-        updateListView();
-        updateDetailTable();
-    }
-
-    function updateHeaderStats(){
-        let longTotal=0,shortTotal=0,netPnl=0,profit=0,loss=0;
-        state.positions.forEach(p=>{
-            if(p.side==='long') longTotal+=p.positionValue;
-            else shortTotal+=p.positionValue;
-            netPnl+=p.unrealizedPnl;
-            if(p.unrealizedPnl>0) profit++;
-            else if(p.unrealizedPnl<0) loss++;
-        });
-        document.getElementById('longPosition').textContent=formatCurrency(longTotal);
-        document.getElementById('shortPosition').textContent=formatCurrency(shortTotal);
-        document.getElementById('totalPositions').textContent=state.positions.length;
-        const pnlEl=document.getElementById('netPnl');
-        pnlEl.textContent=formatCurrency(netPnl);
-        pnlEl.className='stat-value '+(netPnl>=0?'long':'short');
-        document.getElementById('profitCount').textContent=profit;
-        document.getElementById('lossCount').textContent=loss;
-    }
-
-    function updatePositionBar(){
-        let longTotal=0,shortTotal=0;
-        state.positions.forEach(p=>{
-            if(p.side==='long') longTotal+=p.positionValue;
-            else shortTotal+=p.positionValue;
-        });
-        const total=longTotal+shortTotal;
-        const longPct=total>0?(longTotal/total)*100:50;
-        const shortPct=100-longPct;
-        document.getElementById('longPosValue').textContent=formatCurrency(longTotal);
-        document.getElementById('shortPosValue').textContent=formatCurrency(shortTotal);
-        const bl=document.getElementById('barLong'),bs=document.getElementById('barShort');
-        bl.style.width=longPct+'%';bs.style.width=shortPct+'%';
-        bl.textContent=longPct.toFixed(1)+'%';bs.textContent=shortPct.toFixed(1)+'%';
-    }
-
-    function updateHeatmap(){
-        const grid=document.getElementById('heatmapGrid');
-        if(!Object.keys(state.aggregatedData).length){
-            grid.innerHTML=`<div class="empty-state">
-                <div class="empty-state-icon">📊</div>
-                <div class="empty-state-title">No Data Available</div>
-                <div class="empty-state-text">Add wallet addresses and click Load Positions</div>
-            </div>`;
-            return;
         }
-        const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
-        grid.innerHTML=top.map((a,i)=>{
-            const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
-            const domSide=a.longValue>=a.shortValue?'long':'short';
-            const bg=getHeatmapColor(pnlPct);
-            const isBig=i<2, span=isBig?2:1, size=isBig?180:110;
-            return `
-                <div class="heatmap-cell" style="background:${bg};min-height:${size}px;grid-column:span ${span};grid-row:span ${span};">
-                    <div class="heatmap-cell-side">${domSide.toUpperCase()}</div>
-                    <div class="heatmap-cell-token" style="font-size:${isBig?'18px':'14px'};">${a.coin}</div>
-                    <div class="heatmap-cell-value">${formatCurrency(a.totalValue)}</div>
-                    <div class="heatmap-cell-value" style="margin-top:4px;font-size:${isBig?'11px':'10px'};">
-                        ${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%
+
+        state.searchResults=results;
+        renderSearch();
+        setStatus('Connected');
+    }catch(e){
+        console.error(e);
+        alert('Search error: '+e.message);
+        setStatus('Error');
+    }finally{
+        showLoad(false);
+    }
+}
+
+function renderSearch(){
+    const el=$('searchResults');
+    const stats=$('searchStats');
+    const btn=$('importBtn');
+
+    if(!state.searchResults.length){
+        el.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">No Wallets Found</div></div>';
+        stats.classList.add('hidden');
+        btn.classList.add('hidden');
+        return;
+    }
+
+    let longCnt=0,shortCnt=0,totalSize=0;
+    state.searchResults.forEach(r=>{
+        if(r.side==='long')longCnt++;
+        else shortCnt++;
+        totalSize+=r.positionValue;
+    });
+
+    $('foundCount').textContent=state.searchResults.length;
+    $('foundLong').textContent=longCnt;
+    $('foundShort').textContent=shortCnt;
+    $('foundSize').textContent=fmt$(totalSize);
+    stats.classList.remove('hidden');
+    btn.classList.remove('hidden');
+
+    el.innerHTML=state.searchResults.map(r=>{
+        const pnlCls=r.unrealizedPnl>=0?'long':'short';
+        const roe=r.returnOnEquity*100;
+        return`
+            <div class="result-item">
+                <div class="result-info">
+                    <div class="result-coin">${r.coin} - ${r.side.toUpperCase()}</div>
+                    <div class="result-addr">${r.address}</div>
+                    <div class="result-details">
+                        ${fmt$(r.positionValue)} | ${fmtN(r.szi)} | ${r.leverage.toFixed(1)}x | 
+                        <span class="${pnlCls}">${r.unrealizedPnl>=0?'+':''}${fmt$(r.unrealizedPnl)}</span> | 
+                        <span class="${pnlCls}">${roe>=0?'+':''}${roe.toFixed(2)}%</span>
                     </div>
                 </div>
-            `;
-        }).join('');
-    }
+                <input type="checkbox" class="cb" data-addr="${r.address}" ${state.selectedWallets.has(r.address)?'checked':''}>
+            </div>
+        `;
+    }).join('');
 
-    function updateListView(){
-        const grid=document.getElementById('listGrid');
-        if(!Object.keys(state.aggregatedData).length){
-            grid.innerHTML=`<div class="empty-state">
-                <div class="empty-state-icon">📝</div>
-                <div class="empty-state-title">No Data Available</div>
-                <div class="empty-state-text">Add wallet addresses and click Load Positions</div>
-            </div>`;
-            return;
-        }
-        const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
-        grid.innerHTML=top.map(a=>{
-            const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
-            const pnlClass=a.pnl>=0?'pnl-positive':'pnl-negative';
-            const dom=a.longValue>=a.shortValue?'Long':'Short';
-            const sideClass=dom==='Long'?'side-long':'side-short';
-            return `
-                <div class="list-item">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                        <div class="list-item-token">${a.coin}</div>
-                        <span class="side-badge ${sideClass}">${dom}</span>
-                    </div>
-                    <div style="display:flex;flex-direction:column;gap:8px;">
-                        <div style="display:flex;justify-content:space-between;">
-                            <div class="list-detail-item">
-                                <div class="list-detail-label">Position Value</div>
-                                <div class="list-detail-value">${formatCurrency(a.totalValue)}</div>
-                            </div>
-                            <div class="list-detail-item" style="text-align:right;">
-                                <div class="list-detail-label">PnL</div>
-                                <div class="list-detail-value ${pnlClass}">
-                                    ${a.pnl>=0?'+':''}${formatCurrency(a.pnl)}
-                                </div>
-                            </div>
-                        </div>
-                        <div style="display:flex;justify-content:space-between;gap:12px;">
-                            <div class="list-detail-item">
-                                <div class="list-detail-label">Long</div>
-                                <div class="list-detail-value" style="color:#10b981;font-size:11px;">${formatCurrency(a.longValue)}</div>
-                            </div>
-                            <div class="list-detail-item">
-                                <div class="list-detail-label">Short</div>
-                                <div class="list-detail-value" style="color:#ef4444;font-size:11px;">${formatCurrency(a.shortValue)}</div>
-                            </div>
-                            <div class="list-detail-item" style="text-align:right;">
-                                <div class="list-detail-label">ROE</div>
-                                <div class="list-detail-value ${pnlClass}" style="font-size:11px;">
-                                    ${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    function parseFloatInput(id){
-        const el=document.getElementById(id);
-        if(!el) return null;
-        const v=el.value.trim().replace(/[^0-9.\-]/g,'');
-        if(!v) return null;
-        const n=parseFloat(v);
-        return isNaN(n)?null:n;
-    }
-
-    function getAgeDays(ms){
-        if(!ms||ms<=0) return null;
-        const diff=Date.now()-ms;
-        if(diff<=0) return 0;
-        return diff/(1000*60*60*24);
-    }
-
-    function getFilteredPositions(){
-        if(!state.positions.length) return [];
-        const token=(document.getElementById('fToken')?.value||'').toLowerCase().trim();
-        const addr=(document.getElementById('fAddress')?.value||'').toLowerCase().trim();
-        const side=(document.getElementById('fSide')?.value||'all');
-
-        const levMin=parseFloatInput('fLevMin'),levMax=parseFloatInput('fLevMax');
-        const posMin=parseFloatInput('fPosMin'),posMax=parseFloatInput('fPosMax');
-        const sizeMin=parseFloatInput('fSize');
-        const entryMin=parseFloatInput('fEntryMin'),entryMax=parseFloatInput('fEntryMax');
-        const markMin=parseFloatInput('fMarkMin'),markMax=parseFloatInput('fMarkMax');
-        const pnlMin=parseFloatInput('fPnlMin'),pnlMax=parseFloatInput('fPnlMax');
-        const ageMin=parseFloatInput('fAge');
-        const liqText=(document.getElementById('fLiq')?.value||'').toLowerCase().trim();
-
-        return state.positions.filter(p=>{
-            if(token && !p.coin.toLowerCase().includes(token)) return false;
-            if(addr && !p.address.toLowerCase().includes(addr)) return false;
-            if(side!=='all' && p.side!==side) return false;
-
-            if(levMin!==null && p.leverage<levMin) return false;
-            if(levMax!==null && p.leverage>levMax) return false;
-
-            if(posMin!==null && p.positionValue<posMin) return false;
-            if(posMax!==null && p.positionValue>posMax) return false;
-
-            if(sizeMin!==null && p.szi<sizeMin) return false;
-
-            if(entryMin!==null && p.entryPx<entryMin) return false;
-            if(entryMax!==null && p.entryPx>entryMax) return false;
-
-            const mark=p.entryPx+(p.unrealizedPnl/p.szi);
-            if(markMin!==null && mark<markMin) return false;
-            if(markMax!==null && mark>markMax) return false;
-
-            if(pnlMin!==null && p.unrealizedPnl<pnlMin) return false;
-            if(pnlMax!==null && p.unrealizedPnl>pnlMax) return false;
-
-            const age=getAgeDays(p.openedAt);
-            if(ageMin!==null && (age===null||age<ageMin)) return false;
-
-            if(liqText){
-                const liqStr=p.liquidationPx>0?formatPrice(p.liquidationPx).toLowerCase():'n/a';
-                if(!liqStr.includes(liqText)) return false;
-            }
-            return true;
+    el.querySelectorAll('.cb').forEach(cb=>{
+        cb.addEventListener('change',e=>{
+            const addr=e.target.dataset.addr;
+            if(e.target.checked)state.selectedWallets.add(addr);
+            else state.selectedWallets.delete(addr);
         });
-    }
+    });
+}
 
-    function updateDetailTable(){
-        const tbody=document.getElementById('detailTableBody');
-        if(!state.positions.length){
-            tbody.innerHTML=`<tr>
-                <td colspan="12" style="text-align:center;padding:40px;color:#6b7280;">
-                    <div style="font-size:32px;margin-bottom:12px;">🔍</div>
-                    <div style="font-size:14px;font-weight:700;margin-bottom:6px;">No Positions Found</div>
-                    <div style="font-size:12px;">Add wallet addresses to view positions</div>
-                </td>
-            </tr>`;
-            return;
+function importWallets(){
+    if(!state.selectedWallets.size){alert('Select wallets');return;}
+
+    let added=0;
+    state.selectedWallets.forEach(addr=>{
+        if(!state.addresses.includes(addr)){
+            state.addresses.push(addr);
+            added++;
         }
-        const arr=getFilteredPositions();
-        if(!arr.length){
-            tbody.innerHTML=`<tr>
-                <td colspan="12" style="text-align:center;padding:40px;color:#6b7280;">
-                    <div style="font-size:32px;margin-bottom:12px;">🧹</div>
-                    <div style="font-size:14px;font-weight:700;margin-bottom:6px;">No Results</div>
-                    <div style="font-size:12px;">Try adjusting your filters</div>
-                </td>
-            </tr>`;
-            return;
-        }
-        tbody.innerHTML=arr.map(p=>{
-            const pnlClass=p.unrealizedPnl>=0?'pnl-positive':'pnl-negative';
-            const roe=p.returnOnEquity*100;
-            const mark=p.entryPx+(p.unrealizedPnl/p.szi);
-            const age=getAgeDays(p.openedAt);
-            const ageText=age===null?'–':age.toFixed(1);
-            return `
-                <tr>
-                    <td class="token-cell">${p.coin}</td>
-                    <td style="font-family:monospace;font-size:11px;">${p.address.substring(0,6)}...${p.address.substring(p.address.length-4)}</td>
-                    <td><span class="side-badge side-${p.side}">${p.side.toUpperCase()}</span></td>
-                    <td style="color:#9ca3af;font-size:11px;">${p.leverage.toFixed(2)}x</td>
-                    <td style="font-weight:700;">${formatCurrency(p.positionValue)}</td>
-                    <td>${formatNumber(p.szi)}</td>
-                    <td>${formatPrice(p.entryPx)}</td>
-                    <td>${formatPrice(mark)}</td>
-                    <td class="${pnlClass}">${p.unrealizedPnl>=0?'+':''}${formatCurrency(p.unrealizedPnl)}</td>
-                    <td class="${pnlClass}">${roe>=0?'+':''}${roe.toFixed(2)}%</td>
-                    <td class="age-cell">${ageText}</td>
-                    <td>${p.liquidationPx>0?formatPrice(p.liquidationPx):'N/A'}</td>
-                </tr>
-            `;
-        }).join('');
-    }
+    });
 
-    function updateStatus(status){
-        const badge=document.getElementById('statusBadge');
-        if(status==='Connected'){badge.textContent='Connected';badge.className='status-badge status-connected';}
-        else if(status==='Loading...'||status==='Searching...'){badge.textContent=status;badge.className='status-badge status-disconnected';}
-        else if(status==='Error'){badge.textContent='Error';badge.className='status-badge status-disconnected';}
-        else{badge.textContent='Ready';badge.className='status-badge status-disconnected';}
-    }
-
-    function updateLastUpdateTime(){
-        const now=new Date();
-        document.getElementById('lastUpdate').textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    }
-
-    function showLoading(show,text='Loading...'){
-        const overlay=document.getElementById('loadingOverlay');
-        const loadingText=document.getElementById('loadingText');
-        loadingText.textContent=text;
-        overlay.classList.toggle('active',!!show);
-    }
-
-    function initViewToggle(){
-        const btns=document.querySelectorAll('.view-btn');
-        const heat=document.getElementById('heatmapView');
-        const list=document.getElementById('listView');
-        btns.forEach(b=>{
-            b.addEventListener('click',()=>{
-                const v=b.dataset.view;
-                btns.forEach(x=>x.classList.remove('active'));
-                b.classList.add('active');
-                if(v==='heatmap'){heat.classList.add('active');list.classList.remove('active');}
-                else{heat.classList.remove('active');list.classList.add('active');}
-            });
-        });
-    }
-
-    function initFilters(){
-        const els=document.querySelectorAll('.filter-input,.filter-select');
-        els.forEach(el=>{
-            el.addEventListener('input',updateDetailTable);
-            el.addEventListener('change',updateDetailTable);
-        });
-    }
-
-    function clearAll(){
-        state.addresses=[];
-        state.positions=[];
-        state.aggregatedData={};
+    if(added>0){
+        renderAddrs();
+        saveCfg();
+        alert(`✅ Imported ${added} wallet(s)!`);
+        
         state.searchResults=[];
         state.selectedWallets.clear();
-        saveConfig();
-        renderAddressList();
-        renderSearchResults();
-        updateDashboard();
-        updateStatus('Ready');
-        document.getElementById('lastUpdate').textContent='Never';
-        document.getElementById('coinSearchInput').value='';
+        $('coinInput').value='';
+        renderSearch();
+    }else{
+        alert('All selected already exist');
     }
+}
 
-    function exportCSV(){
-        if(!state.positions.length){alert('No positions to export');return;}
-        const rows=getFilteredPositions();
-        if(!rows.length){alert('No rows match current filters');return;}
-        const header=['token','address','side','leverage','positionValue','size','entryPrice','markPrice','unrealizedPnl','roePercent','ageDays','liquidationPx'];
-        const csv=[header.join(',')];
-        rows.forEach(p=>{
-            const mark=p.entryPx+(p.unrealizedPnl/p.szi);
-            const age=getAgeDays(p.openedAt);
-            const roe=p.returnOnEquity*100;
-            const line=[
-                p.coin,
-                p.address,
-                p.side,
-                p.leverage.toFixed(2),
-                p.positionValue,
-                p.szi,
-                p.entryPx,
-                mark,
-                p.unrealizedPnl,
-                roe,
-                age===null?'':age.toFixed(4),
-                p.liquidationPx
-            ].map(v=>String(v).replace(/"/g,'""'));
-            csv.push('"'+line.join('","')+'"');
-        });
-        const blob=new Blob([csv.join('\n')],{type:'text/csv;charset=utf-8;'});
-        const url=URL.createObjectURL(blob);
-        const a=document.createElement('a');
-        a.href=url;a.download='hyperliquid_positions.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
-    }
-
-    function initAutoRefresh(){
-        const sel=document.getElementById('autoRefreshSelect');
-        sel.addEventListener('change',()=>{
-            if(state.autoRefreshTimer){clearInterval(state.autoRefreshTimer);state.autoRefreshTimer=null;}
-            const sec=parseInt(sel.value,10);
-            if(sec>0){
-                state.autoRefreshTimer=setInterval(()=>fetchAllPositions(true),sec*1000);
+async function loadPos(auto=false){
+    if(!state.addresses.length){if(!auto)alert('Add addresses');return;}
+    showLoad(true,'Loading...');
+    setStatus('Loading...');
+    try{
+        const all=[];
+        for(const addr of state.addresses){
+            const data=await fetchUser(addr);
+            if(data&&data.assetPositions){
+                data.assetPositions.forEach(pos=>{
+                    const p=pos.position;
+                    const szi=parseFloat(p.szi);
+                    if(szi===0)return;
+                    const entryPx=parseFloat(p.entryPx);
+                    const posVal=Math.abs(szi)*entryPx;
+                    const pnl=parseFloat(p.unrealizedPnl);
+                    const lev=parseFloat(p.leverage.value);
+                    const liqPx=parseFloat(p.liquidationPx||0);
+                    const openMs=Number(p.lastUpdateTime||p.time||p.timestamp||0);
+                    all.push({
+                        address:addr,
+                        coin:pos.coin||p.coin,
+                        side:szi>0?'long':'short',
+                        szi:Math.abs(szi),
+                        entryPx,
+                        positionValue:posVal,
+                        unrealizedPnl:pnl,
+                        returnOnEquity:parseFloat(p.returnOnEquity),
+                        leverage:lev,
+                        liquidationPx:liqPx,
+                        marginUsed:parseFloat(p.marginUsed),
+                        openedAt:openMs
+                    });
+                });
             }
-        });
+        }
+        state.positions=all;
+        aggregate();
+        updateUI();
+        updateTime();
+        setStatus('Connected');
+    }catch(e){
+        console.error(e);
+        if(!auto)alert('Load error: '+e.message);
+        setStatus('Error');
+    }finally{
+        showLoad(false);
     }
+}
 
-    // Event Listeners
-    document.getElementById('addAddressBtn').addEventListener('click',addAddress);
-    document.getElementById('loadBtn').addEventListener('click',()=>fetchAllPositions(false));
-    document.getElementById('refreshBtn').addEventListener('click',()=>fetchAllPositions(false));
-    document.getElementById('clearBtn').addEventListener('click',clearAll);
-    document.getElementById('exportBtn').addEventListener('click',exportCSV);
-    document.getElementById('searchWalletsBtn').addEventListener('click',searchWalletsByCoin);
-    document.getElementById('importSelectedBtn').addEventListener('click',importSelectedWallets);
-    
-    document.getElementById('addressInput').addEventListener('keydown',e=>{
-        if(e.key==='Enter' && (e.ctrlKey||e.metaKey)){e.preventDefault();addAddress();}
+function aggregate(){
+    const agg={};
+    state.positions.forEach(pos=>{
+        if(!agg[pos.coin]){
+            agg[pos.coin]={coin:pos.coin,longValue:0,shortValue:0,totalValue:0,pnl:0,positions:[]};
+        }
+        const a=agg[pos.coin];
+        if(pos.side==='long')a.longValue+=pos.positionValue;
+        else a.shortValue+=pos.positionValue;
+        a.totalValue+=pos.positionValue;
+        a.pnl+=pos.unrealizedPnl;
+        a.positions.push(pos);
     });
+    state.aggregatedData=agg;
+}
 
-    document.getElementById('coinSearchInput').addEventListener('keydown',e=>{
-        if(e.key==='Enter'){e.preventDefault();searchWalletsByCoin();}
+function updateUI(){
+    updateStats();
+    updateBar();
+    updateHeat();
+    updateList();
+    updateTable();
+}
+
+    function updateStats(){
+    let longTot=0,shortTot=0,netPnl=0,profit=0,loss=0;
+    state.positions.forEach(p=>{
+        if(p.side==='long')longTot+=p.positionValue;
+        else shortTot+=p.positionValue;
+        netPnl+=p.unrealizedPnl;
+        if(p.unrealizedPnl>0)profit++;
+        else if(p.unrealizedPnl<0)loss++;
     });
+    $('longPos').textContent=fmt$(longTot);
+    $('shortPos').textContent=fmt$(shortTot);
+    $('totalPos').textContent=state.positions.length;
+    const pnlEl=$('netPnl');
+    pnlEl.textContent=fmt$(netPnl);
+    pnlEl.className='card-value '+(netPnl>=0?'long':'short');
+    $('profitCnt').textContent=profit;
+    $('lossCnt').textContent=loss;
+}
 
-    document.addEventListener('DOMContentLoaded',()=>{
-        loadConfig();
-        initViewToggle();
-        initFilters();
-        initAutoRefresh();
-        console.log('🐋 Hyperliquid Dashboard ready with Coin Wallet Finder!');
+function updateBar(){
+    let longTot=0,shortTot=0;
+    state.positions.forEach(p=>{
+        if(p.side==='long')longTot+=p.positionValue;
+        else shortTot+=p.positionValue;
     });
+    const tot=longTot+shortTot;
+    const longPct=tot>0?(longTot/tot)*100:50;
+    const shortPct=100-longPct;
+    $('longVal').textContent=fmt$(longTot);
+    $('shortVal').textContent=fmt$(shortTot);
+    const bl=$('barL'),bs=$('barS');
+    bl.style.width=longPct+'%';
+    bs.style.width=shortPct+'%';
+    bl.textContent=longPct.toFixed(1)+'%';
+    bs.textContent=shortPct.toFixed(1)+'%';
+}
 
-    window.removeAddress=removeAddress;
+function updateHeat(){
+    const el=$('heatGrid');
+    if(!Object.keys(state.aggregatedData).length){
+        el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">No Data</div></div>';
+        return;
+    }
+    const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
+    el.innerHTML=top.map((a,i)=>{
+        const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
+        const side=a.longValue>=a.shortValue?'long':'short';
+        const bg=getColor(pnlPct);
+        return`
+            <div class="heat-cell" style="background:${bg};">
+                <div class="heat-side">${side.toUpperCase()}</div>
+                <div class="heat-token">${a.coin}</div>
+                <div class="heat-value">${fmt$(a.totalValue)}</div>
+                <div class="heat-value" style="margin-top:3px;">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function updateList(){
+    const el=$('listGrid');
+    if(!Object.keys(state.aggregatedData).length){
+        el.innerHTML='<div class="empty"><div class="empty-icon">📝</div><div class="empty-title">No Data</div></div>';
+        return;
+    }
+    const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
+    el.innerHTML=top.map(a=>{
+        const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
+        const pnlCls=a.pnl>=0?'long':'short';
+        const dom=a.longValue>=a.shortValue?'Long':'Short';
+        const sideCls=dom==='Long'?'side-long':'side-short';
+        return`
+            <div class="list-item">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div class="list-token">${a.coin}</div>
+                    <span class="side-badge ${sideCls}">${dom}</span>
+                </div>
+                <div class="list-row">
+                    <div>
+                        <div class="list-label">Value</div>
+                        <div class="list-value">${fmt$(a.totalValue)}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="list-label">PnL</div>
+                        <div class="list-value ${pnlCls}">${a.pnl>=0?'+':''}${fmt$(a.pnl)}</div>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <div>
+                        <div class="list-label">Long</div>
+                        <div class="list-value long" style="font-size:9px;">${fmt$(a.longValue)}</div>
+                    </div>
+                    <div>
+                        <div class="list-label">Short</div>
+                        <div class="list-value short" style="font-size:9px;">${fmt$(a.shortValue)}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="list-label">ROE</div>
+                        <div class="list-value ${pnlCls}" style="font-size:9px;">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function updateTable(){
+    const tbody=$('tableBody');
+    if(!state.positions.length){
+        tbody.innerHTML=`<tr>
+            <td colspan="10" style="text-align:center;padding:30px;color:#666;">
+                <div style="font-size:24px;margin-bottom:8px;">🔍</div>
+                <div style="font-weight:700;margin-bottom:4px;">No Positions</div>
+            </td>
+        </tr>`;
+        return;
+    }
+    tbody.innerHTML=state.positions.map(p=>{
+        const pnlCls=p.unrealizedPnl>=0?'long':'short';
+        const roe=p.returnOnEquity*100;
+        const mark=p.entryPx+(p.unrealizedPnl/p.szi);
+        return`
+            <tr>
+                <td class="token-cell">${p.coin}</td>
+                <td style="font-family:monospace;font-size:9px;">${p.address.substring(0,6)}...${p.address.substring(p.address.length-4)}</td>
+                <td><span class="side-badge side-${p.side}">${p.side.toUpperCase()}</span></td>
+                <td style="color:#888;">${p.leverage.toFixed(1)}x</td>
+                <td style="font-weight:700;">${fmt$(p.positionValue)}</td>
+                <td>${fmtN(p.szi)}</td>
+                <td>${fmtP(p.entryPx)}</td>
+                <td>${fmtP(mark)}</td>
+                <td class="${pnlCls}">${p.unrealizedPnl>=0?'+':''}${fmt$(p.unrealizedPnl)}</td>
+                <td class="${pnlCls}">${roe>=0?'+':''}${roe.toFixed(2)}%</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function setStatus(s){
+    const el=$('status');
+    if(s==='Connected'){el.textContent='OK';el.className='badge badge-ok';}
+    else if(s==='Loading...'||s==='Searching...'){el.textContent=s;el.className='badge badge-err';}
+    else if(s==='Error'){el.textContent='ERR';el.className='badge badge-err';}
+    else{el.textContent='Ready';el.className='badge badge-err';}
+}
+
+function updateTime(){
+    const now=new Date();
+    $('lastUpdate').textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+
+function showLoad(show,txt='Loading...'){
+    const el=$('loading');
+    const txtEl=$('loadingText');
+    txtEl.textContent=txt;
+    if(show)el.classList.add('active');
+    else el.classList.remove('active');
+}
+
+function clearAll(){
+    state.addresses=[];
+    state.positions=[];
+    state.aggregatedData={};
+    state.searchResults=[];
+    state.selectedWallets.clear();
+    saveCfg();
+    renderAddrs();
+    renderSearch();
+    updateUI();
+    setStatus('Ready');
+    $('lastUpdate').textContent='Never';
+    $('coinInput').value='';
+}
+
+function exportCSV(){
+    if(!state.positions.length){alert('No positions');return;}
+    const header=['token','address','side','leverage','positionValue','size','entryPrice','markPrice','unrealizedPnl','roePercent'];
+    const csv=[header.join(',')];
+    state.positions.forEach(p=>{
+        const mark=p.entryPx+(p.unrealizedPnl/p.szi);
+        const roe=p.returnOnEquity*100;
+        const line=[
+            p.coin,
+            p.address,
+            p.side,
+            p.leverage.toFixed(2),
+            p.positionValue,
+            p.szi,
+            p.entryPx,
+            mark,
+            p.unrealizedPnl,
+            roe
+        ].map(v=>String(v).replace(/"/g,'""'));
+        csv.push('"'+line.join('","')+'"');
+    });
+    const blob=new Blob([csv.join('\n')],{type:'text/csv;charset=utf-8;'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='hl_positions.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function $(id){return document.getElementById(id);}
+
+// Event Listeners
+$('addBtn').addEventListener('click',addAddr);
+$('loadBtn').addEventListener('click',()=>loadPos(false));
+$('refreshBtn').addEventListener('click',()=>loadPos(false));
+$('clearBtn').addEventListener('click',clearAll);
+$('exportBtn').addEventListener('click',exportCSV);
+$('searchBtn').addEventListener('click',searchCoin);
+$('importBtn').addEventListener('click',importWallets);
+
+$('addrInput').addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){
+        e.preventDefault();
+        addAddr();
+    }
+});
+
+$('coinInput').addEventListener('keydown',e=>{
+    if(e.key==='Enter'){
+        e.preventDefault();
+        searchCoin();
+    }
+});
+
+window.rmAddr=rmAddr;
+
+// Init
+document.addEventListener('DOMContentLoaded',()=>{
+    loadCfg();
+    console.log('🐋 HL Dashboard ready');
+});
 </script>
 </body>
 </html>
