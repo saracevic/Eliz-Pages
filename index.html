@@ -56,7 +56,8 @@
         .list-section{background:#111;border:1px solid #222;border-radius:6px;padding:10px;}
         .list-cols{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
         .list-item{background:#0a0a0a;border:1px solid #222;border-radius:4px;padding:8px;margin-bottom:6px;}
-        .list-token{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;}
+        .list-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+        .list-token{font-size:13px;font-weight:700;color:#fff;}
         .list-row{display:flex;justify-content:space-between;margin-top:4px;font-size:10px;}
         .list-label{color:#666;font-size:9px;}
         .list-value{color:#fff;font-weight:700;}
@@ -69,13 +70,16 @@
         .heat-side{position:absolute;top:4px;right:4px;font-size:8px;padding:2px 4px;border-radius:2px;background:rgba(0,0,0,.6);font-weight:700;color:#fff;}
         
         table{width:100%;border-collapse:collapse;font-size:10px;}
-        th{padding:6px;text-align:left;background:#0a0a0a;color:#666;font-size:9px;border-bottom:1px solid #222;}
+        th{padding:6px;text-align:left;background:#0a0a0a;color:#666;font-size:9px;border-bottom:1px solid #222;cursor:pointer;user-select:none;position:relative;}
+        th:hover{background:#151515;}
+        th.sortable::after{content:'⇅';margin-left:4px;color:#444;font-size:8px;}
+        th.sorted-asc::after{content:'↑';color:#10b981;}
+        th.sorted-desc::after{content:'↓';color:#ef4444;}
         td{padding:6px;border-bottom:1px solid #111;color:#ddd;}
         .token-cell{font-weight:700;color:#fff;}
         .side-badge{padding:2px 6px;border-radius:2px;font-size:9px;font-weight:700;}
         .side-long{background:rgba(16,185,129,.2);color:#10b981;}
         .side-short{background:rgba(239,68,68,.2);color:#ef4444;}
-        .filter-input{background:#000;border:1px solid #333;border-radius:3px;padding:4px;font-size:9px;color:#fff;width:100%;}
         .loading{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:10px;}
         .loading.active{display:flex;}
         .spinner{width:40px;height:40px;border:3px solid #222;border-top-color:#3b82f6;border-radius:50%;animation:spin .8s linear infinite;}
@@ -215,28 +219,16 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Token</th>
-                        <th>Address</th>
-                        <th>Side</th>
-                        <th>Lev</th>
-                        <th>Value</th>
-                        <th>Size</th>
-                        <th>Entry</th>
-                        <th>Mark</th>
-                        <th>PnL</th>
-                        <th>ROE%</th>
-                    </tr>
-                    <tr>
-                        <th><input type="text" id="fToken" class="filter-input" placeholder="Filter"></th>
-                        <th><input type="text" id="fAddr" class="filter-input" placeholder="Filter"></th>
-                        <th><input type="text" id="fSide" class="filter-input" placeholder="long/short"></th>
-                        <th><input type="text" id="fLev" class="filter-input" placeholder="Filter"></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
+                        <th class="sortable" data-col="coin">Token</th>
+                        <th class="sortable" data-col="address">Address</th>
+                        <th class="sortable" data-col="side">Side</th>
+                        <th class="sortable" data-col="leverage">Lev</th>
+                        <th class="sortable" data-col="positionValue">Value</th>
+                        <th class="sortable" data-col="szi">Size</th>
+                        <th class="sortable" data-col="entryPx">Entry</th>
+                        <th class="sortable" data-col="markPrice">Mark</th>
+                        <th class="sortable" data-col="unrealizedPnl">PnL</th>
+                        <th class="sortable" data-col="returnOnEquity">ROE%</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -253,11 +245,11 @@
 </div>
 
 <script>
-const state={addresses:[],positions:[],aggregatedData:{},searchResults:[],selectedWallets:new Set(),filters:{token:'',addr:'',side:'',lev:''}};
+const state={addresses:[],positions:[],aggregatedData:{},searchResults:[],selectedWallets:new Set(),sortCol:null,sortDir:'asc'};
 const API='https://api.hyperliquid.xyz/info';
 const LB_API='https://stats-data.hyperliquid.xyz/Mainnet/leaderboard';
 
-function loadCfg(){
+    function loadCfg(){
     const s=localStorage.getItem('hl_addrs');
     if(s){state.addresses=JSON.parse(s);renderAddrs();}
 }
@@ -282,7 +274,30 @@ function fmtP(p){
     if(p>=0.01)return'$'+p.toFixed(4);
     return'$'+p.toFixed(6);
 }
-function getColor(pnl){
+function getColor(pnl,side){
+    if(side){
+        // Heatmap için: Long = koyu yeşil, Short = koyu kırmızı
+        if(side==='long'){
+            if(pnl>20)return'rgba(16,185,129,0.95)';
+            if(pnl>10)return'rgba(16,185,129,0.85)';
+            if(pnl>5)return'rgba(16,185,129,0.75)';
+            if(pnl>=0)return'rgba(16,185,129,0.65)';
+            const a=Math.abs(pnl);
+            if(a>20)return'rgba(239,68,68,0.5)';
+            if(a>10)return'rgba(239,68,68,0.4)';
+            return'rgba(239,68,68,0.3)';
+        }else{
+            if(pnl>20)return'rgba(16,185,129,0.5)';
+            if(pnl>10)return'rgba(16,185,129,0.4)';
+            if(pnl>=0)return'rgba(16,185,129,0.3)';
+            const a=Math.abs(pnl);
+            if(a>20)return'rgba(239,68,68,0.95)';
+            if(a>10)return'rgba(239,68,68,0.85)';
+            if(a>5)return'rgba(239,68,68,0.75)';
+            return'rgba(239,68,68,0.65)';
+        }
+    }
+    // Diğer kullanımlar için eski sistem
     if(pnl>=0){
         if(pnl>20)return'rgba(16,185,129,0.9)';
         if(pnl>10)return'rgba(16,185,129,0.7)';
@@ -333,7 +348,7 @@ function rmAddr(addr){
     saveCfg();
 }
 
-    async function fetchUser(addr){
+async function fetchUser(addr){
     try{
         const res=await fetch(API,{
             method:'POST',
@@ -655,7 +670,7 @@ function updateList(){
         const sideCls=dom==='Long'?'side-long':'side-short';
         return`
             <div class="list-item">
-                <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div class="list-header">
                     <div class="list-token">${a.coin}</div>
                     <span class="side-badge ${sideCls}">${dom}</span>
                 </div>
@@ -703,7 +718,7 @@ function updateHeat(){
     el.innerHTML=top.map(a=>{
         const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
         const side=a.longValue>=a.shortValue?'long':'short';
-        const bg=getColor(pnlPct);
+        const bg=getColor(pnlPct,side);
         return`
             <div class="heat-cell" style="background:${bg};">
                 <div class="heat-side">${side.toUpperCase()}</div>
@@ -715,21 +730,51 @@ function updateHeat(){
     }).join('');
 }
 
-function getFilteredPos(){
-    return state.positions.filter(p=>{
-        if(state.filters.token&&!p.coin.toLowerCase().includes(state.filters.token.toLowerCase()))return false;
-        if(state.filters.addr&&!p.address.toLowerCase().includes(state.filters.addr.toLowerCase()))return false;
-        if(state.filters.side&&p.side!==state.filters.side.toLowerCase())return false;
-        if(state.filters.lev){
-            const lev=parseFloat(state.filters.lev);
-            if(!isNaN(lev)&&Math.abs(p.leverage-lev)>0.5)return false;
-        }
-        return true;
-    });
+function sortTable(col){
+    if(state.sortCol===col){
+        state.sortDir=state.sortDir==='asc'?'desc':'asc';
+    }else{
+        state.sortCol=col;
+        state.sortDir='asc';
+    }
+    updateTable();
+}
+
+function getSortedPositions(){
+    let sorted=[...state.positions];
+    if(state.sortCol){
+        sorted.sort((a,b)=>{
+            let aVal=a[state.sortCol];
+            let bVal=b[state.sortCol];
+            
+            if(state.sortCol==='markPrice'){
+                aVal=a.entryPx+(a.unrealizedPnl/a.szi);
+                bVal=b.entryPx+(b.unrealizedPnl/b.szi);
+            }
+            
+            if(typeof aVal==='string'){
+                aVal=aVal.toLowerCase();
+                bVal=bVal.toLowerCase();
+            }
+            
+            if(aVal<bVal)return state.sortDir==='asc'?-1:1;
+            if(aVal>bVal)return state.sortDir==='asc'?1:-1;
+            return 0;
+        });
+    }
+    return sorted;
 }
 
 function updateTable(){
     const tbody=$('tableBody');
+    
+    document.querySelectorAll('th.sortable').forEach(th=>{
+        th.className='sortable';
+        if(th.dataset.col===state.sortCol){
+            th.classList.add(state.sortDir==='asc'?'sorted-asc':'sorted-desc');
+        }
+    });
+    
     if(!state.positions.length){
         tbody.innerHTML=`<tr>
             <td colspan="10" style="text-align:center;padding:30px;color:#666;">
@@ -739,17 +784,10 @@ function updateTable(){
         </tr>`;
         return;
     }
-    const filtered=getFilteredPos();
-    if(!filtered.length){
-        tbody.innerHTML=`<tr>
-            <td colspan="10" style="text-align:center;padding:30px;color:#666;">
-                <div style="font-size:24px;margin-bottom:8px;">🧹</div>
-                <div style="font-weight:700;margin-bottom:4px;">No Results</div>
-            </td>
-        </tr>`;
-        return;
-    }
-    tbody.innerHTML=filtered.map(p=>{
+    
+    const sorted=getSortedPositions();
+    
+    tbody.innerHTML=sorted.map(p=>{
         const pnlCls=p.unrealizedPnl>=0?'long':'short';
         const roe=p.returnOnEquity*100;
         const mark=p.entryPx+(p.unrealizedPnl/p.szi);
@@ -797,6 +835,8 @@ function clearAll(){
     state.aggregatedData={};
     state.searchResults=[];
     state.selectedWallets.clear();
+    state.sortCol=null;
+    state.sortDir='asc';
     saveCfg();
     renderAddrs();
     renderSearch();
@@ -808,11 +848,10 @@ function clearAll(){
 
 function exportCSV(){
     if(!state.positions.length){alert('No positions');return;}
-    const filtered=getFilteredPos();
-    if(!filtered.length){alert('No filtered results');return;}
+    const sorted=getSortedPositions();
     const header=['token','address','side','leverage','positionValue','size','entryPrice','markPrice','unrealizedPnl','roePercent'];
     const csv=[header.join(',')];
-    filtered.forEach(p=>{
+    sorted.forEach(p=>{
         const mark=p.entryPx+(p.unrealizedPnl/p.szi);
         const roe=p.returnOnEquity*100;
         const line=[
@@ -866,10 +905,11 @@ $('coinInput').addEventListener('keydown',e=>{
     }
 });
 
-$('fToken').addEventListener('input',e=>{state.filters.token=e.target.value;updateTable();});
-$('fAddr').addEventListener('input',e=>{state.filters.addr=e.target.value;updateTable();});
-$('fSide').addEventListener('input',e=>{state.filters.side=e.target.value;updateTable();});
-$('fLev').addEventListener('input',e=>{state.filters.lev=e.target.value;updateTable();});
+document.querySelectorAll('th.sortable').forEach(th=>{
+    th.addEventListener('click',()=>{
+        sortTable(th.dataset.col);
+    });
+});
 
 window.rmAddr=rmAddr;
 
@@ -880,5 +920,3 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 </body>
 </html>
-
-    
