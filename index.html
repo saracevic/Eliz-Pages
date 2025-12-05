@@ -375,7 +375,7 @@ async function searchCoin(){
 
         const results=[];
         let scanned=0;
-        const total=Math.min(lb.length,300);
+        const total=Math.min(lb.length,600);
 
         for(const row of lb.slice(0,total)){
             scanned++;
@@ -417,7 +417,7 @@ async function searchCoin(){
             }
 
             if(scanned%10===0){
-                await new Promise(r=>setTimeout(r,50));
+                await new Promise(r=>setTimeout(r,20));
             }
         }
 
