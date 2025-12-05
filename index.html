@@ -249,7 +249,7 @@ const state={addresses:[],positions:[],aggregatedData:{},searchResults:[],select
 const API='https://api.hyperliquid.xyz/info';
 const LB_API='https://stats-data.hyperliquid.xyz/Mainnet/leaderboard';
 
-    function loadCfg(){
+function loadCfg(){
     const s=localStorage.getItem('hl_addrs');
     if(s){state.addresses=JSON.parse(s);renderAddrs();}
 }
