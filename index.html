@@ -379,7 +379,7 @@ async function searchCoin(){
 
         for(const row of lb.slice(0,total)){
             scanned++;
-            if(scanned%10===0){
+            if(scanned%20===0){
                 $('loadingText').textContent=`Scanning ${scanned}/${total}...`;
             }
 
