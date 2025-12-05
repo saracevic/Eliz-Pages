@@ -39,7 +39,6 @@
         .result-addr{font-family:monospace;color:#3b82f6;font-size:9px;}
         .result-details{color:#888;margin-top:3px;}
         .cb{width:16px;height:16px;}
-        .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
         .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
         .card{background:#111;border:1px solid #222;border-radius:4px;padding:8px;}
         .card-label{font-size:9px;color:#666;margin-bottom:4px;text-transform:uppercase;}
@@ -52,17 +51,23 @@
         .bar-long,.bar-short{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;}
         .bar-long{background:#10b981;}
         .bar-short{background:#ef4444;}
-        .heat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;min-height:200px;}
-        .heat-cell{position:relative;border-radius:3px;padding:8px;display:flex;flex-direction:column;justify-content:center;align-items:center;}
-        .heat-token{font-size:12px;font-weight:700;color:#fff;margin-bottom:3px;}
-        .heat-value{font-size:9px;font-weight:600;color:#fff;}
-        .heat-side{position:absolute;top:3px;right:3px;font-size:8px;padding:2px 4px;border-radius:2px;background:rgba(0,0,0,.5);font-weight:700;}
-        .list-grid{display:grid;grid-template-columns:1fr;gap:8px;}
-        .list-item{background:#111;border:1px solid #222;border-radius:4px;padding:8px;}
-        .list-token{font-size:14px;font-weight:700;color:#fff;margin-bottom:6px;}
+        
+        .main-grid{display:grid;grid-template-columns:1fr 400px;gap:10px;margin-bottom:8px;}
+        .list-section{background:#111;border:1px solid #222;border-radius:6px;padding:10px;}
+        .list-cols{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+        .list-item{background:#0a0a0a;border:1px solid #222;border-radius:4px;padding:8px;margin-bottom:6px;}
+        .list-token{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;}
         .list-row{display:flex;justify-content:space-between;margin-top:4px;font-size:10px;}
         .list-label{color:#666;font-size:9px;}
         .list-value{color:#fff;font-weight:700;}
+        
+        .heat-section{background:#111;border:1px solid #222;border-radius:6px;padding:10px;}
+        .heat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;}
+        .heat-cell{position:relative;border-radius:4px;padding:10px;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:80px;}
+        .heat-token{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;}
+        .heat-value{font-size:10px;font-weight:600;color:#fff;}
+        .heat-side{position:absolute;top:4px;right:4px;font-size:8px;padding:2px 4px;border-radius:2px;background:rgba(0,0,0,.6);font-weight:700;color:#fff;}
+        
         table{width:100%;border-collapse:collapse;font-size:10px;}
         th{padding:6px;text-align:left;background:#0a0a0a;color:#666;font-size:9px;border-bottom:1px solid #222;}
         td{padding:6px;border-bottom:1px solid #111;color:#ddd;}
@@ -70,6 +75,7 @@
         .side-badge{padding:2px 6px;border-radius:2px;font-size:9px;font-weight:700;}
         .side-long{background:rgba(16,185,129,.2);color:#10b981;}
         .side-short{background:rgba(239,68,68,.2);color:#ef4444;}
+        .filter-input{background:#000;border:1px solid #333;border-radius:3px;padding:4px;font-size:9px;color:#fff;width:100%;}
         .loading{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:10px;}
         .loading.active{display:flex;}
         .spinner{width:40px;height:40px;border:3px solid #222;border-top-color:#3b82f6;border-radius:50%;animation:spin .8s linear infinite;}
@@ -81,7 +87,8 @@
         .hidden{display:none;}
         @media(max-width:768px){
             .grid-4{grid-template-columns:repeat(2,1fr);}
-            .heat-grid{grid-template-columns:repeat(2,1fr);}
+            .main-grid{grid-template-columns:1fr;}
+            .list-cols{grid-template-columns:1fr;}
         }
     </style>
 </head>
@@ -168,27 +175,27 @@
         </div>
     </div>
 
-    <div class="panel">
-        <div class="row" style="margin-bottom:10px;">
-            <div class="title">🔥 TOP 10 POSITIONS</div>
-            <div style="font-size:9px;color:#666;">Updated: <span id="lastUpdate">Never</span></div>
-        </div>
-        <div class="heat-grid" id="heatGrid">
-            <div class="empty">
-                <div class="empty-icon">📊</div>
-                <div class="empty-title">No Data</div>
+    <div class="main-grid">
+        <div class="list-section">
+            <div class="row" style="margin-bottom:10px;">
+                <div class="title">📋 TOP 10 LIST</div>
+                <div style="font-size:9px;color:#666;">Updated: <span id="lastUpdate">Never</span></div>
+            </div>
+            <div class="list-cols" id="listCols">
+                <div class="empty">
+                    <div class="empty-icon">📝</div>
+                    <div class="empty-title">No Data</div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="panel">
-        <div class="row" style="margin-bottom:10px;">
-            <div class="title">📋 LIST VIEW</div>
-        </div>
-        <div class="list-grid" id="listGrid">
-            <div class="empty">
-                <div class="empty-icon">📝</div>
-                <div class="empty-title">No Data</div>
+        <div class="heat-section">
+            <div class="title" style="margin-bottom:10px;">🔥 TOP 10 HEATMAP</div>
+            <div class="heat-grid" id="heatGrid">
+                <div class="empty">
+                    <div class="empty-icon">📊</div>
+                    <div class="empty-title">No Data</div>
+                </div>
             </div>
         </div>
     </div>
@@ -213,6 +220,18 @@
                         <th>PnL</th>
                         <th>ROE%</th>
                     </tr>
+                    <tr>
+                        <th><input type="text" id="fToken" class="filter-input" placeholder="Filter"></th>
+                        <th><input type="text" id="fAddr" class="filter-input" placeholder="Filter"></th>
+                        <th><input type="text" id="fSide" class="filter-input" placeholder="long/short"></th>
+                        <th><input type="text" id="fLev" class="filter-input" placeholder="Filter"></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody id="tableBody">
                     <tr>
@@ -228,7 +247,7 @@
 </div>
 
 <script>
-const state={addresses:[],positions:[],aggregatedData:{},searchResults:[],selectedWallets:new Set()};
+const state={addresses:[],positions:[],aggregatedData:{},searchResults:[],selectedWallets:new Set(),filters:{token:'',addr:'',side:'',lev:''}};
 const API='https://api.hyperliquid.xyz/info';
 const LB_API='https://stats-data.hyperliquid.xyz/Mainnet/leaderboard';
 
@@ -308,7 +327,8 @@ function rmAddr(addr){
     saveCfg();
 }
 
-async function fetchUser(addr){
+
+    async function fetchUser(addr){
     try{
         const res=await fetch(API,{
             method:'POST',
@@ -350,7 +370,7 @@ async function searchCoin(){
 
         const results=[];
         let scanned=0;
-        const total=Math.min(lb.length,300); // Reduced to 300 for speed
+        const total=Math.min(lb.length,300);
 
         for(const row of lb.slice(0,total)){
             scanned++;
@@ -392,7 +412,7 @@ async function searchCoin(){
             }
 
             if(scanned%10===0){
-                await new Promise(r=>setTimeout(r,50)); // Reduced delay
+                await new Promise(r=>setTimeout(r,50));
             }
         }
 
@@ -556,12 +576,12 @@ function aggregate(){
 function updateUI(){
     updateStats();
     updateBar();
-    updateHeat();
     updateList();
+    updateHeat();
     updateTable();
 }
 
-    function updateStats(){
+function updateStats(){
     let longTot=0,shortTot=0,netPnl=0,profit=0,loss=0;
     state.positions.forEach(p=>{
         if(p.side==='long')longTot+=p.positionValue;
@@ -598,36 +618,17 @@ function updateBar(){
     bs.textContent=shortPct.toFixed(1)+'%';
 }
 
-function updateHeat(){
-    const el=$('heatGrid');
-    if(!Object.keys(state.aggregatedData).length){
-        el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">No Data</div></div>';
-        return;
-    }
-    const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
-    el.innerHTML=top.map((a,i)=>{
-        const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
-        const side=a.longValue>=a.shortValue?'long':'short';
-        const bg=getColor(pnlPct);
-        return`
-            <div class="heat-cell" style="background:${bg};">
-                <div class="heat-side">${side.toUpperCase()}</div>
-                <div class="heat-token">${a.coin}</div>
-                <div class="heat-value">${fmt$(a.totalValue)}</div>
-                <div class="heat-value" style="margin-top:3px;">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</div>
-            </div>
-        `;
-    }).join('');
-}
-
 function updateList(){
-    const el=$('listGrid');
+    const el=$('listCols');
     if(!Object.keys(state.aggregatedData).length){
         el.innerHTML='<div class="empty"><div class="empty-icon">📝</div><div class="empty-title">No Data</div></div>';
         return;
     }
     const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
-    el.innerHTML=top.map(a=>{
+    const left=top.slice(0,5);
+    const right=top.slice(5,10);
+    
+    const renderItem=a=>{
         const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
         const pnlCls=a.pnl>=0?'long':'short';
         const dom=a.longValue>=a.shortValue?'Long':'Short';
@@ -664,7 +665,47 @@ function updateList(){
                 </div>
             </div>
         `;
+    };
+    
+    el.innerHTML=`
+        <div>${left.map(renderItem).join('')}</div>
+        <div>${right.map(renderItem).join('')}</div>
+    `;
+}
+
+function updateHeat(){
+    const el=$('heatGrid');
+    if(!Object.keys(state.aggregatedData).length){
+        el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">No Data</div></div>';
+        return;
+    }
+    const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
+    el.innerHTML=top.map(a=>{
+        const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
+        const side=a.longValue>=a.shortValue?'long':'short';
+        const bg=getColor(pnlPct);
+        return`
+            <div class="heat-cell" style="background:${bg};">
+                <div class="heat-side">${side.toUpperCase()}</div>
+                <div class="heat-token">${a.coin}</div>
+                <div class="heat-value">${fmt$(a.totalValue)}</div>
+                <div class="heat-value" style="margin-top:3px;">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</div>
+            </div>
+        `;
     }).join('');
+}
+
+function getFilteredPos(){
+    return state.positions.filter(p=>{
+        if(state.filters.token&&!p.coin.toLowerCase().includes(state.filters.token.toLowerCase()))return false;
+        if(state.filters.addr&&!p.address.toLowerCase().includes(state.filters.addr.toLowerCase()))return false;
+        if(state.filters.side&&p.side!==state.filters.side.toLowerCase())return false;
+        if(state.filters.lev){
+            const lev=parseFloat(state.filters.lev);
+            if(!isNaN(lev)&&Math.abs(p.leverage-lev)>0.5)return false;
+        }
+        return true;
+    });
 }
 
 function updateTable(){
@@ -678,7 +719,17 @@ function updateTable(){
         </tr>`;
         return;
     }
-    tbody.innerHTML=state.positions.map(p=>{
+    const filtered=getFilteredPos();
+    if(!filtered.length){
+        tbody.innerHTML=`<tr>
+            <td colspan="10" style="text-align:center;padding:30px;color:#666;">
+                <div style="font-size:24px;margin-bottom:8px;">🧹</div>
+                <div style="font-weight:700;margin-bottom:4px;">No Results</div>
+            </td>
+        </tr>`;
+        return;
+    }
+    tbody.innerHTML=filtered.map(p=>{
         const pnlCls=p.unrealizedPnl>=0?'long':'short';
         const roe=p.returnOnEquity*100;
         const mark=p.entryPx+(p.unrealizedPnl/p.szi);
@@ -737,9 +788,11 @@ function clearAll(){
 
 function exportCSV(){
     if(!state.positions.length){alert('No positions');return;}
+    const filtered=getFilteredPos();
+    if(!filtered.length){alert('No filtered results');return;}
     const header=['token','address','side','leverage','positionValue','size','entryPrice','markPrice','unrealizedPnl','roePercent'];
     const csv=[header.join(',')];
-    state.positions.forEach(p=>{
+    filtered.forEach(p=>{
         const mark=p.entryPx+(p.unrealizedPnl/p.szi);
         const roe=p.returnOnEquity*100;
         const line=[
@@ -769,7 +822,6 @@ function exportCSV(){
 
 function $(id){return document.getElementById(id);}
 
-// Event Listeners
 $('addBtn').addEventListener('click',addAddr);
 $('loadBtn').addEventListener('click',()=>loadPos(false));
 $('refreshBtn').addEventListener('click',()=>loadPos(false));
@@ -792,9 +844,13 @@ $('coinInput').addEventListener('keydown',e=>{
     }
 });
 
+$('fToken').addEventListener('input',e=>{state.filters.token=e.target.value;updateTable();});
+$('fAddr').addEventListener('input',e=>{state.filters.addr=e.target.value;updateTable();});
+$('fSide').addEventListener('input',e=>{state.filters.side=e.target.value;updateTable();});
+$('fLev').addEventListener('input',e=>{state.filters.lev=e.target.value;updateTable();});
+
 window.rmAddr=rmAddr;
 
-// Init
 document.addEventListener('DOMContentLoaded',()=>{
     loadCfg();
     console.log('🐋 HL Dashboard ready');
