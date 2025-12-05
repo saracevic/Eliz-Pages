@@ -85,6 +85,8 @@
         .empty-icon{font-size:28px;margin-bottom:8px;}
         .empty-title{font-size:13px;font-weight:700;color:#888;margin-bottom:4px;}
         .hidden{display:none;}
+        .select-actions{display:flex;gap:6px;margin-bottom:8px;}
+        .select-actions button{flex:1;padding:5px 10px;font-size:10px;}
         @media(max-width:768px){
             .grid-4{grid-template-columns:repeat(2,1fr);}
             .main-grid{grid-template-columns:1fr;}
@@ -132,6 +134,10 @@
                     <div class="stat-label">Size</div>
                     <div class="stat-value" id="foundSize">$0</div>
                 </div>
+            </div>
+            <div class="select-actions hidden" id="selectActions">
+                <button class="btn btn-secondary" id="selectAllBtn">✓ Select All</button>
+                <button class="btn btn-secondary" id="deselectAllBtn">✗ Deselect All</button>
             </div>
             <div class="results" id="searchResults"></div>
             <button class="btn btn-success hidden" id="importBtn">✅ Import Selected</button>
@@ -327,7 +333,6 @@ function rmAddr(addr){
     saveCfg();
 }
 
-
     async function fetchUser(addr){
     try{
         const res=await fetch(API,{
@@ -432,11 +437,13 @@ function renderSearch(){
     const el=$('searchResults');
     const stats=$('searchStats');
     const btn=$('importBtn');
+    const selectActions=$('selectActions');
 
     if(!state.searchResults.length){
         el.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">No Wallets Found</div></div>';
         stats.classList.add('hidden');
         btn.classList.add('hidden');
+        selectActions.classList.add('hidden');
         return;
     }
 
@@ -453,6 +460,7 @@ function renderSearch(){
     $('foundSize').textContent=fmt$(totalSize);
     stats.classList.remove('hidden');
     btn.classList.remove('hidden');
+    selectActions.classList.remove('hidden');
 
     el.innerHTML=state.searchResults.map(r=>{
         const pnlCls=r.unrealizedPnl>=0?'long':'short';
@@ -480,6 +488,18 @@ function renderSearch(){
             else state.selectedWallets.delete(addr);
         });
     });
+}
+
+function selectAllWallets(){
+    state.searchResults.forEach(r=>{
+        state.selectedWallets.add(r.address);
+    });
+    renderSearch();
+}
+
+function deselectAllWallets(){
+    state.selectedWallets.clear();
+    renderSearch();
 }
 
 function importWallets(){
@@ -829,6 +849,8 @@ $('clearBtn').addEventListener('click',clearAll);
 $('exportBtn').addEventListener('click',exportCSV);
 $('searchBtn').addEventListener('click',searchCoin);
 $('importBtn').addEventListener('click',importWallets);
+$('selectAllBtn').addEventListener('click',selectAllWallets);
+$('deselectAllBtn').addEventListener('click',deselectAllWallets);
 
 $('addrInput').addEventListener('keydown',e=>{
     if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){
@@ -858,3 +880,5 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 </body>
 </html>
+
+    
