@@ -373,13 +373,24 @@ function loadCfg(){
         const cfg=JSON.parse(w);
         $('whaleMinSize').value=cfg.minSize||100000;
         $('whaleInterval').value=cfg.interval||30;
+        $('whaleMinChange').value=cfg.minChange||10;
+        if(cfg.alertNew!==undefined)$('alertNew').checked=cfg.alertNew;
+        if(cfg.alertIncrease!==undefined)$('alertIncrease').checked=cfg.alertIncrease;
+        if(cfg.alertDecrease!==undefined)$('alertDecrease').checked=cfg.alertDecrease;
+        if(cfg.alertClose!==undefined)$('alertClose').checked=cfg.alertClose;
     }
 }
+
 function saveCfg(){
     localStorage.setItem('hl_addrs',JSON.stringify(state.addresses));
     localStorage.setItem('hl_whale_cfg',JSON.stringify({
         minSize:parseInt($('whaleMinSize').value),
-        interval:parseInt($('whaleInterval').value)
+        interval:parseInt($('whaleInterval').value),
+        minChange:parseInt($('whaleMinChange').value),
+        alertNew:$('alertNew').checked,
+        alertIncrease:$('alertIncrease').checked,
+        alertDecrease:$('alertDecrease').checked,
+        alertClose:$('alertClose').checked
     }));
 }
 
@@ -679,10 +690,12 @@ function importWallets(){
     }
 }
 
+
 async function checkWhaleMovements(){
     if(!state.whaleEnabled)return;
     
     const minSize=parseInt($('whaleMinSize').value);
+    const minChange=parseInt($('whaleMinChange').value);
     
     try{
         const lb=await fetchLB();
@@ -698,104 +711,230 @@ async function checkWhaleMovements(){
             for(const pos of data.assetPositions){
                 const p=pos.position;
                 const szi=parseFloat(p.szi);
-                if(szi===0)continue;
+                const coin=pos.coin||p.coin;
+                const key=`${addr}-${coin}`;
+                
+                if(szi===0){
+                    if(state.lastWhaleCheck[key]&&$('alertClose').checked){
+                        const old=state.lastWhaleCheck[key];
+                        addWhaleNotification({
+                            coin,
+                            address:addr,
+                            side:old.side,
+                            size:0,
+                            oldSize:old.posVal,
+                            leverage:0,
+                            type:'close'
+                        });
+                        delete state.lastWhaleCheck[key];
+                    }
+                    continue;
+                }
                 
                 const entryPx=parseFloat(p.entryPx);
                 const posVal=Math.abs(szi)*entryPx;
                 
                 if(posVal>=minSize){
-                    const coin=pos.coin||p.coin;
-                    const key=`${addr}-${coin}`;
+                    const side=szi>0?'long':'short';
+                    const lev=parseFloat(p.leverage.value);
+                    const pnl=parseFloat(p.unrealizedPnl);
+                    const roe=parseFloat(p.returnOnEquity)*100;
                     
                     if(!state.lastWhaleCheck[key]){
-                        state.lastWhaleCheck[key]={
-                            posVal,
-                            szi:Math.abs(szi),
-                            side:szi>0?'long':'short'
-                        };
-                        
-                        addWhaleNotification({
-                            coin,
-                            address:addr,
-                            side:szi>0?'long':'short',
-                            size:posVal,
-                            leverage:parseFloat(p.leverage.value),
-                            type:'new'
-                        });
+                        if($('alertNew').checked){
+                            state.lastWhaleCheck[key]={posVal,szi:Math.abs(szi),side,coin};
+                            addWhaleNotification({
+                                coin,address:addr,side,size:posVal,leverage:lev,type:'new',pnl,roe
+                            });
+                        }
                     }else{
                         const old=state.lastWhaleCheck[key];
-                        const sizeDiff=Math.abs(posVal-old.posVal);
-                        const pctChange=(sizeDiff/old.posVal)*100;
+                        const sizeDiff=posVal-old.posVal;
+                        const pctChange=(Math.abs(sizeDiff)/old.posVal)*100;
                         
-                        if(pctChange>=10){
-                            addWhaleNotification({
-                                coin,
-                                address:addr,
-                                side:szi>0?'long':'short',
-                                size:posVal,
-                                oldSize:old.posVal,
-                                change:pctChange,
-                                type:'change'
-                            });
-                            
-                            state.lastWhaleCheck[key]={
-                                posVal,
-                                szi:Math.abs(szi),
-                                side:szi>0?'long':'short'
-                            };
+                        if(pctChange>=minChange){
+                            if(sizeDiff>0&&$('alertIncrease').checked){
+                                addWhaleNotification({
+                                    coin,address:addr,side,size:posVal,oldSize:old.posVal,
+                                    change:pctChange,type:'increase',leverage:lev,pnl,roe
+                                });
+                            }else if(sizeDiff<0&&$('alertDecrease').checked){
+                                addWhaleNotification({
+                                    coin,address:addr,side,size:posVal,oldSize:old.posVal,
+                                    change:pctChange,type:'decrease',leverage:lev,pnl,roe
+                                });
+                            }
+                            state.lastWhaleCheck[key]={posVal,szi:Math.abs(szi),side,coin};
                         }
                     }
                 }
             }
         }
+        updateWhaleStats();
     }catch(e){
         console.error('Whale check error:',e);
     }
 }
 
+function generateAIAnalysis(data){
+    const {type,coin,side,size,oldSize,change,leverage,pnl,roe}=data;
+    
+    let analysis='';
+    let impact='low';
+    
+    if(type==='new'){
+        impact=size>500000?'high':size>250000?'medium':'low';
+        const sentiment=side==='long'?'bullish':'bearish';
+        analysis=`A whale opened a ${sentiment} position on ${coin}. `;
+        
+        if(leverage>10){
+            analysis+=`High leverage (${leverage.toFixed(1)}x) suggests aggressive confidence. `;
+            impact='high';
+        }else if(leverage<3){
+            analysis+=`Low leverage indicates cautious accumulation. `;
+        }
+        
+        if(size>1000000){
+            analysis+=`This massive ${fmt$(size)} position could significantly impact ${coin} price action. Market may follow this whale's direction.`;
+        }else if(size>500000){
+            analysis+=`This ${fmt$(size)} position is substantial enough to influence short-term momentum.`;
+        }else{
+            analysis+=`Position size ${fmt$(size)} suggests testing waters before larger allocation.`;
+        }
+        
+    }else if(type==='increase'){
+        impact=change>30?'high':change>20?'medium':'low';
+        analysis=`Whale increased ${coin} ${side} position by ${change.toFixed(1)}%. `;
+        
+        if(pnl>0&&roe>10){
+            analysis+=`Already profitable (+${roe.toFixed(1)}% ROE), adding to winner position. Strong bullish signal. `;
+            impact='high';
+        }else if(pnl<0&&roe<-10){
+            analysis+=`Averaging down on losing position (${roe.toFixed(1)}% ROE). Risk: potential capitulation or strong conviction in reversal. `;
+        }
+        
+        if(change>50){
+            analysis+=`Massive ${change.toFixed(0)}% increase signals extreme conviction. Watch for follow-through.`;
+        }else if(change>25){
+            analysis+=`Significant increase. Other whales may follow this move.`;
+        }
+        
+    }else if(type==='decrease'){
+        impact=change>40?'high':change>25?'medium':'low';
+        analysis=`Whale reduced ${coin} ${side} position by ${change.toFixed(1)}%. `;
+        
+        if(pnl>0&&roe>15){
+            analysis+=`Taking profits at +${roe.toFixed(1)}% ROE. Smart money securing gains. `;
+        }else if(pnl<0){
+            analysis+=`Cutting losses at ${roe.toFixed(1)}% ROE. Potential trend reversal signal. `;
+            impact='high';
+        }
+        
+        if(change>50){
+            analysis+=`Major position reduction! This could trigger panic selling if others follow.`;
+        }else{
+            analysis+=`Partial profit-taking or risk management. Monitor for complete exit.`;
+        }
+        
+    }else if(type==='close'){
+        impact='high';
+        const posType=side==='long'?'bullish':'bearish';
+        analysis=`Whale CLOSED entire ${coin} ${side} position (${fmt$(oldSize)}). `;
+        analysis+=`This removes significant ${posType} pressure from market. `;
+        analysis+=`Watch for price reversal or consolidation. Other positions may follow this exit.`;
+    }
+    
+    return{analysis,impact};
+}
+
 function addWhaleNotification(data){
+    const {analysis,impact}=generateAIAnalysis(data);
+    
     const notif={
         ...data,
-        timestamp:Date.now()
+        timestamp:Date.now(),
+        analysis,
+        impact
     };
     
     state.whaleNotifications.unshift(notif);
-    if(state.whaleNotifications.length>20){
-        state.whaleNotifications=state.whaleNotifications.slice(0,20);
+    if(state.whaleNotifications.length>50){
+        state.whaleNotifications=state.whaleNotifications.slice(0,50);
     }
+    
+    const today=new Date().toDateString();
+    const todayAlerts=state.whaleNotifications.filter(n=>new Date(n.timestamp).toDateString()===today);
+    $('whaleAlertsToday').textContent=todayAlerts.length;
     
     renderWhaleNotifications();
     
     if('Notification'in window&&Notification.permission==='granted'){
         new Notification('🐋 Whale Alert!',{
-            body:`${data.coin} ${data.side.toUpperCase()} - ${fmt$(data.size)}`,
+            body:`${data.coin} ${data.side.toUpperCase()} - ${data.type.toUpperCase()} - ${fmt$(data.size)}`,
             icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75">🐋</text></svg>'
         });
     }
 }
 
+function updateWhaleStats(){
+    const tracked=Object.keys(state.lastWhaleCheck).length;
+    $('whaleTrackedCount').textContent=tracked;
+    
+    let totalSize=0,longCnt=0,shortCnt=0;
+    Object.values(state.lastWhaleCheck).forEach(w=>{
+        totalSize+=w.posVal;
+        if(w.side==='long')longCnt++;
+        else shortCnt++;
+    });
+    
+    const avgPos=tracked>0?totalSize/tracked:0;
+    $('whaleAvgPosition').textContent=fmt$(avgPos);
+    
+    if(longCnt>shortCnt){
+        $('whaleSentiment').innerHTML=`<span style="color:#10b981;">BULLISH ${longCnt}/${tracked}</span>`;
+    }else if(shortCnt>longCnt){
+        $('whaleSentiment').innerHTML=`<span style="color:#ef4444;">BEARISH ${shortCnt}/${tracked}</span>`;
+    }else{
+        $('whaleSentiment').innerHTML=`<span style="color:#888;">NEUTRAL ${longCnt}/${shortCnt}</span>`;
+    }
+}
+
 function renderWhaleNotifications(){
     const el=$('whaleNotifications');
+    const filter=document.querySelector('.whale-filter-btn.active')?.dataset.filter||'all';
     
-    if(!state.whaleNotifications.length){
-        el.innerHTML='<div class="empty"><div class="empty-icon">🐋</div><div class="empty-title">No whale alerts yet</div></div>';
+    let filtered=state.whaleNotifications;
+    if(filter!=='all'){
+        filtered=state.whaleNotifications.filter(n=>n.type===filter);
+    }
+    
+    if(!filtered.length){
+        el.innerHTML='<div class="empty"><div class="empty-icon">🐋</div><div class="empty-title">No alerts for this filter</div></div>';
         return;
     }
     
-    el.innerHTML=state.whaleNotifications.map((n,idx)=>{
+    el.innerHTML=filtered.map((n,idx)=>{
         const time=new Date(n.timestamp).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
         const sideCls=n.side==='long'?'long':'short';
-        const isNew=idx===0;
+        const isNew=idx===0&&filter==='all';
         
         let msg='';
         if(n.type==='new'){
-            msg=`New ${n.side.toUpperCase()} position: ${fmt$(n.size)} | ${n.leverage.toFixed(1)}x`;
-        }else{
-            msg=`Position changed ${n.change.toFixed(1)}%: ${fmt$(n.oldSize)} → ${fmt$(n.size)}`;
+            msg=`Opened ${n.side.toUpperCase()}: ${fmt$(n.size)} | ${n.leverage.toFixed(1)}x lev`;
+            if(n.roe)msg+=` | ROE: ${n.roe>=0?'+':''}${n.roe.toFixed(1)}%`;
+        }else if(n.type==='increase'){
+            msg=`Increased ${n.change.toFixed(1)}%: ${fmt$(n.oldSize)} → ${fmt$(n.size)}`;
+            if(n.roe)msg+=` | ROE: ${n.roe>=0?'+':''}${n.roe.toFixed(1)}%`;
+        }else if(n.type==='decrease'){
+            msg=`Decreased ${n.change.toFixed(1)}%: ${fmt$(n.oldSize)} → ${fmt$(n.size)}`;
+            if(n.roe)msg+=` | ROE: ${n.roe>=0?'+':''}${n.roe.toFixed(1)}%`;
+        }else if(n.type==='close'){
+            msg=`CLOSED position: ${fmt$(n.oldSize)} → $0`;
         }
         
         return`
             <div class="whale-notif ${isNew?'whale-notif-new':''}">
+                <span class="whale-notif-type ${n.type}">${n.type.toUpperCase()}</span>
                 <div class="whale-notif-header">
                     <span class="whale-notif-token ${sideCls}">${n.coin} - ${n.side.toUpperCase()}</span>
                     <span class="whale-notif-time">${time}</span>
@@ -804,10 +943,15 @@ function renderWhaleNotifications(){
                     ${n.address.substring(0,8)}...${n.address.substring(n.address.length-6)}
                 </div>
                 <div class="whale-notif-details">${msg}</div>
+                <div class="whale-notif-ai">
+                    <div class="whale-notif-ai-title">🤖 AI Analysis <span class="whale-notif-impact ${n.impact}">${n.impact.toUpperCase()}</span></div>
+                    ${n.analysis}
+                </div>
             </div>
         `;
     }).join('');
 }
+    
 
 function toggleWhaleMonitoring(){
     state.whaleEnabled=!state.whaleEnabled;
@@ -1189,6 +1333,26 @@ $('selectAllBtn').addEventListener('click',selectAllWallets);
 $('deselectAllBtn').addEventListener('click',deselectAllWallets);
 $('toggleWhaleBtn').addEventListener('click',toggleWhaleMonitoring);
 
+$('whaleSettingsBtn').addEventListener('click',()=>{
+    const panel=$('whaleSettingsPanel');
+    panel.style.display=panel.style.display==='none'?'grid':'none';
+});
+
+document.querySelectorAll('.whale-filter-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+        document.querySelectorAll('.whale-filter-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        renderWhaleNotifications();
+    });
+});
+
+$('whaleMinChange').addEventListener('change',saveCfg);
+$('alertNew').addEventListener('change',saveCfg);
+$('alertIncrease').addEventListener('change',saveCfg);
+$('alertDecrease').addEventListener('change',saveCfg);
+$('alertClose').addEventListener('change',saveCfg);
+
+    
 $('addrInput').addEventListener('keydown',e=>{
     if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){
         e.preventDefault();
