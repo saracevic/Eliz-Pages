@@ -810,64 +810,64 @@ function generateAIAnalysis(data){
     
     if(type==='new'){
         impact=size>500000?'high':size>250000?'medium':'low';
-        const sentiment=side==='long'?'bullish':'bearish';
-        analysis=`A whale opened a ${sentiment} position on ${coin}. `;
+        const sentiment=side==='long'?'yükselişe':'düşüşe';
+        analysis=`Bir balina ${coin} için ${sentiment} yönelik pozisyon açtı. `;
         
         if(leverage>10){
-            analysis+=`High leverage (${leverage.toFixed(1)}x) suggests aggressive confidence. `;
+            analysis+=`Yüksek kaldıraç (${leverage.toFixed(1)}x) agresif güveni gösteriyor. `;
             impact='high';
         }else if(leverage<3){
-            analysis+=`Low leverage indicates cautious accumulation. `;
+            analysis+=`Düşük kaldıraç, temkinli biriktirmeye işaret ediyor. `;
         }
         
         if(size>1000000){
-            analysis+=`This massive ${fmt$(size)} position could significantly impact ${coin} price action. Market may follow this whale's direction.`;
+            analysis+=`Bu devasa ${fmt$(size)} pozisyon, ${coin} fiyat hareketini önemli ölçüde etkileyebilir. Piyasa bu balinanın yönünü takip edebilir.`;
         }else if(size>500000){
-            analysis+=`This ${fmt$(size)} position is substantial enough to influence short-term momentum.`;
+            analysis+=`Bu ${fmt$(size)} pozisyon, kısa vadeli momentumu etkileyecek kadar büyük.`;
         }else{
-            analysis+=`Position size ${fmt$(size)} suggests testing waters before larger allocation.`;
+            analysis+=`${fmt$(size)} pozisyon büyüklüğü, daha büyük alım öncesi test aşamasını gösteriyor.`;
         }
         
     }else if(type==='increase'){
         impact=change>30?'high':change>20?'medium':'low';
-        analysis=`Whale increased ${coin} ${side} position by ${change.toFixed(1)}%. `;
+        analysis=`Balina ${coin} ${side==='long'?'long':'short'} pozisyonunu %${change.toFixed(1)} artırdı. `;
         
         if(pnl>0&&roe>10){
-            analysis+=`Already profitable (+${roe.toFixed(1)}% ROE), adding to winner position. Strong bullish signal. `;
+            analysis+=`Zaten kârlı (+%${roe.toFixed(1)} ROE), kazanan pozisyona ekleme yapıyor. Güçlü yükseliş sinyali. `;
             impact='high';
         }else if(pnl<0&&roe<-10){
-            analysis+=`Averaging down on losing position (${roe.toFixed(1)}% ROE). Risk: potential capitulation or strong conviction in reversal. `;
+            analysis+=`Zararlı pozisyonda ortalama düşürme (%${roe.toFixed(1)} ROE). Risk: potansiyel teslim olma veya dönüş konusunda güçlü inanç. `;
         }
         
         if(change>50){
-            analysis+=`Massive ${change.toFixed(0)}% increase signals extreme conviction. Watch for follow-through.`;
+            analysis+=`Devasa %${change.toFixed(0)} artış, aşırı inancı gösteriyor. Devamını izleyin.`;
         }else if(change>25){
-            analysis+=`Significant increase. Other whales may follow this move.`;
+            analysis+=`Önemli artış. Diğer balinalar bu hareketi takip edebilir.`;
         }
         
     }else if(type==='decrease'){
         impact=change>40?'high':change>25?'medium':'low';
-        analysis=`Whale reduced ${coin} ${side} position by ${change.toFixed(1)}%. `;
+        analysis=`Balina ${coin} ${side==='long'?'long':'short'} pozisyonunu %${change.toFixed(1)} azalttı. `;
         
         if(pnl>0&&roe>15){
-            analysis+=`Taking profits at +${roe.toFixed(1)}% ROE. Smart money securing gains. `;
+            analysis+=`+%${roe.toFixed(1)} ROE'de kâr realizasyonu yapıyor. Akıllı para kazancını garanti altına alıyor. `;
         }else if(pnl<0){
-            analysis+=`Cutting losses at ${roe.toFixed(1)}% ROE. Potential trend reversal signal. `;
+            analysis+=`%${roe.toFixed(1)} ROE'de zarar kesiyor. Potansiyel trend dönüş sinyali. `;
             impact='high';
         }
         
         if(change>50){
-            analysis+=`Major position reduction! This could trigger panic selling if others follow.`;
+            analysis+=`Büyük pozisyon azaltması! Diğerleri takip ederse panik satışı tetikleyebilir.`;
         }else{
-            analysis+=`Partial profit-taking or risk management. Monitor for complete exit.`;
+            analysis+=`Kısmi kâr realizasyonu veya risk yönetimi. Tam çıkış için izleyin.`;
         }
         
     }else if(type==='close'){
         impact='high';
-        const posType=side==='long'?'bullish':'bearish';
-        analysis=`Whale CLOSED entire ${coin} ${side} position (${fmt$(oldSize)}). `;
-        analysis+=`This removes significant ${posType} pressure from market. `;
-        analysis+=`Watch for price reversal or consolidation. Other positions may follow this exit.`;
+        const posType=side==='long'?'yükseliş':'düşüş';
+        analysis=`Balina tüm ${coin} ${side==='long'?'long':'short'} pozisyonunu KAPATTI (${fmt$(oldSize)}). `;
+        analysis+=`Bu, piyasadan önemli ${posType} baskısını kaldırıyor. `;
+        analysis+=`Fiyat dönüşü veya konsolidasyona dikkat edin. Diğer pozisyonlar bu çıkışı takip edebilir.`;
     }
     
     return{analysis,impact};
@@ -901,10 +901,10 @@ function setNotificationMode(mode){
     const activeBtn=document.querySelector(`[data-mode="${mode}"]`);
     if(activeBtn)activeBtn.classList.add('active');
     
-    const descriptions={
-        silent:'List only, no sounds or pop-ups',
-        sound:'List updates + sound notification',
-        full:'List + sound + browser pop-ups'
+const descriptions={
+        silent:'Sadece liste, ses ve bildirim yok',
+        sound:'Liste güncellemesi + ses bildirimi',
+        full:'Liste + ses + tarayıcı bildirimi'
     };
     
     const descEl=$('modeDescription');
