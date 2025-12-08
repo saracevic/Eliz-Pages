@@ -16,11 +16,14 @@
         .badge-ok{background:#10b981;color:#000;}
         .badge-err{background:#ef4444;color:#fff;}
         .input{background:#000;border:1px solid #333;border-radius:4px;padding:8px;color:#fff;font-size:11px;width:100%;}
-        .btn{padding:7px 12px;border-radius:4px;border:none;font-size:11px;font-weight:700;cursor:pointer;width:100%;margin-top:6px;}
+        .btn{padding:7px 12px;border-radius:4px;border:none;font-size:11px;font-weight:700;cursor:pointer;width:100%;margin-top:6px;transition:all .2s;}
+        .btn:hover{transform:translateY(-1px);opacity:.9;}
+        .btn:active{transform:translateY(0);}
         .btn-primary{background:#3b82f6;color:#fff;}
         .btn-secondary{background:#222;color:#aaa;border:1px solid #333;}
         .btn-success{background:#10b981;color:#000;}
         .btn-warning{background:#f59e0b;color:#000;}
+        .btn-danger{background:#ef4444;color:#fff;}
         .chips{max-height:100px;overflow-y:auto;margin-top:6px;}
         .chip{display:inline-flex;align-items:center;gap:6px;background:#222;border:1px solid #333;border-radius:3px;padding:4px 8px;margin:3px;font-size:10px;font-family:monospace;}
         .chip button{background:none;border:none;color:#ef4444;cursor:pointer;font-size:12px;}
@@ -74,15 +77,17 @@
         .whale-settings{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
         .whale-input-group{display:flex;flex-direction:column;gap:4px;}
         .whale-input-label{font-size:9px;color:#666;text-transform:uppercase;}
-        .whale-notifications{max-height:200px;overflow-y:auto;margin-top:8px;}
-        .whale-notif{background:#0a0a0a;border-left:3px solid #f59e0b;padding:8px;margin-bottom:6px;border-radius:3px;font-size:10px;}
+        .whale-notifications{max-height:400px;overflow-y:auto;margin-top:8px;}
+        .whale-notif{background:#0a0a0a;border-left:3px solid #f59e0b;padding:8px;margin-bottom:6px;border-radius:3px;font-size:10px;position:relative;padding-right:80px;transition:all .3s ease;}
+        .whale-notif:hover{background:#111;transform:translateX(2px);}
         .whale-notif-header{display:flex;justify-content:space-between;margin-bottom:4px;}
         .whale-notif-token{font-weight:700;color:#fff;}
         .whale-notif-time{color:#666;font-size:9px;}
         .whale-notif-details{color:#ddd;margin-top:4px;}
         .whale-notif-new{animation:slideIn .3s ease-out;}
         @keyframes slideIn{from{transform:translateX(-10px);opacity:0;}to{transform:translateX(0);opacity:1;}}
-        .whale-stat-card{background:#0a0a0a;border:1px solid #222;border-radius:4px;padding:8px;text-align:center;}
+        .whale-stat-card{background:#0a0a0a;border:1px solid #222;border-radius:4px;padding:8px;text-align:center;transition:all .2s;}
+        .whale-stat-card:hover{background:#111;border-color:#333;}
         .whale-stat-label{font-size:9px;color:#666;text-transform:uppercase;margin-bottom:4px;}
         .whale-stat-value{font-size:14px;font-weight:700;color:#fff;}
         .whale-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;margin-bottom:8px;}
@@ -97,16 +102,50 @@
         .whale-notif-type.increase{background:rgba(59,130,246,.2);color:#3b82f6;}
         .whale-notif-type.decrease{background:rgba(245,158,11,.2);color:#f59e0b;}
         .whale-notif-type.close{background:rgba(239,68,68,.2);color:#ef4444;}
-        .whale-notif{position:relative;padding-right:80px;}
         .whale-notif-impact{display:inline-block;padding:2px 6px;border-radius:2px;font-size:9px;font-weight:700;margin-left:6px;}
+        .whale-notif-impact.critical{background:rgba(239,68,68,.3);color:#ef4444;border:1px solid #ef4444;}
         .whale-notif-impact.high{background:rgba(239,68,68,.2);color:#ef4444;}
         .whale-notif-impact.medium{background:rgba(245,158,11,.2);color:#f59e0b;}
         .whale-notif-impact.low{background:rgba(59,130,246,.2);color:#3b82f6;}
-        @media(max-width:768px){.whale-stats{grid-template-columns:repeat(2,1fr);}}
         .whale-mode-btn{flex:1;padding:8px 12px;border-radius:4px;border:1px solid #333;background:#111;color:#888;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
         .whale-mode-btn:hover{background:#1a1a1a;border-color:#444;transform:translateY(-1px);}
         .whale-mode-btn.active{background:#3b82f6;color:#fff;border-color:#3b82f6;box-shadow:0 0 10px rgba(59,130,246,.3);}
         .whale-mode-btn:active{transform:translateY(0);}
+        
+        .whale-advanced-filters{background:#0a0a0a;border:1px solid #222;border-radius:4px;padding:10px;margin-top:8px;display:none;}
+        .whale-advanced-filters.active{display:block;}
+        .filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+        .filter-group{display:flex;flex-direction:column;gap:4px;}
+        .filter-label{font-size:9px;color:#666;text-transform:uppercase;}
+        .coin-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
+        .coin-chip{padding:4px 8px;background:#222;border:1px solid #333;border-radius:3px;font-size:9px;cursor:pointer;transition:all .2s;}
+        .coin-chip:hover{background:#333;}
+        .coin-chip.active{background:#3b82f6;border-color:#3b82f6;color:#fff;}
+        
+        .whale-chart{background:#0a0a0a;border:1px solid #222;border-radius:4px;padding:10px;margin-top:8px;height:150px;}
+        .chart-bars{display:flex;align-items:flex-end;justify-content:space-around;height:100px;gap:4px;}
+        .chart-bar{flex:1;background:linear-gradient(180deg,#3b82f6,#1e40af);border-radius:2px 2px 0 0;min-height:4px;position:relative;transition:all .3s;}
+        .chart-bar:hover{opacity:.8;transform:scaleY(1.05);}
+        .chart-bar-label{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:8px;color:#666;white-space:nowrap;}
+        .chart-title{font-size:10px;color:#888;margin-bottom:10px;font-weight:600;}
+        
+        .whale-profile-modal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;}
+        .whale-profile-modal.active{display:flex;}
+        .whale-profile-content{background:#111;border:1px solid #222;border-radius:8px;padding:20px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;}
+        .whale-profile-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #222;}
+        .whale-profile-close{background:none;border:none;color:#888;font-size:20px;cursor:pointer;padding:4px 8px;}
+        .whale-profile-close:hover{color:#fff;}
+        .whale-profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+        .whale-history{margin-top:16px;}
+        .whale-history-title{font-size:11px;color:#888;margin-bottom:8px;font-weight:600;}
+        .whale-history-item{background:#0a0a0a;border:1px solid #222;padding:8px;border-radius:4px;margin-bottom:6px;font-size:10px;}
+        
+        .volume-indicator{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;animation:pulse 2s infinite;}
+        @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+        .volume-high{background:#ef4444;}
+        .volume-medium{background:#f59e0b;}
+        .volume-low{background:#10b981;}
+        
         table{width:100%;border-collapse:collapse;font-size:10px;}
         th{padding:6px;text-align:left;background:#0a0a0a;color:#666;font-size:9px;border-bottom:1px solid #222;cursor:pointer;user-select:none;position:relative;}
         th:hover{background:#151515;}
@@ -129,11 +168,14 @@
         .hidden{display:none;}
         .select-actions{display:flex;gap:6px;margin-bottom:8px;}
         .select-actions button{flex:1;padding:5px 10px;font-size:10px;}
+        
         @media(max-width:768px){
             .grid-4{grid-template-columns:repeat(2,1fr);}
             .main-grid{grid-template-columns:1fr;}
             .list-cols{grid-template-columns:1fr;}
             .whale-settings{grid-template-columns:1fr;}
+            .whale-stats{grid-template-columns:repeat(2,1fr);}
+            .filter-grid{grid-template-columns:1fr;}
         }
     </style>
 </head>
@@ -186,13 +228,13 @@
             <button class="btn btn-success hidden" id="importBtn">✅ Import Selected</button>
         </div>
     </div>
-
-<div class="whale-alert">
+    <div class="whale-alert">
     <div class="row">
         <div class="title">🐋 WHALE ALERTS</div>
         <div style="display:flex;gap:6px;align-items:center;">
             <button class="btn btn-warning" id="toggleWhaleBtn" style="width:auto;padding:6px 12px;margin:0;">OFF</button>
             <button class="btn btn-secondary" id="whaleSettingsBtn" style="width:auto;padding:6px 12px;margin:0;">⚙️</button>
+            <button class="btn btn-secondary" id="advancedFiltersBtn" style="width:auto;padding:6px 12px;margin:0;">🔧</button>
         </div>
     </div>
     
@@ -247,6 +289,60 @@
                 List only, no sounds or pop-ups
             </div>
         </div>
+        <div class="whale-input-group">
+            <label class="whale-input-label">Sound Volume</label>
+            <input type="range" id="soundVolume" class="input" value="50" min="0" max="100" step="10" style="padding:4px;">
+            <div style="font-size:9px;color:#666;margin-top:2px;text-align:center;" id="volumeDisplay">50%</div>
+        </div>
+    </div>
+
+    <div class="whale-advanced-filters" id="advancedFiltersPanel">
+        <div style="font-size:11px;font-weight:700;color:#10b981;margin-bottom:8px;">🔧 ADVANCED FILTERS</div>
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label class="filter-label">Coin Filter</label>
+                <div class="coin-chips" id="coinFilterChips">
+                    <div class="coin-chip" data-coin="ALL">All</div>
+                    <div class="coin-chip" data-coin="BTC">BTC</div>
+                    <div class="coin-chip" data-coin="ETH">ETH</div>
+                    <div class="coin-chip" data-coin="SOL">SOL</div>
+                    <div class="coin-chip" data-coin="XRP">XRP</div>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Min Position Size</label>
+                <select id="minSizeFilter" class="input" style="margin-top:4px;">
+                    <option value="0">All Sizes</option>
+                    <option value="100000">$100K+</option>
+                    <option value="250000">$250K+</option>
+                    <option value="500000">$500K+</option>
+                    <option value="1000000">$1M+</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">PnL Filter</label>
+                <select id="pnlFilter" class="input" style="margin-top:4px;">
+                    <option value="all">All Positions</option>
+                    <option value="profit">Profitable Only</option>
+                    <option value="loss">Loss Only</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Impact Level</label>
+                <select id="impactFilter" class="input" style="margin-top:4px;">
+                    <option value="all">All Levels</option>
+                    <option value="critical">Critical Only</option>
+                    <option value="high">High+</option>
+                    <option value="medium">Medium+</option>
+                </select>
+            </div>
+        </div>
+        <button class="btn btn-primary" id="applyFiltersBtn" style="margin-top:8px;">Apply Filters</button>
+    </div>
+
+    <div class="whale-chart">
+        <div class="chart-title">📊 Activity Last Hour (alerts per 5min)</div>
+        <div class="chart-bars" id="activityChart"></div>
     </div>
 
     <div class="whale-stats" id="whaleStats">
@@ -268,18 +364,23 @@
         </div>
     </div>
 
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;margin-bottom:8px;">
-    <div class="whale-filters" style="margin:0;flex:1;">
-        <button class="whale-filter-btn active" data-filter="all">Tümü</button>
-        <button class="whale-filter-btn" data-filter="new">Yeni</button>
-        <button class="whale-filter-btn" data-filter="increase">Artış</button>
-        <button class="whale-filter-btn" data-filter="decrease">Azalış</button>
-        <button class="whale-filter-btn" data-filter="close">Kapalı</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;margin-bottom:8px;">
+        <div class="whale-filters" style="margin:0;flex:1;">
+            <button class="whale-filter-btn active" data-filter="all">All</button>
+            <button class="whale-filter-btn" data-filter="new">New</button>
+            <button class="whale-filter-btn" data-filter="increase">Increase</button>
+            <button class="whale-filter-btn" data-filter="decrease">Decrease</button>
+            <button class="whale-filter-btn" data-filter="close">Close</button>
+        </div>
+        <div style="display:flex;gap:6px;">
+            <button class="btn btn-secondary" id="exportWhaleBtn" style="width:auto;padding:6px 12px;margin:0;font-size:10px;">
+                📥 Export
+            </button>
+            <button class="btn btn-secondary" id="clearNotificationsBtn" style="width:auto;padding:6px 12px;margin:0;font-size:10px;">
+                🧹 Clear
+            </button>
+        </div>
     </div>
-    <button class="btn btn-secondary" id="clearNotificationsBtn" style="width:auto;padding:6px 12px;margin:0;font-size:10px;">
-        🧹 Temizle
-    </button>
-</div>
 
     <div class="whale-notifications" id="whaleNotifications">
         <div class="empty">
@@ -289,6 +390,22 @@
     </div>
 </div>
 
+<div class="whale-profile-modal" id="whaleProfileModal">
+    <div class="whale-profile-content">
+        <div class="whale-profile-header">
+            <div>
+                <div style="font-size:13px;font-weight:700;color:#fff;">Whale Profile</div>
+                <div style="font-size:9px;color:#666;font-family:monospace;margin-top:4px;" id="profileAddress"></div>
+            </div>
+            <button class="whale-profile-close" id="closeProfileBtn">×</button>
+        </div>
+        <div class="whale-profile-stats" id="profileStats"></div>
+        <div class="whale-history">
+            <div class="whale-history-title">📜 Recent Activity</div>
+            <div id="profileHistory"></div>
+        </div>
+    </div>
+</div>
     
     <div class="loading" id="loading">
         <div class="spinner"></div>
@@ -387,7 +504,28 @@
 </div>
 
 <script>
-const state={addresses:[],positions:[],aggregatedData:{},searchResults:[],selectedWallets:new Set(),sortCol:null,sortDir:'asc',whaleEnabled:false,whaleInterval:null,lastWhaleCheck:{},whaleNotifications:[],notificationMode:'silent'};
+const state={
+    addresses:[],
+    positions:[],
+    aggregatedData:{},
+    searchResults:[],
+    selectedWallets:new Set(),
+    sortCol:null,
+    sortDir:'asc',
+    whaleEnabled:false,
+    whaleInterval:null,
+    lastWhaleCheck:{},
+    whaleNotifications:[],
+    notificationMode:'silent',
+    soundVolume:0.5,
+    activityData:Array(12).fill(0),
+    coinFilter:'ALL',
+    minSizeFilter:0,
+    pnlFilter:'all',
+    impactFilter:'all',
+    whaleProfiles:{}
+};
+
 const API='https://api.hyperliquid.xyz/info';
 const LB_API='https://stats-data.hyperliquid.xyz/Mainnet/leaderboard';
 
@@ -408,6 +546,11 @@ function loadCfg(){
             state.notificationMode=cfg.notificationMode;
             setNotificationMode(cfg.notificationMode);
         }
+        if(cfg.soundVolume!==undefined){
+            state.soundVolume=cfg.soundVolume;
+            $('soundVolume').value=cfg.soundVolume*100;
+            $('volumeDisplay').textContent=Math.round(cfg.soundVolume*100)+'%';
+        }
     }
 }
 
@@ -421,7 +564,8 @@ function saveCfg(){
         alertIncrease:$('alertIncrease').checked,
         alertDecrease:$('alertDecrease').checked,
         alertClose:$('alertClose').checked,
-        notificationMode:state.notificationMode
+        notificationMode:state.notificationMode,
+        soundVolume:state.soundVolume
     }));
 }
 
@@ -444,7 +588,7 @@ function fmtP(p){
     if(p>=0.01)return'$'+p.toFixed(4);
     return'$'+p.toFixed(6);
 }
-function getColor(pnl,side){
+    function getColor(pnl,side){
     if(side){
         if(side==='long'){
             if(pnl>20)return'rgba(16,185,129,0.95)';
@@ -721,7 +865,6 @@ function importWallets(){
     }
 }
 
-
 async function checkWhaleMovements(){
     if(!state.whaleEnabled)return;
     
@@ -798,10 +941,20 @@ async function checkWhaleMovements(){
                             state.lastWhaleCheck[key]={posVal,szi:Math.abs(szi),side,coin};
                         }
                     }
+                    
+                    if(!state.whaleProfiles[addr]){
+                        state.whaleProfiles[addr]={
+                            address:addr,
+                            history:[],
+                            totalAlerts:0,
+                            winRate:0
+                        };
+                    }
                 }
             }
         }
         updateWhaleStats();
+        updateActivityChart();
     }catch(e){
         console.error('Whale check error:',e);
     }
@@ -814,65 +967,94 @@ function generateAIAnalysis(data){
     let impact='low';
     
     if(type==='new'){
-        impact=size>500000?'high':size>250000?'medium':'low';
-        const sentiment=side==='long'?'yükselişe':'düşüşe';
-        analysis=`Bir balina ${coin} için ${sentiment} yönelik pozisyon açtı. `;
+        if(size>2000000){impact='critical';}
+        else if(size>1000000){impact='high';}
+        else if(size>500000){impact='medium';}
         
-        if(leverage>10){
-            analysis+=`Yüksek kaldıraç (${leverage.toFixed(1)}x) agresif güveni gösteriyor. `;
-            impact='high';
+        const sentiment=side==='long'?'bullish':'bearish';
+        analysis=`A whale opened a ${sentiment} position on ${coin}. `;
+        
+        if(leverage>15){
+            analysis+=`Extremely high leverage (${leverage.toFixed(1)}x) indicates aggressive conviction. `;
+            impact='critical';
+        }else if(leverage>10){
+            analysis+=`High leverage (${leverage.toFixed(1)}x) shows strong confidence. `;
+            if(impact==='low')impact='medium';
         }else if(leverage<3){
-            analysis+=`Düşük kaldıraç, temkinli biriktirmeye işaret ediyor. `;
+            analysis+=`Low leverage suggests cautious accumulation. `;
         }
         
-        if(size>1000000){
-            analysis+=`Bu devasa ${fmt$(size)} pozisyon, ${coin} fiyat hareketini önemli ölçüde etkileyebilir. Piyasa bu balinanın yönünü takip edebilir.`;
+        if(size>2000000){
+            analysis+=`This massive ${fmt$(size)} position could significantly impact ${coin} price action. Market may follow this whale's direction.`;
+        }else if(size>1000000){
+            analysis+=`This ${fmt$(size)} position is large enough to influence short-term momentum.`;
         }else if(size>500000){
-            analysis+=`Bu ${fmt$(size)} pozisyon, kısa vadeli momentumu etkileyecek kadar büyük.`;
+            analysis+=`${fmt$(size)} position size suggests possible test phase before larger entry.`;
         }else{
-            analysis+=`${fmt$(size)} pozisyon büyüklüğü, daha büyük alım öncesi test aşamasını gösteriyor.`;
+            analysis+=`${fmt$(size)} position - monitoring for potential scaling.`;
         }
         
     }else if(type==='increase'){
-        impact=change>30?'high':change>20?'medium':'low';
-        analysis=`Balina ${coin} ${side==='long'?'long':'short'} pozisyonunu %${change.toFixed(1)} artırdı. `;
+        if(change>50){impact='critical';}
+        else if(change>30){impact='high';}
+        else if(change>20){impact='medium';}
         
-        if(pnl>0&&roe>10){
-            analysis+=`Zaten kârlı (+%${roe.toFixed(1)} ROE), kazanan pozisyona ekleme yapıyor. Güçlü yükseliş sinyali. `;
+        analysis=`Whale increased ${coin} ${side} position by ${change.toFixed(1)}%. `;
+        
+        if(pnl>0&&roe>15){
+            analysis+=`Already profitable (+${roe.toFixed(1)}% ROE), adding to winning position. Strong bullish signal. `;
+            impact='critical';
+        }else if(pnl>0&&roe>10){
+            analysis+=`Adding to profitable position (+${roe.toFixed(1)}% ROE). Conviction play. `;
+            if(impact==='low')impact='high';
+        }else if(pnl<0&&roe<-15){
+            analysis+=`Averaging down on losing position (${roe.toFixed(1)}% ROE). Risk: potential capitulation or strong reversal belief. `;
             impact='high';
         }else if(pnl<0&&roe<-10){
-            analysis+=`Zararlı pozisyonda ortalama düşürme (%${roe.toFixed(1)} ROE). Risk: potansiyel teslim olma veya dönüş konusunda güçlü inanç. `;
+            analysis+=`Adding to underwater position (${roe.toFixed(1)}% ROE). Doubling down. `;
         }
         
-        if(change>50){
-            analysis+=`Devasa %${change.toFixed(0)} artış, aşırı inancı gösteriyor. Devamını izleyin.`;
-        }else if(change>25){
-            analysis+=`Önemli artış. Diğer balinalar bu hareketi takip edebilir.`;
+        if(change>70){
+            analysis+=`Massive ${change.toFixed(0)}% increase shows extreme conviction. Watch for continuation.`;
+        }else if(change>50){
+            analysis+=`Huge ${change.toFixed(0)}% add. Other whales may follow this move.`;
+        }else if(change>30){
+            analysis+=`Significant increase. Position building phase likely continues.`;
         }
         
     }else if(type==='decrease'){
-        impact=change>40?'high':change>25?'medium':'low';
-        analysis=`Balina ${coin} ${side==='long'?'long':'short'} pozisyonunu %${change.toFixed(1)} azalttı. `;
+        if(change>60){impact='critical';}
+        else if(change>40){impact='high';}
+        else if(change>25){impact='medium';}
         
-        if(pnl>0&&roe>15){
-            analysis+=`+%${roe.toFixed(1)} ROE'de kâr realizasyonu yapıyor. Akıllı para kazancını garanti altına alıyor. `;
+        analysis=`Whale reduced ${coin} ${side} position by ${change.toFixed(1)}%. `;
+        
+        if(pnl>0&&roe>20){
+            analysis+=`Taking profits at +${roe.toFixed(1)}% ROE. Smart money securing gains. `;
+            if(impact==='low')impact='medium';
+        }else if(pnl>0&&roe>15){
+            analysis+=`Profit-taking at +${roe.toFixed(1)}% ROE. Healthy position management. `;
+        }else if(pnl<0&&roe<-10){
+            analysis+=`Cutting losses at ${roe.toFixed(1)}% ROE. Potential trend reversal signal. `;
+            impact='critical';
         }else if(pnl<0){
-            analysis+=`%${roe.toFixed(1)} ROE'de zarar kesiyor. Potansiyel trend dönüş sinyali. `;
-            impact='high';
+            analysis+=`Reducing losing position (${roe.toFixed(1)}% ROE). Risk management. `;
         }
         
-        if(change>50){
-            analysis+=`Büyük pozisyon azaltması! Diğerleri takip ederse panik satışı tetikleyebilir.`;
+        if(change>70){
+            analysis+=`Major position exit! Could trigger panic selling if others follow.`;
+        }else if(change>50){
+            analysis+=`Large reduction. Watch for full exit or market reversal.`;
         }else{
-            analysis+=`Kısmi kâr realizasyonu veya risk yönetimi. Tam çıkış için izleyin.`;
+            analysis+=`Partial profit-taking or risk management. Monitor for complete closure.`;
         }
         
     }else if(type==='close'){
-        impact='high';
-        const posType=side==='long'?'yükseliş':'düşüş';
-        analysis=`Balina tüm ${coin} ${side==='long'?'long':'short'} pozisyonunu KAPATTI (${fmt$(oldSize)}). `;
-        analysis+=`Bu, piyasadan önemli ${posType} baskısını kaldırıyor. `;
-        analysis+=`Fiyat dönüşü veya konsolidasyona dikkat edin. Diğer pozisyonlar bu çıkışı takip edebilir.`;
+        impact='critical';
+        const posType=side==='long'?'bullish':'bearish';
+        analysis=`Whale CLOSED entire ${coin} ${side} position (${fmt$(oldSize)}). `;
+        analysis+=`This removes significant ${posType} pressure from the market. `;
+        analysis+=`Watch for price reversal or consolidation. Other positions may follow this exit.`;
     }
     
     return{analysis,impact};
@@ -889,7 +1071,8 @@ function playNotificationSound(){
     oscillator.frequency.value=800;
     oscillator.type='sine';
     
-    gainNode.gain.setValueAtTime(0.3,audioContext.currentTime);
+    const volume=state.soundVolume;
+    gainNode.gain.setValueAtTime(volume,audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01,audioContext.currentTime+0.5);
     
     oscillator.start(audioContext.currentTime);
@@ -906,10 +1089,10 @@ function setNotificationMode(mode){
     const activeBtn=document.querySelector(`[data-mode="${mode}"]`);
     if(activeBtn)activeBtn.classList.add('active');
     
-const descriptions={
-        silent:'Sadece liste, ses ve bildirim yok',
-        sound:'Liste güncellemesi + ses bildirimi',
-        full:'Liste + ses + tarayıcı bildirimi'
+    const descriptions={
+        silent:'List only, no sounds or pop-ups',
+        sound:'List updates + sound notification',
+        full:'List + sound + browser notification'
     };
     
     const descEl=$('modeDescription');
@@ -917,7 +1100,28 @@ const descriptions={
     
     saveCfg();
 }
+
+function updateActivityChart(){
+    const now=Date.now();
+    const fiveMin=5*60*1000;
     
+    state.activityData.shift();
+    
+    const recentAlerts=state.whaleNotifications.filter(n=>now-n.timestamp<fiveMin).length;
+    state.activityData.push(recentAlerts);
+    
+    const maxVal=Math.max(...state.activityData,1);
+    const el=$('activityChart');
+    
+    el.innerHTML=state.activityData.map((val,i)=>{
+        const height=(val/maxVal)*100;
+        const minutesAgo=(state.activityData.length-1-i)*5;
+        return`<div class="chart-bar" style="height:${height}%;">
+            <div class="chart-bar-label">${minutesAgo}m</div>
+        </div>`;
+    }).join('');
+}
+
 function addWhaleNotification(data){
     const {analysis,impact}=generateAIAnalysis(data);
     
@@ -929,8 +1133,13 @@ function addWhaleNotification(data){
     };
     
     state.whaleNotifications.unshift(notif);
-    if(state.whaleNotifications.length>50){
-        state.whaleNotifications=state.whaleNotifications.slice(0,50);
+    if(state.whaleNotifications.length>100){
+        state.whaleNotifications=state.whaleNotifications.slice(0,100);
+    }
+    
+    if(state.whaleProfiles[data.address]){
+        state.whaleProfiles[data.address].history.unshift(notif);
+        state.whaleProfiles[data.address].totalAlerts++;
     }
     
     const today=new Date().toDateString();
@@ -938,6 +1147,7 @@ function addWhaleNotification(data){
     $('whaleAlertsToday').textContent=todayAlerts.length;
     
     renderWhaleNotifications();
+    updateActivityChart();
     
     if(state.notificationMode==='sound'){
         playNotificationSound();
@@ -967,12 +1177,18 @@ function updateWhaleStats(){
     $('whaleAvgPosition').textContent=fmt$(avgPos);
     
     if(longCnt>shortCnt){
-        $('whaleSentiment').innerHTML=`<span style="color:#10b981;">BULLISH ${longCnt}/${tracked}</span>`;
+        const ratio=((longCnt/tracked)*100).toFixed(0);
+        $('whaleSentiment').innerHTML=`<span style="color:#10b981;">🐂 ${ratio}%</span>`;
     }else if(shortCnt>longCnt){
-        $('whaleSentiment').innerHTML=`<span style="color:#ef4444;">BEARISH ${shortCnt}/${tracked}</span>`;
+        const ratio=((shortCnt/tracked)*100).toFixed(0);
+        $('whaleSentiment').innerHTML=`<span style="color:#ef4444;">🐻 ${ratio}%</span>`;
     }else{
-        $('whaleSentiment').innerHTML=`<span style="color:#888;">NEUTRAL ${longCnt}/${shortCnt}</span>`;
+        $('whaleSentiment').innerHTML=`<span style="color:#888;">⚖️ 50/50</span>`;
     }
+}
+
+function applyAdvancedFilters(){
+    renderWhaleNotifications();
 }
 
 function renderWhaleNotifications(){
@@ -980,19 +1196,48 @@ function renderWhaleNotifications(){
     const filter=document.querySelector('.whale-filter-btn.active')?.dataset.filter||'all';
     
     let filtered=state.whaleNotifications;
+    
     if(filter!=='all'){
-        filtered=state.whaleNotifications.filter(n=>n.type===filter);
+        filtered=filtered.filter(n=>n.type===filter);
+    }
+    
+    if(state.coinFilter!=='ALL'){
+        filtered=filtered.filter(n=>n.coin===state.coinFilter);
+    }
+    
+    if(state.minSizeFilter>0){
+        filtered=filtered.filter(n=>n.size>=state.minSizeFilter);
+    }
+    
+    if(state.pnlFilter==='profit'){
+        filtered=filtered.filter(n=>n.pnl&&n.pnl>0);
+    }else if(state.pnlFilter==='loss'){
+        filtered=filtered.filter(n=>n.pnl&&n.pnl<0);
+    }
+    
+    if(state.impactFilter!=='all'){
+        if(state.impactFilter==='critical'){
+            filtered=filtered.filter(n=>n.impact==='critical');
+        }else if(state.impactFilter==='high'){
+            filtered=filtered.filter(n=>n.impact==='critical'||n.impact==='high');
+        }else if(state.impactFilter==='medium'){
+            filtered=filtered.filter(n=>n.impact!=='low');
+        }
     }
     
     if(!filtered.length){
-        el.innerHTML='<div class="empty"><div class="empty-icon">🐋</div><div class="empty-title">No alerts for this filter</div></div>';
+        el.innerHTML='<div class="empty"><div class="empty-icon">🐋</div><div class="empty-title">No alerts match filters</div></div>';
         return;
     }
     
     el.innerHTML=filtered.map((n,idx)=>{
         const time=new Date(n.timestamp).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
         const sideCls=n.side==='long'?'long':'short';
-        const isNew=idx===0&&filter==='all';
+        const isNew=idx===0&&filter==='all'&&state.coinFilter==='ALL';
+        
+        let volumeClass='volume-low';
+        if(n.size>1000000)volumeClass='volume-high';
+        else if(n.size>500000)volumeClass='volume-medium';
         
         let msg='';
         if(n.type==='new'){
@@ -1009,10 +1254,13 @@ function renderWhaleNotifications(){
         }
         
         return`
-            <div class="whale-notif ${isNew?'whale-notif-new':''}">
+            <div class="whale-notif ${isNew?'whale-notif-new':''}" style="cursor:pointer;" onclick="showWhaleProfile('${n.address}')">
                 <span class="whale-notif-type ${n.type}">${n.type.toUpperCase()}</span>
                 <div class="whale-notif-header">
-                    <span class="whale-notif-token ${sideCls}">${n.coin} - ${n.side.toUpperCase()}</span>
+                    <span class="whale-notif-token ${sideCls}">
+                        <span class="volume-indicator ${volumeClass}"></span>
+                        ${n.coin} - ${n.side.toUpperCase()}
+                    </span>
                     <span class="whale-notif-time">${time}</span>
                 </div>
                 <div class="whale-notif-details">
@@ -1027,112 +1275,199 @@ function renderWhaleNotifications(){
         `;
     }).join('');
 }
-    
 
+function showWhaleProfile(address){
+    const profile=state.whaleProfiles[address];
+    if(!profile){
+        alert('No profile data available');
+        return;
+    }
+    
+    const modal=$('whaleProfileModal');
+    const addressEl=$('profileAddress');
+    const statsEl=$('profileStats');
+    const historyEl=$('profileHistory');
+    
+    addressEl.textContent=address;
+    
+    const history=profile.history||[];
+    const wins=history.filter(h=>h.pnl&&h.pnl>0).length;
+    const losses=history.filter(h=>h.pnl&&h.pnl<0).length;
+    const winRate=wins+losses>0?((wins/(wins+losses))*100).toFixed(0):0;
+    
+    const totalPnl=history.reduce((sum,h)=>sum+(h.pnl||0),0);
+    const avgSize=history.length>0?history.reduce((sum,h)=>sum+(h.size||0),0)/history.length:0;
+    
+    statsEl.innerHTML=`
+        <div class="whale-stat-card">
+            <div class="whale-stat-label">Total Alerts</div>
+            <div class="whale-stat-value">${profile.totalAlerts||0}</div>
+        </div>
+        <div class="whale-stat-card">
+            <div class="whale-stat-label">Win Rate</div>
+            <div class="whale-stat-value">${winRate}%</div>
+            </div>
+    <div class="whale-stat-card">
+        <div class="whale-stat-label">Total PnL</div>
+        <div class="whale-stat-value ${totalPnl>=0?'long':'short'}">${fmt$(totalPnl)}</div>
+    </div>
+    <div class="whale-stat-card">
+        <div class="whale-stat-label">Avg Position</div>
+        <div class="whale-stat-value">${fmt$(avgSize)}</div>
+    </div>
+`;
+
+if(history.length===0){
+    historyEl.innerHTML='<div class="empty"><div class="empty-title">No activity yet</div></div>';
+}else{
+    historyEl.innerHTML=history.slice(0,20).map(h=>{
+        const time=new Date(h.timestamp).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+        return`
+            <div class="whale-history-item">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                    <span style="font-weight:700;color:#fff;">${h.coin} - ${h.type.toUpperCase()}</span>
+                    <span style="color:#666;font-size:9px;">${time}</span>
+                </div>
+                <div style="color:#ddd;">${fmt$(h.size)} | ${h.side.toUpperCase()}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+modal.classList.add('active');
+}
+function exportWhaleAlerts(){
+if(!state.whaleNotifications.length){alert('No alerts to export');return;}
+    const header=['timestamp','coin','side','type','size','oldSize','change','leverage','pnl','roe','impact','address'];
+const csv=[header.join(',')];
+
+state.whaleNotifications.forEach(n=>{
+    const line=[
+        new Date(n.timestamp).toISOString(),
+        n.coin,
+        n.side,
+        n.type,
+        n.size||0,
+        n.oldSize||0,
+        n.change||0,
+        n.leverage||0,
+        n.pnl||0,
+        n.roe||0,
+        n.impact,
+        n.address
+    ].map(v=>String(v).replace(/"/g,'""'));
+    csv.push('"'+line.join('","')+'"');
+});
+
+const blob=new Blob([csv.join('\n')],{type:'text/csv;charset=utf-8;'});
+const url=URL.createObjectURL(blob);
+const a=document.createElement('a');
+a.href=url;
+a.download='whale_alerts.csv';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+}
 function toggleWhaleMonitoring(){
-    state.whaleEnabled=!state.whaleEnabled;
-    const btn=$('toggleWhaleBtn');
-    
+state.whaleEnabled=!state.whaleEnabled;
+const btn=$('toggleWhaleBtn');
     if(state.whaleEnabled){
-        btn.textContent='ON';
-        btn.style.background='#10b981';
-        btn.style.color='#000';
-        
-        if('Notification'in window&&Notification.permission==='default'){
-            Notification.requestPermission();
-        }
-        
-        const interval=parseInt($('whaleInterval').value)*1000;
-        state.whaleInterval=setInterval(checkWhaleMovements,interval);
-        checkWhaleMovements();
-        
-        saveCfg();
-    }else{
-        btn.textContent='OFF';
-        btn.style.background='#f59e0b';
-        btn.style.color='#000';
-        
-        if(state.whaleInterval){
-            clearInterval(state.whaleInterval);
-            state.whaleInterval=null;
-        }
+    btn.textContent='ON';
+    btn.style.background='#10b981';
+    btn.style.color='#000';
+    
+    if('Notification'in window&&Notification.permission==='default'){
+        Notification.requestPermission();
+    }
+    
+    const interval=parseInt($('whaleInterval').value)*1000;
+    state.whaleInterval=setInterval(checkWhaleMovements,interval);
+    checkWhaleMovements();
+    
+    saveCfg();
+}else{
+    btn.textContent='OFF';
+    btn.style.background='#f59e0b';
+    btn.style.color='#000';
+    
+    if(state.whaleInterval){
+        clearInterval(state.whaleInterval);
+        state.whaleInterval=null;
     }
 }
-
+    }
 async function loadPos(auto=false){
-    if(!state.addresses.length){if(!auto)alert('Add addresses');return;}
-    showLoad(true,'Loading...');
-    setStatus('Loading...');
-    try{
-        const all=[];
-        for(const addr of state.addresses){
-            const data=await fetchUser(addr);
-            if(data&&data.assetPositions){
-                data.assetPositions.forEach(pos=>{
-                    const p=pos.position;
-                    const szi=parseFloat(p.szi);
-                    if(szi===0)return;
-                    const entryPx=parseFloat(p.entryPx);
-                    const posVal=Math.abs(szi)*entryPx;
-                    const pnl=parseFloat(p.unrealizedPnl);
-                    const lev=parseFloat(p.leverage.value);
-                    const liqPx=parseFloat(p.liquidationPx||0);
-                    const openMs=Number(p.lastUpdateTime||p.time||p.timestamp||0);
-                    all.push({
-                        address:addr,
-                        coin:pos.coin||p.coin,
-                        side:szi>0?'long':'short',
-                        szi:Math.abs(szi),
-                        entryPx,
-                        positionValue:posVal,
-                        unrealizedPnl:pnl,
-                        returnOnEquity:parseFloat(p.returnOnEquity),
-                        leverage:lev,
-                        liquidationPx:liqPx,
-                        marginUsed:parseFloat(p.marginUsed),
-                        openedAt:openMs
-                    });
-                });
-            }
-        }
-        state.positions=all;
-        aggregate();
-        updateUI();
-        updateTime();
-        setStatus('Connected');
-    }catch(e){
-        console.error(e);
-        if(!auto)alert('Load error: '+e.message);
-        setStatus('Error');
-    }finally{
-        showLoad(false);
-    }
+if(!state.addresses.length){if(!auto)alert('Add addresses');return;}
+showLoad(true,'Loading...');
+setStatus('Loading...');
+try{
+const all=[];
+for(const addr of state.addresses){
+const data=await fetchUser(addr);
+if(data&&data.assetPositions){
+data.assetPositions.forEach(pos=>{
+const p=pos.position;
+const szi=parseFloat(p.szi);
+if(szi===0)return;
+const entryPx=parseFloat(p.entryPx);
+const posVal=Math.abs(szi)*entryPx;
+const pnl=parseFloat(p.unrealizedPnl);
+const lev=parseFloat(p.leverage.value);
+const liqPx=parseFloat(p.liquidationPx||0);
+const openMs=Number(p.lastUpdateTime||p.time||p.timestamp||0);
+all.push({
+address:addr,
+coin:pos.coin||p.coin,
+side:szi>0?'long':'short',
+szi:Math.abs(szi),
+entryPx,
+positionValue:posVal,
+unrealizedPnl:pnl,
+returnOnEquity:parseFloat(p.returnOnEquity),
+leverage:lev,
+liquidationPx:liqPx,
+marginUsed:parseFloat(p.marginUsed),
+openedAt:openMs
+});
+});
 }
-
+}
+state.positions=all;
+aggregate();
+updateUI();
+updateTime();
+setStatus('Connected');
+}catch(e){
+console.error(e);
+if(!auto)alert('Load error: '+e.message);
+setStatus('Error');
+}finally{
+showLoad(false);
+}
+}
 function aggregate(){
-    const agg={};
-    state.positions.forEach(pos=>{
-        if(!agg[pos.coin]){
-            agg[pos.coin]={coin:pos.coin,longValue:0,shortValue:0,totalValue:0,pnl:0,positions:[]};
-        }
-        const a=agg[pos.coin];
-        if(pos.side==='long')a.longValue+=pos.positionValue;
-        else a.shortValue+=pos.positionValue;
-        a.totalValue+=pos.positionValue;
-        a.pnl+=pos.unrealizedPnl;
-        a.positions.push(pos);
-    });
-    state.aggregatedData=agg;
+const agg={};
+state.positions.forEach(pos=>{
+if(!agg[pos.coin]){
+agg[pos.coin]={coin:pos.coin,longValue:0,shortValue:0,totalValue:0,pnl:0,positions:[]};
 }
-
+const a=agg[pos.coin];
+if(pos.side==='long')a.longValue+=pos.positionValue;
+else a.shortValue+=pos.positionValue;
+a.totalValue+=pos.positionValue;
+a.pnl+=pos.unrealizedPnl;
+a.positions.push(pos);
+});
+state.aggregatedData=agg;
+}
 function updateUI(){
-    updateStats();
-    updateBar();
-    updateList();
-    updateHeat();
-    updateTable();
+updateStats();
+updateBar();
+updateList();
+updateHeat();
+updateTable();
 }
-
 function updateStats(){
     let longTot=0,shortTot=0,netPnl=0,profit=0,loss=0;
     state.positions.forEach(p=>{
@@ -1142,8 +1477,10 @@ function updateStats(){
         if(p.unrealizedPnl>0)profit++;
         else if(p.unrealizedPnl<0)loss++;
     });
-    $('longPos').textContent=fmt$(longTot);
-    $('shortPos').textContent=fmt$(shortTot);
+    (′longPos′).textContent=fmt('longPos').textContent=fmt
+(′longPos′).textContent=fmt(longTot);
+    (′shortPos′).textContent=fmt('shortPos').textContent=fmt
+(′shortPos′).textContent=fmt(shortTot);
     $('totalPos').textContent=state.positions.length;
     const pnlEl=$('netPnl');
     pnlEl.textContent=fmt$(netPnl);
@@ -1153,17 +1490,20 @@ function updateStats(){
 }
 
 function updateBar(){
-    let longTot=0,shortTot=0;
-    state.positions.forEach(p=>{
-        if(p.side==='long')longTot+=p.positionValue;
-        else shortTot+=p.positionValue;
-    });
-    const tot=longTot+shortTot;
-    const longPct=tot>0?(longTot/tot)*100:50;
+let longTot=0,shortTot=0;
+state.positions.forEach(p=>{
+if(p.side==='long')longTot+=p.positionValue;
+else shortTot+=p.positionValue;
+});
+const tot=longTot+shortTot;
+const longPct=tot>0?(longTot/tot)*100:50;
     const shortPct=100-longPct;
-    $('longVal').textContent=fmt$(longTot);
-    $('shortVal').textContent=fmt$(shortTot);
-    const bl=$('barL'),bs=$('barS');
+    (′longVal′).textContent=fmt('longVal').textContent=fmt
+(′longVal′).textContent=fmt(longTot);
+    (′shortVal′).textContent=fmt('shortVal').textContent=fmt
+(′shortVal′).textContent=fmt(shortTot);
+    const bl=(′barL′),bs=('barL'),bs=
+(′barL′),bs=('barS');
     bl.style.width=longPct+'%';
     bs.style.width=shortPct+'%';
     bl.textContent=longPct.toFixed(1)+'%';
@@ -1171,233 +1511,213 @@ function updateBar(){
 }
 
 function updateList(){
-    const el=$('listCols');
-    if(!Object.keys(state.aggregatedData).length){
-        el.innerHTML='<div class="empty"><div class="empty-icon">📝</div><div class="empty-title">No Data</div></div>';
-        return;
-    }
-    const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
-    const left=top.slice(0,5);
-    const right=top.slice(5,10);
-    
+const el=$('listCols');
+if(!Object.keys(state.aggregatedData).length){
+el.innerHTML='<div class="empty"><div class="empty-icon">📝</div><div class="empty-title">No Data</div></div>';
+return;
+}
+const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
+const left=top.slice(0,5);
+const right=top.slice(5,10);
+
     const renderItem=a=>{
-        const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
-        const pnlCls=a.pnl>=0?'long':'short';
-        const dom=a.longValue>=a.shortValue?'Long':'Short';
-        const sideCls=dom==='Long'?'side-long':'side-short';
-        return`
-            <div class="list-item">
-                <div class="list-header">
-                    <div class="list-token">${a.coin}</div>
-                    <span class="side-badge ${sideCls}">${dom}</span>
+    const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
+    const pnlCls=a.pnl>=0?'long':'short';
+    const dom=a.longValue>=a.shortValue?'Long':'Short';
+    const sideCls=dom==='Long'?'side-long':'side-short';
+    return`
+        <div class="list-item">
+            <div class="list-header">
+                <div class="list-token">${a.coin}</div>
+                <span class="side-badge ${sideCls}">${dom}</span>
+            </div>
+            <div class="list-row">
+                <div>
+                    <div class="list-label">Value</div>
+                    <div class="list-value">${fmt$(a.totalValue)}</div>
                 </div>
-                <div class="list-row">
-                    <div>
-                        <div class="list-label">Value</div>
-                        <div class="list-value">${fmt$(a.totalValue)}</div>
-                    </div>
-                    <div style="text-align:right;">
-                        <div class="list-label">PnL</div>
-                        <div class="list-value ${pnlCls}">${a.pnl>=0?'+':''}${fmt$(a.pnl)}</div>
-                    </div>
-                </div>
-                <div class="list-row">
-                    <div>
-                        <div class="list-label">Long</div>
-                        <div class="list-value long" style="font-size:9px;">${fmt$(a.longValue)}</div>
-                    </div>
-                    <div>
-                        <div class="list-label">Short</div>
-                        <div class="list-value short" style="font-size:9px;">${fmt$(a.shortValue)}</div>
-                    </div>
-                    <div style="text-align:right;">
-                        <div class="list-label">ROE</div>
-                        <div class="list-value ${pnlCls}" style="font-size:9px;">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</div>
-                    </div>
+                <div style="text-align:right;">
+                    <div class="list-label">PnL</div>
+                    <div class="list-value ${pnlCls}">${a.pnl>=0?'+':''}${fmt$(a.pnl)}</div>
                 </div>
             </div>
-        `;
-    };
-    
-    el.innerHTML=`
-        <div>${left.map(renderItem).join('')}</div>
-        <div>${right.map(renderItem).join('')}</div>
+            <div class="list-row">
+                <div>
+                    <div class="list-label">Long</div>
+                    <div class="list-value long" style="font-size:9px;">${fmt$(a.longValue)}</div>
+                </div>
+                <div>
+                    <div class="list-label">Short</div>
+                    <div class="list-value short" style="font-size:9px;">${fmt$(a.shortValue)}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div class="list-label">ROE</div>
+                    <div class="list-value ${pnlCls}" style="font-size:9px;">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</div>
+                </div>
+            </div>
+        </div>
     `;
-}
+};
 
+el.innerHTML=`
+    <div>${left.map(renderItem).join('')}</div>
+    <div>${right.map(renderItem).join('')}</div>
+`;
+    }
 function updateHeat(){
-    const el=$('heatGrid');
-    if(!Object.keys(state.aggregatedData).length){
-        el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">No Data</div></div>';
-        return;
-    }
-    const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
-    el.innerHTML=top.map(a=>{
-        const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
-        const side=a.longValue>=a.shortValue?'long':'short';
-        const bg=getColor(pnlPct,side);
-        return`
-            <div class="heat-cell" style="background:${bg};">
-                <div class="heat-side">${side.toUpperCase()}</div>
-                <div class="heat-token">${a.coin}</div>
-                <div class="heat-value">${fmt$(a.totalValue)}</div>
-                <div class="heat-value" style="margin-top:3px;">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</div>
-            </div>
-        `;
-    }).join('');
+const el=$('heatGrid');
+if(!Object.keys(state.aggregatedData).length){
+el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">No Data</div></div>';
+return;
 }
-
+const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
+el.innerHTML=top.map(a=>{
+const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
+const side=a.longValue>=a.shortValue?'long':'short';
+const bg=getColor(pnlPct,side);
+return            <div class="heat-cell" style="background:${bg};">                 <div class="heat-side">${side.toUpperCase()}</div>                 <div class="heat-token">${a.coin}</div>                 <div class="heat-value">${fmt$(a.totalValue)}</div>                 <div class="heat-value" style="margin-top:3px;">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</div>             </div>        ;
+}).join('');
+}
 function sortTable(col){
-    if(state.sortCol===col){
-        state.sortDir=state.sortDir==='asc'?'desc':'asc';
-    }else{
-        state.sortCol=col;
-        state.sortDir='asc';
-    }
-    updateTable();
+if(state.sortCol===col){
+state.sortDir=state.sortDir==='asc'?'desc':'asc';
+}else{
+state.sortCol=col;
+state.sortDir='asc';
 }
-
+updateTable();
+}
 function getSortedPositions(){
-    let sorted=[...state.positions];
-    if(state.sortCol){
-        sorted.sort((a,b)=>{
-            let aVal=a[state.sortCol];
-            let bVal=b[state.sortCol];
-            
-            if(state.sortCol==='markPrice'){
-                aVal=a.entryPx+(a.unrealizedPnl/a.szi);
-                bVal=b.entryPx+(b.unrealizedPnl/b.szi);
-            }
-            
-            if(typeof aVal==='string'){
-                aVal=aVal.toLowerCase();
-                bVal=bVal.toLowerCase();
-            }
-            
-            if(aVal<bVal)return state.sortDir==='asc'?-1:1;
-            if(aVal>bVal)return state.sortDir==='asc'?1:-1;
-            return 0;
-        });
-    }
-    return sorted;
-}
-
-function updateTable(){
-    const tbody=$('tableBody');
-    
-    document.querySelectorAll('th.sortable').forEach(th=>{
-        th.className='sortable';
-        if(th.dataset.col===state.sortCol){
-            th.classList.add(state.sortDir==='asc'?'sorted-asc':'sorted-desc');
+let sorted=[...state.positions];
+if(state.sortCol){
+sorted.sort((a,b)=>{
+let aVal=a[state.sortCol];
+let bVal=b[state.sortCol];
+    if(state.sortCol==='markPrice'){
+            aVal=a.entryPx+(a.unrealizedPnl/a.szi);
+            bVal=b.entryPx+(b.unrealizedPnl/b.szi);
         }
+        
+        if(typeof aVal==='string'){
+            aVal=aVal.toLowerCase();
+            bVal=bVal.toLowerCase();
+        }
+        
+        if(aVal<bVal)return state.sortDir==='asc'?-1:1;
+        if(aVal>bVal)return state.sortDir==='asc'?1:-1;
+        return 0;
     });
-    
-    if(!state.positions.length){
-        tbody.innerHTML=`<tr>
-            <td colspan="10" style="text-align:center;padding:30px;color:#666;">
-                <div style="font-size:24px;margin-bottom:8px;">🔍</div>
-                <div style="font-weight:700;margin-bottom:4px;">No Positions</div>
-            </td>
-        </tr>`;
-        return;
+}
+return sorted;
     }
-    
-    const sorted=getSortedPositions();
-    
-    tbody.innerHTML=sorted.map(p=>{
-        const pnlCls=p.unrealizedPnl>=0?'long':'short';
-        const roe=p.returnOnEquity*100;
-        const mark=p.entryPx+(p.unrealizedPnl/p.szi);
-        return`
-            <tr>
-                <td class="token-cell">${p.coin}</td>
-                <td style="font-family:monospace;font-size:9px;">${p.address.substring(0,6)}...${p.address.substring(p.address.length-4)}</td>
-                <td><span class="side-badge side-${p.side}">${p.side.toUpperCase()}</span></td>
-                <td style="color:#888;">${p.leverage.toFixed(1)}x</td>
-                <td style="font-weight:700;">${fmt$(p.positionValue)}</td>
-                <td>${fmtN(p.szi)}</td>
-                <td>${fmtP(p.entryPx)}</td>
-                <td>${fmtP(mark)}</td>
-                <td class="${pnlCls}">${p.unrealizedPnl>=0?'+':''}${fmt$(p.unrealizedPnl)}</td>
-                <td class="${pnlCls}">${roe>=0?'+':''}${roe.toFixed(2)}%</td>
-            </tr>
-        `;
-    }).join('');
+function updateTable(){
+const tbody=$('tableBody');
+    document.querySelectorAll('th.sortable').forEach(th=>{
+    th.className='sortable';
+    if(th.dataset.col===state.sortCol){
+        th.classList.add(state.sortDir==='asc'?'sorted-asc':'sorted-desc');
+    }
+});
+
+if(!state.positions.length){
+    tbody.innerHTML=`<tr>
+        <td colspan="10" style="text-align:center;padding:30px;color:#666;">
+            <div style="font-size:24px;margin-bottom:8px;">🔍</div>
+            <div style="font-weight:700;margin-bottom:4px;">No Positions</div>
+        </td>
+    </tr>`;
+    return;
 }
 
+const sorted=getSortedPositions();
+
+tbody.innerHTML=sorted.map(p=>{
+    const pnlCls=p.unrealizedPnl>=0?'long':'short';
+    const roe=p.returnOnEquity*100;
+    const mark=p.entryPx+(p.unrealizedPnl/p.szi);
+    return`
+        <tr>
+            <td class="token-cell">${p.coin}</td>
+            <td style="font-family:monospace;font-size:9px;">${p.address.substring(0,6)}...${p.address.substring(p.address.length-4)}</td>
+            <td><span class="side-badge side-${p.side}">${p.side.toUpperCase()}</span></td>
+            <td style="color:#888;">${p.leverage.toFixed(1)}x</td>
+            <td style="font-weight:700;">${fmt$(p.positionValue)}</td>
+            <td>${fmtN(p.szi)}</td>
+            <td>${fmtP(p.entryPx)}</td>
+            <td>${fmtP(mark)}</td>
+            <td class="${pnlCls}">${p.unrealizedPnl>=0?'+':''}${fmt$(p.unrealizedPnl)}</td>
+            <td class="${pnlCls}">${roe>=0?'+':''}${roe.toFixed(2)}%</td>
+        </tr>
+    `;
+}).join('');
+    }
 function setStatus(s){
-    const el=$('status');
-    if(s==='Connected'){el.textContent='OK';el.className='badge badge-ok';}
-    else if(s==='Loading...'||s==='Searching...'){el.textContent=s;el.className='badge badge-err';}
-    else if(s==='Error'){el.textContent='ERR';el.className='badge badge-err';}
-    else{el.textContent='Ready';el.className='badge badge-err';}
+const el=$('status');
+if(s==='Connected'){el.textContent='OK';el.className='badge badge-ok';}
+else if(s==='Loading...'||s==='Searching...'){el.textContent=s;el.className='badge badge-err';}
+else if(s==='Error'){el.textContent='ERR';el.className='badge badge-err';}
+else{el.textContent='Ready';el.className='badge badge-err';}
 }
-
 function updateTime(){
-    const now=new Date();
-    $('lastUpdate').textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+const now=new Date();
+$('lastUpdate').textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
 }
-
 function showLoad(show,txt='Loading...'){
-    const el=$('loading');
-    const txtEl=$('loadingText');
-    txtEl.textContent=txt;
-    if(show)el.classList.add('active');
-    else el.classList.remove('active');
+const el=$('loading');
+const txtEl=$('loadingText');
+txtEl.textContent=txt;
+if(show)el.classList.add('active');
+else el.classList.remove('active');
 }
-
 function clearAll(){
-    state.addresses=[];
-    state.positions=[];
-    state.aggregatedData={};
-    state.searchResults=[];
-    state.selectedWallets.clear();
-    state.sortCol=null;
-    state.sortDir='asc';
-    saveCfg();
-    renderAddrs();
-    renderSearch();
-    updateUI();
-    setStatus('Ready');
-    $('lastUpdate').textContent='Never';
-    $('coinInput').value='';
+state.addresses=[];
+state.positions=[];
+state.aggregatedData={};
+state.searchResults=[];
+state.selectedWallets.clear();
+state.sortCol=null;
+state.sortDir='asc';
+saveCfg();
+renderAddrs();
+renderSearch();
+updateUI();
+setStatus('Ready');
+$('lastUpdate').textContent='Never';
+$('coinInput').value='';
 }
-
 function exportCSV(){
-    if(!state.positions.length){alert('No positions');return;}
-    const sorted=getSortedPositions();
-    const header=['token','address','side','leverage','positionValue','size','entryPrice','markPrice','unrealizedPnl','roePercent'];
-    const csv=[header.join(',')];
-    sorted.forEach(p=>{
-        const mark=p.entryPx+(p.unrealizedPnl/p.szi);
-        const roe=p.returnOnEquity*100;
-        const line=[
-            p.coin,
-            p.address,
-            p.side,
-            p.leverage.toFixed(2),
-            p.positionValue,
-            p.szi,
-            p.entryPx,
-            mark,
-            p.unrealizedPnl,
-            roe
-        ].map(v=>String(v).replace(/"/g,'""'));
-        csv.push('"'+line.join('","')+'"');
-    });
-    const blob=new Blob([csv.join('\n')],{type:'text/csv;charset=utf-8;'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download='hl_positions.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+if(!state.positions.length){alert('No positions');return;}
+const sorted=getSortedPositions();
+const header=['token','address','side','leverage','positionValue','size','entryPrice','markPrice','unrealizedPnl','roePercent'];
+const csv=[header.join(',')];
+sorted.forEach(p=>{
+const mark=p.entryPx+(p.unrealizedPnl/p.szi);
+const roe=p.returnOnEquity*100;
+const line=[
+p.coin,
+p.address,
+p.side,
+p.leverage.toFixed(2),
+p.positionValue,
+p.szi,
+p.entryPx,
+mark,
+p.unrealizedPnl,
+roe
+].map(v=>String(v).replace(/"/g,'""'));
+csv.push('"'+line.join('","')+'"');
+});
+const blob=new Blob([csv.join('\n')],{type:'text/csv;charset=utf-8;'});
+const url=URL.createObjectURL(blob);
+const a=document.createElement('a');
+a.href=url;
+a.download='hl_positions.csv';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
 }
-
 function $(id){return document.getElementById(id);}
-
 $('addBtn').addEventListener('click',addAddr);
 $('loadBtn').addEventListener('click',()=>loadPos(false));
 $('refreshBtn').addEventListener('click',()=>loadPos(false));
@@ -1408,67 +1728,89 @@ $('importBtn').addEventListener('click',importWallets);
 $('selectAllBtn').addEventListener('click',selectAllWallets);
 $('deselectAllBtn').addEventListener('click',deselectAllWallets);
 $('toggleWhaleBtn').addEventListener('click',toggleWhaleMonitoring);
-
+$('exportWhaleBtn').addEventListener('click',exportWhaleAlerts);
 $('whaleSettingsBtn').addEventListener('click',()=>{
-    const panel=$('whaleSettingsPanel');
-    panel.style.display=panel.style.display==='none'?'grid':'none';
+const panel=$('whaleSettingsPanel');
+panel.style.display=panel.style.display==='none'?'grid':'none';
 });
-    $('clearNotificationsBtn').addEventListener('click',()=>{
-    state.whaleNotifications=[];
-    renderWhaleNotifications();
-    $('whaleAlertsToday').textContent='0';
+$('clearNotificationsBtn').addEventListener('click',()=>{
+state.whaleNotifications=[];
+renderWhaleNotifications();
+$('whaleAlertsToday').textContent='0';
 });
-
+$('advancedFiltersBtn').addEventListener('click',()=>{
+const panel=$('advancedFiltersPanel');
+panel.classList.toggle('active');
+});
+$('applyFiltersBtn').addEventListener('click',applyAdvancedFilters);
+$('closeProfileBtn').addEventListener('click',()=>{
+$('whaleProfileModal').classList.remove('active');
+});
+$('soundVolume').addEventListener('input',e=>{
+state.soundVolume=e.target.value/100;
+$('volumeDisplay').textContent=e.target.value+'%';
+saveCfg();
+});
 document.querySelectorAll('.whale-filter-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-        document.querySelectorAll('.whale-filter-btn').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        renderWhaleNotifications();
-    });
+btn.addEventListener('click',()=>{
+document.querySelectorAll('.whale-filter-btn').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+renderWhaleNotifications();
 });
-
+});
+document.querySelectorAll('.coin-chip').forEach(chip=>{
+chip.addEventListener('click',()=>{
+document.querySelectorAll('.coin-chip').forEach(c=>c.classList.remove('active'));
+chip.classList.add('active');
+state.coinFilter=chip.dataset.coin;
+});
+});
+$('minSizeFilter').addEventListener('change',e=>{
+state.minSizeFilter=parseInt(e.target.value);
+});
+$('pnlFilter').addEventListener('change',e=>{
+state.pnlFilter=e.target.value;
+});
+$('impactFilter').addEventListener('change',e=>{
+state.impactFilter=e.target.value;
+});
 $('whaleMinChange').addEventListener('change',saveCfg);
 $('alertNew').addEventListener('change',saveCfg);
 $('alertIncrease').addEventListener('change',saveCfg);
 $('alertDecrease').addEventListener('change',saveCfg);
 $('alertClose').addEventListener('change',saveCfg);
 document.querySelectorAll('.whale-mode-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-        const mode=btn.dataset.mode;
-        setNotificationMode(mode);
-        
-        if(mode==='full'&&'Notification'in window&&Notification.permission==='default'){
-            Notification.requestPermission();
-        }
-    });
+btn.addEventListener('click',()=>{
+const mode=btn.dataset.mode;
+setNotificationMode(mode);
+    if(mode==='full'&&'Notification'in window&&Notification.permission==='default'){
+        Notification.requestPermission();
+    }
 });
-
-    
+});
 $('addrInput').addEventListener('keydown',e=>{
-    if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){
-        e.preventDefault();
-        addAddr();
-    }
+if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){
+e.preventDefault();
+addAddr();
+}
 });
-
 $('coinInput').addEventListener('keydown',e=>{
-    if(e.key==='Enter'){
-        e.preventDefault();
-        searchCoin();
-    }
+if(e.key==='Enter'){
+e.preventDefault();
+searchCoin();
+}
 });
-
 document.querySelectorAll('th.sortable').forEach(th=>{
-    th.addEventListener('click',()=>{
-        sortTable(th.dataset.col);
-    });
+th.addEventListener('click',()=>{
+sortTable(th.dataset.col);
 });
-
+});
 window.rmAddr=rmAddr;
-
+window.showWhaleProfile=showWhaleProfile;
 document.addEventListener('DOMContentLoaded',()=>{
-    loadCfg();
-    console.log('🐋 HL Dashboard ready');
+loadCfg();
+updateActivityChart();
+console.log('🐋 HL Dashboard PRO ready');
 });
 </script>
 </body>
