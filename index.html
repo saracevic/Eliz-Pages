@@ -103,6 +103,10 @@
         .whale-notif-impact.medium{background:rgba(245,158,11,.2);color:#f59e0b;}
         .whale-notif-impact.low{background:rgba(59,130,246,.2);color:#3b82f6;}
         @media(max-width:768px){.whale-stats{grid-template-columns:repeat(2,1fr);}}
+        .whale-mode-btn{flex:1;padding:8px 12px;border-radius:4px;border:1px solid #333;background:#111;color:#888;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+        .whale-mode-btn:hover{background:#1a1a1a;border-color:#444;transform:translateY(-1px);}
+        .whale-mode-btn.active{background:#3b82f6;color:#fff;border-color:#3b82f6;box-shadow:0 0 10px rgba(59,130,246,.3);}
+        .whale-mode-btn:active{transform:translateY(0);}
         table{width:100%;border-collapse:collapse;font-size:10px;}
         th{padding:6px;text-align:left;background:#0a0a0a;color:#666;font-size:9px;border-bottom:1px solid #222;cursor:pointer;user-select:none;position:relative;}
         th:hover{background:#151515;}
@@ -223,9 +227,22 @@
             </div>
         </div>
         <div class="whale-input-group">
-            <label class="whale-input-label">Min Change % (for alerts)</label>
-            <input type="number" id="whaleMinChange" class="input" value="10" min="5" max="50" step="5">
-        </div>
+    <label class="whale-input-label">Notification Mode</label>
+    <div style="display:flex;gap:6px;margin-top:4px;">
+        <button class="whale-mode-btn active" data-mode="silent" id="modeSilent">
+            🔕 Silent
+        </button>
+        <button class="whale-mode-btn" data-mode="sound" id="modeSound">
+            🔔 Sound
+        </button>
+        <button class="whale-mode-btn" data-mode="full" id="modeFull">
+            📢 Full
+        </button>
+    </div>
+    <div style="font-size:9px;color:#666;margin-top:4px;" id="modeDescription">
+        List only, no sounds or pop-ups
+    </div>
+</div>
     </div>
 
     <div class="whale-stats" id="whaleStats">
@@ -361,7 +378,7 @@
 </div>
 
 <script>
-const state={addresses:[],positions:[],aggregatedData:{},searchResults:[],selectedWallets:new Set(),sortCol:null,sortDir:'asc',whaleEnabled:false,whaleInterval:null,lastWhaleCheck:{},whaleNotifications:[]};
+const state={addresses:[],positions:[],aggregatedData:{},searchResults:[],selectedWallets:new Set(),sortCol:null,sortDir:'asc',whaleEnabled:false,whaleInterval:null,lastWhaleCheck:{},whaleNotifications:[],notificationMode:'silent'};
 const API='https://api.hyperliquid.xyz/info';
 const LB_API='https://stats-data.hyperliquid.xyz/Mainnet/leaderboard';
 
@@ -378,6 +395,10 @@ function loadCfg(){
         if(cfg.alertIncrease!==undefined)$('alertIncrease').checked=cfg.alertIncrease;
         if(cfg.alertDecrease!==undefined)$('alertDecrease').checked=cfg.alertDecrease;
         if(cfg.alertClose!==undefined)$('alertClose').checked=cfg.alertClose;
+        if(cfg.notificationMode){
+            state.notificationMode=cfg.notificationMode;
+            setNotificationMode(cfg.notificationMode);
+        }
     }
 }
 
@@ -390,7 +411,8 @@ function saveCfg(){
         alertNew:$('alertNew').checked,
         alertIncrease:$('alertIncrease').checked,
         alertDecrease:$('alertDecrease').checked,
-        alertClose:$('alertClose').checked
+        alertClose:$('alertClose').checked,
+        notificationMode:state.notificationMode
     }));
 }
 
@@ -847,6 +869,46 @@ function generateAIAnalysis(data){
     return{analysis,impact};
 }
 
+function playNotificationSound(){
+    const audioContext=new(window.AudioContext||window.webkitAudioContext)();
+    const oscillator=audioContext.createOscillator();
+    const gainNode=audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value=800;
+    oscillator.type='sine';
+    
+    gainNode.gain.setValueAtTime(0.3,audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01,audioContext.currentTime+0.5);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime+0.5);
+}
+
+function setNotificationMode(mode){
+    state.notificationMode=mode;
+    
+    document.querySelectorAll('.whale-mode-btn').forEach(btn=>{
+        btn.classList.remove('active');
+    });
+    
+    const activeBtn=document.querySelector(`[data-mode="${mode}"]`);
+    if(activeBtn)activeBtn.classList.add('active');
+    
+    const descriptions={
+        silent:'List only, no sounds or pop-ups',
+        sound:'List updates + sound notification',
+        full:'List + sound + browser pop-ups'
+    };
+    
+    const descEl=$('modeDescription');
+    if(descEl)descEl.textContent=descriptions[mode]||'';
+    
+    saveCfg();
+}
+    
 function addWhaleNotification(data){
     const {analysis,impact}=generateAIAnalysis(data);
     
@@ -868,11 +930,18 @@ function addWhaleNotification(data){
     
     renderWhaleNotifications();
     
-    if('Notification'in window&&Notification.permission==='granted'){
-        new Notification('🐋 Whale Alert!',{
-            body:`${data.coin} ${data.side.toUpperCase()} - ${data.type.toUpperCase()} - ${fmt$(data.size)}`,
-            icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75">🐋</text></svg>'
-        });
+renderWhaleNotifications();
+    
+    if(state.notificationMode==='sound'){
+        playNotificationSound();
+    }else if(state.notificationMode==='full'){
+        playNotificationSound();
+        if('Notification'in window&&Notification.permission==='granted'){
+            new Notification('🐋 Whale Alert!',{
+                body:`${data.coin} ${data.side.toUpperCase()} - ${data.type.toUpperCase()} - ${fmt$(data.size)}`,
+                icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75">🐋</text></svg>'
+            });
+        }
     }
 }
 
@@ -1351,6 +1420,16 @@ $('alertNew').addEventListener('change',saveCfg);
 $('alertIncrease').addEventListener('change',saveCfg);
 $('alertDecrease').addEventListener('change',saveCfg);
 $('alertClose').addEventListener('change',saveCfg);
+document.querySelectorAll('.whale-mode-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+        const mode=btn.dataset.mode;
+        setNotificationMode(mode);
+        
+        if(mode==='full'&&'Notification'in window&&Notification.permission==='default'){
+            Notification.requestPermission();
+        }
+    });
+});
 
     
 $('addrInput').addEventListener('keydown',e=>{
