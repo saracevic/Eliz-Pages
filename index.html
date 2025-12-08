@@ -268,13 +268,18 @@
         </div>
     </div>
 
-    <div class="whale-filters">
-        <button class="whale-filter-btn active" data-filter="all">All</button>
-        <button class="whale-filter-btn" data-filter="new">New</button>
-        <button class="whale-filter-btn" data-filter="increase">Increase</button>
-        <button class="whale-filter-btn" data-filter="decrease">Decrease</button>
-        <button class="whale-filter-btn" data-filter="close">Close</button>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;margin-bottom:8px;">
+    <div class="whale-filters" style="margin:0;flex:1;">
+        <button class="whale-filter-btn active" data-filter="all">Tümü</button>
+        <button class="whale-filter-btn" data-filter="new">Yeni</button>
+        <button class="whale-filter-btn" data-filter="increase">Artış</button>
+        <button class="whale-filter-btn" data-filter="decrease">Azalış</button>
+        <button class="whale-filter-btn" data-filter="close">Kapalı</button>
     </div>
+    <button class="btn btn-secondary" id="clearNotificationsBtn" style="width:auto;padding:6px 12px;margin:0;font-size:10px;">
+        🧹 Temizle
+    </button>
+</div>
 
     <div class="whale-notifications" id="whaleNotifications">
         <div class="empty">
