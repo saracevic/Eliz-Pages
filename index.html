@@ -1477,10 +1477,8 @@ function updateStats(){
         if(p.unrealizedPnl>0)profit++;
         else if(p.unrealizedPnl<0)loss++;
     });
-    (′longPos′).textContent=fmt('longPos').textContent=fmt
-(′longPos′).textContent=fmt(longTot);
-    (′shortPos′).textContent=fmt('shortPos').textContent=fmt
-(′shortPos′).textContent=fmt(shortTot);
+    $('longPos').textContent=fmt$(longTot);
+    $('shortPos').textContent=fmt$(shortTot);
     $('totalPos').textContent=state.positions.length;
     const pnlEl=$('netPnl');
     pnlEl.textContent=fmt$(netPnl);
@@ -1490,20 +1488,17 @@ function updateStats(){
 }
 
 function updateBar(){
-let longTot=0,shortTot=0;
-state.positions.forEach(p=>{
-if(p.side==='long')longTot+=p.positionValue;
-else shortTot+=p.positionValue;
-});
-const tot=longTot+shortTot;
-const longPct=tot>0?(longTot/tot)*100:50;
+    let longTot=0,shortTot=0;
+    state.positions.forEach(p=>{
+        if(p.side==='long')longTot+=p.positionValue;
+        else shortTot+=p.positionValue;
+    });
+    const tot=longTot+shortTot;
+    const longPct=tot>0?(longTot/tot)*100:50;
     const shortPct=100-longPct;
-    (′longVal′).textContent=fmt('longVal').textContent=fmt
-(′longVal′).textContent=fmt(longTot);
-    (′shortVal′).textContent=fmt('shortVal').textContent=fmt
-(′shortVal′).textContent=fmt(shortTot);
-    const bl=(′barL′),bs=('barL'),bs=
-(′barL′),bs=('barS');
+    $('longVal').textContent=fmt$(longTot);
+    $('shortVal').textContent=fmt$(shortTot);
+    const bl=$('barL'),bs=$('barS');
     bl.style.width=longPct+'%';
     bs.style.width=shortPct+'%';
     bl.textContent=longPct.toFixed(1)+'%';
@@ -1565,18 +1560,25 @@ el.innerHTML=`
 `;
     }
 function updateHeat(){
-const el=$('heatGrid');
-if(!Object.keys(state.aggregatedData).length){
-el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">No Data</div></div>';
-return;
-}
-const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
-el.innerHTML=top.map(a=>{
-const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
-const side=a.longValue>=a.shortValue?'long':'short';
-const bg=getColor(pnlPct,side);
-return            <div class="heat-cell" style="background:${bg};">                 <div class="heat-side">${side.toUpperCase()}</div>                 <div class="heat-token">${a.coin}</div>                 <div class="heat-value">${fmt$(a.totalValue)}</div>                 <div class="heat-value" style="margin-top:3px;">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</div>             </div>        ;
-}).join('');
+    const el=$('heatGrid');
+    if(!Object.keys(state.aggregatedData).length){
+        el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">No Data</div></div>';
+        return;
+    }
+    const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
+    el.innerHTML=top.map(a=>{
+        const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
+        const side=a.longValue>=a.shortValue?'long':'short';
+        const bg=getColor(pnlPct,side);
+        return`
+            <div class="heat-cell" style="background:${bg};">
+                <div class="heat-side">${side.toUpperCase()}</div>
+                <div class="heat-token">${a.coin}</div>
+                <div class="heat-value">${fmt$(a.totalValue)}</div>
+                <div class="heat-value" style="margin-top:3px;">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</div>
+            </div>
+        `;
+    }).join('');
 }
 function sortTable(col){
 if(state.sortCol===col){
