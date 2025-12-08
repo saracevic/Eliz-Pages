@@ -1413,6 +1413,11 @@ $('whaleSettingsBtn').addEventListener('click',()=>{
     const panel=$('whaleSettingsPanel');
     panel.style.display=panel.style.display==='none'?'grid':'none';
 });
+    $('clearNotificationsBtn').addEventListener('click',()=>{
+    state.whaleNotifications=[];
+    renderWhaleNotifications();
+    $('whaleAlertsToday').textContent='0';
+});
 
 document.querySelectorAll('.whale-filter-btn').forEach(btn=>{
     btn.addEventListener('click',()=>{
