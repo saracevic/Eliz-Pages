@@ -228,7 +228,7 @@
             <button class="btn btn-success hidden" id="importBtn">✅ Import Selected</button>
         </div>
     </div>
-    <div class="whale-alert">
+<div class="whale-alert">
     <div class="row">
         <div class="title">🐋 WHALE ALERTS</div>
         <div style="display:flex;gap:6px;align-items:center;">
@@ -588,7 +588,7 @@ function fmtP(p){
     if(p>=0.01)return'$'+p.toFixed(4);
     return'$'+p.toFixed(6);
 }
-    function getColor(pnl,side){
+function getColor(pnl,side){
     if(side){
         if(side==='long'){
             if(pnl>20)return'rgba(16,185,129,0.95)';
@@ -1306,168 +1306,895 @@ function showWhaleProfile(address){
         <div class="whale-stat-card">
             <div class="whale-stat-label">Win Rate</div>
             <div class="whale-stat-value">${winRate}%</div>
-            </div>
-    <div class="whale-stat-card">
-        <div class="whale-stat-label">Total PnL</div>
-        <div class="whale-stat-value ${totalPnl>=0?'long':'short'}">${fmt$(totalPnl)}</div>
-    </div>
-    <div class="whale-stat-card">
-        <div class="whale-stat-label">Avg Position</div>
-        <div class="whale-stat-value">${fmt$(avgSize)}</div>
-    </div>
-`;
+function getColor(pnl,side){
+    if(side){
+        if(side==='long'){
+            if(pnl>20)return'rgba(16,185,129,0.95)';
+            if(pnl>10)return'rgba(16,185,129,0.85)';
+            if(pnl>5)return'rgba(16,185,129,0.75)';
+            if(pnl>=0)return'rgba(16,185,129,0.65)';
+            if(pnl>-5)return'rgba(16,185,129,0.45)';
+            if(pnl>-10)return'rgba(16,185,129,0.35)';
+            return'rgba(16,185,129,0.25)';
+        }else{
+            if(pnl>20)return'rgba(239,68,68,0.95)';
+            if(pnl>10)return'rgba(239,68,68,0.85)';
+            if(pnl>5)return'rgba(239,68,68,0.75)';
+            if(pnl>=0)return'rgba(239,68,68,0.65)';
+            if(pnl>-5)return'rgba(239,68,68,0.45)';
+            if(pnl>-10)return'rgba(239,68,68,0.35)';
+            return'rgba(239,68,68,0.25)';
+        }
+    }
+    if(pnl>=0){
+        if(pnl>20)return'rgba(16,185,129,0.9)';
+        if(pnl>10)return'rgba(16,185,129,0.7)';
+        if(pnl>5)return'rgba(16,185,129,0.5)';
+        return'rgba(16,185,129,0.3)';
+    }
+    const a=Math.abs(pnl);
+    if(a>20)return'rgba(239,68,68,0.9)';
+    if(a>10)return'rgba(239,68,68,0.7)';
+    if(a>5)return'rgba(239,68,68,0.5)';
+    return'rgba(239,68,68,0.3)';
+}
 
-if(history.length===0){
-    historyEl.innerHTML='<div class="empty"><div class="empty-title">No activity yet</div></div>';
-}else{
-    historyEl.innerHTML=history.slice(0,20).map(h=>{
-        const time=new Date(h.timestamp).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+function renderAddrs(){
+    const el=$('addrList');
+    if(!state.addresses.length){
+        el.innerHTML='<div style="text-align:center;color:#666;padding:8px;font-size:10px;">No addresses</div>';
+        return;
+    }
+    el.innerHTML=state.addresses.map(a=>`
+        <div class="chip">
+            <span>${a.substring(0,6)}...${a.substring(a.length-4)}</span>
+            <button onclick="rmAddr('${a}')">×</button>
+        </div>
+    `).join('');
+}
+
+function addAddr(){
+    const raw=$('addrInput').value.trim();
+    if(!raw){alert('Enter address');return;}
+    const parts=raw.split(/[\s,;]+/).filter(Boolean);
+    let added=0;
+    parts.forEach(p=>{
+        const addr=p.trim();
+        if(addr.startsWith('0x')&&addr.length===42&&!state.addresses.includes(addr)){
+            state.addresses.push(addr);
+            added++;
+        }
+    });
+    if(!added){alert('No new valid addresses');return;}
+    $('addrInput').value='';
+    renderAddrs();
+    saveCfg();
+}
+
+function rmAddr(addr){
+    state.addresses=state.addresses.filter(a=>a!==addr);
+    renderAddrs();
+    saveCfg();
+}
+
+async function fetchUser(addr){
+    try{
+        const res=await fetch(API,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({type:'clearinghouseState',user:addr})
+        });
+        if(!res.ok)throw new Error('API fail');
+        return await res.json();
+    }catch(e){
+        console.error('fetchUser error',e);
+        return null;
+    }
+}
+
+async function fetchLB(){
+    try{
+        const res=await fetch(LB_API);
+        if(!res.ok)throw new Error('LB fail');
+        const data=await res.json();
+        return data.leaderboardRows||[];
+    }catch(e){
+        console.error('fetchLB error',e);
+        return[];
+    }
+}
+
+async function searchCoin(){
+    const coin=$('coinInput').value.trim().toUpperCase();
+    if(!coin){alert('Enter coin symbol');return;}
+
+    showLoad(true,'Searching '+coin+'...');
+    setStatus('Searching...');
+    state.searchResults=[];
+    state.selectedWallets.clear();
+
+    try{
+        const lb=await fetchLB();
+        if(!lb.length){alert('LB data fail');showLoad(false);return;}
+
+        const results=[];
+        const batchSize=10;
+        const maxWallets=300;
+        const total=Math.min(lb.length,maxWallets);
+        let scanned=0;
+
+        const processBatch=async(batch)=>{
+            const promises=batch.map(async row=>{
+                const addr=row.ethAddress;
+                if(!addr)return[];
+
+                try{
+                    const data=await fetchUser(addr);
+                    if(!data||!data.assetPositions)return[];
+
+                    const found=[];
+                    for(const pos of data.assetPositions){
+                        const p=pos.position;
+                        const c=(pos.coin||p.coin||'').toUpperCase();
+                        
+                        if(c===coin){
+                            const szi=parseFloat(p.szi);
+                            if(szi===0)continue;
+
+                            const entryPx=parseFloat(p.entryPx);
+                            const posVal=Math.abs(szi)*entryPx;
+                            const pnl=parseFloat(p.unrealizedPnl);
+                            const lev=parseFloat(p.leverage.value);
+
+                            found.push({
+                                address:addr,
+                                coin:c,
+                                side:szi>0?'long':'short',
+                                szi:Math.abs(szi),
+                                entryPx,
+                                positionValue:posVal,
+                                unrealizedPnl:pnl,
+                                leverage:lev,
+                                returnOnEquity:parseFloat(p.returnOnEquity)
+                            });
+                        }
+                    }
+                    return found;
+                }catch(e){
+                    return[];
+                }
+            });
+
+            return(await Promise.all(promises)).flat();
+        };
+
+        for(let i=0;i<total;i+=batchSize){
+            const batch=lb.slice(i,Math.min(i+batchSize,total));
+            const batchResults=await processBatch(batch);
+            results.push(...batchResults);
+            
+            scanned+=batch.length;
+            $('loadingText').textContent=`Scanning ${scanned}/${total}... Found: ${results.length}`;
+            
+            await new Promise(r=>setTimeout(r,100));
+        }
+
+        state.searchResults=results;
+        renderSearch();
+        setStatus('Connected');
+    }catch(e){
+        console.error(e);
+        alert('Search error: '+e.message);
+        setStatus('Error');
+    }finally{
+        showLoad(false);
+    }
+}
+
+function renderSearch(){
+    const el=$('searchResults');
+    const stats=$('searchStats');
+    const btn=$('importBtn');
+    const selectActions=$('selectActions');
+
+    if(!state.searchResults.length){
+        el.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">No Wallets Found</div></div>';
+        stats.classList.add('hidden');
+        btn.classList.add('hidden');
+        selectActions.classList.add('hidden');
+        return;
+    }
+
+    let longCnt=0,shortCnt=0,totalSize=0;
+    state.searchResults.forEach(r=>{
+        if(r.side==='long')longCnt++;
+        else shortCnt++;
+        totalSize+=r.positionValue;
+    });
+
+    $('foundCount').textContent=state.searchResults.length;
+    $('foundLong').textContent=longCnt;
+    $('foundShort').textContent=shortCnt;
+    $('foundSize').textContent=fmt$(totalSize);
+    stats.classList.remove('hidden');
+    btn.classList.remove('hidden');
+    selectActions.classList.remove('hidden');
+
+    el.innerHTML=state.searchResults.map(r=>{
+        const pnlCls=r.unrealizedPnl>=0?'long':'short';
+        const roe=r.returnOnEquity*100;
         return`
-            <div class="whale-history-item">
-                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-                    <span style="font-weight:700;color:#fff;">${h.coin} - ${h.type.toUpperCase()}</span>
-                    <span style="color:#666;font-size:9px;">${time}</span>
+            <div class="result-item">
+                <div class="result-info">
+                    <div class="result-coin">${r.coin} - ${r.side.toUpperCase()}</div>
+                    <div class="result-addr">${r.address}</div>
+                    <div class="result-details">
+                        ${fmt$(r.positionValue)} | ${fmtN(r.szi)} | ${r.leverage.toFixed(1)}x | 
+                        <span class="${pnlCls}">${r.unrealizedPnl>=0?'+':''}${fmt$(r.unrealizedPnl)}</span> | 
+                        <span class="${pnlCls}">${roe>=0?'+':''}${roe.toFixed(2)}%</span>
+                    </div>
                 </div>
-                <div style="color:#ddd;">${fmt$(h.size)} | ${h.side.toUpperCase()}</div>
+                <input type="checkbox" class="cb" data-addr="${r.address}" ${state.selectedWallets.has(r.address)?'checked':''}>
+            </div>
+        `;
+    }).join('');
+
+    el.querySelectorAll('.cb').forEach(cb=>{
+        cb.addEventListener('change',e=>{
+            const addr=e.target.dataset.addr;
+            if(e.target.checked)state.selectedWallets.add(addr);
+            else state.selectedWallets.delete(addr);
+        });
+    });
+}
+
+function selectAllWallets(){
+    state.searchResults.forEach(r=>{
+        state.selectedWallets.add(r.address);
+    });
+    renderSearch();
+}
+
+function deselectAllWallets(){
+    state.selectedWallets.clear();
+    renderSearch();
+}
+
+function importWallets(){
+    if(!state.selectedWallets.size){alert('Select wallets');return;}
+
+    let added=0;
+    state.selectedWallets.forEach(addr=>{
+        if(!state.addresses.includes(addr)){
+            state.addresses.push(addr);
+            added++;
+        }
+    });
+
+    if(added>0){
+        renderAddrs();
+        saveCfg();
+        alert(`✅ Imported ${added} wallet(s)!`);
+        
+        state.searchResults=[];
+        state.selectedWallets.clear();
+        $('coinInput').value='';
+        renderSearch();
+    }else{
+        alert('All selected already exist');
+    }
+}
+
+async function checkWhaleMovements(){
+    if(!state.whaleEnabled)return;
+    
+    const minSize=parseInt($('whaleMinSize').value);
+    const minChange=parseInt($('whaleMinChange').value);
+    
+    try{
+        const lb=await fetchLB();
+        const topWallets=lb.slice(0,50);
+        
+        for(const row of topWallets){
+            const addr=row.ethAddress;
+            if(!addr)continue;
+            
+            const data=await fetchUser(addr);
+            if(!data||!data.assetPositions)continue;
+            
+            for(const pos of data.assetPositions){
+                const p=pos.position;
+                const szi=parseFloat(p.szi);
+                const coin=pos.coin||p.coin;
+                const key=`${addr}-${coin}`;
+                
+                if(szi===0){
+                    if(state.lastWhaleCheck[key]&&$('alertClose').checked){
+                        const old=state.lastWhaleCheck[key];
+                        addWhaleNotification({
+                            coin,
+                            address:addr,
+                            side:old.side,
+                            size:0,
+                            oldSize:old.posVal,
+                            leverage:0,
+                            type:'close'
+                        });
+                        delete state.lastWhaleCheck[key];
+                    }
+                    continue;
+                }
+                
+                const entryPx=parseFloat(p.entryPx);
+                const posVal=Math.abs(szi)*entryPx;
+                
+                if(posVal>=minSize){
+                    const side=szi>0?'long':'short';
+                    const lev=parseFloat(p.leverage.value);
+                    const pnl=parseFloat(p.unrealizedPnl);
+                    const roe=parseFloat(p.returnOnEquity)*100;
+                    
+                    if(!state.lastWhaleCheck[key]){
+                        if($('alertNew').checked){
+                            state.lastWhaleCheck[key]={posVal,szi:Math.abs(szi),side,coin};
+                            addWhaleNotification({
+                                coin,address:addr,side,size:posVal,leverage:lev,type:'new',pnl,roe
+                            });
+                        }
+                    }else{
+                        const old=state.lastWhaleCheck[key];
+                        const sizeDiff=posVal-old.posVal;
+                        const pctChange=(Math.abs(sizeDiff)/old.posVal)*100;
+                        
+                        if(pctChange>=minChange){
+                            if(sizeDiff>0&&$('alertIncrease').checked){
+                                addWhaleNotification({
+                                    coin,address:addr,side,size:posVal,oldSize:old.posVal,
+                                    change:pctChange,type:'increase',leverage:lev,pnl,roe
+                                });
+                            }else if(sizeDiff<0&&$('alertDecrease').checked){
+                                addWhaleNotification({
+                                    coin,address:addr,side,size:posVal,oldSize:old.posVal,
+                                    change:pctChange,type:'decrease',leverage:lev,pnl,roe
+                                });
+                            }
+                            state.lastWhaleCheck[key]={posVal,szi:Math.abs(szi),side,coin};
+                        }
+                    }
+                    
+                    if(!state.whaleProfiles[addr]){
+                        state.whaleProfiles[addr]={
+                            address:addr,
+                            history:[],
+                            totalAlerts:0,
+                            winRate:0
+                        };
+                    }
+                }
+            }
+        }
+        updateWhaleStats();
+        updateActivityChart();
+    }catch(e){
+        console.error('Whale check error:',e);
+    }
+}
+
+function generateAIAnalysis(data){
+    const {type,coin,side,size,oldSize,change,leverage,pnl,roe}=data;
+    
+    let analysis='';
+    let impact='low';
+    
+    if(type==='new'){
+        if(size>2000000){impact='critical';}
+        else if(size>1000000){impact='high';}
+        else if(size>500000){impact='medium';}
+        
+        const sentiment=side==='long'?'bullish':'bearish';
+        analysis=`A whale opened a ${sentiment} position on ${coin}. `;
+        
+        if(leverage>15){
+            analysis+=`Extremely high leverage (${leverage.toFixed(1)}x) indicates aggressive conviction. `;
+            impact='critical';
+        }else if(leverage>10){
+            analysis+=`High leverage (${leverage.toFixed(1)}x) shows strong confidence. `;
+            if(impact==='low')impact='medium';
+        }else if(leverage<3){
+            analysis+=`Low leverage suggests cautious accumulation. `;
+        }
+        
+        if(size>2000000){
+            analysis+=`This massive ${fmt$(size)} position could significantly impact ${coin} price action. Market may follow this whale's direction.`;
+        }else if(size>1000000){
+            analysis+=`This ${fmt$(size)} position is large enough to influence short-term momentum.`;
+        }else if(size>500000){
+            analysis+=`${fmt$(size)} position size suggests possible test phase before larger entry.`;
+        }else{
+            analysis+=`${fmt$(size)} position - monitoring for potential scaling.`;
+        }
+        
+    }else if(type==='increase'){
+        if(change>50){impact='critical';}
+        else if(change>30){impact='high';}
+        else if(change>20){impact='medium';}
+        
+        analysis=`Whale increased ${coin} ${side} position by ${change.toFixed(1)}%. `;
+        
+        if(pnl>0&&roe>15){
+            analysis+=`Already profitable (+${roe.toFixed(1)}% ROE), adding to winning position. Strong bullish signal. `;
+            impact='critical';
+        }else if(pnl>0&&roe>10){
+            analysis+=`Adding to profitable position (+${roe.toFixed(1)}% ROE). Conviction play. `;
+            if(impact==='low')impact='high';
+        }else if(pnl<0&&roe<-15){
+            analysis+=`Averaging down on losing position (${roe.toFixed(1)}% ROE). Risk: potential capitulation or strong reversal belief. `;
+            impact='high';
+        }else if(pnl<0&&roe<-10){
+            analysis+=`Adding to underwater position (${roe.toFixed(1)}% ROE). Doubling down. `;
+        }
+        
+        if(change>70){
+            analysis+=`Massive ${change.toFixed(0)}% increase shows extreme conviction. Watch for continuation.`;
+        }else if(change>50){
+            analysis+=`Huge ${change.toFixed(0)}% add. Other whales may follow this move.`;
+        }else if(change>30){
+            analysis+=`Significant increase. Position building phase likely continues.`;
+        }
+}else if(type==='decrease'){
+        if(change>60){impact='critical';}
+        else if(change>40){impact='high';}
+        else if(change>25){impact='medium';}
+        
+        analysis=`Whale reduced ${coin} ${side} position by ${change.toFixed(1)}%. `;
+        
+        if(pnl>0&&roe>20){
+            analysis+=`Taking profits at +${roe.toFixed(1)}% ROE. Smart money securing gains. `;
+            if(impact==='low')impact='medium';
+        }else if(pnl>0&&roe>15){
+            analysis+=`Profit-taking at +${roe.toFixed(1)}% ROE. Healthy position management. `;
+        }else if(pnl<0&&roe<-10){
+            analysis+=`Cutting losses at ${roe.toFixed(1)}% ROE. Potential trend reversal signal. `;
+            impact='critical';
+        }else if(pnl<0){
+            analysis+=`Reducing losing position (${roe.toFixed(1)}% ROE). Risk management. `;
+        }
+        
+        if(change>70){
+            analysis+=`Major position exit! Could trigger panic selling if others follow.`;
+        }else if(change>50){
+            analysis+=`Large reduction. Watch for full exit or market reversal.`;
+        }else{
+            analysis+=`Partial profit-taking or risk management. Monitor for complete closure.`;
+        }
+        
+    }else if(type==='close'){
+        impact='critical';
+        const posType=side==='long'?'bullish':'bearish';
+        analysis=`Whale CLOSED entire ${coin} ${side} position (${fmt$(oldSize)}). `;
+        analysis+=`This removes significant ${posType} pressure from the market. `;
+        analysis+=`Watch for price reversal or consolidation. Other positions may follow this exit.`;
+    }
+    
+    return{analysis,impact};
+}
+
+function playNotificationSound(){
+    const audioContext=new(window.AudioContext||window.webkitAudioContext)();
+    const oscillator=audioContext.createOscillator();
+    const gainNode=audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value=800;
+    oscillator.type='sine';
+    
+    const volume=state.soundVolume;
+    gainNode.gain.setValueAtTime(volume,audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01,audioContext.currentTime+0.5);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime+0.5);
+}
+
+function setNotificationMode(mode){
+    state.notificationMode=mode;
+    
+    document.querySelectorAll('.whale-mode-btn').forEach(btn=>{
+        btn.classList.remove('active');
+    });
+    
+    const activeBtn=document.querySelector(`[data-mode="${mode}"]`);
+    if(activeBtn)activeBtn.classList.add('active');
+    
+    const descriptions={
+        silent:'List only, no sounds or pop-ups',
+        sound:'List updates + sound notification',
+        full:'List + sound + browser notification'
+    };
+    
+    const descEl=$('modeDescription');
+    if(descEl)descEl.textContent=descriptions[mode]||'';
+    
+    saveCfg();
+}
+
+function updateActivityChart(){
+    const now=Date.now();
+    const fiveMin=5*60*1000;
+    
+    state.activityData.shift();
+    
+    const recentAlerts=state.whaleNotifications.filter(n=>now-n.timestamp<fiveMin).length;
+    state.activityData.push(recentAlerts);
+    
+    const maxVal=Math.max(...state.activityData,1);
+    const el=$('activityChart');
+    
+    el.innerHTML=state.activityData.map((val,i)=>{
+        const height=(val/maxVal)*100;
+        const minutesAgo=(state.activityData.length-1-i)*5;
+        return`<div class="chart-bar" style="height:${height}%;">
+            <div class="chart-bar-label">${minutesAgo}m</div>
+        </div>`;
+    }).join('');
+}
+
+function addWhaleNotification(data){
+    const {analysis,impact}=generateAIAnalysis(data);
+    
+    const notif={
+        ...data,
+        timestamp:Date.now(),
+        analysis,
+        impact
+    };
+    
+    state.whaleNotifications.unshift(notif);
+    if(state.whaleNotifications.length>100){
+        state.whaleNotifications=state.whaleNotifications.slice(0,100);
+    }
+    
+    if(state.whaleProfiles[data.address]){
+        state.whaleProfiles[data.address].history.unshift(notif);
+        state.whaleProfiles[data.address].totalAlerts++;
+    }
+    
+    const today=new Date().toDateString();
+    const todayAlerts=state.whaleNotifications.filter(n=>new Date(n.timestamp).toDateString()===today);
+    $('whaleAlertsToday').textContent=todayAlerts.length;
+    
+    renderWhaleNotifications();
+    updateActivityChart();
+    
+    if(state.notificationMode==='sound'){
+        playNotificationSound();
+    }else if(state.notificationMode==='full'){
+        playNotificationSound();
+        if('Notification'in window&&Notification.permission==='granted'){
+            new Notification('🐋 Whale Alert!',{
+                body:`${data.coin} ${data.side.toUpperCase()} - ${data.type.toUpperCase()} - ${fmt$(data.size)}`,
+                icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75">🐋</text></svg>'
+            });
+        }
+    }
+}
+
+function updateWhaleStats(){
+    const tracked=Object.keys(state.lastWhaleCheck).length;
+    $('whaleTrackedCount').textContent=tracked;
+    
+    let totalSize=0,longCnt=0,shortCnt=0;
+    Object.values(state.lastWhaleCheck).forEach(w=>{
+        totalSize+=w.posVal;
+        if(w.side==='long')longCnt++;
+        else shortCnt++;
+    });
+    
+    const avgPos=tracked>0?totalSize/tracked:0;
+    $('whaleAvgPosition').textContent=fmt$(avgPos);
+    
+    if(longCnt>shortCnt){
+        const ratio=((longCnt/tracked)*100).toFixed(0);
+        $('whaleSentiment').innerHTML=`<span style="color:#10b981;">🐂 ${ratio}%</span>`;
+    }else if(shortCnt>longCnt){
+        const ratio=((shortCnt/tracked)*100).toFixed(0);
+        $('whaleSentiment').innerHTML=`<span style="color:#ef4444;">🐻 ${ratio}%</span>`;
+    }else{
+        $('whaleSentiment').innerHTML=`<span style="color:#888;">⚖️ 50/50</span>`;
+    }
+}
+
+function applyAdvancedFilters(){
+    renderWhaleNotifications();
+}
+
+function renderWhaleNotifications(){
+    const el=$('whaleNotifications');
+    const filter=document.querySelector('.whale-filter-btn.active')?.dataset.filter||'all';
+    
+    let filtered=state.whaleNotifications;
+    
+    if(filter!=='all'){
+        filtered=filtered.filter(n=>n.type===filter);
+    }
+    
+    if(state.coinFilter!=='ALL'){
+        filtered=filtered.filter(n=>n.coin===state.coinFilter);
+    }
+    
+    if(state.minSizeFilter>0){
+        filtered=filtered.filter(n=>n.size>=state.minSizeFilter);
+    }
+    
+    if(state.pnlFilter==='profit'){
+        filtered=filtered.filter(n=>n.pnl&&n.pnl>0);
+    }else if(state.pnlFilter==='loss'){
+        filtered=filtered.filter(n=>n.pnl&&n.pnl<0);
+    }
+    
+    if(state.impactFilter!=='all'){
+        if(state.impactFilter==='critical'){
+            filtered=filtered.filter(n=>n.impact==='critical');
+        }else if(state.impactFilter==='high'){
+            filtered=filtered.filter(n=>n.impact==='critical'||n.impact==='high');
+        }else if(state.impactFilter==='medium'){
+            filtered=filtered.filter(n=>n.impact!=='low');
+        }
+    }
+    
+    if(!filtered.length){
+        el.innerHTML='<div class="empty"><div class="empty-icon">🐋</div><div class="empty-title">No alerts match filters</div></div>';
+        return;
+    }
+    
+    el.innerHTML=filtered.map((n,idx)=>{
+        const time=new Date(n.timestamp).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+        const sideCls=n.side==='long'?'long':'short';
+        const isNew=idx===0&&filter==='all'&&state.coinFilter==='ALL';
+        
+        let volumeClass='volume-low';
+        if(n.size>1000000)volumeClass='volume-high';
+        else if(n.size>500000)volumeClass='volume-medium';
+        
+        let msg='';
+        if(n.type==='new'){
+            msg=`Opened ${n.side.toUpperCase()}: ${fmt$(n.size)} | ${n.leverage.toFixed(1)}x lev`;
+            if(n.roe)msg+=` | ROE: ${n.roe>=0?'+':''}${n.roe.toFixed(1)}%`;
+        }else if(n.type==='increase'){
+            msg=`Increased ${n.change.toFixed(1)}%: ${fmt$(n.oldSize)} → ${fmt$(n.size)}`;
+            if(n.roe)msg+=` | ROE: ${n.roe>=0?'+':''}${n.roe.toFixed(1)}%`;
+        }else if(n.type==='decrease'){
+            msg=`Decreased ${n.change.toFixed(1)}%: ${fmt$(n.oldSize)} → ${fmt$(n.size)}`;
+            if(n.roe)msg+=` | ROE: ${n.roe>=0?'+':''}${n.roe.toFixed(1)}%`;
+        }else if(n.type==='close'){
+            msg=`CLOSED position: ${fmt$(n.oldSize)} → $0`;
+        }
+        
+        return`
+            <div class="whale-notif ${isNew?'whale-notif-new':''}" style="cursor:pointer;" onclick="showWhaleProfile('${n.address}')">
+                <span class="whale-notif-type ${n.type}">${n.type.toUpperCase()}</span>
+                <div class="whale-notif-header">
+                    <span class="whale-notif-token ${sideCls}">
+                        <span class="volume-indicator ${volumeClass}"></span>
+                        ${n.coin} - ${n.side.toUpperCase()}
+                    </span>
+                    <span class="whale-notif-time">${time}</span>
+                </div>
+                <div class="whale-notif-details">
+                    ${n.address.substring(0,8)}...${n.address.substring(n.address.length-6)}
+                </div>
+                <div class="whale-notif-details">${msg}</div>
+                <div class="whale-notif-ai">
+                    <div class="whale-notif-ai-title">🤖 AI Analysis <span class="whale-notif-impact ${n.impact}">${n.impact.toUpperCase()}</span></div>
+                    ${n.analysis}
+                </div>
             </div>
         `;
     }).join('');
 }
 
-modal.classList.add('active');
+function showWhaleProfile(address){
+    const profile=state.whaleProfiles[address];
+    if(!profile){
+        alert('No profile data available');
+        return;
+    }
+    
+    const modal=$('whaleProfileModal');
+    const addressEl=$('profileAddress');
+    const statsEl=$('profileStats');
+    const historyEl=$('profileHistory');
+    
+    addressEl.textContent=address;
+    
+    const history=profile.history||[];
+    const wins=history.filter(h=>h.pnl&&h.pnl>0).length;
+    const losses=history.filter(h=>h.pnl&&h.pnl<0).length;
+    const winRate=wins+losses>0?((wins/(wins+losses))*100).toFixed(0):0;
+    
+    const totalPnl=history.reduce((sum,h)=>sum+(h.pnl||0),0);
+    const avgSize=history.length>0?history.reduce((sum,h)=>sum+(h.size||0),0)/history.length:0;
+    
+    statsEl.innerHTML=`
+        <div class="whale-stat-card">
+            <div class="whale-stat-label">Total Alerts</div>
+            <div class="whale-stat-value">${profile.totalAlerts||0}</div>
+        </div>
+        <div class="whale-stat-card">
+            <div class="whale-stat-label">Win Rate</div>
+            <div class="whale-stat-value">${winRate}%</div>
+        </div>
+        <div class="whale-stat-card">
+            <div class="whale-stat-label">Total PnL</div>
+            <div class="whale-stat-value ${totalPnl>=0?'long':'short'}">${fmt$(totalPnl)}</div>
+        </div>
+        <div class="whale-stat-card">
+            <div class="whale-stat-label">Avg Position</div>
+            <div class="whale-stat-value">${fmt$(avgSize)}</div>
+        </div>
+    `;
+    
+    if(history.length===0){
+        historyEl.innerHTML='<div class="empty"><div class="empty-title">No activity yet</div></div>';
+    }else{
+        historyEl.innerHTML=history.slice(0,20).map(h=>{
+            const time=new Date(h.timestamp).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+            return`
+                <div class="whale-history-item">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                        <span style="font-weight:700;color:#fff;">${h.coin} - ${h.type.toUpperCase()}</span>
+                        <span style="color:#666;font-size:9px;">${time}</span>
+                    </div>
+                    <div style="color:#ddd;">${fmt$(h.size)} | ${h.side.toUpperCase()}</div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    modal.classList.add('active');
 }
+
 function exportWhaleAlerts(){
-if(!state.whaleNotifications.length){alert('No alerts to export');return;}
+    if(!state.whaleNotifications.length){alert('No alerts to export');return;}
+    
     const header=['timestamp','coin','side','type','size','oldSize','change','leverage','pnl','roe','impact','address'];
-const csv=[header.join(',')];
-
-state.whaleNotifications.forEach(n=>{
-    const line=[
-        new Date(n.timestamp).toISOString(),
-        n.coin,
-        n.side,
-        n.type,
-        n.size||0,
-        n.oldSize||0,
-        n.change||0,
-        n.leverage||0,
-        n.pnl||0,
-        n.roe||0,
-        n.impact,
-        n.address
-    ].map(v=>String(v).replace(/"/g,'""'));
-    csv.push('"'+line.join('","')+'"');
-});
-
-const blob=new Blob([csv.join('\n')],{type:'text/csv;charset=utf-8;'});
-const url=URL.createObjectURL(blob);
-const a=document.createElement('a');
-a.href=url;
-a.download='whale_alerts.csv';
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-URL.revokeObjectURL(url);
+    const csv=[header.join(',')];
+    
+    state.whaleNotifications.forEach(n=>{
+        const line=[
+            new Date(n.timestamp).toISOString(),
+            n.coin,
+            n.side,
+            n.type,
+            n.size||0,
+            n.oldSize||0,
+            n.change||0,
+            n.leverage||0,
+            n.pnl||0,
+            n.roe||0,
+            n.impact,
+            n.address
+        ].map(v=>String(v).replace(/"/g,'""'));
+        csv.push('"'+line.join('","')+'"');
+    });
+    
+    const blob=new Blob([csv.join('\n')],{type:'text/csv;charset=utf-8;'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='whale_alerts.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
+
 function toggleWhaleMonitoring(){
-state.whaleEnabled=!state.whaleEnabled;
-const btn=$('toggleWhaleBtn');
+    state.whaleEnabled=!state.whaleEnabled;
+    const btn=$('toggleWhaleBtn');
+    
     if(state.whaleEnabled){
-    btn.textContent='ON';
-    btn.style.background='#10b981';
-    btn.style.color='#000';
-    
-    if('Notification'in window&&Notification.permission==='default'){
-        Notification.requestPermission();
-    }
-    
-    const interval=parseInt($('whaleInterval').value)*1000;
-    state.whaleInterval=setInterval(checkWhaleMovements,interval);
-    checkWhaleMovements();
-    
-    saveCfg();
-}else{
-    btn.textContent='OFF';
-    btn.style.background='#f59e0b';
-    btn.style.color='#000';
-    
-    if(state.whaleInterval){
-        clearInterval(state.whaleInterval);
-        state.whaleInterval=null;
+        btn.textContent='ON';
+        btn.style.background='#10b981';
+        btn.style.color='#000';
+        
+        if('Notification'in window&&Notification.permission==='default'){
+            Notification.requestPermission();
+        }
+        
+        const interval=parseInt($('whaleInterval').value)*1000;
+        state.whaleInterval=setInterval(checkWhaleMovements,interval);
+        checkWhaleMovements();
+        
+        saveCfg();
+    }else{
+        btn.textContent='OFF';
+        btn.style.background='#f59e0b';
+        btn.style.color='#000';
+        
+        if(state.whaleInterval){
+            clearInterval(state.whaleInterval);
+            state.whaleInterval=null;
+        }
     }
 }
-    }
+
 async function loadPos(auto=false){
-if(!state.addresses.length){if(!auto)alert('Add addresses');return;}
-showLoad(true,'Loading...');
-setStatus('Loading...');
-try{
-const all=[];
-for(const addr of state.addresses){
-const data=await fetchUser(addr);
-if(data&&data.assetPositions){
-data.assetPositions.forEach(pos=>{
-const p=pos.position;
-const szi=parseFloat(p.szi);
-if(szi===0)return;
-const entryPx=parseFloat(p.entryPx);
-const posVal=Math.abs(szi)*entryPx;
-const pnl=parseFloat(p.unrealizedPnl);
-const lev=parseFloat(p.leverage.value);
-const liqPx=parseFloat(p.liquidationPx||0);
-const openMs=Number(p.lastUpdateTime||p.time||p.timestamp||0);
-all.push({
-address:addr,
-coin:pos.coin||p.coin,
-side:szi>0?'long':'short',
-szi:Math.abs(szi),
-entryPx,
-positionValue:posVal,
-unrealizedPnl:pnl,
-returnOnEquity:parseFloat(p.returnOnEquity),
-leverage:lev,
-liquidationPx:liqPx,
-marginUsed:parseFloat(p.marginUsed),
-openedAt:openMs
-});
-});
+    if(!state.addresses.length){if(!auto)alert('Add addresses');return;}
+    showLoad(true,'Loading...');
+    setStatus('Loading...');
+    try{
+        const all=[];
+        for(const addr of state.addresses){
+            const data=await fetchUser(addr);
+            if(data&&data.assetPositions){
+                data.assetPositions.forEach(pos=>{
+                    const p=pos.position;
+                    const szi=parseFloat(p.szi);
+                    if(szi===0)return;
+                    const entryPx=parseFloat(p.entryPx);
+                    const posVal=Math.abs(szi)*entryPx;
+                    const pnl=parseFloat(p.unrealizedPnl);
+                    const lev=parseFloat(p.leverage.value);
+                    const liqPx=parseFloat(p.liquidationPx||0);
+                    const openMs=Number(p.lastUpdateTime||p.time||p.timestamp||0);
+                    all.push({
+                        address:addr,
+                        coin:pos.coin||p.coin,
+                        side:szi>0?'long':'short',
+                        szi:Math.abs(szi),
+                        entryPx,
+                        positionValue:posVal,
+                        unrealizedPnl:pnl,
+                        returnOnEquity:parseFloat(p.returnOnEquity),
+                        leverage:lev,
+                        liquidationPx:liqPx,
+                        marginUsed:parseFloat(p.marginUsed),
+                        openedAt:openMs
+                    });
+                });
+            }
+        }
+        state.positions=all;
+        aggregate();
+        updateUI();
+        updateTime();
+        setStatus('Connected');
+    }catch(e){
+        console.error(e);
+        if(!auto)alert('Load error: '+e.message);
+        setStatus('Error');
+    }finally{
+        showLoad(false);
+    }
 }
-}
-state.positions=all;
-aggregate();
-updateUI();
-updateTime();
-setStatus('Connected');
-}catch(e){
-console.error(e);
-if(!auto)alert('Load error: '+e.message);
-setStatus('Error');
-}finally{
-showLoad(false);
-}
-}
+
 function aggregate(){
-const agg={};
-state.positions.forEach(pos=>{
-if(!agg[pos.coin]){
-agg[pos.coin]={coin:pos.coin,longValue:0,shortValue:0,totalValue:0,pnl:0,positions:[]};
+    const agg={};
+    state.positions.forEach(pos=>{
+        if(!agg[pos.coin]){
+            agg[pos.coin]={coin:pos.coin,longValue:0,shortValue:0,totalValue:0,pnl:0,positions:[]};
+        }
+        const a=agg[pos.coin];
+        if(pos.side==='long')a.longValue+=pos.positionValue;
+        else a.shortValue+=pos.positionValue;
+        a.totalValue+=pos.positionValue;
+        a.pnl+=pos.unrealizedPnl;
+        a.positions.push(pos);
+    });
+    state.aggregatedData=agg;
 }
-const a=agg[pos.coin];
-if(pos.side==='long')a.longValue+=pos.positionValue;
-else a.shortValue+=pos.positionValue;
-a.totalValue+=pos.positionValue;
-a.pnl+=pos.unrealizedPnl;
-a.positions.push(pos);
-});
-state.aggregatedData=agg;
-}
+
 function updateUI(){
-updateStats();
-updateBar();
-updateList();
-updateHeat();
-updateTable();
+    updateStats();
+    updateBar();
+    updateList();
+    updateHeat();
+    updateTable();
 }
+
 function updateStats(){
     let longTot=0,shortTot=0,netPnl=0,profit=0,loss=0;
     state.positions.forEach(p=>{
@@ -1506,59 +2233,60 @@ function updateBar(){
 }
 
 function updateList(){
-const el=$('listCols');
-if(!Object.keys(state.aggregatedData).length){
-el.innerHTML='<div class="empty"><div class="empty-icon">📝</div><div class="empty-title">No Data</div></div>';
-return;
-}
-const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
-const left=top.slice(0,5);
-const right=top.slice(5,10);
-
-    const renderItem=a=>{
-    const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
-    const pnlCls=a.pnl>=0?'long':'short';
-    const dom=a.longValue>=a.shortValue?'Long':'Short';
-    const sideCls=dom==='Long'?'side-long':'side-short';
-    return`
-        <div class="list-item">
-            <div class="list-header">
-                <div class="list-token">${a.coin}</div>
-                <span class="side-badge ${sideCls}">${dom}</span>
-            </div>
-            <div class="list-row">
-                <div>
-                    <div class="list-label">Value</div>
-                    <div class="list-value">${fmt$(a.totalValue)}</div>
-                </div>
-                <div style="text-align:right;">
-                    <div class="list-label">PnL</div>
-                    <div class="list-value ${pnlCls}">${a.pnl>=0?'+':''}${fmt$(a.pnl)}</div>
-                </div>
-            </div>
-            <div class="list-row">
-                <div>
-                    <div class="list-label">Long</div>
-                    <div class="list-value long" style="font-size:9px;">${fmt$(a.longValue)}</div>
-                </div>
-                <div>
-                    <div class="list-label">Short</div>
-                    <div class="list-value short" style="font-size:9px;">${fmt$(a.shortValue)}</div>
-                </div>
-                <div style="text-align:right;">
-                    <div class="list-label">ROE</div>
-                    <div class="list-value ${pnlCls}" style="font-size:9px;">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</div>
-                </div>
-            </div>
-        </div>
-    `;
-};
-
-el.innerHTML=`
-    <div>${left.map(renderItem).join('')}</div>
-    <div>${right.map(renderItem).join('')}</div>
-`;
+    const el=$('listCols');
+    if(!Object.keys(state.aggregatedData).length){
+        el.innerHTML='<div class="empty"><div class="empty-icon">📝</div><div class="empty-title">No Data</div></div>';
+        return;
     }
+    const top=Object.values(state.aggregatedData).sort((a,b)=>b.totalValue-a.totalValue).slice(0,10);
+    const left=top.slice(0,5);
+    const right=top.slice(5,10);
+    
+    const renderItem=a=>{
+        const pnlPct=a.totalValue>0?(a.pnl/a.totalValue)*100:0;
+        const pnlCls=a.pnl>=0?'long':'short';
+        const dom=a.longValue>=a.shortValue?'Long':'Short';
+        const sideCls=dom==='Long'?'side-long':'side-short';
+        return`
+            <div class="list-item">
+                <div class="list-header">
+                    <div class="list-token">${a.coin}</div>
+                    <span class="side-badge ${sideCls}">${dom}</span>
+                </div>
+                <div class="list-row">
+                    <div>
+                        <div class="list-label">Value</div>
+                        <div class="list-value">${fmt$(a.totalValue)}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="list-label">PnL</div>
+                        <div class="list-value ${pnlCls}">${a.pnl>=0?'+':''}${fmt$(a.pnl)}</div>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <div>
+                        <div class="list-label">Long</div>
+                        <div class="list-value long" style="font-size:9px;">${fmt$(a.longValue)}</div>
+                    </div>
+                    <div>
+                        <div class="list-label">Short</div>
+                        <div class="list-value short" style="font-size:9px;">${fmt$(a.shortValue)}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="list-label">ROE</div>
+                        <div class="list-value ${pnlCls}" style="font-size:9px;">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+    
+    el.innerHTML=`
+        <div>${left.map(renderItem).join('')}</div>
+        <div>${right.map(renderItem).join('')}</div>
+    `;
+}
+
 function updateHeat(){
     const el=$('heatGrid');
     if(!Object.keys(state.aggregatedData).length){
@@ -1580,116 +2308,126 @@ function updateHeat(){
         `;
     }).join('');
 }
+
 function sortTable(col){
-if(state.sortCol===col){
-state.sortDir=state.sortDir==='asc'?'desc':'asc';
-}else{
-state.sortCol=col;
-state.sortDir='asc';
+    if(state.sortCol===col){
+        state.sortDir=state.sortDir==='asc'?'desc':'asc';
+    }else{
+        state.sortCol=col;
+        state.sortDir='asc';
+    }
+    updateTable();
 }
-updateTable();
-}
+
 function getSortedPositions(){
-let sorted=[...state.positions];
-if(state.sortCol){
-sorted.sort((a,b)=>{
-let aVal=a[state.sortCol];
-let bVal=b[state.sortCol];
-    if(state.sortCol==='markPrice'){
-            aVal=a.entryPx+(a.unrealizedPnl/a.szi);
-            bVal=b.entryPx+(b.unrealizedPnl/b.szi);
-        }
-        
-        if(typeof aVal==='string'){
-            aVal=aVal.toLowerCase();
-            bVal=bVal.toLowerCase();
-        }
-        
-        if(aVal<bVal)return state.sortDir==='asc'?-1:1;
-        if(aVal>bVal)return state.sortDir==='asc'?1:-1;
-        return 0;
-    });
-}
-return sorted;
+    let sorted=[...state.positions];
+    if(state.sortCol){
+        sorted.sort((a,b)=>{
+            let aVal=a[state.sortCol];
+            let bVal=b[state.sortCol];
+            
+            if(state.sortCol==='markPrice'){
+                aVal=a.entryPx+(a.unrealizedPnl/a.szi);
+                bVal=b.entryPx+(b.unrealizedPnl/b.szi);
+            }
+            
+            if(typeof aVal==='string'){
+                aVal=aVal.toLowerCase();
+                bVal=bVal.toLowerCase();
+            }
+            
+            if(aVal<bVal)return state.sortDir==='asc'?-1:1;
+            if(aVal>bVal)return state.sortDir==='asc'?1:-1;
+            return 0;
+        });
     }
+    return sorted;
+}
+
 function updateTable(){
-const tbody=$('tableBody');
+    const tbody=$('tableBody');
+    
     document.querySelectorAll('th.sortable').forEach(th=>{
-    th.className='sortable';
-    if(th.dataset.col===state.sortCol){
-        th.classList.add(state.sortDir==='asc'?'sorted-asc':'sorted-desc');
+        th.className='sortable';
+        if(th.dataset.col===state.sortCol){
+            th.classList.add(state.sortDir==='asc'?'sorted-asc':'sorted-desc');
+        }
+    });
+    
+    if(!state.positions.length){
+        tbody.innerHTML=`<tr>
+            <td colspan="10" style="text-align:center;padding:30px;color:#666;">
+                <div style="font-size:24px;margin-bottom:8px;">🔍</div>
+                <div style="font-weight:700;margin-bottom:4px;">No Positions</div>
+            </td>
+        </tr>`;
+        return;
     }
-});
-
-if(!state.positions.length){
-    tbody.innerHTML=`<tr>
-        <td colspan="10" style="text-align:center;padding:30px;color:#666;">
-            <div style="font-size:24px;margin-bottom:8px;">🔍</div>
-            <div style="font-weight:700;margin-bottom:4px;">No Positions</div>
-        </td>
-    </tr>`;
-    return;
+    
+    const sorted=getSortedPositions();
+    
+    tbody.innerHTML=sorted.map(p=>{
+        const pnlCls=p.unrealizedPnl>=0?'long':'short';
+        const roe=p.returnOnEquity*100;
+        const mark=p.entryPx+(p.unrealizedPnl/p.szi);
+        return`
+            <tr>
+                <td class="token-cell">${p.coin}</td>
+                <td style="font-family:monospace;font-size:9px;">${p.address.substring(0,6)}...${p.address.substring(p.address.length-4)}</td>
+                <td><span class="side-badge side-${p.side}">${p.side.toUpperCase()}</span></td>
+                <td style="color:#888;">${p.leverage.toFixed(1)}x</td>
+                <td style="font-weight:700;">${fmt$(p.positionValue)}</td>
+                <td>${fmtN(p.szi)}</td>
+                <td>${fmtP(p.entryPx)}</td>
+                <td>${fmtP(mark)}</td>
+                <td class="${pnlCls}">${p.unrealizedPnl>=0?'+':''}${fmt$(p.unrealizedPnl)}</td>
+                <td class="${pnlCls}">${roe>=0?'+':''}${roe.toFixed(2)}%</td>
+            </tr>
+        `;
+    }).join('');
 }
 
-const sorted=getSortedPositions();
-
-tbody.innerHTML=sorted.map(p=>{
-    const pnlCls=p.unrealizedPnl>=0?'long':'short';
-    const roe=p.returnOnEquity*100;
-    const mark=p.entryPx+(p.unrealizedPnl/p.szi);
-    return`
-        <tr>
-            <td class="token-cell">${p.coin}</td>
-            <td style="font-family:monospace;font-size:9px;">${p.address.substring(0,6)}...${p.address.substring(p.address.length-4)}</td>
-            <td><span class="side-badge side-${p.side}">${p.side.toUpperCase()}</span></td>
-            <td style="color:#888;">${p.leverage.toFixed(1)}x</td>
-            <td style="font-weight:700;">${fmt$(p.positionValue)}</td>
-            <td>${fmtN(p.szi)}</td>
-            <td>${fmtP(p.entryPx)}</td>
-            <td>${fmtP(mark)}</td>
-            <td class="${pnlCls}">${p.unrealizedPnl>=0?'+':''}${fmt$(p.unrealizedPnl)}</td>
-            <td class="${pnlCls}">${roe>=0?'+':''}${roe.toFixed(2)}%</td>
-        </tr>
-    `;
-}).join('');
-    }
 function setStatus(s){
-const el=$('status');
-if(s==='Connected'){el.textContent='OK';el.className='badge badge-ok';}
-else if(s==='Loading...'||s==='Searching...'){el.textContent=s;el.className='badge badge-err';}
-else if(s==='Error'){el.textContent='ERR';el.className='badge badge-err';}
-else{el.textContent='Ready';el.className='badge badge-err';}
+    const el=$('status');
+    if(s==='Connected'){el.textContent='OK';el.className='badge badge-ok';}
+    else if(s==='Loading...'||s==='Searching...'){el.textContent=s;el.className='badge badge-err';}
+    else if(s==='Error'){el.textContent='ERR';el.className='badge badge-err';}
+    else{el.textContent='Ready';el.className='badge badge-err';}
 }
+
 function updateTime(){
-const now=new Date();
-$('lastUpdate').textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    const now=new Date();
+    $('lastUpdate').textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
 }
+
 function showLoad(show,txt='Loading...'){
-const el=$('loading');
-const txtEl=$('loadingText');
-txtEl.textContent=txt;
-if(show)el.classList.add('active');
-else el.classList.remove('active');
+    const el=$('loading');
+    const txtEl=$('loadingText');
+    txtEl.textContent=txt;
+    if(show)el.classList.add('active');
+    else el.classList.remove('active');
 }
+
 function clearAll(){
-state.addresses=[];
-state.positions=[];
-state.aggregatedData={};
-state.searchResults=[];
-state.selectedWallets.clear();
-state.sortCol=null;
-state.sortDir='asc';
-saveCfg();
-renderAddrs();
-renderSearch();
-updateUI();
-setStatus('Ready');
-$('lastUpdate').textContent='Never';
-$('coinInput').value='';
+    state.addresses=[];
+    state.positions=[];
+    state.aggregatedData={};
+    state.searchResults=[];
+    state.selectedWallets.clear();
+    state.sortCol=null;
+    state.sortDir='asc';
+    saveCfg();
+    renderAddrs();
+    renderSearch();
+    updateUI();
+    setStatus('Ready');
+    $('lastUpdate').textContent='Never';
+    $('coinInput').value='';
 }
+
 function exportCSV(){
-if(!state.positions.length){alert('No positions');return;}
-const sorted=getSortedPositions();
+    if(!state.positions.length){alert('No positions');return;}
+    const sorted=getSortedPositions();
 const header=['token','address','side','leverage','positionValue','size','entryPrice','markPrice','unrealizedPnl','roePercent'];
 const csv=[header.join(',')];
 sorted.forEach(p=>{
