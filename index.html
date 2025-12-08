@@ -82,7 +82,27 @@
         .whale-notif-details{color:#ddd;margin-top:4px;}
         .whale-notif-new{animation:slideIn .3s ease-out;}
         @keyframes slideIn{from{transform:translateX(-10px);opacity:0;}to{transform:translateX(0);opacity:1;}}
-        
+        .whale-stat-card{background:#0a0a0a;border:1px solid #222;border-radius:4px;padding:8px;text-align:center;}
+        .whale-stat-label{font-size:9px;color:#666;text-transform:uppercase;margin-bottom:4px;}
+        .whale-stat-value{font-size:14px;font-weight:700;color:#fff;}
+        .whale-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;margin-bottom:8px;}
+        .whale-filters{display:flex;gap:6px;margin-top:8px;margin-bottom:8px;overflow-x:auto;}
+        .whale-filter-btn{padding:5px 12px;border-radius:3px;border:1px solid #333;background:#111;color:#888;font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s;}
+        .whale-filter-btn:hover{background:#1a1a1a;border-color:#444;}
+        .whale-filter-btn.active{background:#3b82f6;color:#fff;border-color:#3b82f6;}
+        .whale-notif-ai{background:#0a0a0a;border:1px solid #333;border-radius:4px;padding:8px;margin-top:6px;font-size:10px;color:#aaa;line-height:1.4;}
+        .whale-notif-ai-title{color:#3b82f6;font-weight:700;margin-bottom:4px;font-size:9px;text-transform:uppercase;}
+        .whale-notif-type{position:absolute;top:8px;right:8px;padding:3px 8px;border-radius:3px;font-size:9px;font-weight:700;}
+        .whale-notif-type.new{background:rgba(16,185,129,.2);color:#10b981;}
+        .whale-notif-type.increase{background:rgba(59,130,246,.2);color:#3b82f6;}
+        .whale-notif-type.decrease{background:rgba(245,158,11,.2);color:#f59e0b;}
+        .whale-notif-type.close{background:rgba(239,68,68,.2);color:#ef4444;}
+        .whale-notif{position:relative;padding-right:80px;}
+        .whale-notif-impact{display:inline-block;padding:2px 6px;border-radius:2px;font-size:9px;font-weight:700;margin-left:6px;}
+        .whale-notif-impact.high{background:rgba(239,68,68,.2);color:#ef4444;}
+        .whale-notif-impact.medium{background:rgba(245,158,11,.2);color:#f59e0b;}
+        .whale-notif-impact.low{background:rgba(59,130,246,.2);color:#3b82f6;}
+        @media(max-width:768px){.whale-stats{grid-template-columns:repeat(2,1fr);}}
         table{width:100%;border-collapse:collapse;font-size:10px;}
         th{padding:6px;text-align:left;background:#0a0a0a;color:#666;font-size:9px;border-bottom:1px solid #222;cursor:pointer;user-select:none;position:relative;}
         th:hover{background:#151515;}
@@ -163,29 +183,87 @@
         </div>
     </div>
 
-    <div class="whale-alert">
-        <div class="row">
-            <div class="title">🚨 WHALE ALERTS</div>
+<div class="whale-alert">
+    <div class="row">
+        <div class="title">🐋 WHALE ALERTS</div>
+        <div style="display:flex;gap:6px;align-items:center;">
             <button class="btn btn-warning" id="toggleWhaleBtn" style="width:auto;padding:6px 12px;margin:0;">OFF</button>
+            <button class="btn btn-secondary" id="whaleSettingsBtn" style="width:auto;padding:6px 12px;margin:0;">⚙️</button>
         </div>
-        <div class="whale-settings">
-            <div class="whale-input-group">
-                <label class="whale-input-label">Min Position Size ($)</label>
-                <input type="number" id="whaleMinSize" class="input" value="100000" min="10000" step="10000">
-            </div>
-            <div class="whale-input-group">
-                <label class="whale-input-label">Check Interval (sec)</label>
-                <input type="number" id="whaleInterval" class="input" value="30" min="15" max="300" step="5">
+    </div>
+    
+    <div class="whale-settings" id="whaleSettingsPanel" style="display:none;">
+        <div class="whale-input-group">
+            <label class="whale-input-label">Min Position Size ($)</label>
+            <input type="number" id="whaleMinSize" class="input" value="100000" min="10000" step="10000">
+        </div>
+        <div class="whale-input-group">
+            <label class="whale-input-label">Check Interval (sec)</label>
+            <input type="number" id="whaleInterval" class="input" value="30" min="15" max="300" step="5">
+        </div>
+        <div class="whale-input-group">
+            <label class="whale-input-label">Alert Types</label>
+            <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+                <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:#ddd;cursor:pointer;">
+                    <input type="checkbox" id="alertNew" checked style="cursor:pointer;">
+                    <span>New Positions</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:#ddd;cursor:pointer;">
+                    <input type="checkbox" id="alertIncrease" checked style="cursor:pointer;">
+                    <span>Increases</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:#ddd;cursor:pointer;">
+                    <input type="checkbox" id="alertDecrease" checked style="cursor:pointer;">
+                    <span>Decreases</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:#ddd;cursor:pointer;">
+                    <input type="checkbox" id="alertClose" checked style="cursor:pointer;">
+                    <span>Closures</span>
+                </label>
             </div>
         </div>
-        <div class="whale-notifications" id="whaleNotifications">
-            <div class="empty">
-                <div class="empty-icon">🐋</div>
-                <div class="empty-title">No whale alerts yet</div>
-            </div>
+        <div class="whale-input-group">
+            <label class="whale-input-label">Min Change % (for alerts)</label>
+            <input type="number" id="whaleMinChange" class="input" value="10" min="5" max="50" step="5">
         </div>
     </div>
 
+    <div class="whale-stats" id="whaleStats">
+        <div class="whale-stat-card">
+            <div class="whale-stat-label">Total Tracked</div>
+            <div class="whale-stat-value" id="whaleTrackedCount">0</div>
+        </div>
+        <div class="whale-stat-card">
+            <div class="whale-stat-label">Alerts Today</div>
+            <div class="whale-stat-value" id="whaleAlertsToday">0</div>
+        </div>
+        <div class="whale-stat-card">
+            <div class="whale-stat-label">Avg Position</div>
+            <div class="whale-stat-value" id="whaleAvgPosition">$0</div>
+        </div>
+        <div class="whale-stat-card">
+            <div class="whale-stat-label">Bullish/Bearish</div>
+            <div class="whale-stat-value" id="whaleSentiment">--</div>
+        </div>
+    </div>
+
+    <div class="whale-filters">
+        <button class="whale-filter-btn active" data-filter="all">All</button>
+        <button class="whale-filter-btn" data-filter="new">New</button>
+        <button class="whale-filter-btn" data-filter="increase">Increase</button>
+        <button class="whale-filter-btn" data-filter="decrease">Decrease</button>
+        <button class="whale-filter-btn" data-filter="close">Close</button>
+    </div>
+
+    <div class="whale-notifications" id="whaleNotifications">
+        <div class="empty">
+            <div class="empty-icon">🐋</div>
+            <div class="empty-title">No whale alerts yet</div>
+        </div>
+    </div>
+</div>
+
+    
     <div class="loading" id="loading">
         <div class="spinner"></div>
         <div class="loading-text" id="loadingText">Loading...</div>
