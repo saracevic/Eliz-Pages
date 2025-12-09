@@ -586,6 +586,34 @@
             };
         }
 
+        // Coin'e göre quantity formatı
+        function formatQuantity(quantity, symbol) {
+            if (symbol === 'BTCUSDT') {
+                return quantity < 1 ? quantity.toFixed(5) : quantity.toFixed(3);
+            } else if (symbol === 'ETHUSDT') {
+                return quantity < 1 ? quantity.toFixed(4) : quantity.toFixed(2);
+            } else if (symbol === 'BNBUSDT') {
+                return quantity < 10 ? quantity.toFixed(3) : quantity.toFixed(1);
+            } else if (symbol === 'SOLUSDT') {
+                return quantity < 10 ? quantity.toFixed(2) : quantity.toFixed(1);
+            } else if (symbol === 'XRPUSDT') {
+                return quantity < 100 ? quantity.toFixed(1) : quantity.toFixed(0);
+            }
+            return quantity.toFixed(2);
+        }
+
+        // Price formatı
+        function formatPrice(price, symbol) {
+            if (symbol === 'BTCUSDT' || symbol === 'ETHUSDT') {
+                return parseFloat(price).toFixed(2);
+            } else if (symbol === 'BNBUSDT' || symbol === 'SOLUSDT') {
+                return parseFloat(price).toFixed(2);
+            } else if (symbol === 'XRPUSDT') {
+                return parseFloat(price).toFixed(4);
+            }
+            return parseFloat(price).toFixed(2);
+        }
+
         // Trade ekleme
         function addTrade(trade) {
             const time = new Date(trade.T);
@@ -595,35 +623,38 @@
             const milliseconds = String(time.getMilliseconds()).padStart(3, '0');
             
             const formattedTime = `${hours}:${minutes}:${seconds}:${milliseconds}`;
-            const price = parseFloat(trade.p).toFixed(2);
+            const price = formatPrice(trade.p, currentSymbol);
             const quantity = parseFloat(trade.q);
-            const quantityFormatted = quantity.toFixed(4);
+            const quantityFormatted = formatQuantity(quantity, currentSymbol);
             const isBuyerMaker = trade.m;
             const isBuy = !isBuyerMaker;
 
             // Hacim güncelle
             if (isBuy) {
                 buyVolume += quantity;
-                buyVolumeEl.textContent = buyVolume.toFixed(2);
+                buyVolumeEl.textContent = formatQuantity(buyVolume, currentSymbol);
             } else {
                 sellVolume += quantity;
-                sellVolumeEl.textContent = sellVolume.toFixed(2);
+                sellVolumeEl.textContent = formatQuantity(sellVolume, currentSymbol);
             }
 
-            // Büyük emir kontrolü
+            // Büyük emir kontrolü - 5 BTC veya eşdeğeri
             let isLarge = false;
-            const minAmount = getMinBTCAmount();
+            const minBTC = 5; // 5 BTC'ye düşürdük
             
             if (currentSymbol === 'BTCUSDT') {
-                isLarge = quantity >= minAmount;
+                isLarge = quantity >= minBTC;
             } else {
+                // Diğer coinler için 5 BTC'lik USD değeri (yaklaşık $475,000)
                 const tradeValue = quantity * parseFloat(trade.p);
-                isLarge = tradeValue >= minAmount;
+                const minValue = minBTC * 95000;
+                isLarge = tradeValue >= minValue;
             }
 
             // Büyük emir bildirimi
             if (isLarge) {
-                const message = `${isBuy ? 'BUY' : 'SELL'} ${quantityFormatted} ${currentSymbol.replace('USDT', '')} @ $${price}`;
+                const tradeValueUSD = (quantity * parseFloat(trade.p)).toFixed(0);
+                const message = `${isBuy ? '🟢 BUY' : '🔴 SELL'} ${quantityFormatted} ${currentSymbol.replace('USDT', '')} @ ${price} (≈${tradeValueUSD})`;
                 showNotification(message);
             }
 
