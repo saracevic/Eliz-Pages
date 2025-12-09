@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
@@ -12,358 +11,355 @@
             box-sizing: border-box;
         }
 
-```
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: #0a0e27;
-        color: #fff;
-        overflow: hidden;
-        height: 100vh;
-    }
-
-    .main-container {
-        display: grid;
-        grid-template-columns: 1fr 350px;
-        height: 100vh;
-        gap: 15px;
-        padding: 15px;
-    }
-
-    .left-panel {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
-    }
-
-    .header h1 {
-        font-size: 28px;
-        letter-spacing: 4px;
-        font-weight: 700;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-
-    .controls {
-        display: flex;
-        gap: 12px;
-        background: rgba(255, 255, 255, 0.05);
-        padding: 15px;
-        border-radius: 12px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .symbol-selector {
-        flex: 1;
-        padding: 12px 18px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        border-radius: 8px;
-        color: white;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .symbol-selector:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.6);
-    }
-
-    .status {
-        padding: 12px 24px;
-        background: rgba(0, 255, 100, 0.15);
-        border-radius: 8px;
-        font-size: 13px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        border: 1px solid rgba(0, 255, 100, 0.3);
-    }
-
-    .status-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: #00ff66;
-        animation: pulse 2s infinite;
-        box-shadow: 0 0 10px #00ff66;
-    }
-
-    @keyframes pulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.5; transform: scale(0.9); }
-    }
-
-    .stats-bar {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-    }
-
-    .stat-card {
-        background: rgba(255, 255, 255, 0.05);
-        padding: 15px;
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-    }
-
-    .stat-label {
-        font-size: 11px;
-        color: rgba(255, 255, 255, 0.6);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 5px;
-    }
-
-    .stat-value {
-        font-size: 20px;
-        font-weight: 700;
-    }
-
-    .stat-value.buy { color: #00ff88; }
-    .stat-value.sell { color: #ff4466; }
-    .stat-value.volume { color: #ffa500; }
-
-    .table-header {
-        display: grid;
-        grid-template-columns: 2fr 1.5fr 1fr;
-        gap: 15px;
-        padding: 15px 20px;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .trades-container {
-        flex: 1;
-        overflow-y: auto;
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 12px;
-        padding: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .trades-container::-webkit-scrollbar {
-        width: 10px;
-    }
-
-    .trades-container::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 10px;
-    }
-
-    .trades-container::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 10px;
-    }
-
-    .trade-row {
-        display: grid;
-        grid-template-columns: 2fr 1.5fr 1fr;
-        gap: 15px;
-        padding: 12px 20px;
-        margin-bottom: 4px;
-        border-radius: 8px;
-        animation: slideIn 0.3s ease;
-        font-size: 14px;
-        border-left: 3px solid transparent;
-        transition: all 0.3s;
-    }
-
-    @keyframes slideIn {
-        from {
-            transform: translateX(-20px);
-            opacity: 0;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e27;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
         }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
 
-    .trade-row.buy {
-        background: rgba(0, 255, 136, 0.08);
-        color: #00ff88;
-        border-left-color: #00ff88;
-    }
-
-    .trade-row.sell {
-        background: rgba(255, 68, 102, 0.08);
-        color: #ff4466;
-        border-left-color: #ff4466;
-    }
-
-    .trade-row.large {
-        border: 2px solid #ffd700;
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-        font-weight: 700;
-        animation: glow 2s infinite, slideIn 0.3s ease;
-    }
-
-    @keyframes glow {
-        0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
-        50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.6); }
-    }
-
-    .time {
-        font-family: 'Courier New', monospace;
-        font-size: 13px;
-    }
-
-    .price {
-        font-weight: 700;
-        font-size: 16px;
-    }
-
-    .size {
-        text-align: right;
-        font-weight: 600;
-    }
-
-    .right-panel {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .fear-greed-card {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 12px;
-        padding: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-    }
-
-    .fear-greed-title {
-        font-size: 16px;
-        font-weight: 600;
-        margin-bottom: 20px;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        text-align: center;
-    }
-
-    .fear-greed-gauge {
-        position: relative;
-        width: 200px;
-        height: 200px;
-        margin: 0 auto 20px;
-    }
-
-    .gauge-circle {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        background: conic-gradient(
-            from 0deg,
-            #ff4444 0deg 72deg,
-            #ff8844 72deg 144deg,
-            #ffdd44 144deg 216deg,
-            #88ff44 216deg 288deg,
-            #44ff44 288deg 360deg
-        );
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
-    }
-
-    .gauge-inner {
-        width: 140px;
-        height: 140px;
-        border-radius: 50%;
-        background: #0a0e27;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        border: 3px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .gauge-value {
-        font-size: 48px;
-        font-weight: 700;
-        color: #fff;
-    }
-
-    .gauge-label {
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.6);
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-top: 5px;
-    }
-
-    .fear-greed-status {
-        text-align: center;
-        font-size: 20px;
-        font-weight: 700;
-        padding: 12px;
-        border-radius: 8px;
-        margin-bottom: 15px;
-    }
-
-    .fear-greed-info {
-        font-size: 11px;
-        color: rgba(255, 255, 255, 0.5);
-        text-align: center;
-        line-height: 1.5;
-    }
-
-    .notification {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 20px 30px;
-        border-radius: 12px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        transform: translateX(400px);
-        transition: transform 0.5s;
-        z-index: 1000;
-        border: 2px solid #ffd700;
-    }
-
-    .notification.show {
-        transform: translateX(0);
-    }
-
-    .notification-title {
-        font-size: 16px;
-        font-weight: 700;
-        margin-bottom: 8px;
-        color: #ffd700;
-    }
-
-    .notification-message {
-        font-size: 14px;
-        color: #fff;
-    }
-
-    @media (max-width: 1200px) {
         .main-container {
-            grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            height: 100vh;
+            gap: 15px;
+            padding: 15px;
         }
-        .right-panel {
-            display: none;
-        }
-    }
-</style>
-```
 
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            letter-spacing: 4px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .symbol-selector {
+            flex: 1;
+            padding: 12px 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .symbol-selector:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .status {
+            padding: 12px 24px;
+            background: rgba(0, 255, 100, 0.15);
+            border-radius: 8px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(0, 255, 100, 0.3);
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00ff66;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px #00ff66;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.9); }
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .stat-value.buy { color: #00ff88; }
+        .stat-value.sell { color: #ff4466; }
+        .stat-value.volume { color: #ffa500; }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 1fr;
+            gap: 15px;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .trades-container {
+            flex: 1;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .trades-container::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .trades-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .trades-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        .trade-row {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 1fr;
+            gap: 15px;
+            padding: 12px 20px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            animation: slideIn 0.3s ease;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .trade-row.buy {
+            background: rgba(0, 255, 136, 0.08);
+            color: #00ff88;
+            border-left-color: #00ff88;
+        }
+
+        .trade-row.sell {
+            background: rgba(255, 68, 102, 0.08);
+            color: #ff4466;
+            border-left-color: #ff4466;
+        }
+
+        .trade-row.large {
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            font-weight: 700;
+            animation: glow 2s infinite, slideIn 0.3s ease;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.6); }
+        }
+
+        .time {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .price {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .size {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .fear-greed-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .fear-greed-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .fear-greed-gauge {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+        }
+
+        .gauge-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #ff4444 0deg 72deg,
+                #ff8844 72deg 144deg,
+                #ffdd44 144deg 216deg,
+                #88ff44 216deg 288deg,
+                #44ff44 288deg 360deg
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .gauge-inner {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: #0a0e27;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gauge-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .gauge-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+
+        .fear-greed-status {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .fear-greed-info {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transform: translateX(400px);
+            transition: transform 0.5s;
+            z-index: 1000;
+            border: 2px solid #ffd700;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #ffd700;
+        }
+
+        .notification-message {
+            font-size: 14px;
+            color: #fff;
+        }
+
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            .right-panel {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="main-container">
@@ -372,445 +368,371 @@
                 <h1>⚡ T&S PRO</h1>
             </div>
 
-```
-        <div class="controls">
-            <select class="symbol-selector" id="symbolSelector">
-                <option value="BTCUSDT">BTC/USDT</option>
-                <option value="ETHUSDT">ETH/USDT</option>
-                <option value="BNBUSDT">BNB/USDT</option>
-                <option value="SOLUSDT">SOL/USDT</option>
-                <option value="XRPUSDT">XRP/USDT</option>
-            </select>
-            <div class="status">
-                <div class="status-dot"></div>
-                <span id="statusText">CONNECTING</span>
-            </div>
-        </div>
-
-        <div class="stats-bar">
-            <div class="stat-card">
-                <div class="stat-label">Buy Volume</div>
-                <div class="stat-value buy" id="buyVolume">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Sell Volume</div>
-                <div class="stat-value sell" id="sellVolume">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Total 24h Vol</div>
-                <div class="stat-value volume" id="totalVolume">0</div>
-            </div>
-        </div>
-
-        <div class="table-header">
-            <div>Time</div>
-            <div>Price</div>
-            <div style="text-align: right;">Size</div>
-        </div>
-
-        <div class="trades-container" id="tradesContainer"></div>
-    </div>
-
-    <div class="right-panel">
-        <div class="fear-greed-card">
-            <div class="fear-greed-title">🔥 Fear & Greed Index</div>
-            <div class="fear-greed-gauge">
-                <div class="gauge-circle">
-                    <div class="gauge-inner">
-                        <div class="gauge-value" id="fearGreedValue">--</div>
-                        <div class="gauge-label">INDEX</div>
-                    </div>
+            <div class="controls">
+                <select class="symbol-selector" id="symbolSelector">
+                    <option value="BTCUSDT">BTC/USDT</option>
+                    <option value="ETHUSDT">ETH/USDT</option>
+                    <option value="BNBUSDT">BNB/USDT</option>
+                    <option value="SOLUSDT">SOL/USDT</option>
+                    <option value="XRPUSDT">XRP/USDT</option>
+                </select>
+                <div class="status">
+                    <div class="status-dot"></div>
+                    <span id="statusText">LIVE</span>
                 </div>
             </div>
-            <div class="fear-greed-status" id="fearGreedStatus">Loading...</div>
-            <div class="fear-greed-info" id="fearGreedInfo">Fetching market sentiment data...</div>
+
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-label">Buy Volume</div>
+                    <div class="stat-value buy" id="buyVolume">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Sell Volume</div>
+                    <div class="stat-value sell" id="sellVolume">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total 24h Vol</div>
+                    <div class="stat-value volume" id="totalVolume">0</div>
+                </div>
+            </div>
+
+            <div class="table-header">
+                <div>Time</div>
+                <div>Price</div>
+                <div style="text-align: right;">Size</div>
+            </div>
+
+            <div class="trades-container" id="tradesContainer"></div>
+        </div>
+
+        <div class="right-panel">
+            <div class="fear-greed-card">
+                <div class="fear-greed-title">🔥 Fear & Greed Index</div>
+                <div class="fear-greed-gauge">
+                    <div class="gauge-circle">
+                        <div class="gauge-inner">
+                            <div class="gauge-value" id="fearGreedValue">--</div>
+                            <div class="gauge-label">INDEX</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fear-greed-status" id="fearGreedStatus">Loading...</div>
+                <div class="fear-greed-info" id="fearGreedInfo">Fetching market sentiment data...</div>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="notification" id="notification">
-    <div class="notification-title">🐋 WHALE ALERT!</div>
-    <div class="notification-message" id="notificationMessage"></div>
-</div>
+    <div class="notification" id="notification">
+        <div class="notification-title">🐋 WHALE ALERT!</div>
+        <div class="notification-message" id="notificationMessage"></div>
+    </div>
 
-<script>
-    // ========== PART 1/2: VARIABLES & BASIC FUNCTIONS ==========
-    
-    let ws = null;
-    let trades = [];
-    const maxTrades = 100;
-    let currentSymbol = 'BTCUSDT';
-    let buyVolume = 0;
-    let sellVolume = 0;
-    let audioContext = null;
-    let dataSource = 'binance';
-    let reconnectAttempts = 0;
-    const maxReconnectAttempts = 3;
+    <script>
+        let ws = null;
+        let trades = [];
+        const maxTrades = 100;
+        let currentSymbol = 'BTCUSDT';
+        let buyVolume = 0;
+        let sellVolume = 0;
+        let audioContext = null;
 
-    const tradesContainer = document.getElementById('tradesContainer');
-    const symbolSelector = document.getElementById('symbolSelector');
-    const statusText = document.getElementById('statusText');
-    const buyVolumeEl = document.getElementById('buyVolume');
-    const sellVolumeEl = document.getElementById('sellVolume');
-    const totalVolumeEl = document.getElementById('totalVolume');
-    const notification = document.getElementById('notification');
-    const notificationMessage = document.getElementById('notificationMessage');
+        const tradesContainer = document.getElementById('tradesContainer');
+        const symbolSelector = document.getElementById('symbolSelector');
+        const statusText = document.getElementById('statusText');
+        const buyVolumeEl = document.getElementById('buyVolume');
+        const sellVolumeEl = document.getElementById('sellVolume');
+        const totalVolumeEl = document.getElementById('totalVolume');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notificationMessage');
 
-    // Ses sistemi
-    function initAudio() {
-        if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        }
-    }
-
-    function playBeep(frequency = 800, duration = 200) {
-        initAudio();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.value = frequency;
-        oscillator.type = 'sine';
-        
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + duration / 1000);
-    }
-
-    function showNotification(message) {
-        notificationMessage.textContent = message;
-        notification.classList.add('show');
-        playBeep(1200, 300);
-        
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 5000);
-    }
-
-    async function fetchFearGreedIndex() {
-        try {
-            const response = await fetch('https://api.alternative.me/fng/?limit=1');
-            const data = await response.json();
-            const index = data.data[0];
-            
-            const value = parseInt(index.value);
-            const classification = index.value_classification;
-            
-            document.getElementById('fearGreedValue').textContent = value;
-            document.getElementById('fearGreedStatus').textContent = classification.toUpperCase();
-            
-            const statusEl = document.getElementById('fearGreedStatus');
-            if (value <= 25) {
-                statusEl.style.background = 'rgba(255, 68, 68, 0.2)';
-                statusEl.style.color = '#ff4444';
-            } else if (value <= 45) {
-                statusEl.style.background = 'rgba(255, 136, 68, 0.2)';
-                statusEl.style.color = '#ff8844';
-            } else if (value <= 55) {
-                statusEl.style.background = 'rgba(255, 221, 68, 0.2)';
-                statusEl.style.color = '#ffdd44';
-            } else if (value <= 75) {
-                statusEl.style.background = 'rgba(136, 255, 68, 0.2)';
-                statusEl.style.color = '#88ff44';
-            } else {
-                statusEl.style.background = 'rgba(68, 255, 68, 0.2)';
-                statusEl.style.color = '#44ff44';
+        // Ses sistemi
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
             }
-            
-            document.getElementById('fearGreedInfo').textContent = 
-                `Last updated: ${new Date(index.timestamp * 1000).toLocaleString()}`;
-            
-        } catch (error) {
-            console.error('Fear & Greed Index hatası:', error);
-            document.getElementById('fearGreedInfo').textContent = 'Unable to fetch data';
         }
-    }
 
-    async function fetch24hVolume() {
-        try {
-            const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${currentSymbol}`);
-            const data = await response.json();
-            const volume = parseFloat(data.volume);
-            totalVolumeEl.textContent = volume > 1000 ? (volume / 1000).toFixed(2) + 'K' : volume.toFixed(2);
-        } catch (error) {
-            console.error('24h volume hatası:', error);
-        }
-    }
-
-    symbolSelector.addEventListener('change', (e) => {
-        currentSymbol = e.target.value;
-        trades = [];
-        buyVolume = 0;
-        sellVolume = 0;
-        tradesContainer.innerHTML = '';
-        buyVolumeEl.textContent = '0';
-        sellVolumeEl.textContent = '0';
-        dataSource = 'binance';
-        reconnectAttempts = 0;
-        connectWebSocket();
-        fetch24hVolume();
-    });
-
-   // ========== PART 2/2: WEBSOCKET & TRADE FUNCTIONS ==========
-
-// ÇOK KAYNAK STRATEJİSİ - Binance, Kraken, Coinbase
-function connectWebSocket() {
-    if (ws) {
-        ws.close();
-    }
-
-    const symbol = currentSymbol.toLowerCase();
-    let wsUrl;
-    let needsSubscription = false;
-    let subscribeMessage = null;
-
-    if (dataSource === 'binance') {
-        wsUrl = `wss://stream.binance.com:9443/ws/${symbol}@trade`;
-        console.log('🔵 Binance bağlantısı kuruluyor...', currentSymbol);
-    } else if (dataSource === 'kraken') {
-        wsUrl = `wss://ws.kraken.com/`;
-        needsSubscription = true;
-        const krakenPair = currentSymbol.replace('USDT', '/USD').replace('BTC', 'XBT');
-        subscribeMessage = {
-            event: 'subscribe',
-            pair: [krakenPair],
-            subscription: { name: 'trade' }
-        };
-        console.log('🟣 Kraken bağlantısı kuruluyor...', krakenPair);
-    } else if (dataSource === 'coinbase') {
-        wsUrl = `wss://ws-feed.exchange.coinbase.com`;
-        needsSubscription = true;
-        const coinbasePair = currentSymbol.replace('USDT', '-USD');
-        subscribeMessage = {
-            type: 'subscribe',
-            product_ids: [coinbasePair],
-            channels: ['matches']
-        };
-        console.log('🔵 Coinbase bağlantısı kuruluyor...', coinbasePair);
-    }
-
-    ws = new WebSocket(wsUrl);
-
-    ws.onopen = () => {
-        console.log(`✅ ${dataSource.toUpperCase()} WebSocket AÇILDI:`, currentSymbol);
-        statusText.textContent = `LIVE (${dataSource.toUpperCase()})`;
-        statusText.style.color = '#00ff66';
-        reconnectAttempts = 0;
-
-        if (needsSubscription && subscribeMessage) {
-            console.log('📤 Subscribe mesajı gönderiliyor...', subscribeMessage);
-            ws.send(JSON.stringify(subscribeMessage));
-        }
-    };
-
-    ws.onmessage = (event) => {
-        try {
-            const data = JSON.parse(event.data);
+        function playBeep(frequency = 800, duration = 200) {
+            initAudio();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
             
-            // Binance formatı
-            if (dataSource === 'binance' && data.e === 'trade') {
-                console.log('📊 Binance Trade:', {
-                    price: data.p,
-                    quantity: data.q,
-                    time: new Date(data.T).toLocaleTimeString()
-                });
-                addTrade(data);
-            }
-            // Kraken formatı
-            else if (dataSource === 'kraken') {
-                if (Array.isArray(data) && data.length >= 2) {
-                    const eventType = data[2];
-                    if (eventType === 'trade') {
-                        const trades = data[1];
-                        if (Array.isArray(trades)) {
-                            trades.forEach(trade => {
-                                const krakenTrade = {
-                                    T: Date.now(),
-                                    p: parseFloat(trade[0]),
-                                    q: parseFloat(trade[1]),
-                                    m: trade[3] === 's'
-                                };
-                                console.log('📊 Kraken Trade:', krakenTrade);
-                                addTrade(krakenTrade);
-                            });
-                        }
-                    }
-                } else if (data.event === 'subscribed') {
-                    console.log('✅ Kraken subscription başarılı:', data);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration / 1000);
+        }
+
+        // Bildirim göster
+        function showNotification(message) {
+            notificationMessage.textContent = message;
+            notification.classList.add('show');
+            playBeep(1200, 300);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        // Korku & Açgözlülük Endeksi
+        async function fetchFearGreedIndex() {
+            try {
+                const response = await fetch('https://api.alternative.me/fng/?limit=1');
+                const data = await response.json();
+                const index = data.data[0];
+                
+                const value = parseInt(index.value);
+                const classification = index.value_classification;
+                
+                document.getElementById('fearGreedValue').textContent = value;
+                document.getElementById('fearGreedStatus').textContent = classification.toUpperCase();
+                
+                // Renk ayarla
+                const statusEl = document.getElementById('fearGreedStatus');
+                if (value <= 25) {
+                    statusEl.style.background = 'rgba(255, 68, 68, 0.2)';
+                    statusEl.style.color = '#ff4444';
+                } else if (value <= 45) {
+                    statusEl.style.background = 'rgba(255, 136, 68, 0.2)';
+                    statusEl.style.color = '#ff8844';
+                } else if (value <= 55) {
+                    statusEl.style.background = 'rgba(255, 221, 68, 0.2)';
+                    statusEl.style.color = '#ffdd44';
+                } else if (value <= 75) {
+                    statusEl.style.background = 'rgba(136, 255, 68, 0.2)';
+                    statusEl.style.color = '#88ff44';
+                } else {
+                    statusEl.style.background = 'rgba(68, 255, 68, 0.2)';
+                    statusEl.style.color = '#44ff44';
                 }
+                
+                document.getElementById('fearGreedInfo').textContent = 
+                    `Last updated: ${new Date(index.timestamp * 1000).toLocaleString()}`;
+                
+            } catch (error) {
+                console.error('Fear & Greed Index hatası:', error);
+                document.getElementById('fearGreedInfo').textContent = 'Unable to fetch data';
             }
-            // Coinbase formatı
-            else if (dataSource === 'coinbase' && data.type === 'match') {
-                const coinbaseTrade = {
-                    T: new Date(data.time).getTime(),
-                    p: parseFloat(data.price),
-                    q: parseFloat(data.size),
-                    m: data.side === 'sell'
-                };
-                console.log('📊 Coinbase Trade:', coinbaseTrade);
-                addTrade(coinbaseTrade);
-            } else if (dataSource === 'coinbase' && data.type === 'subscriptions') {
-                console.log('✅ Coinbase subscription başarılı:', data);
-            }
-        } catch (error) {
-            console.error('❌ Parse hatası:', error);
         }
-    };
 
-    ws.onerror = (error) => {
-        console.error(`❌ ${dataSource.toUpperCase()} WebSocket HATASI:`, error);
-        statusText.textContent = 'ERROR';
-        statusText.style.color = '#ff4444';
-    };
-
-    ws.onclose = (event) => {
-        console.log(`⚠️ ${dataSource.toUpperCase()} WebSocket KAPANDI. Code:`, event.code);
-        statusText.textContent = 'RECONNECTING';
-        statusText.style.color = '#ffaa00';
-        
-        reconnectAttempts++;
-        
-        if (reconnectAttempts >= maxReconnectAttempts) {
-            console.log('⚠️ Maksimum deneme sayısı aşıldı, kaynak değiştiriliyor...');
-            
-            if (dataSource === 'binance') {
-                dataSource = 'kraken';
-                console.log('🔄 Kraken\'a geçiliyor...');
-            } else if (dataSource === 'kraken') {
-                dataSource = 'coinbase';
-                console.log('🔄 Coinbase\'e geçiliyor...');
-            } else {
-                dataSource = 'binance';
-                console.log('🔄 Binance\'e geri dönülüyor...');
+        // 24 saat hacim
+        async function fetch24hVolume() {
+            try {
+                const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${currentSymbol}`);
+                const data = await response.json();
+                const volume = parseFloat(data.volume);
+                totalVolumeEl.textContent = volume > 1000 ? (volume / 1000).toFixed(2) + 'K' : volume.toFixed(2);
+            } catch (error) {
+                console.error('24h volume hatası:', error);
             }
-            reconnectAttempts = 0;
         }
-        
-        setTimeout(() => {
-            console.log(`🔄 ${dataSource.toUpperCase()} ile yeniden bağlanıyor...`);
+
+        // Minimum BTC miktarı
+        function getMinBTCAmount() {
+            const minBTC = 10;
+            if (currentSymbol === 'BTCUSDT') {
+                return minBTC;
+            }
+            return minBTC * 95000;
+        }
+
+        // Sembol değiştiğinde
+        symbolSelector.addEventListener('change', (e) => {
+            currentSymbol = e.target.value;
+            trades = [];
+            buyVolume = 0;
+            sellVolume = 0;
+            tradesContainer.innerHTML = '';
             connectWebSocket();
-        }, 2000);
-    };
-}
+            fetch24hVolume();
+        });
 
-function formatQuantity(quantity, symbol) {
-    if (symbol === 'BTCUSDT') {
-        if (quantity >= 1) return quantity.toFixed(3);
-        if (quantity >= 0.1) return quantity.toFixed(4);
-        return quantity.toFixed(6);
-    } else if (symbol === 'ETHUSDT') {
-        if (quantity >= 10) return quantity.toFixed(2);
-        if (quantity >= 1) return quantity.toFixed(3);
-        return quantity.toFixed(5);
-    } else if (symbol === 'BNBUSDT' || symbol === 'SOLUSDT') {
-        if (quantity >= 100) return quantity.toFixed(1);
-        return quantity.toFixed(3);
-    } else if (symbol === 'XRPUSDT') {
-        if (quantity >= 1000) return quantity.toFixed(0);
-        return quantity.toFixed(2);
-    }
-    return quantity.toFixed(2);
-}
+        // WebSocket bağlantısı - BASİT VE GÜÇLÜ
+        function connectWebSocket() {
+            if (ws) {
+                ws.close();
+            }
 
-function formatPrice(price, symbol) {
-    if (symbol === 'XRPUSDT') {
-        return parseFloat(price).toFixed(4);
-    }
-    return parseFloat(price).toFixed(2);
-}
+            const symbol = currentSymbol.toLowerCase();
+            ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@trade`);
 
-function addTrade(trade) {
-    const time = new Date(trade.T);
-    const formattedTime = `${String(time.getHours()).padStart(2, '0')}:${String(time.getMinutes()).padStart(2, '0')}:${String(time.getSeconds()).padStart(2, '0')}`;
-    
-    const price = formatPrice(trade.p, currentSymbol);
-    const quantity = parseFloat(trade.q);
-    const isBuy = !trade.m;
+            ws.onopen = () => {
+                console.log('✅ BAĞLANDI:', currentSymbol);
+                statusText.textContent = 'LIVE';
+            };
 
-    // SADECE BÜYÜK EMİRLER - 5 BTC eşdeğeri
-    const minBTC = 5;
-    let shouldShow = false;
-    
-    if (currentSymbol === 'BTCUSDT') {
-        shouldShow = quantity >= minBTC;
-    } else {
-        const tradeValue = quantity * parseFloat(trade.p);
-        shouldShow = tradeValue >= (minBTC * 95000);
-    }
+            ws.onmessage = (event) => {
+                const trade = JSON.parse(event.data);
+                console.log('📊', trade.q, currentSymbol.replace('USDT',''), '@', trade.p);
+                addTrade(trade);
+            };
 
-    if (!shouldShow) return;
+            ws.onerror = (error) => {
+                console.error('❌ HATA:', error);
+                statusText.textContent = 'ERROR';
+            };
 
-    const quantityFormatted = formatQuantity(quantity, currentSymbol);
+            ws.onclose = () => {
+                console.log('⚠️ KAPANDI - 3 saniye sonra yeniden bağlanıyor...');
+                statusText.textContent = 'RECONNECTING';
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
 
-    // Hacim güncelle
-    if (isBuy) {
-        buyVolume += quantity;
-        buyVolumeEl.textContent = formatQuantity(buyVolume, currentSymbol);
-    } else {
-        sellVolume += quantity;
-        sellVolumeEl.textContent = formatQuantity(sellVolume, currentSymbol);
-    }
+        // Coin'e göre quantity formatı
+        function formatQuantity(quantity, symbol) {
+            if (symbol === 'BTCUSDT') {
+                // BTC için: 0.001 ve üzeri göster
+                if (quantity >= 1) return quantity.toFixed(3);
+                if (quantity >= 0.1) return quantity.toFixed(4);
+                if (quantity >= 0.01) return quantity.toFixed(5);
+                if (quantity >= 0.001) return quantity.toFixed(6);
+                return quantity.toFixed(8);
+            } else if (symbol === 'ETHUSDT') {
+                if (quantity >= 10) return quantity.toFixed(2);
+                if (quantity >= 1) return quantity.toFixed(3);
+                if (quantity >= 0.1) return quantity.toFixed(4);
+                return quantity.toFixed(5);
+            } else if (symbol === 'BNBUSDT') {
+                if (quantity >= 100) return quantity.toFixed(1);
+                if (quantity >= 10) return quantity.toFixed(2);
+                return quantity.toFixed(3);
+            } else if (symbol === 'SOLUSDT') {
+                if (quantity >= 100) return quantity.toFixed(1);
+                if (quantity >= 10) return quantity.toFixed(2);
+                return quantity.toFixed(3);
+            } else if (symbol === 'XRPUSDT') {
+                if (quantity >= 1000) return quantity.toFixed(0);
+                if (quantity >= 100) return quantity.toFixed(1);
+                return quantity.toFixed(2);
+            }
+            return quantity.toFixed(2);
+        }
 
-    // Bildirim
-    const tradeValueUSD = (quantity * parseFloat(trade.p)).toFixed(0);
-    const message = `${isBuy ? '🟢 BUY' : '🔴 SELL'} ${quantityFormatted} ${currentSymbol.replace('USDT', '')} @ $${price} (≈$${parseInt(tradeValueUSD).toLocaleString()})`;
-    showNotification(message);
+        // Price formatı
+        function formatPrice(price, symbol) {
+            if (symbol === 'BTCUSDT' || symbol === 'ETHUSDT') {
+                return parseFloat(price).toFixed(2);
+            } else if (symbol === 'BNBUSDT' || symbol === 'SOLUSDT') {
+                return parseFloat(price).toFixed(2);
+            } else if (symbol === 'XRPUSDT') {
+                return parseFloat(price).toFixed(4);
+            }
+            return parseFloat(price).toFixed(2);
+        }
 
-    trades.unshift({
-        time: formattedTime,
-        price: price,
-        quantity: quantityFormatted,
-        isBuy: isBuy,
-        isLarge: true
-    });
+        // Trade ekleme
+        function addTrade(trade) {
+            const time = new Date(trade.T);
+            const hours = String(time.getHours()).padStart(2, '0');
+            const minutes = String(time.getMinutes()).padStart(2, '0');
+            const seconds = String(time.getSeconds()).padStart(2, '0');
+            const milliseconds = String(time.getMilliseconds()).padStart(3, '0');
+            
+            const formattedTime = `${hours}:${minutes}:${seconds}:${milliseconds}`;
+            const price = formatPrice(trade.p, currentSymbol);
+            const quantity = parseFloat(trade.q);
+            const isBuyerMaker = trade.m;
+            const isBuy = !isBuyerMaker;
 
-    if (trades.length > maxTrades) {
-        trades.pop();
-    }
+            // SADECE BÜYÜK EMİRLERİ GÖSTER - 5 BTC veya eşdeğeri
+            const minBTC = 5;
+            let shouldShow = false;
+            
+            if (currentSymbol === 'BTCUSDT') {
+                shouldShow = quantity >= minBTC;
+            } else {
+                // Diğer coinler için 5 BTC'lik USD değeri (yaklaşık $475,000)
+                const tradeValue = quantity * parseFloat(trade.p);
+                const minValue = minBTC * 95000; // 5 BTC * $95,000
+                shouldShow = tradeValue >= minValue;
+            }
 
-    renderTrades();
-}
+            // Eğer minimum limiti geçmiyorsa, bu trade'i gösterme
+            if (!shouldShow) {
+                return;
+            }
 
-function renderTrades() {
-    tradesContainer.innerHTML = '';
-    
-    trades.forEach(trade => {
-        const tradeRow = document.createElement('div');
-        tradeRow.className = `trade-row ${trade.isBuy ? 'buy' : 'sell'} ${trade.isLarge ? 'large' : ''}`;
-        
-        tradeRow.innerHTML = `
-            <div class="time">${trade.time}</div>
-            <div class="price">${trade.price}</div>
-            <div class="size">${trade.quantity}</div>
-        `;
-        
-        tradesContainer.appendChild(tradeRow);
-    });
-}
+            const quantityFormatted = formatQuantity(quantity, currentSymbol);
 
-// Başlatma
-window.addEventListener('load', () => {
-    connectWebSocket();
-    fetch24hVolume();
-    fetchFearGreedIndex();
-    
-    setInterval(fetchFearGreedIndex, 300000);
-    setInterval(fetch24hVolume, 30000);
-});
+            // Hacim güncelle (sadece gösterilen trade'ler için)
+            if (isBuy) {
+                buyVolume += quantity;
+                buyVolumeEl.textContent = formatQuantity(buyVolume, currentSymbol);
+            } else {
+                sellVolume += quantity;
+                sellVolumeEl.textContent = formatQuantity(sellVolume, currentSymbol);
+            }
 
-window.addEventListener('beforeunload', () => {
-    if (ws) ws.close();
-});
+            // Büyük emir bildirimi
+            const tradeValueUSD = (quantity * parseFloat(trade.p)).toFixed(0);
+            const message = `${isBuy ? '🟢 BUY' : '🔴 SELL'} ${quantityFormatted} ${currentSymbol.replace('USDT', '')} @ ${price} (≈${tradeValueUSD})`;
+            showNotification(message);
 
-document.addEventListener('click', initAudio, { once: true });
+            // Trade objesini diziye ekle
+            trades.unshift({
+                time: formattedTime,
+                price: price,
+                quantity: quantityFormatted,
+                isBuy: isBuy,
+                isLarge: true // Tüm gösterilenler zaten büyük emirler
+            });
 
-    
-</script>
-```
+            if (trades.length > maxTrades) {
+                trades.pop();
+            }
 
+            renderTrades();
+        }
+
+        // Trade'leri render et
+        function renderTrades() {
+            tradesContainer.innerHTML = '';
+            
+            trades.forEach(trade => {
+                const tradeRow = document.createElement('div');
+                tradeRow.className = `trade-row ${trade.isBuy ? 'buy' : 'sell'} ${trade.isLarge ? 'large' : ''}`;
+                
+                tradeRow.innerHTML = `
+                    <div class="time">${trade.time}</div>
+                    <div class="price">${trade.price}</div>
+                    <div class="size">${trade.quantity}</div>
+                `;
+                
+                tradesContainer.appendChild(tradeRow);
+            });
+        }
+
+        // Başlatma
+        window.addEventListener('load', () => {
+            connectWebSocket();
+            fetch24hVolume();
+            fetchFearGreedIndex();
+            
+            // Her 5 dakikada bir Fear & Greed Index'i güncelle
+            setInterval(fetchFearGreedIndex, 300000);
+            
+            // Her 30 saniyede bir 24h volume güncelle
+            setInterval(fetch24hVolume, 30000);
+        });
+
+        // Sayfa kapatılırken
+        window.addEventListener('beforeunload', () => {
+            if (ws) ws.close();
+        });
+
+        // İlk tıklamada ses sistemini başlat
+        document.addEventListener('click', () => {
+            initAudio();
+        }, { once: true });
+    </script>
 </body>
 </html>
