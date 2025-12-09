@@ -589,15 +589,29 @@
         // Coin'e göre quantity formatı
         function formatQuantity(quantity, symbol) {
             if (symbol === 'BTCUSDT') {
-                return quantity < 1 ? quantity.toFixed(5) : quantity.toFixed(3);
+                // BTC için: 0.001 ve üzeri göster
+                if (quantity >= 1) return quantity.toFixed(3);
+                if (quantity >= 0.1) return quantity.toFixed(4);
+                if (quantity >= 0.01) return quantity.toFixed(5);
+                if (quantity >= 0.001) return quantity.toFixed(6);
+                return quantity.toFixed(8);
             } else if (symbol === 'ETHUSDT') {
-                return quantity < 1 ? quantity.toFixed(4) : quantity.toFixed(2);
+                if (quantity >= 10) return quantity.toFixed(2);
+                if (quantity >= 1) return quantity.toFixed(3);
+                if (quantity >= 0.1) return quantity.toFixed(4);
+                return quantity.toFixed(5);
             } else if (symbol === 'BNBUSDT') {
-                return quantity < 10 ? quantity.toFixed(3) : quantity.toFixed(1);
+                if (quantity >= 100) return quantity.toFixed(1);
+                if (quantity >= 10) return quantity.toFixed(2);
+                return quantity.toFixed(3);
             } else if (symbol === 'SOLUSDT') {
-                return quantity < 10 ? quantity.toFixed(2) : quantity.toFixed(1);
+                if (quantity >= 100) return quantity.toFixed(1);
+                if (quantity >= 10) return quantity.toFixed(2);
+                return quantity.toFixed(3);
             } else if (symbol === 'XRPUSDT') {
-                return quantity < 100 ? quantity.toFixed(1) : quantity.toFixed(0);
+                if (quantity >= 1000) return quantity.toFixed(0);
+                if (quantity >= 100) return quantity.toFixed(1);
+                return quantity.toFixed(2);
             }
             return quantity.toFixed(2);
         }
