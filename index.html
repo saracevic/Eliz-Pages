@@ -250,6 +250,20 @@
             };
         }
 
+        // Minimum BTC miktarını hesaplama
+        function getMinBTCAmount() {
+            // BTC için 10 BTC, diğer coinler için eşdeğer USD değeri
+            const minBTC = 10;
+            
+            // Eğer BTCUSDT ise direkt BTC miktarını kontrol et
+            if (currentSymbol === 'BTCUSDT') {
+                return minBTC;
+            }
+            
+            // Diğer coinler için 10 BTC'lik USD değerini hesapla (yaklaşık $950,000)
+            return minBTC * 95000; // 10 BTC ≈ $950,000
+        }
+
         // Trade ekleme
         function addTrade(trade) {
             const time = new Date(trade.T);
@@ -260,16 +274,30 @@
             
             const formattedTime = `${hours}:${minutes}:${seconds}:${milliseconds}`;
             const price = parseFloat(trade.p).toFixed(2);
-            const quantity = parseFloat(trade.q).toFixed(4);
+            const quantity = parseFloat(trade.q);
+            const quantityFormatted = quantity.toFixed(4);
             const isBuyerMaker = trade.m;
+
+            // Büyük emir kontrolü
+            let isLarge = false;
+            const minAmount = getMinBTCAmount();
+            
+            if (currentSymbol === 'BTCUSDT') {
+                // BTC için direkt miktar kontrolü
+                isLarge = quantity >= minAmount;
+            } else {
+                // Diğer coinler için USD değeri kontrolü
+                const tradeValue = quantity * parseFloat(trade.p);
+                isLarge = tradeValue >= minAmount;
+            }
 
             // Trade objesini diziye ekle
             trades.unshift({
                 time: formattedTime,
                 price: price,
-                quantity: quantity,
+                quantity: quantityFormatted,
                 isBuy: !isBuyerMaker,
-                isLarge: parseFloat(trade.q) * parseFloat(trade.p) > 10000
+                isLarge: isLarge
             });
 
             // Maksimum trade sayısını sınırla
