@@ -310,16 +310,18 @@
                     <div class="coin-chip" data-coin="XRP">XRP</div>
                 </div>
             </div>
-            <div class="filter-group">
-                <label class="filter-label">Min Position Size</label>
-                <select id="minSizeFilter" class="input" style="margin-top:4px;">
-                    <option value="0">All Sizes</option>
-                    <option value="100000">$100K+</option>
-                    <option value="250000">$250K+</option>
-                    <option value="500000">$500K+</option>
-                    <option value="1000000">$1M+</option>
-                </select>
-            </div>
+        <div class="whale-input-group">
+            <label class="whale-input-label">Min Position Size</label>
+            <select id="whaleMinSize" class="input" style="margin-top:4px;">
+            <option value="100000">🐟 Small Fish ($100K+)</option>
+            <option value="500000">🐬 Dolphin ($500K+)</option>
+            <option value="1000000">🦈 Shark ($1M+)</option>
+            <option value="3000000" selected>🐋 Whale ($3M+) ✅</option>
+            <option value="10000000">🐳 Mega Whale ($10M+)</option>
+        </select>
+    </div>
+            
+            
             <div class="filter-group">
                 <label class="filter-label">PnL Filter</label>
                 <select id="pnlFilter" class="input" style="margin-top:4px;">
