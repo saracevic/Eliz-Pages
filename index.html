@@ -639,11 +639,30 @@
             const formattedTime = `${hours}:${minutes}:${seconds}:${milliseconds}`;
             const price = formatPrice(trade.p, currentSymbol);
             const quantity = parseFloat(trade.q);
-            const quantityFormatted = formatQuantity(quantity, currentSymbol);
             const isBuyerMaker = trade.m;
             const isBuy = !isBuyerMaker;
 
-            // Hacim güncelle
+            // SADECE BÜYÜK EMİRLERİ GÖSTER - 5 BTC veya eşdeğeri
+            const minBTC = 5;
+            let shouldShow = false;
+            
+            if (currentSymbol === 'BTCUSDT') {
+                shouldShow = quantity >= minBTC;
+            } else {
+                // Diğer coinler için 5 BTC'lik USD değeri (yaklaşık $475,000)
+                const tradeValue = quantity * parseFloat(trade.p);
+                const minValue = minBTC * 95000; // 5 BTC * $95,000
+                shouldShow = tradeValue >= minValue;
+            }
+
+            // Eğer minimum limiti geçmiyorsa, bu trade'i gösterme
+            if (!shouldShow) {
+                return;
+            }
+
+            const quantityFormatted = formatQuantity(quantity, currentSymbol);
+
+            // Hacim güncelle (sadece gösterilen trade'ler için)
             if (isBuy) {
                 buyVolume += quantity;
                 buyVolumeEl.textContent = formatQuantity(buyVolume, currentSymbol);
@@ -652,25 +671,10 @@
                 sellVolumeEl.textContent = formatQuantity(sellVolume, currentSymbol);
             }
 
-            // Büyük emir kontrolü - 5 BTC veya eşdeğeri
-            let isLarge = false;
-            const minBTC = 5; // 5 BTC'ye düşürdük
-            
-            if (currentSymbol === 'BTCUSDT') {
-                isLarge = quantity >= minBTC;
-            } else {
-                // Diğer coinler için 5 BTC'lik USD değeri (yaklaşık $475,000)
-                const tradeValue = quantity * parseFloat(trade.p);
-                const minValue = minBTC * 95000;
-                isLarge = tradeValue >= minValue;
-            }
-
             // Büyük emir bildirimi
-            if (isLarge) {
-                const tradeValueUSD = (quantity * parseFloat(trade.p)).toFixed(0);
-                const message = `${isBuy ? '🟢 BUY' : '🔴 SELL'} ${quantityFormatted} ${currentSymbol.replace('USDT', '')} @ ${price} (≈${tradeValueUSD})`;
-                showNotification(message);
-            }
+            const tradeValueUSD = (quantity * parseFloat(trade.p)).toFixed(0);
+            const message = `${isBuy ? '🟢 BUY' : '🔴 SELL'} ${quantityFormatted} ${currentSymbol.replace('USDT', '')} @ ${price} (≈${tradeValueUSD})`;
+            showNotification(message);
 
             // Trade objesini diziye ekle
             trades.unshift({
@@ -678,7 +682,7 @@
                 price: price,
                 quantity: quantityFormatted,
                 isBuy: isBuy,
-                isLarge: isLarge
+                isLarge: true // Tüm gösterilenler zaten büyük emirler
             });
 
             if (trades.length > maxTrades) {
