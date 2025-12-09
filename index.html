@@ -555,35 +555,67 @@
             fetch24hVolume();
         });
 
-        // WebSocket bağlantısı
+        // WebSocket bağlantısı - DAHA GÜÇLÜ
         function connectWebSocket() {
             if (ws) {
                 ws.close();
             }
 
             const symbol = currentSymbol.toLowerCase();
+            // Binance'in ana stream endpoint'i
             ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@trade`);
 
             ws.onopen = () => {
-                console.log('WebSocket bağlandı:', currentSymbol);
+                console.log('✅ WebSocket AÇILDI:', currentSymbol);
                 statusText.textContent = 'LIVE';
+                statusText.style.color = '#00ff66';
             };
 
             ws.onmessage = (event) => {
-                const trade = JSON.parse(event.data);
-                addTrade(trade);
+                try {
+                    const trade = JSON.parse(event.data);
+                    // Veri geldiğini göster
+                    console.log('📊 Trade geldi:', {
+                        symbol: currentSymbol,
+                        price: trade.p,
+                        quantity: trade.q,
+                        time: new Date(trade.T).toLocaleTimeString()
+                    });
+                    addTrade(trade);
+                } catch (error) {
+                    console.error('❌ Trade parse hatası:', error);
+                }
             };
 
             ws.onerror = (error) => {
-                console.error('WebSocket hatası:', error);
+                console.error('❌ WebSocket HATASI:', error);
                 statusText.textContent = 'ERROR';
+                statusText.style.color = '#ff4444';
             };
 
-            ws.onclose = () => {
-                console.log('WebSocket kapandı');
+            ws.onclose = (event) => {
+                console.log('⚠️ WebSocket KAPANDI. Code:', event.code, 'Reason:', event.reason);
                 statusText.textContent = 'RECONNECTING';
-                setTimeout(connectWebSocket, 3000);
+                statusText.style.color = '#ffaa00';
+                
+                // 2 saniye sonra yeniden bağlan
+                setTimeout(() => {
+                    console.log('🔄 Yeniden bağlanıyor...');
+                    connectWebSocket();
+                }, 2000);
             };
+
+            // Bağlantı sağlık kontrolü - her 30 saniyede ping
+            setInterval(() => {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    console.log('💓 WebSocket canlı');
+                } else if (ws && ws.readyState === WebSocket.CONNECTING) {
+                    console.log('⏳ WebSocket bağlanıyor...');
+                } else {
+                    console.log('❌ WebSocket kapalı, yeniden başlatılıyor...');
+                    connectWebSocket();
+                }
+            }, 30000);
         }
 
         // Coin'e göre quantity formatı
