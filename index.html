@@ -271,7 +271,7 @@
         </div>
         <div class="whale-input-group">
             <label class="whale-input-label">Min Change % (for alerts)</label>
-            <input type="number" id="whaleMinChange" class="input" value="10" min="5" max="50" step="5">
+            <input type="number" id="whaleMinChange" class="input" value="10" min="5" max="100" step="5">
         </div>
         <div class="whale-input-group">
             <label class="whale-input-label">Notification Mode</label>
@@ -292,7 +292,7 @@
         </div>
         <div class="whale-input-group">
             <label class="whale-input-label">Sound Volume</label>
-            <input type="range" id="soundVolume" class="input" value="50" min="0" max="100" step="10" style="padding:4px;">
+            <input type="range" id="soundVolume" class="input" value="100" min="0" max="100" step="10" style="padding:4px;">
             <div style="font-size:9px;color:#666;margin-top:2px;text-align:center;" id="volumeDisplay">50%</div>
         </div>
     </div>
@@ -923,7 +923,7 @@ async function checkWhaleMovements() {
 
     try {
         const lb = await fetchLB();
-        const topWallets = lb.slice(0, 50);
+        const topWallets = lb.slice(0, 200);
 
         for (const row of topWallets) {
             const addr = row.ethAddress;
