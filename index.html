@@ -426,6 +426,13 @@
         // PART 1: GLOBAL STATE & CONFIG
         const CONFIG = {
             maxTrades: 200,
+            // TAPE'TE GÖSTER (Time & Sales ekranı için)
+            displayThresholds: {
+                BTCUSDT: 0.1,    // 0.1 BTC = ~$9.5K (tape'te göster)
+                ETHUSDT: 3,      // 3 ETH = ~$10K
+                SOLUSDT: 50      // 50 SOL = ~$10K
+            },
+            // WHALE ALERT (bildirim için)
             whaleThresholds: {
                 BTCUSDT: 1,      // 1 BTC = ~$95K
                 ETHUSDT: 30,     // 30 ETH = ~$100K
