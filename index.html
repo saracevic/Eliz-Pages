@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bookmap Pro - T&S Heatmap</title>
+    <title>Bookmap Time & Sales</title>
     <style>
         * {
             margin: 0;
@@ -12,82 +12,318 @@
         }
 
         body {
-            font-family: 'Consolas', 'Monaco', monospace;
-            background: #000;
-            color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #1a1d24;
+            color: #c8ccd4;
             overflow: hidden;
             height: 100vh;
         }
 
-        .main-grid {
+        .container {
             display: grid;
-            grid-template-columns: 1fr 380px;
-            grid-template-rows: 60px 1fr 120px;
+            grid-template-columns: 80px 1fr;
             height: 100vh;
-            gap: 2px;
-            background: #0a0a0a;
         }
 
+        /* SOL PRICE LADDER */
+        .price-ladder {
+            background: #232830;
+            border-right: 1px solid #2d3139;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            font-size: 12px;
+            color: #7d8590;
+        }
+
+        .price-ladder::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .price-ladder::-webkit-scrollbar-track {
+            background: #1a1d24;
+        }
+
+        .price-ladder::-webkit-scrollbar-thumb {
+            background: #3d4451;
+        }
+
+        .price-item {
+            padding: 6px 10px;
+            text-align: right;
+            border-bottom: 1px solid #2d3139;
+            transition: background 0.2s;
+        }
+
+        .price-item:hover {
+            background: #2d3139;
+            color: #fff;
+        }
+
+        .price-item.current {
+            background: #3d4451;
+            color: #ffd700;
+            font-weight: 600;
+        }
+
+        /* SAĞ PANEL */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            background: #1a1d24;
+        }
+
+        /* HEADER */
         .header {
-            grid-column: 1 / -1;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            padding: 15px 25px;
+            background: #232830;
+            padding: 12px 20px;
+            border-bottom: 1px solid #2d3139;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #00ff88;
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: 3px;
-            color: #00ff88;
-            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        .title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 0.5px;
         }
 
-        .controls {
+        .symbol-selector {
             display: flex;
-            gap: 15px;
-            align-items: center;
+            gap: 8px;
         }
 
         .symbol-btn {
-            padding: 10px 20px;
-            background: rgba(0, 255, 136, 0.1);
-            border: 1px solid #00ff88;
-            border-radius: 6px;
-            color: #00ff88;
-            font-size: 14px;
-            font-weight: 600;
+            padding: 6px 14px;
+            background: #2d3139;
+            border: 1px solid #3d4451;
+            border-radius: 4px;
+            color: #c8ccd4;
+            font-size: 12px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
 
         .symbol-btn:hover {
-            background: rgba(0, 255, 136, 0.2);
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+            background: #3d4451;
+            border-color: #4d5461;
         }
 
         .symbol-btn.active {
-            background: #00ff88;
-            color: #000;
+            background: #4a90e2;
+            border-color: #4a90e2;
+            color: #fff;
         }
 
-        .status-indicator {
+        /* FILTERS */
+        .filters {
+            background: #232830;
+            padding: 12px 20px;
+            border-bottom: 1px solid #2d3139;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 11px;
+            color: #7d8590;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-input {
+            width: 70px;
+            padding: 5px 8px;
+            background: #1a1d24;
+            border: 1px solid #3d4451;
+            border-radius: 3px;
+            color: #c8ccd4;
             font-size: 12px;
-            color: #00ff88;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .radio-label input[type="radio"] {
+            cursor: pointer;
+        }
+
+        /* TABLE */
+        .table-container {
+            flex: 1;
+            overflow-y: auto;
+            background: #1a1d24;
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #1a1d24;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #3d4451;
+            border-radius: 4px;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 120px 100px 1fr;
+            padding: 10px 20px;
+            background: #232830;
+            border-bottom: 1px solid #2d3139;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-size: 11px;
+            color: #7d8590;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .table-body {
+            font-size: 13px;
+        }
+
+        .trade-row {
+            display: grid;
+            grid-template-columns: 120px 100px 1fr;
+            padding: 6px 20px;
+            border-bottom: 1px solid #252930;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .trade-row.buy {
+            background: rgba(76, 175, 80, 0.08);
+        }
+
+        .trade-row.sell {
+            background: rgba(244, 67, 54, 0.08);
+        }
+
+        .trade-row.whale {
+            background: rgba(255, 215, 0, 0.12);
+            border-left: 3px solid #ffd700;
+            font-weight: 600;
+        }
+
+        .trade-time {
+            color: #7d8590;
+            font-family: 'Courier New', monospace;
+        }
+
+        .trade-price {
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .trade-row.buy .trade-price {
+            color: #4caf50;
+        }
+
+        .trade-row.sell .trade-price {
+            color: #f44336;
+        }
+
+        .trade-size {
+            text-align: right;
+            color: #c8ccd4;
+        }
+
+        .trade-row.whale .trade-size {
+            color: #ffd700;
+        }
+
+        /* STATUS BAR */
+        .status-bar {
+            background: #232830;
+            padding: 8px 20px;
+            border-top: 1px solid #2d3139;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+        }
+
+        .status-left {
+            display: flex;
+            gap: 20px;
+            color: #7d8590;
+        }
+
+        .status-item {
+            display: flex;
+            gap: 5px;
+        }
+
+        .status-label {
+            color: #7d8590;
+        }
+
+        .status-value {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .status-value.buy {
+            color: #4caf50;
+        }
+
+        .status-value.sell {
+            color: #f44336;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .status-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background: #00ff88;
-            box-shadow: 0 0 10px #00ff88;
+            background: #4caf50;
             animation: pulse 2s infinite;
         }
 
@@ -96,256 +332,25 @@
             50% { opacity: 0.4; }
         }
 
-        .heatmap-container {
-            background: #0a0a0a;
-            position: relative;
-            overflow: hidden;
-            border-right: 1px solid #1a1a1a;
+        .status-text {
+            color: #4caf50;
+            font-weight: 600;
         }
 
-        #heatmapCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        .tape-container {
-            background: #0a0a0a;
-            display: flex;
-            flex-direction: column;
-            border-left: 1px solid #1a1a1a;
-        }
-
-        .tape-header {
-            display: grid;
-            grid-template-columns: 100px 120px 1fr;
-            gap: 10px;
-            padding: 12px 15px;
-            background: #16213e;
-            font-size: 11px;
-            font-weight: 700;
-            color: #00ff88;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 2px solid #00ff88;
-        }
-
-        .tape-body {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-        .tape-body::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .tape-body::-webkit-scrollbar-track {
-            background: #0a0a0a;
-        }
-
-        .tape-body::-webkit-scrollbar-thumb {
-            background: #00ff88;
-            border-radius: 4px;
-        }
-
-        .tape-row {
-            display: grid;
-            grid-template-columns: 100px 120px 1fr;
-            gap: 10px;
-            padding: 6px 15px;
-            font-size: 13px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            animation: slideIn 0.2s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-10px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .tape-row.buy {
-            background: rgba(0, 255, 136, 0.05);
-            border-left: 3px solid #00ff88;
-        }
-
-        .tape-row.sell {
-            background: rgba(255, 68, 102, 0.05);
-            border-left: 3px solid #ff4466;
-        }
-
-        .tape-row.whale {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid #ffd700;
-            font-weight: 700;
-            animation: glow 1.5s infinite;
-        }
-
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
-            50% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.6); }
-        }
-
-        .tape-time {
-            color: #666;
-            font-family: monospace;
-        }
-
-        .tape-price {
-            font-weight: 700;
-        }
-
-        .tape-row.buy .tape-price {
-            color: #00ff88;
-        }
-
-        .tape-row.sell .tape-price {
-            color: #ff4466;
-        }
-
-        .tape-size {
-            text-align: right;
-            color: #aaa;
-        }
-
-        .tape-row.whale .tape-size {
-            color: #ffd700;
-        }
-
-        .delta-container {
-            grid-column: 1 / -1;
-            background: #0a0a0a;
-            padding: 15px;
-            border-top: 1px solid #1a1a1a;
-        }
-
-        .delta-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .delta-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: #00ff88;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .delta-stats {
-            display: flex;
-            gap: 30px;
-            font-size: 11px;
-        }
-
-        .delta-stat {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .delta-stat.buy {
-            color: #00ff88;
-        }
-
-        .delta-stat.sell {
-            color: #ff4466;
-        }
-
-        .delta-stat.net {
-            color: #ffd700;
-        }
-
-        .delta-bars {
-            display: flex;
-            align-items: center;
-            height: 50px;
-            background: #16213e;
-            border-radius: 6px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .delta-bar {
-            height: 100%;
-            transition: width 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .delta-bar.buy {
-            background: linear-gradient(90deg, transparent, #00ff88);
-            color: #00ff88;
-        }
-
-        .delta-bar.sell {
-            background: linear-gradient(270deg, transparent, #ff4466);
-            color: #ff4466;
-        }
-
-        .delta-center {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: #ffd700;
-            z-index: 10;
-        }
-
-        .price-ladder {
-            position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 100px;
-            background: rgba(0, 0, 0, 0.8);
-            border-left: 1px solid #00ff88;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            padding: 10px 5px;
-            font-size: 11px;
-            z-index: 100;
-        }
-
-        .price-level {
-            padding: 4px 8px;
-            text-align: right;
-            color: #666;
-            border-radius: 3px;
-            transition: all 0.2s;
-        }
-
-        .price-level:hover {
-            background: rgba(0, 255, 136, 0.1);
-            color: #00ff88;
-        }
-
+        /* WHALE ALERT */
         .whale-alert {
             position: fixed;
-            top: 80px;
+            top: 20px;
             right: 20px;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: #232830;
             border: 2px solid #ffd700;
-            border-radius: 8px;
-            padding: 15px 20px;
-            min-width: 300px;
-            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
+            border-radius: 6px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             transform: translateX(400px);
             transition: transform 0.4s ease;
             z-index: 1000;
+            min-width: 280px;
         }
 
         .whale-alert.show {
@@ -353,188 +358,222 @@
         }
 
         .whale-alert-title {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 700;
             color: #ffd700;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .whale-alert-message {
             font-size: 13px;
-            color: #fff;
+            color: #c8ccd4;
+        }
+
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 60px 1fr;
+            }
+
+            .price-ladder {
+                font-size: 10px;
+            }
+
+            .price-item {
+                padding: 5px 6px;
+            }
+
+            .header {
+                padding: 10px 12px;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .symbol-selector {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .symbol-btn {
+                flex: 1;
+                font-size: 11px;
+                padding: 6px 8px;
+            }
+
+            .filters {
+                padding: 10px 12px;
+                gap: 10px;
+            }
+
+            .filter-input {
+                width: 60px;
+                font-size: 11px;
+            }
+
+            .table-header {
+                grid-template-columns: 100px 80px 1fr;
+                padding: 8px 12px;
+                font-size: 10px;
+            }
+
+            .trade-row {
+                grid-template-columns: 100px 80px 1fr;
+                padding: 5px 12px;
+                font-size: 12px;
+            }
+
+            .status-bar {
+                padding: 6px 12px;
+                flex-direction: column;
+                gap: 6px;
+                align-items: flex-start;
+            }
+
+            .status-left {
+                gap: 10px;
+                font-size: 10px;
+            }
+
+            .whale-alert {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="main-grid">
-        <div class="header">
-            <div class="logo">⚡ BOOKMAP PRO</div>
-            <div class="controls">
-                <button class="symbol-btn active" data-symbol="BTCUSDT">BTC/USDT</button>
-                <button class="symbol-btn" data-symbol="ETHUSDT">ETH/USDT</button>
-                <button class="symbol-btn" data-symbol="SOLUSDT">SOL/USDT</button>
-                <div class="status-indicator">
+    <div class="container">
+        <!-- SOL PRICE LADDER -->
+        <div class="price-ladder" id="priceLadder"></div>
+
+        <!-- SAĞ PANEL -->
+        <div class="right-panel">
+            <!-- HEADER -->
+            <div class="header">
+                <div class="title">Time & Sales</div>
+                <div class="symbol-selector">
+                    <button class="symbol-btn active" data-symbol="BTCUSDT">BTC</button>
+                    <button class="symbol-btn" data-symbol="ETHUSDT">ETH</button>
+                    <button class="symbol-btn" data-symbol="SOLUSDT">SOL</button>
+                    <button class="symbol-btn" data-symbol="XRPUSDT">XRP</button>
+                </div>
+            </div>
+
+            <!-- FILTERS -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Min Size</label>
+                    <input type="number" class="filter-input" id="minSizeInput" placeholder="0.1" step="0.01">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Max Size</label>
+                    <input type="number" class="filter-input" id="maxSizeInput" placeholder="100" step="0.1">
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Show</span>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="showFilter" value="all" checked> All
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="showFilter" value="buy"> Buy
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="showFilter" value="sell"> Sell
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-container">
+                <div class="table-header">
+                    <div>Time</div>
+                    <div>Price</div>
+                    <div style="text-align: right;">Size</div>
+                </div>
+                <div class="table-body" id="tableBody"></div>
+            </div>
+
+            <!-- STATUS BAR -->
+            <div class="status-bar">
+                <div class="status-left">
+                    <div class="status-item">
+                        <span class="status-label">Buy Vol:</span>
+                        <span class="status-value buy" id="buyVol">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Sell Vol:</span>
+                        <span class="status-value sell" id="sellVol">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Ratio:</span>
+                        <span class="status-value" id="ratioVal">0%</span>
+                    </div>
+                </div>
+                <div class="status-right">
                     <div class="status-dot"></div>
-                    <span id="statusText">LIVE</span>
+                    <span class="status-text" id="statusText">LIVE</span>
                 </div>
-            </div>
-        </div>
-
-        <div class="heatmap-container">
-            <canvas id="heatmapCanvas"></canvas>
-            <div class="price-ladder" id="priceLadder"></div>
-        </div>
-
-        <div class="tape-container">
-            <div class="tape-header">
-                <div>TIME</div>
-                <div>PRICE</div>
-                <div style="text-align: right;">SIZE</div>
-            </div>
-            <div class="tape-body" id="tapeBody"></div>
-        </div>
-
-        <div class="delta-container">
-            <div class="delta-header">
-                <div class="delta-title">📊 VOLUME DELTA (1M)</div>
-                <div class="delta-stats">
-                    <div class="delta-stat buy">
-                        BUY: <span id="buyVol">0</span>
-                    </div>
-                    <div class="delta-stat sell">
-                        SELL: <span id="sellVol">0</span>
-                    </div>
-                    <div class="delta-stat net">
-                        NET: <span id="netDelta">0</span>
-                    </div>
-                </div>
-            </div>
-            <div class="delta-bars">
-                <div class="delta-bar buy" id="buyBar"></div>
-                <div class="delta-center"></div>
-                <div class="delta-bar sell" id="sellBar"></div>
             </div>
         </div>
     </div>
 
+    <!-- WHALE ALERT -->
     <div class="whale-alert" id="whaleAlert">
         <div class="whale-alert-title">🐋 WHALE DETECTED</div>
         <div class="whale-alert-message" id="whaleMessage"></div>
     </div>
 
-    <!-- VOLUME PRESSURE WIDGET -->
-    <button class="vp-toggle-btn" id="vpToggleBtn">📊 VOLUME PRESSURE</button>
-    
-    <div class="volume-pressure-widget" id="volumePressureWidget" style="display: none;">
-        <div class="vp-header">
-            <div class="vp-title">📊 Volume Pressure</div>
-            <button class="vp-close" id="vpCloseBtn">✕</button>
-        </div>
-        <div class="vp-values">
-            <div class="vp-row">
-                <span class="vp-label">Aggr Sells</span>
-                <span class="vp-value sell" id="vpAggrSells">0</span>
-            </div>
-            <div class="vp-row">
-                <span class="vp-label">Aggr Buys</span>
-                <span class="vp-value buy" id="vpAggrBuys">0</span>
-            </div>
-            <div class="vp-row">
-                <span class="vp-label">Buy/Sell Ratio</span>
-                <span class="vp-value ratio" id="vpRatio">0%</span>
-            </div>
-        </div>
-        <div class="vp-bar-container">
-            <div class="vp-bar sell" id="vpSellBar" style="width: 50%; float: left;"></div>
-            <div class="vp-bar buy" id="vpBuyBar" style="width: 50%; float: right;"></div>
-            <div class="vp-center-line"></div>
-        </div>
-    </div>
-
     <script>
-        // PART 1: GLOBAL STATE & CONFIG
+        // CONFIG
         const CONFIG = {
-            maxTrades: 200,
-            // TAPE'TE GÖSTER (Time & Sales ekranı için)
+            maxTrades: 500,
             displayThresholds: {
-                BTCUSDT: 0.1,    // 0.1 BTC = ~$9.5K (tape'te göster)
-                ETHUSDT: 3,      // 3 ETH = ~$10K
-                SOLUSDT: 50      // 50 SOL = ~$10K
-            },
-            // WHALE ALERT (bildirim için)
-            whaleThresholds: {
-                BTCUSDT: 1,      // 1 BTC = ~$95K
-                ETHUSDT: 30,     // 30 ETH = ~$100K
-                SOLUSDT: 500     // 500 SOL = ~$100K
-            },
-            heatmapLevels: 50,
-            priceTickSize: {
-                BTCUSDT: 10,
+                BTCUSDT: 0.05,
                 ETHUSDT: 1,
-                SOLUSDT: 0.1
+                SOLUSDT: 20,
+                XRPUSDT: 5000
+            },
+            whaleThresholds: {
+                BTCUSDT: 0.5,
+                ETHUSDT: 15,
+                SOLUSDT: 300,
+                XRPUSDT: 50000
             }
         };
 
+        // STATE
         const STATE = {
             currentSymbol: 'BTCUSDT',
             ws: null,
             trades: [],
-            volumeData: {
-                buy: 0,
-                sell: 0
+            allTrades: [],
+            volumeData: { buy: 0, sell: 0 },
+            filters: {
+                minSize: null,
+                maxSize: null,
+                show: 'all'
             },
-            priceRange: {
-                min: 0,
-                max: 0
-            },
-            heatmapData: new Map(),
+            priceRange: { min: 0, max: 0 },
             lastResetTime: Date.now()
         };
 
-        // DOM Elements
-        const canvas = document.getElementById('heatmapCanvas');
-        const ctx = canvas.getContext('2d');
-        const tapeBody = document.getElementById('tapeBody');
+        // DOM
         const priceLadder = document.getElementById('priceLadder');
+        const tableBody = document.getElementById('tableBody');
         const statusText = document.getElementById('statusText');
         const buyVolEl = document.getElementById('buyVol');
         const sellVolEl = document.getElementById('sellVol');
-        const netDeltaEl = document.getElementById('netDelta');
-        const buyBar = document.getElementById('buyBar');
-        const sellBar = document.getElementById('sellBar');
+        const ratioValEl = document.getElementById('ratioVal');
         const whaleAlert = document.getElementById('whaleAlert');
         const whaleMessage = document.getElementById('whaleMessage');
+        const minSizeInput = document.getElementById('minSizeInput');
+        const maxSizeInput = document.getElementById('maxSizeInput');
 
-        // Volume Pressure Widget Elements
-        const vpWidget = document.getElementById('volumePressureWidget');
-        const vpToggleBtn = document.getElementById('vpToggleBtn');
-        const vpCloseBtn = document.getElementById('vpCloseBtn');
-        const vpAggrSells = document.getElementById('vpAggrSells');
-        const vpAggrBuys = document.getElementById('vpAggrBuys');
-        const vpRatio = document.getElementById('vpRatio');
-        const vpSellBar = document.getElementById('vpSellBar');
-        const vpBuyBar = document.getElementById('vpBuyBar');
-
-        // Volume Pressure Widget Toggle
-        vpToggleBtn.addEventListener('click', () => {
-            vpWidget.style.display = 'block';
-            vpToggleBtn.classList.add('hidden');
-        });
-
-        vpCloseBtn.addEventListener('click', () => {
-            vpWidget.style.display = 'none';
-            vpToggleBtn.classList.remove('hidden');
-        });
-
-        // Canvas setup
-        function resizeCanvas() {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        // Symbol selector
+        // Symbol selection
         document.querySelectorAll('.symbol-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.symbol-btn').forEach(b => b.classList.remove('active'));
@@ -545,32 +584,56 @@
             });
         });
 
-        function resetState() {
-            STATE.trades = [];
-            STATE.volumeData = { buy: 0, sell: 0 };
-            STATE.heatmapData.clear();
-            STATE.lastResetTime = Date.now();
-            tapeBody.innerHTML = '';
-            updateDeltaBars();
+        // Filters
+        minSizeInput.addEventListener('input', (e) => {
+            STATE.filters.minSize = parseFloat(e.target.value) || null;
+            applyFilters();
+        });
+
+        maxSizeInput.addEventListener('input', (e) => {
+            STATE.filters.maxSize = parseFloat(e.target.value) || null;
+            applyFilters();
+        });
+
+        document.querySelectorAll('input[name="showFilter"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                STATE.filters.show = e.target.value;
+                applyFilters();
+            });
+        });
+
+        function applyFilters() {
+            STATE.trades = STATE.allTrades.filter(trade => {
+                if (STATE.filters.minSize && trade.quantity < STATE.filters.minSize) return false;
+                if (STATE.filters.maxSize && trade.quantity > STATE.filters.maxSize) return false;
+                if (STATE.filters.show === 'buy' && !trade.isBuy) return false;
+                if (STATE.filters.show === 'sell' && trade.isBuy) return false;
+                return true;
+            });
+            renderTrades();
         }
 
-        // PART 2: WEBSOCKET & HEATMAP LOGIC (UPDATED - LIVE DATA)
-        
-        // WebSocket Connection - REAL BINANCE API
+        function resetState() {
+            STATE.trades = [];
+            STATE.allTrades = [];
+            STATE.volumeData = { buy: 0, sell: 0 };
+            STATE.priceRange = { min: 0, max: 0 };
+            STATE.lastResetTime = Date.now();
+            tableBody.innerHTML = '';
+            updateStatusBar();
+        }
+
+        // WebSocket
         function connectWebSocket() {
-            if (STATE.ws) {
-                STATE.ws.close();
-            }
+            if (STATE.ws) STATE.ws.close();
 
             const symbol = STATE.currentSymbol.toLowerCase();
-            // GERÇEK BİNANCE WEBSOCKET - DEMO DEĞİL!
             STATE.ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@trade`);
 
             STATE.ws.onopen = () => {
-                console.log('✅ CONNECTED TO LIVE BINANCE:', STATE.currentSymbol);
-                console.log('📡 Real-time trades incoming...');
+                console.log('✅ Connected:', STATE.currentSymbol);
                 statusText.textContent = 'LIVE';
-                statusText.style.color = '#00ff88';
+                statusText.style.color = '#4caf50';
             };
 
             STATE.ws.onmessage = (event) => {
@@ -578,75 +641,73 @@
                 processTrade(trade);
             };
 
-            STATE.ws.onerror = (error) => {
-                console.error('❌ WebSocket Error:', error);
+            STATE.ws.onerror = () => {
                 statusText.textContent = 'ERROR';
-                statusText.style.color = '#ff4466';
+                statusText.style.color = '#f44336';
             };
 
             STATE.ws.onclose = () => {
-                console.log('⚠️ Disconnected - Reconnecting in 3s...');
                 statusText.textContent = 'RECONNECTING';
-                statusText.style.color = '#ffa500';
+                statusText.style.color = '#ff9800';
                 setTimeout(connectWebSocket, 3000);
             };
         }
 
-        // Process incoming trade - HER TRADE GÖSTER
         function processTrade(trade) {
             const price = parseFloat(trade.p);
             const quantity = parseFloat(trade.q);
             const isBuy = !trade.m;
             const timestamp = trade.T;
 
-            // Initialize price range on first trade
+            // Init price range
             if (STATE.priceRange.max === 0) {
                 STATE.priceRange.min = price - 100;
                 STATE.priceRange.max = price + 100;
-                console.log('📊 Price range initialized:', STATE.priceRange);
+                updatePriceLadder(price);
             }
 
-            // LOG HER TRADE - CONSOLE'DA GÖRECEKSIN!
-            console.log(`${isBuy ? '🟢 BUY' : '🔴 SELL'} ${formatQuantity(quantity)} ${STATE.currentSymbol.replace('USDT','')} @ ${formatPrice(price)}`);
-
-            // Add to tape (TÜM TRADE'LER - WHALE OLMASA DA!)
-            addToTape({
-                time: formatTime(timestamp),
-                price: price,
-                quantity: quantity,
-                isBuy: isBuy,
-                isWhale: isWhaleTrade(quantity)
-            });
-
-            // Update volume delta
+            // Update volume
             if (isBuy) {
                 STATE.volumeData.buy += quantity;
             } else {
                 STATE.volumeData.sell += quantity;
             }
 
-            // Add to heatmap
-            addToHeatmap(price, quantity, isBuy);
+            // Display threshold
+            const displayThreshold = CONFIG.displayThresholds[STATE.currentSymbol] || 0.05;
 
-            // Check whale alert (1 BTC = WHALE!)
-            if (isWhaleTrade(quantity)) {
-                console.log('🐋 WHALE ALERT! 🐋', formatQuantity(quantity), STATE.currentSymbol.replace('USDT',''));
-                showWhaleAlert(price, quantity, isBuy);
+            if (quantity >= displayThreshold) {
+                const tradeObj = {
+                    time: formatTime(timestamp),
+                    price: price,
+                    quantity: quantity,
+                    isBuy: isBuy,
+                    isWhale: isWhaleTrade(quantity)
+                };
+
+                STATE.allTrades.unshift(tradeObj);
+                if (STATE.allTrades.length > CONFIG.maxTrades) {
+                    STATE.allTrades.pop();
+                }
+
+                applyFilters();
+
+                if (tradeObj.isWhale) {
+                    showWhaleAlert(price, quantity, isBuy);
+                }
+
+                updatePriceLadder(price);
             }
 
-            // Update UI
-            updateDeltaBars();
-            updatePriceLadder();
+            updateStatusBar();
 
             // Reset every minute
             if (Date.now() - STATE.lastResetTime > 60000) {
-                console.log('🔄 Resetting 1-minute delta');
                 STATE.volumeData = { buy: 0, sell: 0 };
                 STATE.lastResetTime = Date.now();
             }
         }
 
-        // Format timestamp
         function formatTime(timestamp) {
             const date = new Date(timestamp);
             const h = String(date.getHours()).padStart(2, '0');
@@ -656,56 +717,18 @@
             return `${h}:${m}:${s}.${ms}`;
         }
 
-        // Check if whale trade
         function isWhaleTrade(quantity) {
-            const threshold = CONFIG.whaleThresholds[STATE.currentSymbol] || 5;
+            const threshold = CONFIG.whaleThresholds[STATE.currentSymbol] || 0.5;
             return quantity >= threshold;
         }
 
-        // Add trade to tape - SADECE ÇAĞRILIRSA EKLE
-        function addToTape(trade) {
-            STATE.trades.unshift(trade);
-            if (STATE.trades.length > CONFIG.maxTrades) {
-                STATE.trades.pop();
-            }
-
-            // Hemen render et
-            renderTape();
-        }
-
-        // Render tape - STATE.trades dizisindeki herşeyi göster
-        function renderTape() {
-            const fragment = document.createDocumentFragment();
-            
-            // STATE.trades zaten sadece büyük emirleri içeriyor
-            STATE.trades.slice(0, 100).forEach(trade => {
-                const row = document.createElement('div');
-                row.className = `tape-row ${trade.isBuy ? 'buy' : 'sell'} ${trade.isWhale ? 'whale' : ''}`;
-                
-                row.innerHTML = `
-                    <div class="tape-time">${trade.time}</div>
-                    <div class="tape-price">${formatPrice(trade.price)}</div>
-                    <div class="tape-size">${formatQuantity(trade.quantity)}</div>
-                `;
-                
-                fragment.appendChild(row);
-            });
-
-            tapeBody.innerHTML = '';
-            tapeBody.appendChild(fragment);
-        }
-
-        // Format price
         function formatPrice(price) {
-            if (STATE.currentSymbol === 'BTCUSDT' || STATE.currentSymbol === 'ETHUSDT') {
-                return price.toFixed(2);
-            } else if (STATE.currentSymbol === 'SOLUSDT') {
-                return price.toFixed(2);
+            if (STATE.currentSymbol === 'XRPUSDT') {
+                return price.toFixed(4);
             }
             return price.toFixed(2);
         }
 
-        // Format quantity
         function formatQuantity(quantity) {
             if (STATE.currentSymbol === 'BTCUSDT') {
                 if (quantity >= 1) return quantity.toFixed(3);
@@ -713,352 +736,94 @@
                 return quantity.toFixed(5);
             } else if (STATE.currentSymbol === 'ETHUSDT') {
                 if (quantity >= 10) return quantity.toFixed(2);
-                if (quantity >= 1) return quantity.toFixed(3);
-                return quantity.toFixed(4);
+                return quantity.toFixed(3);
             } else if (STATE.currentSymbol === 'SOLUSDT') {
                 if (quantity >= 100) return quantity.toFixed(1);
+                return quantity.toFixed(2);
+            } else if (STATE.currentSymbol === 'XRPUSDT') {
+                if (quantity >= 10000) return quantity.toFixed(0);
+                if (quantity >= 1000) return quantity.toFixed(1);
                 return quantity.toFixed(2);
             }
             return quantity.toFixed(2);
         }
 
-        // Add to heatmap
-        function addToHeatmap(price, quantity, isBuy) {
-            const priceLevel = Math.round(price / CONFIG.priceTickSize[STATE.currentSymbol]) * CONFIG.priceTickSize[STATE.currentSymbol];
-            
-            if (!STATE.heatmapData.has(priceLevel)) {
-                STATE.heatmapData.set(priceLevel, { buy: 0, sell: 0, timestamps: [] });
-            }
+        function renderTrades() {
+            const fragment = document.createDocumentFragment();
 
-            const level = STATE.heatmapData.get(priceLevel);
-            if (isBuy) {
-                level.buy += quantity;
-            } else {
-                level.sell += quantity;
-            }
-            level.timestamps.push(Date.now());
+            STATE.trades.slice(0, 200).forEach(trade => {
+                const row = document.createElement('div');
+                row.className = `trade-row ${trade.isBuy ? 'buy' : 'sell'} ${trade.isWhale ? 'whale' : ''}`;
 
-            // Clean old data (keep last 5 minutes)
-            const fiveMinutesAgo = Date.now() - 300000;
-            STATE.heatmapData.forEach((value, key) => {
-                value.timestamps = value.timestamps.filter(t => t > fiveMinutesAgo);
-                if (value.timestamps.length === 0) {
-                    STATE.heatmapData.delete(key);
-                }
-            });
-        }
+                row.innerHTML = `
+                    <div class="trade-time">${trade.time}</div>
+                    <div class="trade-price">${formatPrice(trade.price)}</div>
+                    <div class="trade-size">${formatQuantity(trade.quantity)}</div>
+                `;
 
-        // Draw heatmap
-        function drawHeatmap() {
-            ctx.fillStyle = '#0a0a0a';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            if (STATE.heatmapData.size === 0) return;
-
-            const prices = Array.from(STATE.heatmapData.keys()).sort((a, b) => b - a);
-            const maxPrice = prices[0];
-            const minPrice = prices[prices.length - 1];
-            const priceRange = maxPrice - minPrice;
-
-            if (priceRange === 0) return;
-
-            const maxVolume = Math.max(...Array.from(STATE.heatmapData.values()).map(v => v.buy + v.sell));
-            const cellHeight = canvas.height / prices.length;
-            const timeWidth = canvas.width - 100;
-
-            prices.forEach((price, index) => {
-                const data = STATE.heatmapData.get(price);
-                const y = index * cellHeight;
-
-                // Buy volume (green)
-                if (data.buy > 0) {
-                    const intensity = data.buy / maxVolume;
-                    const width = timeWidth * intensity;
-                    ctx.fillStyle = `rgba(0, 255, 136, ${0.2 + intensity * 0.6})`;
-                    ctx.fillRect(0, y, width, cellHeight);
-                }
-
-                // Sell volume (red)
-                if (data.sell > 0) {
-                    const intensity = data.sell / maxVolume;
-                    const width = timeWidth * intensity;
-                    ctx.fillStyle = `rgba(255, 68, 102, ${0.2 + intensity * 0.6})`;
-                    ctx.fillRect(timeWidth - width, y, width, cellHeight);
-                }
-
-                // Price grid lines
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width - 100, y);
-                ctx.stroke();
+                fragment.appendChild(row);
             });
 
-            // Current price line
-            if (STATE.trades.length > 0) {
-                const currentPrice = STATE.trades[0].price;
-                const priceIndex = prices.findIndex(p => p <= currentPrice);
-                if (priceIndex !== -1) {
-                    const y = priceIndex * cellHeight;
-                    ctx.strokeStyle = '#ffd700';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.moveTo(0, y);
-                    ctx.lineTo(canvas.width - 100, y);
-                    ctx.stroke();
-                    ctx.lineWidth = 1;
-                }
-            }
+            tableBody.innerHTML = '';
+            tableBody.appendChild(fragment);
         }
 
-        // Update price ladder
-        function updatePriceLadder() {
-            if (STATE.heatmapData.size === 0) return;
+        function updatePriceLadder(currentPrice) {
+            const start = Math.floor(currentPrice / 10) * 10 - 100;
+            const end = start + 200;
+            const step = STATE.currentSymbol === 'XRPUSDT' ? 0.001 : 10;
 
-            const prices = Array.from(STATE.heatmapData.keys()).sort((a, b) => b - a);
-            const step = Math.max(1, Math.floor(prices.length / 15));
-            
             priceLadder.innerHTML = '';
-            
-            for (let i = 0; i < prices.length; i += step) {
+
+            for (let price = end; price >= start; price -= step) {
                 const div = document.createElement('div');
-                div.className = 'price-level';
-                div.textContent = formatPrice(prices[i]);
+                div.className = 'price-item';
+                if (Math.abs(price - currentPrice) < step) {
+                    div.classList.add('current');
+                }
+                div.textContent = formatPrice(price);
                 priceLadder.appendChild(div);
             }
         }
 
-        // PART 3: DELTA BARS + WHALE ALERTS + INITIALIZATION
-
-        // Update delta bars
-        function updateDeltaBars() {
+        function updateStatusBar() {
             const buyVol = STATE.volumeData.buy;
             const sellVol = STATE.volumeData.sell;
             const totalVol = buyVol + sellVol;
-            const netDelta = buyVol - sellVol;
 
-            // Update text values
             buyVolEl.textContent = formatQuantity(buyVol);
             sellVolEl.textContent = formatQuantity(sellVol);
-            netDeltaEl.textContent = formatQuantity(Math.abs(netDelta));
-            netDeltaEl.style.color = netDelta >= 0 ? '#00ff88' : '#ff4466';
 
-            // Update bars
-            if (totalVol > 0) {
-                const buyPercent = (buyVol / totalVol) * 50;
-                const sellPercent = (sellVol / totalVol) * 50;
-
-                buyBar.style.width = `${buyPercent}%`;
-                sellBar.style.width = `${sellPercent}%`;
-
-                // Show values in bars if enough space
-                if (buyPercent > 10) {
-                    buyBar.textContent = formatQuantity(buyVol);
-                } else {
-                    buyBar.textContent = '';
-                }
-
-                if (sellPercent > 10) {
-                    sellBar.textContent = formatQuantity(sellVol);
-                } else {
-                    sellBar.textContent = '';
-                }
-            } else {
-                buyBar.style.width = '0%';
-                sellBar.style.width = '0%';
-                buyBar.textContent = '';
-                sellBar.textContent = '';
-            }
-
-            // Update Volume Pressure Widget
-            updateVolumePressureWidget();
-        }
-
-        // Update Volume Pressure Widget
-        function updateVolumePressureWidget() {
-            const buyVol = STATE.volumeData.buy;
-            const sellVol = STATE.volumeData.sell;
-            const totalVol = buyVol + sellVol;
-
-            // Format values with K/M
-            const formatVP = (val) => {
-                if (val >= 1000000) return (val / 1000000).toFixed(2) + 'M';
-                if (val >= 1000) return (val / 1000).toFixed(2) + 'K';
-                return val.toFixed(2);
-            };
-
-            vpAggrSells.textContent = formatVP(sellVol);
-            vpAggrBuys.textContent = formatVP(buyVol);
-
-            // Calculate ratio
             if (totalVol > 0) {
                 const ratio = ((buyVol / totalVol) * 100).toFixed(1);
-                vpRatio.textContent = `${ratio}%`;
-                vpRatio.style.color = ratio >= 50 ? '#00ff88' : '#ff4466';
-
-                // Update bars
-                const buyPercent = (buyVol / totalVol) * 50;
-                const sellPercent = (sellVol / totalVol) * 50;
-
-                vpBuyBar.style.width = `${buyPercent}%`;
-                vpSellBar.style.width = `${sellPercent}%`;
-
-                // Show values in bars if enough space
-                if (buyPercent > 15) {
-                    vpBuyBar.textContent = formatVP(buyVol);
-                } else {
-                    vpBuyBar.textContent = '';
-                }
-
-                if (sellPercent > 15) {
-                    vpSellBar.textContent = formatVP(sellVol);
-                } else {
-                    vpSellBar.textContent = '';
-                }
+                ratioValEl.textContent = `${ratio}%`;
+                ratioValEl.style.color = ratio >= 50 ? '#4caf50' : '#f44336';
             } else {
-                vpRatio.textContent = '0%';
-                vpBuyBar.style.width = '0%';
-                vpSellBar.style.width = '0%';
-                vpBuyBar.textContent = '';
-                vpSellBar.textContent = '';
+                ratioValEl.textContent = '0%';
+                ratioValEl.style.color = '#7d8590';
             }
         }
 
-        // Show whale alert
         function showWhaleAlert(price, quantity, isBuy) {
             const symbol = STATE.currentSymbol.replace('USDT', '');
-            const tradeValue = (price * quantity).toFixed(0);
-            
-            const message = `${isBuy ? '🟢 BUY' : '🔴 SELL'} ${formatQuantity(quantity)} ${symbol} @ ${formatPrice(price)} (${tradeValue})`;
-            
+            const message = `${isBuy ? '🟢 BUY' : '🔴 SELL'} ${formatQuantity(quantity)} ${symbol} @ ${formatPrice(price)}`;
+
             whaleMessage.textContent = message;
             whaleAlert.classList.add('show');
 
-            // Play sound
-            playWhaleSound();
-
-            // Hide after 5 seconds
             setTimeout(() => {
                 whaleAlert.classList.remove('show');
             }, 5000);
         }
 
-        // Audio context for sounds
-        let audioContext = null;
-
-        function initAudio() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
-
-        function playWhaleSound() {
-            if (!audioContext) return;
-
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-
-            oscillator.frequency.value = 880;
-            oscillator.type = 'sine';
-
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.3);
-        }
-
-        // Initialize audio on first click
-        document.addEventListener('click', () => {
-            initAudio();
-        }, { once: true });
-
-        // Heatmap animation loop
-        function animateHeatmap() {
-            drawHeatmap();
-            requestAnimationFrame(animateHeatmap);
-        }
-
-        // Initialize on load
+        // Initialize
         window.addEventListener('load', () => {
-            console.log('🚀 Bookmap Pro Starting...');
             connectWebSocket();
-            animateHeatmap();
-
-            // Update UI every 100ms
-            setInterval(() => {
-                updateDeltaBars();
-            }, 100);
-
-            // Redraw heatmap every 500ms
-            setInterval(() => {
-                if (STATE.heatmapData.size > 0) {
-                    updatePriceLadder();
-                }
-            }, 500);
         });
 
-        // Cleanup on unload
         window.addEventListener('beforeunload', () => {
-            if (STATE.ws) {
-                STATE.ws.close();
-            }
+            if (STATE.ws) STATE.ws.close();
         });
-
-        // Handle visibility change
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                console.log('⏸️ Page hidden - maintaining connection');
-            } else {
-                console.log('▶️ Page visible - checking connection');
-                if (!STATE.ws || STATE.ws.readyState !== WebSocket.OPEN) {
-                    connectWebSocket();
-                }
-            }
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // Space = pause/resume (optional feature)
-            if (e.code === 'Space') {
-                e.preventDefault();
-                // Could implement pause functionality here
-            }
-            
-            // R = reset delta
-            if (e.code === 'KeyR') {
-                STATE.volumeData = { buy: 0, sell: 0 };
-                STATE.lastResetTime = Date.now();
-                updateDeltaBars();
-                console.log('🔄 Delta reset');
-            }
-
-            // C = clear heatmap
-            if (e.code === 'KeyC') {
-                STATE.heatmapData.clear();
-                console.log('🧹 Heatmap cleared');
-            }
-
-            // 1-3 = switch symbols
-            if (e.code === 'Digit1') {
-                document.querySelector('[data-symbol="BTCUSDT"]').click();
-            }
-            if (e.code === 'Digit2') {
-                document.querySelector('[data-symbol="ETHUSDT"]').click();
-            }
-            if (e.code === 'Digit3') {
-                document.querySelector('[data-symbol="SOLUSDT"]').click();
-            }
-        });
-
-        console.log('⚡ Bookmap Pro Loaded');
-        console.log('Keyboard Shortcuts:');
-        console.log('  R = Reset Delta');
-        console.log('  C = Clear Heatmap');
-        console.log('  1/2/3 = Switch Symbols');
     </script>
 </body>
 </html>
