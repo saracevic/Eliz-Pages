@@ -422,6 +422,35 @@
         <div class="whale-alert-message" id="whaleMessage"></div>
     </div>
 
+    <!-- VOLUME PRESSURE WIDGET -->
+    <button class="vp-toggle-btn" id="vpToggleBtn">📊 VOLUME PRESSURE</button>
+    
+    <div class="volume-pressure-widget" id="volumePressureWidget" style="display: none;">
+        <div class="vp-header">
+            <div class="vp-title">📊 Volume Pressure</div>
+            <button class="vp-close" id="vpCloseBtn">✕</button>
+        </div>
+        <div class="vp-values">
+            <div class="vp-row">
+                <span class="vp-label">Aggr Sells</span>
+                <span class="vp-value sell" id="vpAggrSells">0</span>
+            </div>
+            <div class="vp-row">
+                <span class="vp-label">Aggr Buys</span>
+                <span class="vp-value buy" id="vpAggrBuys">0</span>
+            </div>
+            <div class="vp-row">
+                <span class="vp-label">Buy/Sell Ratio</span>
+                <span class="vp-value ratio" id="vpRatio">0%</span>
+            </div>
+        </div>
+        <div class="vp-bar-container">
+            <div class="vp-bar sell" id="vpSellBar" style="width: 50%; float: left;"></div>
+            <div class="vp-bar buy" id="vpBuyBar" style="width: 50%; float: right;"></div>
+            <div class="vp-center-line"></div>
+        </div>
+    </div>
+
     <script>
         // PART 1: GLOBAL STATE & CONFIG
         const CONFIG = {
@@ -475,6 +504,27 @@
         const sellBar = document.getElementById('sellBar');
         const whaleAlert = document.getElementById('whaleAlert');
         const whaleMessage = document.getElementById('whaleMessage');
+
+        // Volume Pressure Widget Elements
+        const vpWidget = document.getElementById('volumePressureWidget');
+        const vpToggleBtn = document.getElementById('vpToggleBtn');
+        const vpCloseBtn = document.getElementById('vpCloseBtn');
+        const vpAggrSells = document.getElementById('vpAggrSells');
+        const vpAggrBuys = document.getElementById('vpAggrBuys');
+        const vpRatio = document.getElementById('vpRatio');
+        const vpSellBar = document.getElementById('vpSellBar');
+        const vpBuyBar = document.getElementById('vpBuyBar');
+
+        // Volume Pressure Widget Toggle
+        vpToggleBtn.addEventListener('click', () => {
+            vpWidget.style.display = 'block';
+            vpToggleBtn.classList.add('hidden');
+        });
+
+        vpCloseBtn.addEventListener('click', () => {
+            vpWidget.style.display = 'none';
+            vpToggleBtn.classList.remove('hidden');
+        });
 
         // Canvas setup
         function resizeCanvas() {
@@ -818,6 +868,59 @@
                 sellBar.style.width = '0%';
                 buyBar.textContent = '';
                 sellBar.textContent = '';
+            }
+
+            // Update Volume Pressure Widget
+            updateVolumePressureWidget();
+        }
+
+        // Update Volume Pressure Widget
+        function updateVolumePressureWidget() {
+            const buyVol = STATE.volumeData.buy;
+            const sellVol = STATE.volumeData.sell;
+            const totalVol = buyVol + sellVol;
+
+            // Format values with K/M
+            const formatVP = (val) => {
+                if (val >= 1000000) return (val / 1000000).toFixed(2) + 'M';
+                if (val >= 1000) return (val / 1000).toFixed(2) + 'K';
+                return val.toFixed(2);
+            };
+
+            vpAggrSells.textContent = formatVP(sellVol);
+            vpAggrBuys.textContent = formatVP(buyVol);
+
+            // Calculate ratio
+            if (totalVol > 0) {
+                const ratio = ((buyVol / totalVol) * 100).toFixed(1);
+                vpRatio.textContent = `${ratio}%`;
+                vpRatio.style.color = ratio >= 50 ? '#00ff88' : '#ff4466';
+
+                // Update bars
+                const buyPercent = (buyVol / totalVol) * 50;
+                const sellPercent = (sellVol / totalVol) * 50;
+
+                vpBuyBar.style.width = `${buyPercent}%`;
+                vpSellBar.style.width = `${sellPercent}%`;
+
+                // Show values in bars if enough space
+                if (buyPercent > 15) {
+                    vpBuyBar.textContent = formatVP(buyVol);
+                } else {
+                    vpBuyBar.textContent = '';
+                }
+
+                if (sellPercent > 15) {
+                    vpSellBar.textContent = formatVP(sellVol);
+                } else {
+                    vpSellBar.textContent = '';
+                }
+            } else {
+                vpRatio.textContent = '0%';
+                vpBuyBar.style.width = '0%';
+                vpSellBar.style.width = '0%';
+                vpBuyBar.textContent = '';
+                vpSellBar.textContent = '';
             }
         }
 
