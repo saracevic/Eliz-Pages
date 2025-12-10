@@ -612,21 +612,22 @@
             return quantity >= threshold;
         }
 
-        // Add trade to tape
+        // Add trade to tape - SADECE ÇAĞRILIRSA EKLE
         function addToTape(trade) {
             STATE.trades.unshift(trade);
             if (STATE.trades.length > CONFIG.maxTrades) {
                 STATE.trades.pop();
             }
 
-            // Render only visible trades (performance)
+            // Hemen render et
             renderTape();
         }
 
-        // Render tape
+        // Render tape - STATE.trades dizisindeki herşeyi göster
         function renderTape() {
             const fragment = document.createDocumentFragment();
             
+            // STATE.trades zaten sadece büyük emirleri içeriyor
             STATE.trades.slice(0, 100).forEach(trade => {
                 const row = document.createElement('div');
                 row.className = `tape-row ${trade.isBuy ? 'buy' : 'sell'} ${trade.isWhale ? 'whale' : ''}`;
