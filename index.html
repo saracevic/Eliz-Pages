@@ -18,12 +18,7 @@
       --success: #22c55e;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: system-ui, sans-serif;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
 
     body {
       background: radial-gradient(circle at top, #0f172a 0, #020617 60%, #000 100%);
@@ -44,231 +39,72 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    .header { margin-bottom: 20px; }
-    .title { 
-      font-size: 22px; 
-      font-weight: 700;
-      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .subtitle { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
-    .date-badge {
-      margin-top: 8px;
-      padding: 6px 12px;
-      font-size: 13px;
-      border-radius: 999px;
-      background: rgba(56, 189, 248, 0.25);
-      display: inline-block;
-    }
+    .title { font-size: 22px; font-weight: 700; background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subtitle { color: var(--text-muted); font-size: 14px; }
+    .date-badge { margin-top: 8px; padding: 6px 12px; background: rgba(56,189,248,0.25); display: inline-block; border-radius: 999px; }
 
-    .section {
-      margin-bottom: 22px;
-      background: rgba(15, 23, 42, 0.6);
-      padding: 16px;
-      border-radius: 16px;
-      border: 1px solid rgba(148,163,184,0.25);
-      backdrop-filter: blur(10px);
-    }
+    .section { margin-top: 20px; padding: 16px; background: rgba(15,23,42,0.6); border-radius: 16px; border: 1px solid var(--border); }
 
-    .section-title {
-      font-size: 17px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .section-title { font-size: 17px; font-weight: 600; margin-bottom: 12px; }
 
-    .question { margin-bottom: 16px; }
-    .question-label { 
-      font-size: 14px; 
-      font-weight: 500;
-      margin-bottom: 8px;
-      display: block;
-    }
-    .helper { 
-      font-size: 12px; 
-      color: var(--text-muted); 
-      margin-top: 8px;
-      margin-bottom: 6px;
-    }
-
-    .radio-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 6px;
-      flex-wrap: wrap;
-    }
-
-    .radio-pill {
-      padding: 8px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      font-size: 14px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.3s ease;
-      background: rgba(15, 23, 42, 0.6);
-    }
-
-    .radio-pill:hover {
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
-
-    .radio-pill input {
-      display: none;
-    }
-
-    .radio-pill.checked[data-value="evet"] {
-      background: rgba(34,197,94,0.3);
-      border-color: var(--success);
-      box-shadow: 0 0 10px rgba(34,197,94,0.3);
-    }
-    .radio-pill.checked[data-value="hayir"] {
-      background: rgba(239,68,68,0.3);
-      border-color: var(--danger);
-      box-shadow: 0 0 10px rgba(239,68,68,0.3);
-    }
-
-    .text-input,
-    .number-input,
-    .file-input,
-    .textarea-box,
-    .select-input {
-      width: 100%;
-      padding: 10px 12px;
-      margin-top: 8px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(15,23,42,0.85);
-      color: var(--text);
-      font-size: 14px;
-    }
+    .radio-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+    .radio-pill { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); cursor: pointer; }
+    .radio-pill.checked[data-value="evet"] { background: rgba(34,197,94,0.3); border-color: var(--success); }
+    .radio-pill.checked[data-value="hayir"] { background: rgba(239,68,68,0.3); border-color: var(--danger); }
 
     .hidden { display: none !important; }
 
-    .progress-container {
+    .text-input,
+    .textarea-box,
+    .select-input,
+    .file-input {
       width: 100%;
-      background: rgba(255,255,255,0.1);
-      height: 20px;
-      border-radius: 12px;
-      margin-top: 12px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      transition: width 0.6s ease;
-      font-size: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 600;
-    }
-
-    .status-chip {
-      padding: 6px 12px;
+      padding: 10px;
+      margin-top: 8px;
+      background: rgba(15,23,42,0.85);
       border-radius: 12px;
       border: 1px solid var(--border);
-      font-size: 13px;
-      display: inline-block;
-      margin-top: 10px;
+      color: var(--text);
     }
 
-    .ok { border-color: var(--success); color: var(--success); }
-    .bad { border-color: var(--danger); color: var(--danger); }
-    .warn { border-color: var(--warn); color: var(--warn); }
+    .progress-container { background: rgba(255,255,255,0.1); height: 20px; margin-top: 12px; border-radius: 12px; overflow: hidden; }
+    .progress-bar { width: 0%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 12px; color: #fff; }
 
-    .google-btn,
-    .refresh-btn,
-    .email-btn {
-      margin-top: 10px;
-      padding: 10px 16px;
-      border-radius: 12px;
-      width: 100%;
-      cursor: pointer;
-      text-align: center;
-      font-size: 14px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      border: none;
+    .status-chip { padding: 6px 12px; border-radius: 12px; margin-top: 10px; display: inline-block; border: 1px solid var(--border); }
+    .ok { color: var(--success); border-color: var(--success); }
+    .bad { color: var(--danger); border-color: var(--danger); }
+    .warn { color: var(--warn); border-color: var(--warn); }
+
+    .refresh-btn, .email-btn, .google-btn {
+      width: 100%; padding: 10px; border-radius: 12px; margin-top: 10px;
     }
 
-    .google-btn {
-      background: rgba(56,189,248,0.15);
-      border: 1px solid rgba(56,189,248,0.5);
-      color: #38bdf8;
-    }
-
-    .refresh-btn {
-      background: rgba(239,68,68,0.15);
-      border: 1px solid rgba(239,68,68,0.5);
-      color: #ef4444;
-    }
-
-    .email-btn {
-      background: rgba(34,197,94,0.15);
-      border: 1px solid rgba(34,197,94,0.5);
-      color: #22c55e;
-    }
-
-    .summary-text {
-      margin-top: 14px;
-      padding: 12px;
-      background: rgba(15,23,42,0.6);
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      font-size: 14px;
-      line-height: 1.6;
-    }
+    .summary-text { margin-top: 14px; padding: 12px; background: rgba(15,23,42,0.6); border-radius: 12px; line-height: 1.6; }
   </style>
 </head>
 
 <body>
 <div class="app">
 
-  <div class="header">
-    <div class="title">📚 Eliz'in Günlük Ödev Kontrol Paneli</div>
-    <div class="subtitle">Öğretmen – öğrenci – veli takip sistemi</div>
-    <div id="dateBadge" class="date-badge"></div>
-  </div>
+  <div class="title">📚 Eliz'in Günlük Ödev Kontrol Paneli</div>
+  <div class="subtitle">Öğretmen – öğrenci – veli takip sistemi</div>
+  <div id="dateBadge" class="date-badge"></div>
 
   <!-- PROJE -->
   <section class="section">
     <div class="section-title">🔍 Proje / Araştırma Ödevi</div>
 
-    <div class="question">
-      <div class="question-label">Öğretmen proje verdi mi?</div>
-
-      <div class="radio-group" data-group="projGiven">
-        <label class="radio-pill" data-value="evet">
-          <input type="radio" name="projGiven" value="evet"> ✓ Evet
-        </label>
-        <label class="radio-pill" data-value="hayir">
-          <input type="radio" name="projGiven" value="hayir"> ✗ Hayır
-        </label>
-      </div>
-
-      <input id="projText" class="text-input hidden" type="text" placeholder="Ödev konusu..." />
+    <div class="radio-group" data-group="projGiven">
+      <label class="radio-pill" data-value="evet"><input type="radio" name="projGiven">✓ Evet</label>
+      <label class="radio-pill" data-value="hayir"><input type="radio" name="projGiven">✗ Hayır</label>
     </div>
 
-    <div id="projDoneBlock" class="question hidden">
-      <div class="question-label">Proje yapıldı mı?</div>
+    <input id="projText" class="text-input hidden" placeholder="Ödev konusu...">
+
+    <div id="projDoneBlock" class="hidden">
       <div class="radio-group" data-group="projDone">
-        <label class="radio-pill" data-value="evet">
-          <input type="radio" name="projDone" value="evet"> ✓ Evet
-        </label>
-        <label class="radio-pill" data-value="hayir">
-          <input type="radio" name="projDone" value="hayir"> ✗ Hayır
-        </label>
+        <label class="radio-pill" data-value="evet"><input type="radio" name="projDone">✓ Yapıldı</label>
+        <label class="radio-pill" data-value="hayir"><input type="radio" name="projDone">✗ Yapılmadı</label>
       </div>
     </div>
   </section>
@@ -277,62 +113,44 @@
   <section class="section">
     <div class="section-title">📕 Fasikül Ödevi</div>
 
-    <div class="question">
-      <div class="question-label">Fasikül ödevi yapıldı mı?</div>
-      <div class="radio-group" data-group="fasDone">
-        <label class="radio-pill" data-value="evet">
-          <input type="radio" name="fasDone" value="evet"> ✓ Evet
-        </label>
-        <label class="radio-pill" data-value="hayir">
-          <input type="radio" name="fasDone" value="hayir"> ✗ Hayır
-        </label>
-      </div>
-      <select id="fasPages" class="select-input hidden">
-        <option value="">Sayfa seç</option>
-        <option value="1">1 sayfa</option>
-        <option value="2">2 sayfa</option>
-        <option value="3">3 sayfa</option>
-        <option value="4">4 sayfa</option>
-        <option value="5">5 sayfa</option>
-        <option value="6">6 sayfa</option>
-        <option value="7">7 sayfa</option>
-        <option value="8">8 sayfa</option>
-        <option value="9">9 sayfa</option>
-        <option value="10">10 sayfa</option>
-      </select>
+    <div class="radio-group" data-group="fasDone">
+      <label class="radio-pill" data-value="evet"><input type="radio" name="fasDone">✓ Evet</label>
+      <label class="radio-pill" data-value="hayir"><input type="radio" name="fasDone">✗ Hayır</label>
     </div>
 
-    <div class="question">
-      <div class="question-label">Fasikülde takıldığın soru oldu mu?</div>
+    <select id="fasPages" class="select-input hidden">
+      <option value="">Sayfa seç</option>
+      <option value="1">1 sayfa</option>
+      <option value="2">2 sayfa</option>
+      <option value="3">3 sayfa</option>
+      <option value="4">4 sayfa</option>
+      <option value="5">5 sayfa</option>
+      <option value="6">6 sayfa</option>
+      <option value="7">7 sayfa</option>
+      <option value="8">8 sayfa</option>
+      <option value="9">9 sayfa</option>
+      <option value="10">10 sayfa</option>
+    </select>
 
+    <div id="fasStuckBlock" class="">
       <div class="radio-group" data-group="fasStuck">
-        <label class="radio-pill" data-value="evet">
-          <input type="radio" name="fasStuck" value="evet"> ✓ Evet
-        </label>
-        <label class="radio-pill" data-value="hayir">
-          <input type="radio" name="fasStuck" value="hayir"> ✗ Hayır
-        </label>
+        <label class="radio-pill" data-value="evet"><input type="radio" name="fasStuck">✓ Evet</label>
+        <label class="radio-pill" data-value="hayir"><input type="radio" name="fasStuck">✗ Hayır</label>
       </div>
 
       <span id="fasStatus" class="status-chip warn">Durum bekleniyor</span>
 
-      <div id="stuckOptions" class="question hidden">
+      <div id="stuckOptions" class="hidden">
 
-        <div class="helper">Takıldığın soruyu fotoğraf olarak yüklemek ister misin?</div>
         <div class="radio-group" data-group="uploadQuestionImg">
-          <label class="radio-pill" data-value="evet">
-            <input type="radio" name="uploadQuestionImg" value="evet"> ✓ Evet
-          </label>
-          <label class="radio-pill" data-value="hayir">
-            <input type="radio" name="uploadQuestionImg" value="hayir"> ✗ Hayır
-          </label>
+          <label class="radio-pill" data-value="evet"><input type="radio" name="uploadQuestionImg">📎 Fotoğraf yükle</label>
+          <label class="radio-pill" data-value="hayir"><input type="radio" name="uploadQuestionImg">✏️ Konu yaz</label>
         </div>
 
-        <input id="questionFile" class="file-input hidden" type="file" accept="image/*,.pdf" />
+        <input id="questionFile" class="file-input hidden" type="file">
 
         <div id="topicBlock" class="hidden">
-          <div class="helper">Takıldığın konuyu yaz:</div>
-          <input id="topicText" class="text-input" placeholder="Örn: Çemberde açı, kesir problemleri..." />
+          <input id="topicText" class="text-input" placeholder="Takıldığın konu...">
           <button id="googleSearchBtn" class="google-btn">🔍 PDF Kaynak Ara</button>
         </div>
 
@@ -344,58 +162,61 @@
   <section class="section">
     <div class="section-title">📗 Kitap Okuma</div>
 
-    <div class="question">
-      <div class="question-label">Bugün kitap okudun mu?</div>
-      <div class="radio-group" data-group="bookRead">
-        <label class="radio-pill" data-value="evet">
-          <input type="radio" name="bookRead" value="evet"> ✓ Evet
-        </label>
-        <label class="radio-pill" data-value="hayir">
-          <input type="radio" name="bookRead" value="hayir"> ✗ Hayır
-        </label>
-      </div>
-      <input id="bookPages" class="number-input hidden" type="number" min="0" placeholder="Kaç sayfa okudun?" />
+    <div class="radio-group" data-group="bookRead">
+      <label class="radio-pill" data-value="evet"><input type="radio" name="bookRead">✓ Evet</label>
+      <label class="radio-pill" data-value="hayir"><input type="radio" name="bookRead">✗ Hayır</label>
     </div>
 
-    <div class="question">
-      <div class="question-label">Okuduğunu anladın mı?</div>
-      <div class="radio-group" data-group="bookUnderstand">
-        <label class="radio-pill" data-value="evet">
-          <input type="radio" name="bookUnderstand" value="evet"> ✓ Evet
-        </label>
-        <label class="radio-pill" data-value="hayir">
-          <input type="radio" name="bookUnderstand" value="hayir"> ✗ Hayır
-        </label>
-      </div>
-      <textarea id="bookExplain" class="textarea-box hidden" placeholder="Kısaca ne anladığını yaz..."></textarea>
+    <!-- ARTIK SELECT OLDU -->
+    <select id="bookPages" class="select-input">
+      <option value="">Sayfa seç</option>
+      <option value="1">1 sayfa</option>
+      <option value="2">2 sayfa</option>
+      <option value="3">3 sayfa</option>
+      <option value="4">4 sayfa</option>
+      <option value="5">5 sayfa</option>
+      <option value="6">6 sayfa</option>
+      <option value="7">7 sayfa</option>
+      <option value="8">8 sayfa</option>
+      <option value="9">9 sayfa</option>
+      <option value="10">10 sayfa</option>
+      <option value="15">15 sayfa</option>
+      <option value="20">20 sayfa</option>
+      <option value="25">25 sayfa</option>
+      <option value="30">30 sayfa</option>
+      <option value="40">40 sayfa</option>
+      <option value="50">50 sayfa</option>
+    </select>
+
+    <div class="radio-group" data-group="bookUnderstand">
+      <label class="radio-pill" data-value="evet"><input type="radio" name="bookUnderstand">✓ Evet</label>
+      <label class="radio-pill" data-value="hayir"><input type="radio" name="bookUnderstand">✗ Hayır</label>
     </div>
+
+    <textarea id="bookExplain" class="textarea-box hidden" placeholder="Ne anladığını yaz..."></textarea>
+
   </section>
 
   <!-- ÖZET -->
   <section class="section">
     <div class="section-title">📊 Genel Durum Özeti</div>
 
-    <div class="progress-container">
-      <div id="progressBar" class="progress-bar"></div>
-    </div>
+    <div class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
 
     <span id="overallChip" class="status-chip warn">Eksikler olabilir</span>
 
     <div id="summaryText" class="summary-text"></div>
-    <button id="resetBtn" class="refresh-btn">🔄 Bugünü Sıfırla</button>
+
+    <button id="resetBtn" class="refresh-btn">🔄 Sıfırla</button>
   </section>
 
   <!-- EMAIL -->
   <section class="section">
-    <div class="section-title">📨 Bilgileri E-mail Olarak Göndermek İster misin?</div>
+    <div class="section-title">📨 E-mail Gönder</div>
 
     <div class="radio-group" data-group="sendEmail">
-      <label class="radio-pill" data-value="evet">
-        <input type="radio" name="sendEmail" value="evet"> ✓ Gönder
-      </label>
-      <label class="radio-pill" data-value="hayir">
-        <input type="radio" name="sendEmail" value="hayir"> ✗ Gönderme
-      </label>
+      <label class="radio-pill" data-value="evet"><input type="radio" name="sendEmail">📧 Gönder</label>
+      <label class="radio-pill" data-value="hayir"><input type="radio" name="sendEmail">✗ Gönderme</label>
     </div>
 
     <button id="emailSendButton" class="email-btn hidden">📧 Mail Gönder</button>
@@ -407,240 +228,202 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
-  // Tarih
-  const today = new Date();
-  document.getElementById("dateBadge").textContent =
-    today.toLocaleDateString("tr-TR", {
-      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-    });
+document.getElementById("dateBadge").textContent =
+  new Date().toLocaleDateString("tr-TR",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
 
-  // Radio pill logic
-  document.querySelectorAll(".radio-group").forEach(group => {
-    group.addEventListener("click", e => {
-      const pill = e.target.closest(".radio-pill");
-      if (!pill) return;
-      group.querySelectorAll(".radio-pill").forEach(p => p.classList.remove("checked"));
-      pill.classList.add("checked");
-      const input = pill.querySelector("input");
-      if (input) input.checked = true;
-      handleLogic(group.dataset.group, pill.dataset.value);
-    });
+document.querySelectorAll(".radio-group").forEach(group=>{
+  group.addEventListener("click",e=>{
+    const pill=e.target.closest(".radio-pill");
+    if(!pill) return;
+    group.querySelectorAll(".radio-pill").forEach(p=>p.classList.remove("checked"));
+    pill.classList.add("checked");
+    pill.querySelector("input").checked=true;
+    handleLogic(group.dataset.group,pill.dataset.value);
   });
+});
 
-  function getRadio(name) {
-    const el = document.querySelector(`input[name='${name}']:checked`);
-    return el ? el.value : null;
+function getRadio(name){
+  const el=document.querySelector(`input[name='${name}']:checked`);
+  return el?el.value:null;
+}
+
+function handleLogic(group,val){
+
+  if(group==="projGiven"){
+    document.getElementById("projText").classList.toggle("hidden",val!=="evet");
+    document.getElementById("projDoneBlock").classList.toggle("hidden",val!=="evet");
   }
 
-  function handleLogic(group, val) {
-    if (group === "projGiven") {
-      document.getElementById("projText").classList.toggle("hidden", val !== "evet");
-      document.getElementById("projDoneBlock").classList.toggle("hidden", val !== "evet");
-    }
+  if(group==="fasDone"){
+    const block=document.getElementById("fasStuckBlock");
+    const chip=document.getElementById("fasStatus");
+    const opt=document.getElementById("stuckOptions");
 
-    if (group === "fasDone") {
-      document.getElementById("fasPages").classList.toggle("hidden", val !== "evet");
-    }
+    document.getElementById("fasPages").classList.toggle("hidden",val!=="evet");
 
-    if (group === "fasStuck") {
-      const chip = document.getElementById("fasStatus");
-      const opt = document.getElementById("stuckOptions");
-
-      if (val === "evet") {
-        opt.classList.remove("hidden");
-        chip.className = "status-chip bad";
-        chip.textContent = "Takıldığın soru var ⚠️";
-      } else {
-        opt.classList.add("hidden");
-        chip.className = "status-chip ok";
-        chip.textContent = "Sorun yok ✓";
-        document.getElementById("questionFile").value = "";
-        document.getElementById("topicText").value = "";
-        document.getElementById("topicBlock").classList.add("hidden");
-      }
-    }
-
-    if (group === "uploadQuestionImg") {
-      const yes = val === "evet";
-      document.getElementById("questionFile").classList.toggle("hidden", !yes);
-      document.getElementById("topicBlock").classList.toggle("hidden", yes);
-    }
-
-    if (group === "bookRead") {
-      document.getElementById("bookPages").classList.toggle("hidden", val !== "evet");
-    }
-
-    if (group === "bookUnderstand") {
-      document.getElementById("bookExplain").classList.toggle("hidden", val !== "evet");
-    }
-
-    if (group === "sendEmail") {
-      document.getElementById("emailSendButton").classList.toggle("hidden", val !== "evet");
-    }
-
-    updateSummary();
-  }
-
-  document.getElementById("googleSearchBtn").onclick = () => {
-    const topic = document.getElementById("topicText").value.trim();
-    if (!topic) return alert("Konu yazmalısın.");
-    window.open("https://www.google.com/search?q=" +
-      encodeURIComponent(topic + " filetype:pdf"), "_blank");
-  };
-
-  // Input listeners
-  ["bookPages", "fasPages", "projText", "topicText", "bookExplain"]
-    .forEach(id => {
-      document.getElementById(id).addEventListener("input", updateSummary);
-    });
-  document.getElementById("questionFile").addEventListener("change", updateSummary);
-
-  function updateSummary() {
-
-    const summary = [];
-    const chip = document.getElementById("overallChip");
-    const prog = document.getElementById("progressBar");
-
-    const projGiven = getRadio("projGiven");
-    const projDone = getRadio("projDone");
-    const projText = document.getElementById("projText").value.trim();
-
-    const fasDone = getRadio("fasDone");
-    const fasPages = Number(document.getElementById("fasPages").value) || 0;
-
-    const fasStuck = getRadio("fasStuck");
-    const hasFile = document.getElementById("questionFile").files.length > 0;
-    const topic = document.getElementById("topicText").value.trim();
-
-    const bookRead = getRadio("bookRead");
-    const bookPages = Number(document.getElementById("bookPages").value) || 0;
-
-    const bookUnder = getRadio("bookUnderstand");
-    const explain = document.getElementById("bookExplain").value.trim();
-
-    // --- PROJE ---
-    if (projGiven === "hayir") {
-      summary.push("📌 Bugün proje / araştırma ödevi verilmedi.");
-    } else if (projGiven === "evet") {
-      summary.push("📋 Proje / araştırma ödevi verildi.");
-      if (projText) summary.push("→ Konu: " + projText);
-      if (projDone === "evet") summary.push("→ Proje yapıldı ✔");
-      else if (projDone === "hayir") summary.push("→ Proje YAPILMADI ❌");
-    }
-
-    // --- FASİKÜL ---
-    if (fasDone === "evet") {
-      summary.push(`📕 Fasikül: ${fasPages} sayfa yapıldı ✔`);
-    } else summary.push("📕 Fasikül yapılmadı ❌");
-
-    if (fasStuck === "evet") {
-      if (hasFile) summary.push("→ Takıldığın soru: FOTOĞRAF yüklendi 📎");
-      else if (topic) summary.push("→ Takıldığın konu: " + topic);
-      else summary.push("→ Takıldığın soru var fakat detay girilmedi ⚠️");
-    } else if (fasStuck === "hayir") {
-      summary.push("→ Fasikülde sorun yok ✓");
-    }
-
-    // --- KİTAP ---
-    if (bookRead === "evet") {
-      summary.push(`📗 Kitap okundu (${bookPages} sayfa)`);
-      if (bookUnder === "evet") {
-        summary.push("→ Okuduğunu anladı ✔");
-        if (explain) summary.push("→ " + explain);
-      } else if (bookUnder === "hayir") {
-        summary.push("→ Okuduğunu tam anlamadı ⚠️");
-      }
-    } else summary.push("📗 Kitap okunmadı ❌");
-
-    // --- ZORUNLU GÖREV HESABI ---
-    let completed = 0;
-    let total = 2; // kitap + fasikül
-    const errors = [];
-
-    // Kitap zorunlu
-    if (bookRead === "evet" && bookPages >= 10) completed++;
-    else {
-      const need = Math.max(0, 10 - bookPages);
-      if (need > 0) errors.push(`📗 Kitap: ${need} sayfa eksik (min 10).`);
-    }
-
-    // Fasikül zorunlu
-    if (fasDone === "evet" && fasPages >= 3) completed++;
-    else {
-      const need = Math.max(0, 3 - fasPages);
-      if (need > 0) errors.push(`📕 Fasikül: ${need} sayfa eksik (min 3).`);
-    }
-
-    // Proje sadece verildiyse zorunlu
-    if (projGiven === "evet") {
-      total++;
-      if (projDone === "evet") completed++;
-      else errors.push("📋 Proje: Yapılmalı.");
-    }
-
-    // Progress hesaplama
-    let percent = Math.round((completed / total) * 100);
-    if (!isFinite(percent)) percent = 0;
-
-    prog.style.width = percent + "%";
-    prog.textContent = percent + "%";
-
-    // Konfeti tamamlandığında
-    if (percent === 100 && errors.length === 0) {
-      prog.style.background = "var(--success)";
-      chip.className = "status-chip ok";
-      chip.textContent = "Tüm görevler tamamlandı";
-
-      if (!window.confettiPlayed) {
-        window.confettiPlayed = true;
-        const end = Date.now() + 2500;
-        (function frame() {
-          confetti({
-            particleCount: 4,
-            spread: 360,
-            startVelocity: 20,
-            ticks: 120,
-            origin: { x: Math.random(), y: Math.random() * 0.4 }
-          });
-          if (Date.now() < end) requestAnimationFrame(frame);
-        })();
-      }
+    if(val==="hayir"){
+      block.classList.add("hidden");
+      chip.classList.add("hidden");
+      opt.classList.add("hidden");
     } else {
-      chip.className = "status-chip bad";
-      chip.textContent = "Zorunlu görevler eksik";
-      prog.style.background = "var(--danger)";
+      block.classList.remove("hidden");
+      chip.classList.remove("hidden");
     }
-
-    // ÖZET SONUNA MUTLAK DURUM EKLE
-    summary.push("<br><hr style='border:0;border-top:1px solid rgba(255,255,255,0.15);margin:10px 0;'>");
-
-    if (percent === 100 && errors.length === 0) {
-      summary.push("<div style='font-size:16px;font-weight:600;color:#22c55e;margin-top:10px;'>🎉 Tüm zorunlu görevler TAMAMLANDI!</div>");
-    } else {
-      summary.push("<div style='font-size:16px;font-weight:600;color:#ef4444;margin-top:10px;'>❌ Zorunlu görevler TAMAMLANMADI</div>");
-      if (errors.length > 0) {
-        summary.push("<br><strong>Eksikler:</strong>");
-        errors.forEach(e => summary.push("• " + e));
-      }
-    }
-
-    document.getElementById("summaryText").innerHTML = summary.join("<br>");
   }
 
-  // Reset
-  document.getElementById("resetBtn").onclick = () => location.reload();
+  if(group==="fasStuck"){
+    const chip=document.getElementById("fasStatus");
+    const opt=document.getElementById("stuckOptions");
 
-  // E-mail gönderme
-  document.getElementById("emailSendButton").onclick = () => {
-    const txt = document.getElementById("summaryText").innerText;
+    if(val==="evet"){
+      chip.className="status-chip bad";
+      chip.textContent="Takıldığın soru var ⚠️";
+      opt.classList.remove("hidden");
+    } else {
+      chip.className="status-chip ok";
+      chip.textContent="Sorun yok ✓";
+      opt.classList.add("hidden");
+    }
+  }
 
-    const mail =
-      "mailto:erkan.saracoglu@gmail.com,oznur.saracevic@gmail.com" +
-      "?subject=" + encodeURIComponent("Günlük Ödev Durumu") +
-      "&body=" + encodeURIComponent(txt);
+  if(group==="uploadQuestionImg"){
+    document.getElementById("questionFile").classList.toggle("hidden",val!=="evet");
+    document.getElementById("topicBlock").classList.toggle("hidden",val==="evet");
+  }
 
-    window.location.href = mail;
-  };
+  if(group==="bookUnderstand"){
+    document.getElementById("bookExplain").classList.toggle("hidden",val!=="evet");
+  }
+
+  if(group==="sendEmail"){
+    document.getElementById("emailSendButton").classList.toggle("hidden",val!=="evet");
+  }
+
+  updateSummary();
+}
+
+document.getElementById("bookPages").addEventListener("change",updateSummary);
+document.getElementById("fasPages").addEventListener("change",updateSummary);
+
+document.getElementById("googleSearchBtn").onclick=()=>{
+  const t=document.getElementById("topicText").value.trim();
+  if(!t) return alert("Konu yaz!");
+  window.open("https://www.google.com/search?q="+encodeURIComponent(t+" filetype:pdf"));
+};
+
+function updateSummary(){
+
+  const summary=[];
+  const chip=document.getElementById("overallChip");
+  const prog=document.getElementById("progressBar");
+
+  const projGiven=getRadio("projGiven");
+  const projDone=getRadio("projDone");
+  const projText=document.getElementById("projText").value.trim();
+
+  const fasDone=getRadio("fasDone");
+  const fasPages=Number(document.getElementById("fasPages").value)||0;
+
+  const fasStuck=getRadio("fasStuck");
+  const hasFile=document.getElementById("questionFile").files.length>0;
+  const topic=document.getElementById("topicText").value.trim();
+
+  const bookRead=getRadio("bookRead");
+  const bookPages=Number(document.getElementById("bookPages").value)||0;
+
+  const bookUnder=getRadio("bookUnderstand");
+  const explain=document.getElementById("bookExplain").value.trim();
+
+  // PROJE
+  if(projGiven==="hayir"){
+    summary.push("📌 Bugün proje verilmedi.");
+  } else if(projGiven==="evet"){
+    summary.push("📋 Proje verildi.");
+    if(projText) summary.push("→ Konu: "+projText);
+    if(projDone==="evet") summary.push("→ Proje yapıldı ✔");
+    else if(projDone==="hayir") summary.push("→ Proje yapılmadı ❌");
+  }
+
+  // FASİKÜL
+  if(fasDone==="evet") summary.push(`📕 Fasikül: ${fasPages} sayfa ✔`);
+  else summary.push("📕 Fasikül yapılmadı ❌");
+
+  if(fasDone==="evet"){
+    if(fasStuck==="evet"){
+      if(hasFile) summary.push("→ Fotoğraf yüklendi 📎");
+      else if(topic) summary.push("→ Takıldığın konu: "+topic);
+    } else summary.push("→ Fasikülde sorun yok ✓");
+  }
+
+  // KİTAP
+  if(bookRead==="evet") summary.push(`📗 Kitap okundu (${bookPages} sayfa)`);
+  else summary.push("📗 Kitap okunmadı ❌");
+
+  if(bookUnder==="evet"){
+    summary.push("→ Okuduğunu anladı ✔");
+    if(explain) summary.push("→ "+explain);
+  } else if(bookUnder==="hayir"){
+    summary.push("→ Anlamadı ⚠️");
+  }
+
+  // ZORUNLU GÖREV HESABI
+  let completed=0;
+  let total=2; // kitap + fasikül
+  const errors=[];
+
+  if(bookPages>=10 && bookRead==="evet") completed++;
+  else errors.push(`📗 Kitap: ${Math.max(0,10-bookPages)} sayfa eksik`);
+
+  if(fasPages>=3 && fasDone==="evet") completed++;
+  else errors.push(`📕 Fasikül: ${Math.max(0,3-fasPages)} sayfa eksik`);
+
+  if(projGiven==="evet"){
+    total++;
+    if(projDone==="evet") completed++;
+    else errors.push("📋 Proje yapılmalı");
+  }
+
+  let percent=Math.round((completed/total)*100);
+  prog.style.width=percent+"%";
+  prog.textContent=percent+"%";
+
+  if(percent===100 && errors.length===0){
+    chip.className="status-chip ok";
+    chip.textContent="Tüm görevler tamamlandı";
+
+    if(!window.confettiPlayed){
+      window.confettiPlayed=true;
+      const end=Date.now()+2000;
+      (function frame(){
+        confetti({particleCount:4,spread:360,startVelocity:20,origin:{x:Math.random(),y:Math.random()*0.4}});
+        if(Date.now()<end) requestAnimationFrame(frame);
+      })();
+    }
+  } else {
+    chip.className="status-chip bad";
+    chip.textContent="Eksikler var";
+  }
+
+  summary.push("<hr>");
+  if(percent===100 && errors.length===0){
+    summary.push("<b style='color:#22c55e'>🎉 Tüm zorunlu görevler TAMAMLANDI!</b>");
+  } else {
+    summary.push("<b style='color:#ef4444'>❌ Zorunlu görevler TAMAMLANMADI</b>");
+    errors.forEach(e=>summary.push("• "+e));
+  }
+
+  document.getElementById("summaryText").innerHTML=summary.join("<br>");
+}
+
+document.getElementById("resetBtn").onclick=()=>location.reload();
+
+document.getElementById("emailSendButton").onclick=()=>{
+  const txt=document.getElementById("summaryText").innerText;
+  window.location.href=
+    "mailto:erkan.saracoglu@gmail.com,oznur.saracevic@gmail.com"
+    +"?subject="+encodeURIComponent("Günlük Ödev Durumu")
+    +"&body="+encodeURIComponent(txt);
+};
 </script>
 
 </body>
