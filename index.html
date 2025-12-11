@@ -18,7 +18,12 @@
       --success: #22c55e;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, sans-serif;
+    }
 
     body {
       background: radial-gradient(circle at top, #0f172a 0, #020617 60%, #000 100%);
@@ -39,83 +44,135 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    .title {
-      font-size: 24px;
+    .header { margin-bottom: 20px; }
+    .title { 
+      font-size: 22px; 
       font-weight: 700;
       background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-
-    .subtitle { color: var(--text-muted); font-size: 14px; }
-    .date-badge { margin-top: 8px; padding: 6px 12px; background: rgba(56,189,248,0.25); display: inline-block; border-radius: 999px; }
+    .subtitle { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
+    .date-badge {
+      margin-top: 8px;
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.25);
+      display: inline-block;
+    }
 
     .section {
-      margin-top: 20px;
+      margin-bottom: 22px;
+      background: rgba(15, 23, 42, 0.6);
       padding: 16px;
-      background: rgba(15,23,42,0.6);
       border-radius: 16px;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(148,163,184,0.25);
+      backdrop-filter: blur(10px);
     }
 
-    .section-title { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+    .section-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-    .question-label {
-      font-size: 14px;
+    .question-label { 
+      font-size: 14px; 
       font-weight: 500;
-      margin-top: 8px;
-      margin-bottom: 4px;
+      margin-bottom: 8px;
+      display: block;
     }
 
-    .radio-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
-    
+    .radio-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
     .radio-pill {
       padding: 8px 14px;
       border-radius: 999px;
       border: 1px solid var(--border);
       cursor: pointer;
-      transition: 0.2s;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+      background: rgba(15, 23, 42, 0.6);
     }
 
-    .radio-pill.checked[data-value="evet"] { background: rgba(34,197,94,0.35); border-color: var(--success); }
-    .radio-pill.checked[data-value="hayir"] { background: rgba(239,68,68,0.35); border-color: var(--danger); }
+    .radio-pill.checked[data-value="evet"] {
+      background: rgba(34,197,94,0.3);
+      border-color: var(--success);
+    }
+    .radio-pill.checked[data-value="hayir"] {
+      background: rgba(239,68,68,0.3);
+      border-color: var(--danger);
+    }
+
+    .text-input,
+    .file-input,
+    .textarea-box,
+    .select-input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(15,23,42,0.85);
+      color: var(--text);
+      margin-bottom: 12px;
+    }
 
     .hidden { display: none !important; }
 
-    .text-input,
-    .textarea-box,
-    .select-input,
-    .file-input {
+    .progress-container {
       width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      background: rgba(15,23,42,0.85);
+      background: rgba(255,255,255,0.1);
+      height: 20px;
       border-radius: 12px;
+      overflow: hidden;
       border: 1px solid var(--border);
-      color: var(--text);
     }
 
-    .progress-container { background: rgba(255,255,255,0.1); height: 20px; margin-top: 12px; border-radius: 12px; overflow: hidden; }
-    .progress-bar { width: 0%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 12px; color: #fff; }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      transition: width .4s;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: white;
+    }
 
     .status-chip {
       padding: 6px 12px;
       border-radius: 12px;
-      margin-top: 10px;
-      display: inline-block;
       border: 1px solid var(--border);
+      font-size: 13px;
+      display: inline-block;
+      margin-top: 10px;
     }
 
-    .ok { color: var(--success); border-color: var(--success); }
-    .bad { color: var(--danger); border-color: var(--danger); }
-    .warn { color: var(--warn); border-color: var(--warn); }
-
-    .refresh-btn, .email-btn, .google-btn, .proj-search-btn {
-      width: 100%;
-      padding: 10px;
-      border-radius: 12px;
-      margin-top: 10px;
-      cursor: pointer;
+    .ok {
+      background: rgba(34,197,94,0.2);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .bad {
+      background: rgba(239,68,68,0.2);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .warn {
+      background: rgba(234,179,8,0.2);
+      border-color: var(--warn);
+      color: var(--warn);
     }
 
     .summary-text {
@@ -123,7 +180,8 @@
       padding: 12px;
       background: rgba(15,23,42,0.6);
       border-radius: 12px;
-      line-height: 1.6;
+      border: 1px solid var(--border);
+      font-size: 14px;
     }
   </style>
 </head>
@@ -131,427 +189,588 @@
 <body>
 <div class="app">
 
-  <div class="title">📚 Eliz'in Günlük Ödev Kontrol Paneli</div>
-  <div class="subtitle">Öğretmen – öğrenci – veli takip sistemi</div>
-  <div id="dateBadge" class="date-badge"></div>
-
+  <div class="header">
+    <div class="title">📚 Eliz'in Günlük Ödev Kontrol Paneli</div>
+    <div class="subtitle">Öğretmen – öğrenci – veli takip sistemi</div>
+    <div id="dateBadge" class="date-badge"></div>
+  </div>
   <!-- PROJE -->
   <section class="section">
     <div class="section-title">🔍 Öğretmen Proje / Araştırma Ödevi Verdi mi?</div>
 
-    <div class="question-label">Öğretmen proje / araştırma ödevi verdi mi?</div>
-    <div class="radio-group" data-group="projGiven">
-      <label class="radio-pill" data-value="evet"><input type="radio" name="projGiven">✓ Evet</label>
-      <label class="radio-pill" data-value="hayir"><input type="radio" name="projGiven">✗ Hayır</label>
+    <div class="question">
+      <div class="question-label">Öğretmen proje verdi mi?</div>
+
+      <div class="radio-group" data-group="projGiven">
+        <label class="radio-pill" data-value="evet">
+          <input type="radio" name="projGiven" value="evet">✓ Evet
+        </label>
+        <label class="radio-pill" data-value="hayir">
+          <input type="radio" name="projGiven" value="hayir">✗ Hayır
+        </label>
+      </div>
+
+      <input id="projText" class="text-input hidden" placeholder="Ödev konusu..." />
     </div>
 
-    <input id="projText" class="text-input hidden" placeholder="Ödev konusu...">
-
     <div id="projDoneBlock" class="hidden">
-      <div class="question-label">Proje / araştırma ödevi yapıldı mı?</div>
+      <div class="question-label">Proje yapıldı mı?</div>
+
       <div class="radio-group" data-group="projDone">
-        <label class="radio-pill" data-value="evet"><input type="radio" name="projDone">✓ Yapıldı</label>
-        <label class="radio-pill" data-value="hayir"><input type="radio" name="projDone">✗ Yapılmadı</label>
+        <label class="radio-pill" data-value="evet">
+          <input type="radio" name="projDone" value="evet">✓ Evet
+        </label>
+        <label class="radio-pill" data-value="hayir">
+          <input type="radio" name="projDone" value="hayir">✗ Hayır
+        </label>
       </div>
     </div>
 
     <div id="projResearchBlock" class="hidden">
-      <div class="question-label">Bu konu hakkında şimdi PDF araştırması yapmak ister misin?</div>
+      <div class="question-label">Proje yapılmadı. Araştırma yapmak ister misin?</div>
 
       <div class="radio-group" data-group="projResearch">
-        <label class="radio-pill" data-value="evet"><input type="radio" name="projResearch">✓ Evet</label>
-        <label class="radio-pill" data-value="hayir"><input type="radio" name="projResearch">✗ Hayır</label>
+        <label class="radio-pill" data-value="evet">
+          <input type="radio" name="projResearch" value="evet">✓ Evet
+        </label>
+        <label class="radio-pill" data-value="hayir">
+          <input type="radio" name="projResearch" value="hayir">✗ Hayır
+        </label>
       </div>
 
-      <button id="projSearchBtn" class="proj-search-btn hidden">🔍 Bu konu için PDF ara</button>
+      <button id="projSearchBtn" class="text-input hidden">🔍 Proje Konusuna Göre PDF Ara</button>
     </div>
-
   </section>
 
   <!-- FASİKÜL -->
   <section class="section">
     <div class="section-title">📕 Fasikül Ödevi</div>
 
-    <div class="question-label">Fasikül ödevi yapıldı mı?</div>
-    <div class="radio-group" data-group="fasDone">
-      <label class="radio-pill" data-value="evet"><input type="radio" name="fasDone">✓ Evet</label>
-      <label class="radio-pill" data-value="hayir"><input type="radio" name="fasDone">✗ Hayır</label>
-    </div>
+    <div class="question">
+      <div class="question-label">Fasikül ödevi yapıldı mı?</div>
 
-    <select id="fasPages" class="select-input hidden">
-      <option value="">Sayfa seç</option>
-      <option value="1">1 sayfa</option>
-      <option value="2">2 sayfa</option>
-      <option value="3">3 sayfa</option>
-      <option value="4">4 sayfa</option>
-      <option value="5">5 sayfa</option>
-    </select>
-
-    <div id="fasStuckBlock">
-      <div class="question-label">Fasikülde takıldığın soru oldu mu?</div>
-      <div class="radio-group" data-group="fasStuck">
-        <label class="radio-pill" data-value="evet"><input type="radio" name="fasStuck">✓ Evet</label>
-        <label class="radio-pill" data-value="hayir"><input type="radio" name="fasStuck">✗ Hayır</label>
+      <div class="radio-group" data-group="fasDone">
+        <label class="radio-pill" data-value="evet">
+          <input type="radio" name="fasDone" value="evet">✓ Evet
+        </label>
+        <label class="radio-pill" data-value="hayir">
+          <input type="radio" name="fasDone" value="hayir">✗ Hayır
+        </label>
       </div>
 
-      <span id="fasStatus" class="status-chip warn">Durum bekleniyor</span>
+      <select id="fasPages" class="select-input hidden">
+        <option value="">Sayfa seç</option>
+        <option value="1">1 sayfa</option>
+        <option value="2">2 sayfa</option>
+        <option value="3">3 sayfa</option>
+        <option value="4">4 sayfa</option>
+        <option value="5">5 sayfa</option>
+        <option value="6">6 sayfa</option>
+        <option value="7">7 sayfa</option>
+        <option value="8">8 sayfa</option>
+        <option value="9">9 sayfa</option>
+        <option value="10">10 sayfa</option>
+      </select>
+    </div>
+
+    <div id="stuckBlock" class="hidden">
+      <div class="question-label">Fasikülde takıldığın soru oldu mu?</div>
+
+      <div class="radio-group" data-group="fasStuck">
+        <label class="radio-pill" data-value="evet">
+          <input type="radio" name="fasStuck" value="evet">✓ Evet
+        </label>
+        <label class="radio-pill" data-value="hayir">
+          <input type="radio" name="fasStuck" value="hayir">✗ Hayır
+        </label>
+      </div>
 
       <div id="stuckOptions" class="hidden">
-        <div class="question-label">Takıldığın soruyu nasıl iletmek istersin?</div>
+        <div class="question-label">Soru fotoğrafı yüklemek ister misin?</div>
+
         <div class="radio-group" data-group="uploadQuestionImg">
-          <label class="radio-pill" data-value="evet"><input type="radio" name="uploadQuestionImg">📎 Fotoğraf yükle</label>
-          <label class="radio-pill" data-value="hayir"><input type="radio" name="uploadQuestionImg">✏️ Konu yaz</label>
+          <label class="radio-pill" data-value="evet">
+            <input type="radio" name="uploadQuestionImg" value="evet">✓ Evet
+          </label>
+          <label class="radio-pill" data-value="hayir">
+            <input type="radio" name="uploadQuestionImg" value="hayir">✗ Hayır
+          </label>
         </div>
 
-        <input id="questionFile" class="file-input hidden" type="file">
+        <input id="questionFile" class="file-input hidden" type="file" accept="image/*,.pdf" />
 
         <div id="topicBlock" class="hidden">
-          <input id="topicText" class="text-input" placeholder="Takıldığın konu...">
-          <button id="googleSearchBtn" class="google-btn">🔍 PDF Ara</button>
+          <div class="question-label">Takıldığın konuyu yaz:</div>
+          <input id="topicText" class="text-input" placeholder="Örn: Çemberde açı..." />
+          <button id="googleSearchBtn" class="text-input">🔍 PDF Kaynak Ara</button>
         </div>
       </div>
     </div>
-
   </section>
 
   <!-- KİTAP -->
   <section class="section">
     <div class="section-title">📗 Kitap Okuma</div>
 
-    <div class="question-label">Bugün kitap okudun mu?</div>
-    <div class="radio-group" data-group="bookRead">
-      <label class="radio-pill" data-value="evet"><input type="radio" name="bookRead">✓ Evet</label>
-      <label class="radio-pill" data-value="hayir"><input type="radio" name="bookRead">✗ Hayır</label>
-    </div>
+    <div class="question">
+      <div class="question-label">Bugün kitap okudun mu?</div>
 
-    <div id="bookPagesBlock" class="hidden">
-      <div class="question-label">Kaç sayfa okudun?</div>
-      <select id="bookPages" class="select-input">
-        <option value="">Sayfa seç</option>
+      <div class="radio-group" data-group="bookRead">
+        <label class="radio-pill" data-value="evet">
+          <input type="radio" name="bookRead" value="evet">✓ Evet
+        </label>
+        <label class="radio-pill" data-value="hayir">
+          <input type="radio" name="bookRead" value="hayir">✗ Hayır
+        </label>
+      </div>
+
+      <select id="bookPages" class="select-input hidden">
+        <option value="">Kaç sayfa okudun?</option>
         <option value="1">1 sayfa</option>
         <option value="5">5 sayfa</option>
         <option value="10">10 sayfa</option>
         <option value="15">15 sayfa</option>
         <option value="20">20 sayfa</option>
-        <option value="30">30 sayfa</option>
-        <option value="40">40 sayfa</option>
-        <option value="50">50 sayfa</option>
+        <option value="25">25 sayfa</option>
       </select>
     </div>
 
-    <div id="bookUnderstandBlock" class="hidden">
+    <div id="understandBlock" class="hidden">
       <div class="question-label">Okuduğunu anladın mı?</div>
+
       <div class="radio-group" data-group="bookUnderstand">
-        <label class="radio-pill" data-value="evet"><input type="radio" name="bookUnderstand">✓ Evet</label>
-        <label class="radio-pill" data-value="hayir"><input type="radio" name="bookUnderstand">✗ Hayır</label>
+        <label class="radio-pill" data-value="evet">
+          <input type="radio" name="bookUnderstand" value="evet">✓ Evet
+        </label>
+        <label class="radio-pill" data-value="hayir">
+          <input type="radio" name="bookUnderstand" value="hayir">✗ Hayır
+        </label>
       </div>
 
-      <textarea id="bookExplain" class="textarea-box hidden" placeholder="Ne anladığını yaz..."></textarea>
+      <textarea id="bookExplain" class="textarea-box hidden" placeholder="Kısaca ne anladığını yaz..."></textarea>
     </div>
   </section>
-
-  <!-- ÖZET -->
+  <!-- GENEL DURUM ÖZETİ -->
   <section class="section">
     <div class="section-title">📊 Genel Durum Özeti</div>
 
-    <div class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
+    <div class="progress-container">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
 
     <span id="overallChip" class="status-chip warn">Eksikler olabilir</span>
 
     <div id="summaryText" class="summary-text"></div>
 
-    <button id="resetBtn" class="refresh-btn">🔄 Sıfırla</button>
+    <button id="resetBtn" class="text-input">🔄 Bugünü Sıfırla</button>
   </section>
 
-  <!-- EMAIL -->
+  <!-- EMAIL GÖNDER -->
   <section class="section">
     <div class="section-title">📨 E-mail Gönder</div>
 
     <div class="question-label">Bilgileri e-posta ile göndermek ister misin?</div>
     <div class="radio-group" data-group="sendEmail">
-      <label class="radio-pill" data-value="evet"><input type="radio" name="sendEmail">📧 Gönder</label>
-      <label class="radio-pill" data-value="hayir"><input type="radio" name="sendEmail">✗ Gönderme</label>
+      <label class="radio-pill" data-value="evet">
+        <input type="radio" name="sendEmail" value="evet">📧 Gönder
+      </label>
+      <label class="radio-pill" data-value="hayir">
+        <input type="radio" name="sendEmail" value="hayir">✗ Gönderme
+      </label>
     </div>
 
-    <button id="emailSendButton" class="email-btn hidden">📧 Mail Gönder</button>
+    <button id="emailSendButton" class="text-input hidden">📧 Mail Gönder</button>
   </section>
 
-</div>
+</div> <!-- .app kapanışı -->
 
-<!-- Konfeti -->
+<!-- Konfeti kütüphanesi -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
-document.getElementById("dateBadge").textContent =
-  new Date().toLocaleDateString("tr-TR",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+  // Tarih rozeti
+  document.getElementById("dateBadge").textContent =
+    new Date().toLocaleDateString("tr-TR", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
 
-document.querySelectorAll(".radio-group").forEach(group=>{
-  group.addEventListener("click",e=>{
-    const pill=e.target.closest(".radio-pill");
-    if(!pill) return;
-    group.querySelectorAll(".radio-pill").forEach(p=>p.classList.remove("checked"));
-    pill.classList.add("checked");
-    pill.querySelector("input").checked=true;
-    handleLogic(group.dataset.group,pill.dataset.value);
+  // Radio pill davranışı
+  document.querySelectorAll(".radio-group").forEach((group) => {
+    group.addEventListener("click", (e) => {
+      const pill = e.target.closest(".radio-pill");
+      if (!pill) return;
+      group.querySelectorAll(".radio-pill").forEach((p) => p.classList.remove("checked"));
+      pill.classList.add("checked");
+      const input = pill.querySelector("input");
+      if (input) input.checked = true;
+      handleLogic(group.dataset.group, pill.dataset.value);
+    });
   });
-});
 
-function getRadio(name){
-  const el=document.querySelector(`input[name='${name}']:checked`);
-  return el?el.value:null;
-}
-
-function handleLogic(group,val){
-
-  // PROJE VAR MI?
-  if(group==="projGiven"){
-    document.getElementById("projText").classList.toggle("hidden",val!=="evet");
-    document.getElementById("projDoneBlock").classList.toggle("hidden",val!=="evet");
-    document.getElementById("projResearchBlock").classList.add("hidden");
+  function getRadio(name) {
+    const el = document.querySelector(`input[name='${name}']:checked`);
+    return el ? el.value : null;
   }
 
-  // PROJE YAPILDI MI?
-  if(group==="projDone"){
-    const block=document.getElementById("projResearchBlock");
-    if(val==="hayir") block.classList.remove("hidden");
-    else block.classList.add("hidden");
-  }
-
-  // ARAŞTIRMA ISTER MISIN?
-  if(group==="projResearch"){
-    const btn=document.getElementById("projSearchBtn");
-    btn.classList.toggle("hidden",val!=="evet");
-    document.getElementById("projSearchBtn").onclick=()=>{
-      const konu=document.getElementById("projText").value.trim();
-      if(!konu) return alert("Ödev konusu yazılmamış!");
-      window.open("https://www.google.com/search?q="+encodeURIComponent(konu+" filetype:pdf"),"_blank");
-    };
-  }
-
-  // FASİKÜL YAPILDI MI?
-  if(group==="fasDone"){
-    document.getElementById("fasPages").classList.toggle("hidden",val!=="evet");
-
-    const block=document.getElementById("fasStuckBlock");
-    const chip=document.getElementById("fasStatus");
-    const opts=document.getElementById("stuckOptions");
-
-    if(val==="hayir"){
-      block.classList.add("hidden");
-      chip.classList.add("hidden");
-      opts.classList.add("hidden");
-    } else {
-      block.classList.remove("hidden");
-      chip.classList.remove("hidden");
+  function handleLogic(group, val) {
+    // PROJE VAR MI?
+    if (group === "projGiven") {
+      const show = val === "evet";
+      document.getElementById("projText").classList.toggle("hidden", !show);
+      document.getElementById("projDoneBlock").classList.toggle("hidden", !show);
+      document.getElementById("projResearchBlock").classList.add("hidden");
+      document.getElementById("projSearchBtn").classList.add("hidden");
     }
-  }
 
-  // FASİKÜL TAKILDI MI?
-  if(group==="fasStuck"){
-    const chip=document.getElementById("fasStatus");
-    const opts=document.getElementById("stuckOptions");
-
-    if(val==="evet"){
-      chip.className="status-chip bad";
-      chip.textContent="Takıldığın soru var ⚠️";
-      opts.classList.remove("hidden");
-    } else {
-      chip.className="status-chip ok";
-      chip.textContent="Sorun yok ✓";
-      opts.classList.add("hidden");
-    }
-  }
-
-  // FOTOĞRAF MI KONU MU?
-  if(group==="uploadQuestionImg"){
-    document.getElementById("questionFile").classList.toggle("hidden",val!=="evet");
-    document.getElementById("topicBlock").classList.toggle("hidden",val==="evet");
-  }
-
-  // KİTAP OKUDUN MU?
-  if(group==="bookRead"){
-    const pagesBlock=document.getElementById("bookPagesBlock");
-    const understandBlock=document.getElementById("bookUnderstandBlock");
-
-    if(val==="evet"){
-      pagesBlock.classList.remove("hidden");
-      understandBlock.classList.remove("hidden");
-    } else {
-      pagesBlock.classList.add("hidden");
-      understandBlock.classList.add("hidden");
-
-      // Temizle
-      document.getElementById("bookPages").value="";
-      document.getElementById("bookExplain").value="";
-      document.querySelectorAll('input[name="bookUnderstand"]').forEach(r=>r.checked=false);
-      document.querySelectorAll('[data-group="bookUnderstand"] .radio-pill').forEach(p=>p.classList.remove("checked"));
-    }
-  }
-
-  // KİTAP ANLADI MI?
-  if(group==="bookUnderstand"){
-    document.getElementById("bookExplain").classList.toggle("hidden",val!=="evet");
-  }
-
-  // EMAIL GÖNDERME
-  if(group==="sendEmail"){
-    document.getElementById("emailSendButton").classList.toggle("hidden",val!=="evet");
-  }
-
-  updateSummary();
-}
-
-document.getElementById("bookPages").onchange=updateSummary;
-document.getElementById("fasPages").onchange=updateSummary;
-
-document.getElementById("googleSearchBtn").onclick=()=>{
-  const t=document.getElementById("topicText").value.trim();
-  if(!t) return alert("Konu yaz!");
-  window.open("https://www.google.com/search?q="+encodeURIComponent(t+" filetype:pdf"),"_blank");
-};
-
-function updateSummary(){
-
-  const summary=[];
-  const chip=document.getElementById("overallChip");
-  const prog=document.getElementById("progressBar");
-
-  const projGiven=getRadio("projGiven");
-  const projDone=getRadio("projDone");
-  const projTopic=document.getElementById("projText").value.trim();
-  const projResearch=getRadio("projResearch");
-
-  const fasDone=getRadio("fasDone");
-  const fasPages=Number(document.getElementById("fasPages").value)||0;
-  const fasStuck=getRadio("fasStuck");
-  const hasFile=document.getElementById("questionFile").files.length>0;
-  const topic=document.getElementById("topicText").value.trim();
-
-  const bookRead=getRadio("bookRead");
-  const bookPages=Number(document.getElementById("bookPages").value)||0;
-  const bookUnder=getRadio("bookUnderstand");
-  const explain=document.getElementById("bookExplain").value.trim();
-
-  // PROJE ÖZET
-  if(projGiven==="hayir"){
-    summary.push("📌 Bugün proje / araştırma ödevi verilmedi.");
-  } else if(projGiven==="evet"){
-    summary.push("📋 Proje / araştırma ödevi verildi.");
-    if(projTopic) summary.push("→ Konu: "+projTopic);
-
-    if(projDone==="evet"){
-      summary.push("→ Proje yapıldı ✔");
-    } else if(projDone==="hayir"){
-      summary.push("→ Proje yapılmadı ❌");
-      if(projResearch==="evet"){
-        summary.push("→ Bu konuda PDF araştırması açıldı ✓");
+    // PROJE YAPILDI MI?
+    if (group === "projDone") {
+      const block = document.getElementById("projResearchBlock");
+      block.classList.toggle("hidden", val !== "hayir");
+      if (val !== "hayir") {
+        document.getElementById("projSearchBtn").classList.add("hidden");
+        document
+          .querySelectorAll('input[name="projResearch"]')
+          .forEach((r) => (r.checked = false));
+        document
+          .querySelectorAll('[data-group="projResearch"] .radio-pill')
+          .forEach((p) => p.classList.remove("checked"));
       }
     }
-  }
 
-  // FASİKÜL
-  if(fasDone==="evet"){
-    summary.push("📕 Fasikül: "+fasPages+" sayfa yapıldı ✔");
-    if(fasStuck==="evet"){
-      if(hasFile) summary.push("→ Takıldığın soru: fotoğraf yüklendi 📎");
-      else if(topic) summary.push("→ Takıldığın konu: "+topic);
-    } else if(fasStuck==="hayir"){
-      summary.push("→ Fasikülde takıldığın soru yok ✓");
+    // PROJE ARAŞTIRMA
+    if (group === "projResearch") {
+      const btn = document.getElementById("projSearchBtn");
+      if (val === "evet") {
+        btn.classList.remove("hidden");
+        btn.onclick = () => {
+          const konu = document.getElementById("projText").value.trim();
+          if (!konu) {
+            alert("Ödev konusunu yazmalısın.");
+            return;
+          }
+          window.open(
+            "https://www.google.com/search?q=" +
+              encodeURIComponent(konu + " filetype:pdf"),
+            "_blank"
+          );
+        };
+      } else {
+        btn.classList.add("hidden");
+      }
     }
-  } else if(fasDone==="hayir"){
-    summary.push("📕 Fasikül ödevi yapılmadı ❌");
+
+    // FASİKÜL YAPILDI MI?
+    if (group === "fasDone") {
+      const show = val === "evet";
+      document.getElementById("fasPages").classList.toggle("hidden", !show);
+      const stuckBlock = document.getElementById("stuckBlock");
+
+      if (!show) {
+        stuckBlock.classList.add("hidden");
+        document.getElementById("stuckOptions").classList.add("hidden");
+        document.getElementById("questionFile").classList.add("hidden");
+        document.getElementById("topicBlock").classList.add("hidden");
+        document.getElementById("topicText").value = "";
+        document.getElementById("questionFile").value = "";
+        document
+          .querySelectorAll('input[name="fasStuck"], input[name="uploadQuestionImg"]')
+          .forEach((r) => (r.checked = false));
+        document
+          .querySelectorAll(
+            '[data-group="fasStuck"] .radio-pill, [data-group="uploadQuestionImg"] .radio-pill'
+          )
+          .forEach((p) => p.classList.remove("checked"));
+      } else {
+        stuckBlock.classList.remove("hidden");
+      }
+    }
+
+    // FASİKÜL TAKILDI MI?
+    if (group === "fasStuck") {
+      const opts = document.getElementById("stuckOptions");
+      opts.classList.toggle("hidden", val !== "evet");
+      if (val !== "evet") {
+        document.getElementById("questionFile").classList.add("hidden");
+        document.getElementById("topicBlock").classList.add("hidden");
+        document.getElementById("topicText").value = "";
+        document.getElementById("questionFile").value = "";
+        document
+          .querySelectorAll('input[name="uploadQuestionImg"]')
+          .forEach((r) => (r.checked = false));
+        document
+          .querySelectorAll('[data-group="uploadQuestionImg"] .radio-pill')
+          .forEach((p) => p.classList.remove("checked"));
+      }
+    }
+
+    // FOTOĞRAF MI, KONU MU?
+    if (group === "uploadQuestionImg") {
+      const isYes = val === "evet";
+      document.getElementById("questionFile").classList.toggle("hidden", !isYes);
+      document.getElementById("topicBlock").classList.toggle("hidden", isYes);
+      if (isYes) {
+        document.getElementById("topicText").value = "";
+      } else {
+        document.getElementById("questionFile").value = "";
+      }
+    }
+
+    // KİTAP OKUDUN MU?
+    if (group === "bookRead") {
+      const pagesSel = document.getElementById("bookPages");
+      const understandBlock = document.getElementById("understandBlock");
+
+      if (val === "evet") {
+        pagesSel.classList.remove("hidden");
+        understandBlock.classList.remove("hidden");
+      } else {
+        pagesSel.classList.add("hidden");
+        understandBlock.classList.add("hidden");
+        pagesSel.value = "";
+        document.getElementById("bookExplain").value = "";
+        document
+          .querySelectorAll('input[name="bookUnderstand"]')
+          .forEach((r) => (r.checked = false));
+        document
+          .querySelectorAll('[data-group="bookUnderstand"] .radio-pill')
+          .forEach((p) => p.classList.remove("checked"));
+      }
+    }
+
+    // OKUDUĞUNU ANLADIN MI?
+    if (group === "bookUnderstand") {
+      const txt = document.getElementById("bookExplain");
+      txt.classList.toggle("hidden", val !== "evet");
+      if (val !== "evet") txt.value = "";
+    }
+
+    // EMAIL GÖNDERME
+    if (group === "sendEmail") {
+      document
+        .getElementById("emailSendButton")
+        .classList.toggle("hidden", val !== "evet");
+    }
+
+    updateSummary();
   }
 
-  // KİTAP
-  if(bookRead==="evet"){
-    summary.push("📗 Kitap okundu ("+ (bookPages || "?") +" sayfa)");
-  } else if(bookRead==="hayir"){
-    summary.push("📗 Bugün kitap okunmadı ❌");
-  }
+  // Event bağlama
+  document.getElementById("bookPages").addEventListener("change", updateSummary);
+  document.getElementById("fasPages").addEventListener("change", updateSummary);
 
-  if(bookUnder==="evet"){
-    summary.push("→ Okuduğunu anladı ✔");
-    if(explain) summary.push("→ "+explain);
-  } else if(bookUnder==="hayir"){
-    summary.push("→ Okuduğunu tam anlamadı ⚠️");
-  }
+  document.getElementById("googleSearchBtn").addEventListener("click", () => {
+    const t = document.getElementById("topicText").value.trim();
+    if (!t) {
+      alert("Lütfen takıldığın konuyu yaz.");
+      return;
+    }
+    window.open(
+      "https://www.google.com/search?q=" + encodeURIComponent(t + " filetype:pdf"),
+      "_blank"
+    );
+  });
 
-  // ZORUNLU GÖREV HESABI
-  let completed=0, total=2;
-  const errors=[];
+  function updateSummary() {
+    const summary = [];
+    const chip = document.getElementById("overallChip");
+    const prog = document.getElementById("progressBar");
 
-  // Kitap zorunlu: min 10 sayfa + anlaması tercih
-  if(bookRead==="evet" && bookPages>=10){
-    completed++;
-  } else {
-    const eksik=Math.max(0,10-bookPages);
-    if(bookRead==="hayir"){
+    // PROJE
+    const projGiven = getRadio("projGiven");
+    const projDone = getRadio("projDone");
+    const projResearch = getRadio("projResearch");
+    const projTopic = document.getElementById("projText").value.trim();
+
+    // FASİKÜL
+    const fasDone = getRadio("fasDone");
+    const fasPagesRaw = document.getElementById("fasPages").value;
+    const fasPages = fasPagesRaw === "" ? null : Number(fasPagesRaw);
+    const fasStuck = getRadio("fasStuck");
+    const hasFile = document.getElementById("questionFile").files.length > 0;
+    const topic = document.getElementById("topicText").value.trim();
+
+    // KİTAP
+    const bookRead = getRadio("bookRead");
+    const bookPagesRaw = document.getElementById("bookPages").value;
+    const bookPages = bookPagesRaw === "" ? null : Number(bookPagesRaw);
+    const bookUnder = getRadio("bookUnderstand");
+    const explain = document.getElementById("bookExplain").value.trim();
+
+    // --- PROJE ÖZET ---
+    if (projGiven === "hayir") {
+      summary.push("📌 Bugün proje / araştırma ödevi verilmedi.");
+    } else if (projGiven === "evet") {
+      summary.push("📋 Proje / araştırma ödevi verildi.");
+      if (projTopic) summary.push("→ Konu: " + projTopic);
+
+      if (projDone === "evet") {
+        summary.push("→ Proje yapıldı ✔");
+      } else if (projDone === "hayir") {
+        summary.push("→ Proje henüz yapılmadı ❌");
+        if (projResearch === "evet") {
+          summary.push("→ Bu konuda PDF araması yapıldı (Google açıldı).");
+        }
+      }
+    }
+
+    // --- FASİKÜL ÖZET ---
+    if (fasDone === "evet") {
+      summary.push(
+        "📕 Fasikül: " + (fasPages !== null ? fasPages : "?") + " sayfa yapıldı ✔"
+      );
+      if (fasStuck === "evet") {
+        if (hasFile) {
+          summary.push("→ Takıldığın soru fotoğrafı yüklendi 📎");
+        } else if (topic) {
+          summary.push("→ Takıldığın konu: " + topic);
+        } else {
+          summary.push("→ Takıldığın soru var, ama detay girilmedi ⚠️");
+        }
+      } else if (fasStuck === "hayir") {
+        summary.push("→ Fasikülde takıldığın soru yok ✓");
+      }
+    } else if (fasDone === "hayir") {
+      summary.push("📕 Fasikül ödevi yapılmadı ❌");
+    }
+
+    // --- KİTAP ÖZET ---
+    if (bookRead === "evet") {
+      summary.push(
+        "📗 Kitap okundu (" + (bookPages !== null ? bookPages : "?") + " sayfa)"
+      );
+    } else if (bookRead === "hayir") {
+      summary.push("📗 Bugün kitap okunmadı ❌");
+    }
+
+    if (bookUnder === "evet") {
+      summary.push("→ Okuduğunu anladı ✔");
+      if (explain) summary.push("→ " + explain);
+    } else if (bookUnder === "hayir") {
+      summary.push("→ Okuduğunu tam anlamadı ⚠️");
+    }
+
+    // --- ZORUNLU GÖREV HESABI ---
+    let completed = 0;
+    let totalMandatory = 2; // Kitap + Fasikül her zaman zorunlu
+    const errors = [];
+
+    // Kitap zorunluluğu
+    if (bookRead === "evet") {
+      if (bookPages === null) {
+        errors.push("📗 Kitap: Kaç sayfa okuduğunu seçmelisin.");
+      } else if (bookPages < 10) {
+        errors.push(
+          `📗 Kitap: En az 10 sayfa olmalı (eksik: ${10 - bookPages} sayfa).`
+        );
+      } else {
+        completed += 1;
+      }
+
+      if (bookUnder === "hayir") {
+        errors.push("📗 Kitap: Okudu ama anlamadı.");
+      }
+    } else if (bookRead === "hayir") {
       errors.push("📗 Kitap: Bugün hiç okunmadı (en az 10 sayfa olmalı).");
+    }
+
+    // Fasikül zorunluluğu
+    if (fasDone === "evet") {
+      if (fasPages === null) {
+        errors.push("📕 Fasikül: Kaç sayfa yaptığını seçmelisin.");
+      } else if (fasPages < 3) {
+        errors.push(
+          `📕 Fasikül: En az 3 sayfa olmalı (eksik: ${3 - fasPages} sayfa).`
+        );
+      } else {
+        completed += 1;
+      }
+    } else if (fasDone === "hayir") {
+      errors.push("📕 Fasikül: Bugün yapılmadı (en az 3 sayfa olmalı).");
+    }
+
+    // Proje: sadece verildiyse zorunlu
+    if (projGiven === "evet") {
+      totalMandatory += 1;
+      if (projDone === "evet") {
+        completed += 1;
+      } else {
+        errors.push("📋 Proje: Öğretmen verdiği için yapılmalı.");
+      }
+    }
+
+    // Yüzde hesapla
+    let percent =
+      totalMandatory > 0 ? Math.round((completed / totalMandatory) * 100) : 0;
+    if (!isFinite(percent) || isNaN(percent)) percent = 0;
+
+    prog.style.width = percent + "%";
+    prog.textContent = percent + "%";
+
+    // GENEL DURUM
+    if (percent === 100 && errors.length === 0) {
+      chip.className = "status-chip ok";
+      chip.textContent = "Tüm zorunlu görevler tamamlandı 🎉";
+
+      if (!window.confettiPlayed) {
+        window.confettiPlayed = true;
+        const end = Date.now() + 2000;
+        (function frame() {
+          confetti({
+            particleCount: 6,
+            spread: 360,
+            startVelocity: 25,
+            origin: { x: Math.random(), y: Math.random() * 0.5 },
+          });
+          if (Date.now() < end) requestAnimationFrame(frame);
+        })();
+      }
     } else {
-      errors.push(`📗 Kitap: En az 10 sayfa olmalı (eksik: ${eksik} sayfa).`);
+      chip.className = "status-chip bad";
+      chip.textContent = "Zorunlu görevler TAMAMLANMADI ❌";
     }
-  }
 
-  if(bookUnder==="hayir"){
-    errors.push("📗 Kitap: Okudu ama anlamadı.");
-  }
-
-  // Fasikül zorunlu: min 3 sayfa
-  if(fasDone==="evet" && fasPages>=3){
-    completed++;
-  } else {
-    const eksik=Math.max(0,3-fasPages);
-    errors.push(`📕 Fasikül: En az 3 sayfa olmalı (eksik: ${eksik} sayfa).`);
-  }
-
-  // Proje: sadece verildiyse zorunlu
-  if(projGiven==="evet"){
-    total++;
-    if(projDone==="evet") completed++;
-    else errors.push("📋 Proje: Öğretmen verdiği için yapılmalı.");
-  }
-
-  let percent=Math.round((completed/total)*100);
-  prog.style.width=percent+"%";
-  prog.textContent=percent+"%";
-
-  if(percent===100 && errors.length===0){
-    chip.className="status-chip ok";
-    chip.textContent="Tüm görevler tamamlandı";
-
-    if(!window.confettiPlayed){
-      window.confettiPlayed=true;
-      const end=Date.now()+1800;
-      (function frame(){
-        confetti({particleCount:4,spread:360,startVelocity:20,origin:{x:Math.random(),y:Math.random()*0.4}});
-        if(Date.now()<end) requestAnimationFrame(frame);
-      })();
+    summary.push("<hr>");
+    if (percent === 100 && errors.length === 0) {
+      summary.push(
+        "<b style='color:#22c55e'>🎉 Tüm zorunlu görevler TAMAMLANDI!</b>"
+      );
+    } else {
+      if (errors.length > 0) {
+        summary.push(
+          "<b style='color:#ef4444'>❌ Zorunlu görevler TAMAMLANMADI</b>"
+        );
+        errors.forEach((e) => summary.push("→ " + e));
+      } else {
+        summary.push(
+          "<b style='color:#eab308'>⚠️ Eksikler tam net değil, lütfen kontrole bak.</b>"
+        );
+      }
     }
-  } else {
-    chip.className="status-chip bad";
-    chip.textContent="Eksikler var";
+
+    document.getElementById("summaryText").innerHTML = summary.join("<br>");
   }
 
-  summary.push("<hr>");
-  if(percent===100 && errors.length===0){
-    summary.push("<b style='color:#22c55e'>🎉 Tüm zorunlu görevler TAMAMLANDI!</b>");
-  } else {
-    summary.push("<b style='color:#ef4444'>❌ Zorunlu görevler TAMAMLANMADI</b>");
-    errors.forEach(e=>summary.push("→ "+e));
-  }
+  document.getElementById("resetBtn").addEventListener("click", () =>
+    location.reload()
+  );
 
-  document.getElementById("summaryText").innerHTML=summary.join("<br>");
-}
+  document.getElementById("emailSendButton").addEventListener("click", () => {
+    const txt = document.getElementById("summaryText").innerText;
+    const mailTo =
+      "mailto:erkan.saracoglu@gmail.com,oznur.saracevic@gmail.com" +
+      "?subject=" +
+      encodeURIComponent("Günlük Ödev Durumu") +
+      "&body=" +
+      encodeURIComponent(txt);
 
-document.getElementById("resetBtn").onclick=()=>location.reload();
+    window.location.href = mailTo;
+  });
 
-document.getElementById("emailSendButton").onclick=()=>{
-  const txt=document.getElementById("summaryText").innerText;
-  window.location.href=
-    "mailto:erkan.saracoglu@gmail.com,oznur.saracevic@gmail.com"
-    +"?subject=Günlük Ödev Durumu"
-    +"&body="+encodeURIComponent(txt);
-};
+  // Sayfa ilk açıldığında da özet sıfırdan hesaplansın
+  updateSummary();
 </script>
 
 </body>
