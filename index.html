@@ -60,7 +60,14 @@
 
     .section-title { font-size: 17px; font-weight: 600; margin-bottom: 12px; }
 
-    .radio-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+    .question-label {
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    .radio-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
     .radio-pill { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); cursor: pointer; }
     .radio-pill.checked[data-value="evet"] { background: rgba(34,197,94,0.3); border-color: var(--success); }
     .radio-pill.checked[data-value="hayir"] { background: rgba(239,68,68,0.3); border-color: var(--danger); }
@@ -107,6 +114,7 @@
   <section class="section">
     <div class="section-title">🔍 Öğretmen Proje / Araştırma Ödevi Verdi mi?</div>
 
+    <div class="question-label">Öğretmen proje / araştırma ödevi verdi mi?</div>
     <div class="radio-group" data-group="projGiven">
       <label class="radio-pill" data-value="evet"><input type="radio" name="projGiven">✓ Evet</label>
       <label class="radio-pill" data-value="hayir"><input type="radio" name="projGiven">✗ Hayır</label>
@@ -115,6 +123,7 @@
     <input id="projText" class="text-input hidden" placeholder="Ödev konusu...">
 
     <div id="projDoneBlock" class="hidden">
+      <div class="question-label">Proje / araştırma ödevi yapıldı mı?</div>
       <div class="radio-group" data-group="projDone">
         <label class="radio-pill" data-value="evet"><input type="radio" name="projDone">✓ Yapıldı</label>
         <label class="radio-pill" data-value="hayir"><input type="radio" name="projDone">✗ Yapılmadı</label>
@@ -123,7 +132,7 @@
 
     <!-- YAPILMADI → Araştırma ister misin? -->
     <div id="projResearchBlock" class="hidden">
-      <div class="section-title" style="font-size:15px;margin-top:10px;">🧠 Bu konu hakkında araştırma yapmak ister misin?</div>
+      <div class="question-label">Bu konu hakkında şimdi araştırma yapmak ister misin?</div>
 
       <div class="radio-group" data-group="projResearch">
         <label class="radio-pill" data-value="evet"><input type="radio" name="projResearch">✓ Evet</label>
@@ -139,6 +148,7 @@
   <section class="section">
     <div class="section-title">📕 Fasikül Ödevi</div>
 
+    <div class="question-label">Fasikül ödevi yapıldı mı?</div>
     <div class="radio-group" data-group="fasDone">
       <label class="radio-pill" data-value="evet"><input type="radio" name="fasDone">✓ Evet</label>
       <label class="radio-pill" data-value="hayir"><input type="radio" name="fasDone">✗ Hayır</label>
@@ -154,6 +164,7 @@
     </select>
 
     <div id="fasStuckBlock">
+      <div class="question-label">Fasikülde takıldığın soru oldu mu?</div>
       <div class="radio-group" data-group="fasStuck">
         <label class="radio-pill" data-value="evet"><input type="radio" name="fasStuck">✓ Evet</label>
         <label class="radio-pill" data-value="hayir"><input type="radio" name="fasStuck">✗ Hayır</label>
@@ -162,6 +173,7 @@
       <span id="fasStatus" class="status-chip warn">Durum bekleniyor</span>
 
       <div id="stuckOptions" class="hidden">
+        <div class="question-label">Takıldığın soruyu nasıl iletmek istersin?</div>
         <div class="radio-group" data-group="uploadQuestionImg">
           <label class="radio-pill" data-value="evet"><input type="radio" name="uploadQuestionImg">📎 Fotoğraf yükle</label>
           <label class="radio-pill" data-value="hayir"><input type="radio" name="uploadQuestionImg">✏️ Konu yaz</label>
@@ -182,24 +194,28 @@
   <section class="section">
     <div class="section-title">📗 Kitap Okuma</div>
 
+    <div class="question-label">Bugün kitap okudun mu?</div>
     <div class="radio-group" data-group="bookRead">
       <label class="radio-pill" data-value="evet"><input type="radio" name="bookRead">✓ Evet</label>
       <label class="radio-pill" data-value="hayir"><input type="radio" name="bookRead">✗ Hayır</label>
     </div>
 
-    <!-- Sayfa seçimi (dropdown) -->
-    <select id="bookPages" class="select-input">
-      <option value="">Sayfa seç</option>
-      <option value="1">1 sayfa</option>
-      <option value="5">5 sayfa</option>
-      <option value="10">10 sayfa</option>
-      <option value="15">15 sayfa</option>
-      <option value="20">20 sayfa</option>
-      <option value="30">30 sayfa</option>
-      <option value="40">40 sayfa</option>
-      <option value="50">50 sayfa</option>
-    </select>
+    <div id="bookPagesBlock" class="hidden">
+      <div class="question-label">Kaç sayfa okudun?</div>
+      <select id="bookPages" class="select-input">
+        <option value="">Sayfa seç</option>
+        <option value="1">1 sayfa</option>
+        <option value="5">5 sayfa</option>
+        <option value="10">10 sayfa</option>
+        <option value="15">15 sayfa</option>
+        <option value="20">20 sayfa</option>
+        <option value="30">30 sayfa</option>
+        <option value="40">40 sayfa</option>
+        <option value="50">50 sayfa</option>
+      </select>
+    </div>
 
+    <div class="question-label">Okuduğunu anladın mı?</div>
     <div class="radio-group" data-group="bookUnderstand">
       <label class="radio-pill" data-value="evet"><input type="radio" name="bookUnderstand">✓ Evet</label>
       <label class="radio-pill" data-value="hayir"><input type="radio" name="bookUnderstand">✗ Hayır</label>
@@ -225,6 +241,7 @@
   <section class="section">
     <div class="section-title">📨 E-mail Gönder</div>
 
+    <div class="question-label">Bilgileri e-posta ile göndermek ister misin?</div>
     <div class="radio-group" data-group="sendEmail">
       <label class="radio-pill" data-value="evet"><input type="radio" name="sendEmail">📧 Gönder</label>
       <label class="radio-pill" data-value="hayir"><input type="radio" name="sendEmail">✗ Gönderme</label>
@@ -270,27 +287,22 @@ function handleLogic(group,val){
   // PROJE YAPILDI MI?
   if(group==="projDone"){
     const block=document.getElementById("projResearchBlock");
-
-    if(val==="hayir"){
-      block.classList.remove("hidden");
-    } else {
-      block.classList.add("hidden");
-    }
+    if(val==="hayir") block.classList.remove("hidden");
+    else block.classList.add("hidden");
   }
 
   // ARAŞTIRMA ISTER MISIN?
   if(group==="projResearch"){
     const btn=document.getElementById("projSearchBtn");
     btn.classList.toggle("hidden",val!=="evet");
-
     document.getElementById("projSearchBtn").onclick=()=>{
       const konu=document.getElementById("projText").value.trim();
-      if(!konu) return alert("Konu yazılmamış!");
+      if(!konu) return alert("Ödev konusu yazılmamış!");
       window.open("https://www.google.com/search?q="+encodeURIComponent(konu+" filetype:pdf"),"_blank");
     };
   }
 
-  // FASIKÜL YAPILDI MI?
+  // FASİKÜL YAPILDI MI?
   if(group==="fasDone"){
     document.getElementById("fasPages").classList.toggle("hidden",val!=="evet");
 
@@ -308,7 +320,7 @@ function handleLogic(group,val){
     }
   }
 
-  // FASIKÜL TAKILDI MI?
+  // FASİKÜL TAKILDI MI?
   if(group==="fasStuck"){
     const chip=document.getElementById("fasStatus");
     const opts=document.getElementById("stuckOptions");
@@ -328,6 +340,12 @@ function handleLogic(group,val){
   if(group==="uploadQuestionImg"){
     document.getElementById("questionFile").classList.toggle("hidden",val!=="evet");
     document.getElementById("topicBlock").classList.toggle("hidden",val==="evet");
+  }
+
+  // KİTAP OKUDUN MU? → Sayfa seçimi sadece EVET ise görünür
+  if(group==="bookRead"){
+    const block=document.getElementById("bookPagesBlock");
+    block.classList.toggle("hidden",val!=="evet");
   }
 
   // KİTAP ANLADI MI?
@@ -361,76 +379,88 @@ function updateSummary(){
   const projGiven=getRadio("projGiven");
   const projDone=getRadio("projDone");
   const projTopic=document.getElementById("projText").value.trim();
-
   const projResearch=getRadio("projResearch");
 
   const fasDone=getRadio("fasDone");
   const fasPages=Number(document.getElementById("fasPages").value)||0;
-
   const fasStuck=getRadio("fasStuck");
   const hasFile=document.getElementById("questionFile").files.length>0;
   const topic=document.getElementById("topicText").value.trim();
 
   const bookRead=getRadio("bookRead");
   const bookPages=Number(document.getElementById("bookPages").value)||0;
-
   const bookUnder=getRadio("bookUnderstand");
   const explain=document.getElementById("bookExplain").value.trim();
 
   // PROJE ÖZET
   if(projGiven==="hayir"){
-    summary.push("📌 Bugün proje verilmedi.");
-  } else {
-    summary.push("📋 Proje verildi.");
-    summary.push("→ Konu: "+projTopic);
+    summary.push("📌 Bugün proje / araştırma ödevi verilmedi.");
+  } else if(projGiven==="evet"){
+    summary.push("📋 Proje / araştırma ödevi verildi.");
+    if(projTopic) summary.push("→ Konu: "+projTopic);
 
     if(projDone==="evet"){
-      summary.push("→ Yapıldı ✔");
-    } else {
-      summary.push("→ Yapılmadı ❌");
-
+      summary.push("→ Proje yapıldı ✔");
+    } else if(projDone==="hayir"){
+      summary.push("→ Proje yapılmadı ❌");
       if(projResearch==="evet"){
-        summary.push("→ Araştırma açıldı ✓");
+        summary.push("→ Bu konuda PDF araştırması açıldı ✓");
       }
     }
   }
 
-  // FASIKÜL
+  // FASİKÜL
   if(fasDone==="evet"){
-    summary.push("📕 Fasikül: "+fasPages+" sayfa ✔");
-
+    summary.push("📕 Fasikül: "+fasPages+" sayfa yapıldı ✔");
     if(fasStuck==="evet"){
-      if(hasFile) summary.push("→ Fotoğraf yüklendi 📎");
+      if(hasFile) summary.push("→ Takıldığın soru: fotoğraf yüklendi 📎");
       else if(topic) summary.push("→ Takıldığın konu: "+topic);
-    } else summary.push("→ Sorun yok ✓");
-
-  } else summary.push("📕 Fasikül yapılmadı ❌");
+    } else if(fasStuck==="hayir"){
+      summary.push("→ Fasikülde takıldığın soru yok ✓");
+    }
+  } else if(fasDone==="hayir"){
+    summary.push("📕 Fasikül ödevi yapılmadı ❌");
+  }
 
   // KİTAP
-  if(bookRead==="evet") summary.push("📗 Kitap okundu ("+bookPages+" sayfa)");
-  else summary.push("📗 Kitap okunmadı ❌");
+  if(bookRead==="evet"){
+    summary.push("📗 Kitap okundu ("+ (bookPages || "?") +" sayfa)");
+  } else if(bookRead==="hayir"){
+    summary.push("📗 Bugün kitap okunmadı ❌");
+  }
 
   if(bookUnder==="evet"){
-    summary.push("→ Anladı ✔");
+    summary.push("→ Okuduğunu anladı ✔");
     if(explain) summary.push("→ "+explain);
   } else if(bookUnder==="hayir"){
-    summary.push("→ Anlamadı ⚠️");
+    summary.push("→ Okuduğunu tam anlamadı ⚠️");
   }
 
   // ZORUNLU GÖREV HESABI
   let completed=0, total=2;
   const errors=[];
 
-  if(bookPages>=10 && bookRead==="evet") completed++;
-  else errors.push(`📗 Kitap: ${Math.max(0,10-bookPages)} sayfa eksik`);
+  // Kitap zorunlu: min 10 sayfa
+  if(bookRead==="evet" && bookPages>=10){
+    completed++;
+  } else {
+    const eksik=Math.max(0,10-bookPages);
+    errors.push(`📗 Kitap: En az 10 sayfa olmalı (eksik: ${eksik} sayfa).`);
+  }
 
-  if(fasPages>=3 && fasDone==="evet") completed++;
-  else errors.push(`📕 Fasikül: ${Math.max(0,3-fasPages)} sayfa eksik`);
+  // Fasikül zorunlu: min 3 sayfa
+  if(fasDone==="evet" && fasPages>=3){
+    completed++;
+  } else {
+    const eksik=Math.max(0,3-fasPages);
+    errors.push(`📕 Fasikül: En az 3 sayfa olmalı (eksik: ${eksik} sayfa).`);
+  }
 
+  // Proje: sadece verildiyse zorunlu
   if(projGiven==="evet"){
     total++;
     if(projDone==="evet") completed++;
-    else errors.push("📋 Proje yapılmalı");
+    else errors.push("📋 Proje: Öğretmen verdiği için yapılmalı.");
   }
 
   let percent=Math.round((completed/total)*100);
@@ -449,7 +479,6 @@ function updateSummary(){
         if(Date.now()<end) requestAnimationFrame(frame);
       })();
     }
-
   } else {
     chip.className="status-chip bad";
     chip.textContent="Eksikler var";
