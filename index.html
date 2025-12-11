@@ -60,7 +60,7 @@
       width: 100%;
       max-width: 1000px;
       background: var(--bg-card);
-      padding: 32px;
+      padding: 24px;
       border-radius: 24px;
       border: 1px solid rgba(148,163,184,0.25);
       box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(56, 189, 248, 0.1);
@@ -77,13 +77,13 @@
 
     .header {
       text-align: center;
-      margin-bottom: 32px;
-      padding-bottom: 24px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
       border-bottom: 2px solid rgba(56, 189, 248, 0.2);
     }
 
     .title {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 800;
       background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #a855f7 100%);
       -webkit-background-clip: text;
@@ -94,9 +94,9 @@
 
     .subtitle { 
       color: var(--text-muted); 
-      font-size: 15px; 
+      font-size: 14px; 
       font-weight: 500;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .date-badge { 
@@ -104,7 +104,7 @@
       padding: 8px 16px; 
       background: linear-gradient(135deg, rgba(56,189,248,0.25) 0%, rgba(129,140,248,0.25) 100%);
       border-radius: 999px; 
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       border: 1px solid rgba(56,189,248,0.3);
       box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
@@ -112,27 +112,21 @@
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
     }
 
     .stat-card {
       background: linear-gradient(135deg, rgba(56,189,248,0.1) 0%, rgba(129,140,248,0.1) 100%);
-      padding: 20px;
+      padding: 16px;
       border-radius: 16px;
       border: 1px solid rgba(56,189,248,0.2);
       text-align: center;
-      transition: all 0.3s ease;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(56, 189, 248, 0.2);
     }
 
     .stat-value {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 800;
       background: linear-gradient(135deg, #38bdf8, #818cf8);
       -webkit-background-clip: text;
@@ -140,19 +134,18 @@
     }
 
     .stat-label {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text-muted);
       margin-top: 4px;
       font-weight: 500;
     }
 
     .section {
-      margin-top: 24px;
-      padding: 24px;
+      margin-top: 20px;
+      padding: 20px;
       background: linear-gradient(135deg, rgba(15,23,42,0.8) 0%, rgba(15,23,42,0.6) 100%);
       border-radius: 20px;
       border: 1px solid var(--border);
-      transition: all 0.3s ease;
       animation: slideIn 0.5s ease-out backwards;
     }
 
@@ -166,80 +159,48 @@
       to { opacity: 1; transform: translateX(0); }
     }
 
-    .section:hover {
-      border-color: rgba(56, 189, 248, 0.4);
-      box-shadow: 0 8px 32px rgba(56, 189, 248, 0.15);
-    }
-
     .section-title { 
-      font-size: 20px; 
+      font-size: 18px; 
       font-weight: 700; 
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
     .question-label {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
-      margin-top: 16px;
+      margin-top: 14px;
       margin-bottom: 8px;
       color: var(--accent);
     }
 
     .radio-group { 
       display: flex; 
-      gap: 12px; 
+      gap: 10px; 
       flex-wrap: wrap; 
       margin-top: 8px; 
     }
     
     .radio-pill {
-      padding: 10px 18px;
+      padding: 10px 16px;
       border-radius: 999px;
       border: 2px solid var(--border);
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       font-weight: 600;
       font-size: 14px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .radio-pill::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.1);
-      transform: translate(-50%, -50%);
-      transition: width 0.5s, height 0.5s;
-    }
-
-    .radio-pill:hover::before {
-      width: 200px;
-      height: 200px;
-    }
-
-    .radio-pill:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
     }
 
     .radio-pill.checked[data-value="evet"] { 
       background: linear-gradient(135deg, rgba(34,197,94,0.4), rgba(34,197,94,0.2));
       border-color: var(--success);
-      box-shadow: 0 4px 16px rgba(34,197,94,0.3);
     }
 
     .radio-pill.checked[data-value="hayir"] { 
       background: linear-gradient(135deg, rgba(239,68,68,0.4), rgba(239,68,68,0.2));
       border-color: var(--danger);
-      box-shadow: 0 4px 16px rgba(239,68,68,0.3);
     }
 
     .hidden { display: none !important; }
@@ -248,14 +209,13 @@
     .textarea-box,
     .select-input {
       width: 100%;
-      padding: 12px 16px;
+      padding: 12px 14px;
       margin-top: 8px;
       background: rgba(15,23,42,0.9);
       border-radius: 12px;
       border: 2px solid var(--border);
       color: var(--text);
       font-size: 14px;
-      transition: all 0.3s ease;
     }
 
     .text-input:focus,
@@ -263,7 +223,6 @@
     .select-input:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
     }
 
     .file-input {
@@ -275,18 +234,12 @@
       border: 2px dashed var(--border);
       color: var(--text);
       cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .file-input:hover {
-      border-color: var(--accent);
-      background: rgba(56, 189, 248, 0.05);
     }
 
     .progress-container { 
       background: rgba(255,255,255,0.05); 
       height: 28px; 
-      margin-top: 20px; 
+      margin-top: 16px; 
       border-radius: 14px; 
       overflow: hidden;
       border: 1px solid rgba(255,255,255,0.1);
@@ -332,106 +285,84 @@
     }
 
     .status-chip {
-      padding: 8px 16px;
+      padding: 8px 14px;
       border-radius: 12px;
       margin-top: 12px;
       display: inline-block;
       border: 2px solid var(--border);
       font-weight: 700;
-      font-size: 14px;
-      transition: all 0.3s ease;
+      font-size: 13px;
     }
 
     .ok { 
       color: var(--success); 
       border-color: var(--success);
       background: rgba(34,197,94,0.1);
-      box-shadow: 0 4px 12px rgba(34,197,94,0.2);
     }
 
     .bad { 
       color: var(--danger); 
       border-color: var(--danger);
       background: rgba(239,68,68,0.1);
-      box-shadow: 0 4px 12px rgba(239,68,68,0.2);
     }
 
     .warn { 
       color: var(--warn); 
       border-color: var(--warn);
       background: rgba(234,179,8,0.1);
-      box-shadow: 0 4px 12px rgba(234,179,8,0.2);
     }
 
     .refresh-btn, .email-btn, .google-btn, .proj-search-btn {
       width: 100%;
-      padding: 14px;
+      padding: 12px;
       border-radius: 12px;
       margin-top: 12px;
       cursor: pointer;
       border: none;
       font-weight: 700;
-      font-size: 15px;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
+      font-size: 14px;
+      color: white;
     }
 
     .refresh-btn {
       background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      color: white;
     }
 
     .email-btn {
       background: linear-gradient(135deg, #ec4899, #f43f5e);
-      color: white;
     }
 
     .google-btn, .proj-search-btn {
       background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-      color: white;
-    }
-
-    .refresh-btn:hover,
-    .email-btn:hover,
-    .google-btn:hover,
-    .proj-search-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(56, 189, 248, 0.4);
-    }
-
-    .refresh-btn:active,
-    .email-btn:active,
-    .google-btn:active,
-    .proj-search-btn:active {
-      transform: translateY(0);
     }
 
     .summary-text {
-      margin-top: 20px;
-      padding: 20px;
+      margin-top: 16px;
+      padding: 16px;
       background: rgba(15,23,42,0.8);
       border-radius: 16px;
       line-height: 1.8;
       border: 1px solid rgba(56, 189, 248, 0.2);
+      font-size: 14px;
     }
 
     .summary-text hr {
       border: none;
       height: 2px;
       background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      margin: 16px 0;
+      margin: 12px 0;
     }
 
     .toast {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
+      bottom: 20px;
+      right: 20px;
       background: linear-gradient(135deg, #22c55e, #16a34a);
       color: white;
-      padding: 16px 24px;
+      padding: 14px 20px;
       border-radius: 12px;
       font-weight: 600;
+      font-size: 14px;
       box-shadow: 0 8px 32px rgba(34, 197, 94, 0.4);
       animation: slideInUp 0.5s ease-out, slideOutDown 0.5s ease-in 2.5s forwards;
       z-index: 10000;
@@ -448,10 +379,12 @@
     }
 
     @media (max-width: 768px) {
-      .app { padding: 20px; }
-      .title { font-size: 24px; }
-      .stats-grid { grid-template-columns: 1fr; }
+      .app { padding: 16px; }
+      .title { font-size: 22px; }
+      .stats-grid { grid-template-columns: 1fr; gap: 10px; }
       .section { padding: 16px; }
+      .section-title { font-size: 16px; }
+      .toast { right: 10px; left: 10px; bottom: 10px; }
     }
   </style>
 </head>
@@ -544,7 +477,7 @@
           <label class="radio-pill" data-value="hayir"><input type="radio" name="uploadQuestionImg">✏️ Konu yaz</label>
         </div>
 
-        <input id="questionFile" class="file-input hidden" type="file">
+        <input id="questionFile" class="file-input hidden" type="file" accept="image/*">
 
         <div id="topicBlock" class="hidden">
           <input id="topicText" class="text-input" placeholder="Takıldığın konu...">
@@ -752,7 +685,7 @@ document.getElementById("googleSearchBtn").onclick=()=>{
   window.open("https://www.google.com/search?q="+encodeURIComponent(t+" filetype:pdf"),"_blank");
 };
 
-// ÖZET GÜNCELLEME FONKSİYONU
+// ÖZET GÜNCELLEME FONKSİYONU (HATA DÜZELTİLDİ)
 function updateSummary(){
   const sum=[];
   const chip=document.getElementById("overallChip");
@@ -817,18 +750,20 @@ function updateSummary(){
     sum.push("→ Okuduğunu tam anlamadı ⚠️");
   }
 
-  // ZORUNLU GÖREV HESAPLAMA
+  // ZORUNLU GÖREV HESAPLAMA (HATA DÜZELTİLDİ - SAYFA SEÇME KONTROLÜ EKLENDİ)
   let completed=0,total=2;
   const errors=[];
 
-  // Kitap kontrolü (min 10 sayfa)
-  if(bookRead==="evet"&&bookPages>=10){
+  // Kitap kontrolü (min 10 sayfa) - SAYFA SEÇİLMİŞ Mİ KONTROLÜ
+  if(bookRead==="evet" && bookPages > 0 && bookPages >= 10){
     completed++;
   }else{
-    const eksik=Math.max(0,10-bookPages);
     if(bookRead==="hayir"){
       errors.push("📗 Kitap: Bugün hiç okunmadı (en az 10 sayfa olmalı).");
+    }else if(bookPages === 0){
+      errors.push("📗 Kitap: Kaç sayfa okudun? Lütfen sayfa sayısı seç.");
     }else{
+      const eksik=Math.max(0,10-bookPages);
       errors.push(`📗 Kitap: En az 10 sayfa olmalı (eksik: ${eksik} sayfa).`);
     }
   }
@@ -837,12 +772,18 @@ function updateSummary(){
     errors.push("📗 Kitap: Okudu ama anlamadı.");
   }
 
-  // Fasikül kontrolü (min 3 sayfa)
-  if(fasDone==="evet"&&fasPages>=3){
+  // Fasikül kontrolü (min 3 sayfa) - SAYFA SEÇİLMİŞ Mİ KONTROLÜ
+  if(fasDone==="evet" && fasPages > 0 && fasPages >= 3){
     completed++;
   }else{
-    const eksik=Math.max(0,3-fasPages);
-    errors.push(`📕 Fasikül: En az 3 sayfa olmalı (eksik: ${eksik} sayfa).`);
+    if(fasDone==="hayir"){
+      errors.push("📕 Fasikül: Bugün hiç yapılmadı (en az 3 sayfa olmalı).");
+    }else if(fasPages === 0){
+      errors.push("📕 Fasikül: Kaç sayfa yaptın? Lütfen sayfa sayısı seç.");
+    }else{
+      const eksik=Math.max(0,3-fasPages);
+      errors.push(`📕 Fasikül: En az 3 sayfa olmalı (eksik: ${eksik} sayfa).`);
+    }
   }
 
   // Proje kontrolü (sadece verildiyse zorunlu)
@@ -862,8 +803,8 @@ function updateSummary(){
   document.getElementById("statTasks").textContent=completed+"/"+total;
   document.getElementById("statPages").textContent=fasPages+bookPages;
 
-  // TAMAMLANMA KUTLAMASI 🎉
-  if(percent===100&&errors.length===0){
+  // TAMAMLANMA KUTLAMASI 🎉 (HATA DÜZELTİLDİ)
+  if(percent===100 && errors.length===0){
     chip.className="status-chip ok";
     chip.textContent="🎉 Tüm görevler tamamlandı!";
 
@@ -871,22 +812,20 @@ function updateSummary(){
       window.confettiPlayed=true;
       showToast("🎉 Harika! Tüm görevleri tamamladın!","linear-gradient(135deg, #22c55e, #16a34a)");
       
-      // Basit başarı sesi (beep)
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.frequency.value = 800;
-      oscillator.type = 'sine';
-      
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-      
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.5);
+      // Basit başarı sesi
+      try{
+        const audioContext=new(window.AudioContext||window.webkitAudioContext)();
+        const oscillator=audioContext.createOscillator();
+        const gainNode=audioContext.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.frequency.value=800;
+        oscillator.type='sine';
+        gainNode.gain.setValueAtTime(0.3,audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01,audioContext.currentTime+0.5);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime+0.5);
+      }catch(e){}
 
       // Havai fişek animasyonu (3 saniye)
       const end=Date.now()+3000;
@@ -908,7 +847,7 @@ function updateSummary(){
 
   // Özet metni oluşturma
   sum.push("<hr>");
-  if(percent===100&&errors.length===0){
+  if(percent===100 && errors.length===0){
     sum.push("<b style='color:#22c55e'>🎉 Tüm zorunlu görevler TAMAMLANDI!</b>");
   }else{
     sum.push("<b style='color:#ef4444'>❌ Zorunlu görevler TAMAMLANMADI</b>");
