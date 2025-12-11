@@ -40,7 +40,7 @@
     }
 
     .title {
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 700;
       background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
       -webkit-background-clip: text;
@@ -58,7 +58,7 @@
       border: 1px solid var(--border);
     }
 
-    .section-title { font-size: 17px; font-weight: 600; margin-bottom: 12px; }
+    .section-title { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
 
     .question-label {
       font-size: 14px;
@@ -68,9 +68,17 @@
     }
 
     .radio-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
-    .radio-pill { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); cursor: pointer; }
-    .radio-pill.checked[data-value="evet"] { background: rgba(34,197,94,0.3); border-color: var(--success); }
-    .radio-pill.checked[data-value="hayir"] { background: rgba(239,68,68,0.3); border-color: var(--danger); }
+    
+    .radio-pill {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .radio-pill.checked[data-value="evet"] { background: rgba(34,197,94,0.35); border-color: var(--success); }
+    .radio-pill.checked[data-value="hayir"] { background: rgba(239,68,68,0.35); border-color: var(--danger); }
 
     .hidden { display: none !important; }
 
@@ -90,16 +98,33 @@
     .progress-container { background: rgba(255,255,255,0.1); height: 20px; margin-top: 12px; border-radius: 12px; overflow: hidden; }
     .progress-bar { width: 0%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 12px; color: #fff; }
 
-    .status-chip { padding: 6px 12px; border-radius: 12px; margin-top: 10px; display: inline-block; border: 1px solid var(--border); }
+    .status-chip {
+      padding: 6px 12px;
+      border-radius: 12px;
+      margin-top: 10px;
+      display: inline-block;
+      border: 1px solid var(--border);
+    }
+
     .ok { color: var(--success); border-color: var(--success); }
     .bad { color: var(--danger); border-color: var(--danger); }
     .warn { color: var(--warn); border-color: var(--warn); }
 
     .refresh-btn, .email-btn, .google-btn, .proj-search-btn {
-      width: 100%; padding: 10px; border-radius: 12px; margin-top: 10px; cursor: pointer;
+      width: 100%;
+      padding: 10px;
+      border-radius: 12px;
+      margin-top: 10px;
+      cursor: pointer;
     }
 
-    .summary-text { margin-top: 14px; padding: 12px; background: rgba(15,23,42,0.6); border-radius: 12px; line-height: 1.6; }
+    .summary-text {
+      margin-top: 14px;
+      padding: 12px;
+      background: rgba(15,23,42,0.6);
+      border-radius: 12px;
+      line-height: 1.6;
+    }
   </style>
 </head>
 
@@ -130,9 +155,8 @@
       </div>
     </div>
 
-    <!-- YAPILMADI → Araştırma ister misin? -->
     <div id="projResearchBlock" class="hidden">
-      <div class="question-label">Bu konu hakkında şimdi araştırma yapmak ister misin?</div>
+      <div class="question-label">Bu konu hakkında şimdi PDF araştırması yapmak ister misin?</div>
 
       <div class="radio-group" data-group="projResearch">
         <label class="radio-pill" data-value="evet"><input type="radio" name="projResearch">✓ Evet</label>
@@ -215,13 +239,15 @@
       </select>
     </div>
 
-    <div class="question-label">Okuduğunu anladın mı?</div>
-    <div class="radio-group" data-group="bookUnderstand">
-      <label class="radio-pill" data-value="evet"><input type="radio" name="bookUnderstand">✓ Evet</label>
-      <label class="radio-pill" data-value="hayir"><input type="radio" name="bookUnderstand">✗ Hayır</label>
-    </div>
+    <div id="bookUnderstandBlock" class="hidden">
+      <div class="question-label">Okuduğunu anladın mı?</div>
+      <div class="radio-group" data-group="bookUnderstand">
+        <label class="radio-pill" data-value="evet"><input type="radio" name="bookUnderstand">✓ Evet</label>
+        <label class="radio-pill" data-value="hayir"><input type="radio" name="bookUnderstand">✗ Hayır</label>
+      </div>
 
-    <textarea id="bookExplain" class="textarea-box hidden" placeholder="Ne anladığını yaz..."></textarea>
+      <textarea id="bookExplain" class="textarea-box hidden" placeholder="Ne anladığını yaz..."></textarea>
+    </div>
   </section>
 
   <!-- ÖZET -->
@@ -342,10 +368,24 @@ function handleLogic(group,val){
     document.getElementById("topicBlock").classList.toggle("hidden",val==="evet");
   }
 
-  // KİTAP OKUDUN MU? → Sayfa seçimi sadece EVET ise görünür
+  // KİTAP OKUDUN MU?
   if(group==="bookRead"){
-    const block=document.getElementById("bookPagesBlock");
-    block.classList.toggle("hidden",val!=="evet");
+    const pagesBlock=document.getElementById("bookPagesBlock");
+    const understandBlock=document.getElementById("bookUnderstandBlock");
+
+    if(val==="evet"){
+      pagesBlock.classList.remove("hidden");
+      understandBlock.classList.remove("hidden");
+    } else {
+      pagesBlock.classList.add("hidden");
+      understandBlock.classList.add("hidden");
+
+      // Temizle
+      document.getElementById("bookPages").value="";
+      document.getElementById("bookExplain").value="";
+      document.querySelectorAll('input[name="bookUnderstand"]').forEach(r=>r.checked=false);
+      document.querySelectorAll('[data-group="bookUnderstand"] .radio-pill').forEach(p=>p.classList.remove("checked"));
+    }
   }
 
   // KİTAP ANLADI MI?
@@ -440,12 +480,20 @@ function updateSummary(){
   let completed=0, total=2;
   const errors=[];
 
-  // Kitap zorunlu: min 10 sayfa
+  // Kitap zorunlu: min 10 sayfa + anlaması tercih
   if(bookRead==="evet" && bookPages>=10){
     completed++;
   } else {
     const eksik=Math.max(0,10-bookPages);
-    errors.push(`📗 Kitap: En az 10 sayfa olmalı (eksik: ${eksik} sayfa).`);
+    if(bookRead==="hayir"){
+      errors.push("📗 Kitap: Bugün hiç okunmadı (en az 10 sayfa olmalı).");
+    } else {
+      errors.push(`📗 Kitap: En az 10 sayfa olmalı (eksik: ${eksik} sayfa).`);
+    }
+  }
+
+  if(bookUnder==="hayir"){
+    errors.push("📗 Kitap: Okudu ama anlamadı.");
   }
 
   // Fasikül zorunlu: min 3 sayfa
