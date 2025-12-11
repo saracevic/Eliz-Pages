@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Günlük Ödev Kontrol Paneli</title>
+  <title>Eliz - Günlük Ödev Kontrol Paneli</title>
 
   <style>
     :root {
@@ -45,36 +45,55 @@
     }
 
     .header { margin-bottom: 20px; }
-    .title { font-size: 22px; font-weight: 700; }
-    .subtitle { color: var(--text-muted); font-size: 14px; }
+    .title { 
+      font-size: 22px; 
+      font-weight: 700;
+      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .subtitle { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
     .date-badge {
-      margin-top: 6px;
-      padding: 6px 10px;
+      margin-top: 8px;
+      padding: 6px 12px;
       font-size: 13px;
       border-radius: 999px;
       background: rgba(56, 189, 248, 0.25);
+      display: inline-block;
     }
 
     .section {
       margin-bottom: 22px;
-      background: var(--bg-card);
+      background: rgba(15, 23, 42, 0.6);
       padding: 16px;
       border-radius: 16px;
       border: 1px solid rgba(148,163,184,0.25);
+      backdrop-filter: blur(10px);
     }
 
     .section-title {
       font-size: 17px;
       font-weight: 600;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
     .question { margin-bottom: 16px; }
-    .question-label { font-size: 14px; font-weight: 500; }
-    .helper { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+    .question-label { 
+      font-size: 14px; 
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .helper { 
+      font-size: 12px; 
+      color: var(--text-muted); 
+      margin-top: 8px;
+      margin-bottom: 6px;
+    }
 
     .radio-group {
       display: flex;
@@ -84,14 +103,21 @@
     }
 
     .radio-pill {
-      padding: 6px 12px;
+      padding: 8px 14px;
       border-radius: 999px;
       border: 1px solid var(--border);
       cursor: pointer;
       font-size: 14px;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+      transition: all 0.3s ease;
+      background: rgba(15, 23, 42, 0.6);
+    }
+
+    .radio-pill:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
     }
 
     .radio-pill input {
@@ -101,10 +127,12 @@
     .radio-pill.checked[data-value="evet"] {
       background: rgba(34,197,94,0.3);
       border-color: var(--success);
+      box-shadow: 0 0 10px rgba(34,197,94,0.3);
     }
     .radio-pill.checked[data-value="hayir"] {
-      background: rgba(239,68,68,0.35);
+      background: rgba(239,68,68,0.3);
       border-color: var(--danger);
+      box-shadow: 0 0 10px rgba(239,68,68,0.3);
     }
 
     .text-input,
@@ -120,11 +148,21 @@
       background: rgba(15,23,42,0.85);
       color: var(--text);
       font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    .text-input:focus,
+    .number-input:focus,
+    .textarea-box:focus,
+    .select-input:focus {
+      outline: none;
+      border-color: var(--accent);
     }
 
     .textarea-box {
-      height: 80px;
+      min-height: 80px;
       resize: vertical;
+      font-family: system-ui, sans-serif;
     }
 
     .hidden { display: none !important; }
@@ -132,7 +170,7 @@
     .progress-container {
       width: 100%;
       background: rgba(255,255,255,0.1);
-      height: 18px;
+      height: 20px;
       border-radius: 12px;
       margin-top: 12px;
       overflow: hidden;
@@ -142,44 +180,116 @@
     .progress-bar {
       height: 100%;
       width: 0%;
-      transition: width 0.4s ease, background 0.3s ease;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
 
     .status-chip {
       padding: 6px 12px;
       border-radius: 12px;
       border: 1px solid var(--border);
-      font-size: 12px;
+      font-size: 13px;
+      font-weight: 500;
       display: inline-block;
-      margin-top: 8px;
+      margin-top: 10px;
     }
 
-    .ok { border-color: var(--success); color: var(--success); }
-    .bad { border-color: var(--danger); color: var(--danger); }
-    .warn { border-color: var(--warn); color: var(--warn); }
+    .ok { 
+      border-color: var(--success); 
+      color: var(--success);
+      background: rgba(34,197,94,0.1);
+    }
+    .bad { 
+      border-color: var(--danger); 
+      color: var(--danger);
+      background: rgba(239,68,68,0.1);
+    }
+    .warn { 
+      border-color: var(--warn); 
+      color: var(--warn);
+      background: rgba(234,179,8,0.1);
+    }
 
-    .google-btn {
+    .google-btn,
+    .refresh-btn,
+    .email-btn {
       margin-top: 10px;
-      padding: 10px 14px;
-      background: rgba(56,189,248,0.15);
-      border: 1px solid rgba(56,189,248,0.5);
-      color: #38bdf8;
+      padding: 10px 16px;
       border-radius: 12px;
       width: 100%;
       cursor: pointer;
       text-align: center;
       font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: none;
+    }
+
+    .google-btn {
+      background: rgba(56,189,248,0.15);
+      border: 1px solid rgba(56,189,248,0.5);
+      color: #38bdf8;
+    }
+
+    .google-btn:hover {
+      background: rgba(56,189,248,0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(56,189,248,0.3);
     }
 
     .refresh-btn {
-      margin-top: 12px;
-      padding: 8px 14px;
-      border: 1px solid var(--border);
+      background: rgba(239,68,68,0.15);
+      border: 1px solid rgba(239,68,68,0.5);
+      color: #ef4444;
+    }
+
+    .refresh-btn:hover {
+      background: rgba(239,68,68,0.25);
+      transform: translateY(-2px);
+    }
+
+    .email-btn {
+      background: rgba(34,197,94,0.15);
+      border: 1px solid rgba(34,197,94,0.5);
+      color: #22c55e;
+    }
+
+    .email-btn:hover {
+      background: rgba(34,197,94,0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(34,197,94,0.3);
+    }
+
+    .summary-text {
+      margin-top: 14px;
+      padding: 12px;
+      background: rgba(15,23,42,0.6);
       border-radius: 12px;
-      background: rgba(15,23,42,0.9);
-      cursor: pointer;
-      color: var(--text);
+      border: 1px solid var(--border);
       font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .summary-text strong {
+      color: var(--accent);
+      display: block;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 600px) {
+      .app {
+        padding: 16px;
+      }
+      .title {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
@@ -188,7 +298,7 @@
 <div class="app">
 
   <div class="header">
-    <div class="title">Günlük Ödev Kontrol Paneli</div>
+    <div class="title">📚 Eliz'in Günlük Ödev Kontrol Paneli</div>
     <div class="subtitle">Öğretmen – öğrenci – veli takip sistemi</div>
     <div id="dateBadge" class="date-badge"></div>
   </div>
@@ -246,6 +356,11 @@
         <option value="3">3 sayfa</option>
         <option value="4">4 sayfa</option>
         <option value="5">5 sayfa</option>
+        <option value="6">6 sayfa</option>
+        <option value="7">7 sayfa</option>
+        <option value="8">8 sayfa</option>
+        <option value="9">9 sayfa</option>
+        <option value="10">10 sayfa</option>
       </select>
     </div>
 
@@ -272,7 +387,7 @@
           </label>
           <label class="radio-pill" data-value="hayir">
             <input type="radio" name="uploadQuestionImg" value="hayir"> ✗ Hayır
-          </label>
+        </label>
         </div>
 
         <input id="questionFile" class="file-input hidden" type="file" accept="image/*,.pdf" />
@@ -280,7 +395,7 @@
         <div id="topicBlock" class="hidden">
           <div class="helper">Takıldığın konuyu yaz:</div>
           <input id="topicText" class="text-input" placeholder="Örn: Çemberde açı, kesir problemleri..." />
-          <button id="googleSearchBtn" class="google-btn">PDF Kaynak Ara</button>
+          <button id="googleSearchBtn" class="google-btn">🔍 PDF Kaynak Ara</button>
         </div>
 
       </div>
@@ -301,7 +416,7 @@
           <input type="radio" name="bookRead" value="hayir"> ✗ Hayır
         </label>
       </div>
-      <input id="bookPages" class="number-input hidden" type="number" min="0" placeholder="Kaç sayfa?" />
+      <input id="bookPages" class="number-input hidden" type="number" min="0" placeholder="Kaç sayfa okudun?" />
     </div>
 
     <div class="question">
@@ -328,8 +443,8 @@
 
     <span id="overallChip" class="status-chip warn">Eksikler olabilir</span>
 
-    <div id="summaryText" style="margin-top:12px;"></div>
-    <button id="resetBtn" class="refresh-btn">Bugünü Sıfırla</button>
+    <div id="summaryText" class="summary-text"></div>
+    <button id="resetBtn" class="refresh-btn">🔄 Bugünü Sıfırla</button>
   </section>
 
   <!-- EMAIL GÖNDERME -->
@@ -345,17 +460,24 @@
       </label>
     </div>
 
-    <button id="emailSendButton" class="google-btn hidden">Mail Gönder</button>
+    <button id="emailSendButton" class="email-btn hidden">📧 Mail Gönder</button>
   </section>
 
 </div>
 
 <!-- Konfeti kütüphanesi -->
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
   // Tarih rozeti
-  document.getElementById("dateBadge").textContent = new Date().toLocaleDateString("tr-TR");
+  const today = new Date();
+  const dateOptions = { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  };
+  document.getElementById("dateBadge").textContent = today.toLocaleDateString("tr-TR", dateOptions);
 
   // Radio pill davranışı
   document.querySelectorAll(".radio-group").forEach(group => {
@@ -391,16 +513,22 @@
 
       if (val === "evet") {
         opt.classList.remove("hidden");
-        chip.classList.remove("ok");
+        chip.classList.remove("ok", "warn");
         chip.classList.add("bad");
-      } else {
+        chip.textContent = "Takıldığın soru var ⚠️";
+      } else if (val === "hayir") {
         opt.classList.add("hidden");
-        chip.classList.remove("bad");
+        chip.classList.remove("bad", "warn");
         chip.classList.add("ok");
+        chip.textContent = "Sorun yok ✓";
+        // Temizle
         document.getElementById("questionFile").classList.add("hidden");
         document.getElementById("topicBlock").classList.add("hidden");
         document.getElementById("topicText").value = "";
         document.getElementById("questionFile").value = "";
+        // Radio seçimlerini temizle
+        document.querySelectorAll('input[name="uploadQuestionImg"]').forEach(r => r.checked = false);
+        document.querySelectorAll('[data-group="uploadQuestionImg"] .radio-pill').forEach(p => p.classList.remove("checked"));
       }
     }
 
@@ -408,14 +536,26 @@
       const isYes = (val === "evet");
       document.getElementById("questionFile").classList.toggle("hidden", !isYes);
       document.getElementById("topicBlock").classList.toggle("hidden", isYes);
+      // Karşı tarafı temizle
+      if (isYes) {
+        document.getElementById("topicText").value = "";
+      } else {
+        document.getElementById("questionFile").value = "";
+      }
     }
 
     if (group === "bookRead") {
       document.getElementById("bookPages").classList.toggle("hidden", val !== "evet");
+      if (val !== "evet") {
+        document.getElementById("bookPages").value = "";
+      }
     }
 
     if (group === "bookUnderstand") {
       document.getElementById("bookExplain").classList.toggle("hidden", val !== "evet");
+      if (val !== "evet") {
+        document.getElementById("bookExplain").value = "";
+      }
     }
 
     if (group === "sendEmail") {
@@ -429,7 +569,7 @@
   document.getElementById("googleSearchBtn").addEventListener("click", () => {
     const konu = document.getElementById("topicText").value.trim();
     if (!konu) {
-      alert("Lütfen konu yaz!");
+      alert("Lütfen önce konu yaz!");
       return;
     }
     window.open(
@@ -437,6 +577,14 @@
       "_blank"
     );
   });
+
+  // Sayfa yüklendiğinde inputları dinle
+  document.getElementById("bookPages").addEventListener("input", updateSummary);
+  document.getElementById("fasPages").addEventListener("change", updateSummary);
+  document.getElementById("projText").addEventListener("input", updateSummary);
+  document.getElementById("topicText").addEventListener("input", updateSummary);
+  document.getElementById("bookExplain").addEventListener("input", updateSummary);
+  document.getElementById("questionFile").addEventListener("change", updateSummary);
 
   function updateSummary() {
     const summary = [];
@@ -448,83 +596,91 @@
     const projText = document.getElementById("projText").value.trim();
 
     const fasDone = getRadioValue("fasDone");
-    const fasPages = Number(document.getElementById("fasPages").value);
+    const fasPages = Number(document.getElementById("fasPages").value) || 0;
 
     const fasStuck = getRadioValue("fasStuck");
-    const qFile = document.getElementById("questionFile").value;
+    const qFile = document.getElementById("questionFile").files.length > 0;
     const topic = document.getElementById("topicText").value.trim();
 
     const bookRead = getRadioValue("bookRead");
-    const bookPages = Number(document.getElementById("bookPages").value);
+    const bookPages = Number(document.getElementById("bookPages").value) || 0;
 
     const bookUnder = getRadioValue("bookUnderstand");
     const explain = document.getElementById("bookExplain").value.trim();
 
     // --- PROJE ÖZET ---
     if (projGiven === "hayir") {
-      summary.push("Bugün proje / araştırma ödevi VERİLMEDİ.");
+      summary.push("✅ Bugün proje / araştırma ödevi verilmedi.");
     } else if (projGiven === "evet") {
-      summary.push("Proje / araştırma ödevi VERİLDİ.");
-      if (projText) summary.push("Konu: " + projText);
+      summary.push("📋 Proje / araştırma ödevi verildi.");
+      if (projText) summary.push("&nbsp;&nbsp;&nbsp;→ Konu: " + projText);
       if (projDone === "evet") {
-        summary.push("Proje ödevi yapıldı ✔");
+        summary.push("&nbsp;&nbsp;&nbsp;→ Proje yapıldı ✔");
       } else if (projDone === "hayir") {
-        summary.push("Proje ödevi HENÜZ yapılmadı ✗");
+        summary.push("&nbsp;&nbsp;&nbsp;→ ⚠️ Proje henüz yapılmadı");
       }
     }
 
     // --- FASİKÜL ÖZET ---
     if (fasDone === "evet") {
-      summary.push(`Fasikül: ${fasPages || "?"} sayfa yapıldı ✔`);
+      summary.push(`📕 Fasikül: ${fasPages > 0 ? fasPages : "?"} sayfa yapıldı ✔`);
     } else if (fasDone === "hayir") {
-      summary.push("Fasikül ödevi yapılmadı ✗");
+      summary.push("❌ Fasikül ödevi yapılmadı");
     }
 
     if (fasStuck === "evet") {
       if (qFile) {
-        summary.push("Fasikülde takıldığın sorunun fotoğrafı yüklendi 📎");
+        summary.push("&nbsp;&nbsp;&nbsp;→ 📎 Takıldığın sorunun fotoğrafı yüklendi");
       } else if (topic) {
-        summary.push("Takıldığın konu: " + topic);
+        summary.push("&nbsp;&nbsp;&nbsp;→ 📌 Takıldığın konu: " + topic);
       } else {
-        summary.push("Fasikülde takıldığın soru var (detay girilmemiş) ❗");
+        summary.push("&nbsp;&nbsp;&nbsp;→ ⚠️ Takıldığın soru var (detay girilmemiş)");
       }
+    } else if (fasStuck === "hayir") {
+      summary.push("&nbsp;&nbsp;&nbsp;→ ✅ Fasikülde takılan soru yok");
     }
 
     // --- KİTAP ÖZET ---
     if (bookRead === "evet") {
-      summary.push(`Kitap okundu (${bookPages || "?"} sayfa)`);
+      summary.push(`📗 Kitap okundu (${bookPages > 0 ? bookPages : "?"} sayfa)`);
+      
+      if (bookUnder === "evet") {
+        summary.push("&nbsp;&nbsp;&nbsp;→ ✅ Okuduğunu anladı");
+        if (explain) summary.push("&nbsp;&nbsp;&nbsp;→ " + explain);
+      } else if (bookUnder === "hayir") {
+        summary.push("&nbsp;&nbsp;&nbsp;→ ⚠️ Okuduğunu tam anlamadı");
+      }
     } else if (bookRead === "hayir") {
-      summary.push("Bugün kitap okunmadı.");
-    }
-
-    if (bookUnder === "evet") {
-      summary.push("Okuduğunu anladın ✔");
-      if (explain) summary.push("Açıklama: " + explain);
-    } else if (bookUnder === "hayir") {
-      summary.push("Okuduğunu tam anlamadın ❗");
+      summary.push("❌ Bugün kitap okunmadı");
     }
 
     // --- ZORUNLU GÖREV HESABI ---
     let completed = 0;
-    let totalMandatory = 2; // Kitap + Fasikül
+    let totalMandatory = 2; // Kitap + Fasikül (her zaman zorunlu)
     const errors = [];
 
     // Kitap şartı (her zaman zorunlu)
     if (bookRead === "evet" && bookPages >= 10) {
       completed += 1;
-    } else {
-      errors.push(
-        `Kitap: En az 10 sayfa olmalı. ${10 - (bookPages || 0)} sayfa daha okumalısın.`
-      );
+    } else if (bookRead === "hayir" || bookPages < 10) {
+      const missing = Math.max(0, 10 - bookPages);
+      if (bookRead === "hayir") {
+        errors.push("📗 Kitap: En az 10 sayfa okunmalı.");
+      } else if (missing > 0) {
+        errors.push(`📗 Kitap: ${missing} sayfa daha okunmalı (en az 10 sayfa gerekli).`);
+      }
     }
 
     // Fasikül şartı (her zaman zorunlu)
     if (fasDone === "evet" && fasPages >= 3) {
       completed += 1;
-    } else {
-      errors.push(
-        `Fasikül: En az 3 sayfa olmalı. ${3 - (fasPages || 0)} sayfa daha yapmalısın.`
-      );
+    } else if (fasDone === "hayir" || fasPages < 3) {
+      const missing = Math.max(0, 3 - fasPages);
+      if (fasDone === "hayir") {
+        errors.push("📕 Fasikül: En az 3 sayfa yapılmalı.");
+      } else if (missing > 0) {
+        errors.push(`📕 Fasikül: ${missing} sayfa daha yapılmalı (en az 3 sayfa gerekli).`);
+      }
     }
 
     // Proje: SADECE ÖĞRETMEN VERDİYSE zorunluya dahil olur
@@ -532,23 +688,23 @@
       totalMandatory += 1;
       if (projDone === "evet") {
         completed += 1;
-      } else {
-        errors.push("Proje ödevi verilmiş fakat yapılmamış görünüyor.");
+      } else if (projDone === "hayir" || !projDone) {
+        errors.push("📋 Proje: Öğretmen tarafından verilen proje yapılmalı.");
       }
     }
 
     // Yüzde hesapla (dinamik: 2 veya 3 görev olabilir)
-    let percent =
-      totalMandatory > 0 ? Math.round((completed / totalMandatory) * 100) : 0;
+    let percent = totalMandatory > 0 ? Math.round((completed / totalMandatory) * 100) : 0;
     if (!isFinite(percent) || isNaN(percent)) percent = 0;
 
     prog.style.width = percent + "%";
+    prog.textContent = percent + "%";
 
     // --- GENEL DURUM ---
     if (percent >= 100 && errors.length === 0) {
-      prog.style.background = "var(--success)";
+      prog.style.background = "linear-gradient(90deg, var(--success), #10b981)";
       chip.className = "status-chip ok";
-      chip.textContent = "Zorunlu görevler TAMAMLANDI ✔";
+      chip.textContent = "🎉 Tüm zorunlu görevler tamamlandı!";
 
       // 3D KONFETİ YAĞMURU (sadece 1 kez)
       if (!window.confettiPlayed) {
@@ -558,13 +714,14 @@
 
         (function frame() {
           confetti({
-            particleCount: 4,
-            startVelocity: 20,
+            particleCount: 5,
+            startVelocity: 25,
             spread: 360,
             ticks: 120,
-            origin: { x: 0.5, y: 0 },
+            origin: { x: Math.random(), y: Math.random() * 0.5 },
             scalar: 1.2,
-            shapes: ["square", "circle"],
+            shapes: ["circle", "square"],
+            colors: ['#22c55e', '#38bdf8', '#a855f7', '#f59e0b', '#ec4899']
           });
 
           confetti({
