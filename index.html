@@ -238,7 +238,7 @@
         </label>
       </div>
 
-      <button id="projSearchBtn" class="text-input hidden">🔍 Proje Konusuna Göre PDF Ara</button>
+      <button id="projSearchBtn" class="text-input hidden">🔍 Konuya Göre PDF Ara</button>
     </div>
   </section>
 
@@ -297,12 +297,12 @@
           </label>
         </div>
 
-        <input id="questionFile" class="file-input hidden" type="file" accept="image/*,.pdf" />
+        <input id="questionFile" class="file-input hidden" type="file" accept="image/*" />
 
         <div id="topicBlock" class="hidden">
           <div class="question-label">Takıldığın konuyu yaz:</div>
           <input id="topicText" class="text-input" placeholder="Örn: Çemberde açı..." />
-          <button id="googleSearchBtn" class="text-input">🔍 PDF Kaynak Ara</button>
+          <button id="googleSearchBtn" class="text-input">🔍 PDF Ara</button>
         </div>
       </div>
     </div>
@@ -350,7 +350,8 @@
       <textarea id="bookExplain" class="textarea-box hidden" placeholder="Kısaca ne anladığını yaz..."></textarea>
     </div>
   </section>
-  <!-- GENEL DURUM ÖZETİ -->
+
+  <!-- ÖZET -->
   <section class="section">
     <div class="section-title">📊 Genel Durum Özeti</div>
 
@@ -370,6 +371,7 @@
     <div class="section-title">📨 E-mail Gönder</div>
 
     <div class="question-label">Bilgileri e-posta ile göndermek ister misin?</div>
+
     <div class="radio-group" data-group="sendEmail">
       <label class="radio-pill" data-value="evet">
         <input type="radio" name="sendEmail" value="evet">📧 Gönder
@@ -382,396 +384,281 @@
     <button id="emailSendButton" class="text-input hidden">📧 Mail Gönder</button>
   </section>
 
-</div> <!-- .app kapanışı -->
-
-<!-- Konfeti kütüphanesi -->
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-<script>
-  // Tarih rozeti
-  document.getElementById("dateBadge").textContent =
-    new Date().toLocaleDateString("tr-TR", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-
-  // Radio pill davranışı
-  document.querySelectorAll(".radio-group").forEach((group) => {
-    group.addEventListener("click", (e) => {
-      const pill = e.target.closest(".radio-pill");
-      if (!pill) return;
-      group.querySelectorAll(".radio-pill").forEach((p) => p.classList.remove("checked"));
-      pill.classList.add("checked");
-      const input = pill.querySelector("input");
-      if (input) input.checked = true;
-      handleLogic(group.dataset.group, pill.dataset.value);
-    });
+</div> <!-- app kapanış -->
+  <script>
+/* -------------------------- TARİH -------------------------- */
+document.getElementById("dateBadge").textContent =
+  new Date().toLocaleDateString("tr-TR", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
-  function getRadio(name) {
-    const el = document.querySelector(`input[name='${name}']:checked`);
-    return el ? el.value : null;
-  }
+/* -------------------------- RADIO SEÇİMLER -------------------------- */
+document.querySelectorAll(".radio-group").forEach((group) => {
+  group.addEventListener("click", (e) => {
+    const pill = e.target.closest(".radio-pill");
+    if (!pill) return;
 
-  function handleLogic(group, val) {
-    // PROJE VAR MI?
-    if (group === "projGiven") {
-      const show = val === "evet";
-      document.getElementById("projText").classList.toggle("hidden", !show);
-      document.getElementById("projDoneBlock").classList.toggle("hidden", !show);
-      document.getElementById("projResearchBlock").classList.add("hidden");
-      document.getElementById("projSearchBtn").classList.add("hidden");
-    }
+    group.querySelectorAll(".radio-pill").forEach((p) => p.classList.remove("checked"));
+    pill.classList.add("checked");
 
-    // PROJE YAPILDI MI?
-    if (group === "projDone") {
-      const block = document.getElementById("projResearchBlock");
-      block.classList.toggle("hidden", val !== "hayir");
-      if (val !== "hayir") {
-        document.getElementById("projSearchBtn").classList.add("hidden");
-        document
-          .querySelectorAll('input[name="projResearch"]')
-          .forEach((r) => (r.checked = false));
-        document
-          .querySelectorAll('[data-group="projResearch"] .radio-pill')
-          .forEach((p) => p.classList.remove("checked"));
-      }
-    }
+    const input = pill.querySelector("input");
+    input.checked = true;
 
-    // PROJE ARAŞTIRMA
-    if (group === "projResearch") {
-      const btn = document.getElementById("projSearchBtn");
-      if (val === "evet") {
-        btn.classList.remove("hidden");
-        btn.onclick = () => {
-          const konu = document.getElementById("projText").value.trim();
-          if (!konu) {
-            alert("Ödev konusunu yazmalısın.");
-            return;
-          }
-          window.open(
-            "https://www.google.com/search?q=" +
-              encodeURIComponent(konu + " filetype:pdf"),
-            "_blank"
-          );
-        };
-      } else {
-        btn.classList.add("hidden");
-      }
-    }
-
-    // FASİKÜL YAPILDI MI?
-    if (group === "fasDone") {
-      const show = val === "evet";
-      document.getElementById("fasPages").classList.toggle("hidden", !show);
-      const stuckBlock = document.getElementById("stuckBlock");
-
-      if (!show) {
-        stuckBlock.classList.add("hidden");
-        document.getElementById("stuckOptions").classList.add("hidden");
-        document.getElementById("questionFile").classList.add("hidden");
-        document.getElementById("topicBlock").classList.add("hidden");
-        document.getElementById("topicText").value = "";
-        document.getElementById("questionFile").value = "";
-        document
-          .querySelectorAll('input[name="fasStuck"], input[name="uploadQuestionImg"]')
-          .forEach((r) => (r.checked = false));
-        document
-          .querySelectorAll(
-            '[data-group="fasStuck"] .radio-pill, [data-group="uploadQuestionImg"] .radio-pill'
-          )
-          .forEach((p) => p.classList.remove("checked"));
-      } else {
-        stuckBlock.classList.remove("hidden");
-      }
-    }
-
-    // FASİKÜL TAKILDI MI?
-    if (group === "fasStuck") {
-      const opts = document.getElementById("stuckOptions");
-      opts.classList.toggle("hidden", val !== "evet");
-      if (val !== "evet") {
-        document.getElementById("questionFile").classList.add("hidden");
-        document.getElementById("topicBlock").classList.add("hidden");
-        document.getElementById("topicText").value = "";
-        document.getElementById("questionFile").value = "";
-        document
-          .querySelectorAll('input[name="uploadQuestionImg"]')
-          .forEach((r) => (r.checked = false));
-        document
-          .querySelectorAll('[data-group="uploadQuestionImg"] .radio-pill')
-          .forEach((p) => p.classList.remove("checked"));
-      }
-    }
-
-    // FOTOĞRAF MI, KONU MU?
-    if (group === "uploadQuestionImg") {
-      const isYes = val === "evet";
-      document.getElementById("questionFile").classList.toggle("hidden", !isYes);
-      document.getElementById("topicBlock").classList.toggle("hidden", isYes);
-      if (isYes) {
-        document.getElementById("topicText").value = "";
-      } else {
-        document.getElementById("questionFile").value = "";
-      }
-    }
-
-    // KİTAP OKUDUN MU?
-    if (group === "bookRead") {
-      const pagesSel = document.getElementById("bookPages");
-      const understandBlock = document.getElementById("understandBlock");
-
-      if (val === "evet") {
-        pagesSel.classList.remove("hidden");
-        understandBlock.classList.remove("hidden");
-      } else {
-        pagesSel.classList.add("hidden");
-        understandBlock.classList.add("hidden");
-        pagesSel.value = "";
-        document.getElementById("bookExplain").value = "";
-        document
-          .querySelectorAll('input[name="bookUnderstand"]')
-          .forEach((r) => (r.checked = false));
-        document
-          .querySelectorAll('[data-group="bookUnderstand"] .radio-pill')
-          .forEach((p) => p.classList.remove("checked"));
-      }
-    }
-
-    // OKUDUĞUNU ANLADIN MI?
-    if (group === "bookUnderstand") {
-      const txt = document.getElementById("bookExplain");
-      txt.classList.toggle("hidden", val !== "evet");
-      if (val !== "evet") txt.value = "";
-    }
-
-    // EMAIL GÖNDERME
-    if (group === "sendEmail") {
-      document
-        .getElementById("emailSendButton")
-        .classList.toggle("hidden", val !== "evet");
-    }
-
-    updateSummary();
-  }
-
-  // Event bağlama
-  document.getElementById("bookPages").addEventListener("change", updateSummary);
-  document.getElementById("fasPages").addEventListener("change", updateSummary);
-
-  document.getElementById("googleSearchBtn").addEventListener("click", () => {
-    const t = document.getElementById("topicText").value.trim();
-    if (!t) {
-      alert("Lütfen takıldığın konuyu yaz.");
-      return;
-    }
-    window.open(
-      "https://www.google.com/search?q=" + encodeURIComponent(t + " filetype:pdf"),
-      "_blank"
-    );
+    handleLogic(group.dataset.group, pill.dataset.value);
   });
+});
 
-  function updateSummary() {
-    const summary = [];
-    const chip = document.getElementById("overallChip");
-    const prog = document.getElementById("progressBar");
+function getRadioValue(name) {
+  const el = document.querySelector(`input[name='${name}']:checked`);
+  return el ? el.value : null;
+}
 
-    // PROJE
-    const projGiven = getRadio("projGiven");
-    const projDone = getRadio("projDone");
-    const projResearch = getRadio("projResearch");
-    const projTopic = document.getElementById("projText").value.trim();
+/* -------------------------- ANA KONTROL MANTIĞI -------------------------- */
+function handleLogic(group, val) {
+  /* ------ PROJE VERİLDİ Mİ ------ */
+  if (group === "projGiven") {
+    const show = val === "evet";
+    document.getElementById("projText").classList.toggle("hidden", !show);
+    document.getElementById("projDoneBlock").classList.toggle("hidden", !show);
 
-    // FASİKÜL
-    const fasDone = getRadio("fasDone");
-    const fasPagesRaw = document.getElementById("fasPages").value;
-    const fasPages = fasPagesRaw === "" ? null : Number(fasPagesRaw);
-    const fasStuck = getRadio("fasStuck");
-    const hasFile = document.getElementById("questionFile").files.length > 0;
-    const topic = document.getElementById("topicText").value.trim();
+    // Proje verilmemişse zorunlulara dahil olmayacak
+    document.getElementById("projResearchBlock").classList.add("hidden");
+  }
 
-    // KİTAP
-    const bookRead = getRadio("bookRead");
-    const bookPagesRaw = document.getElementById("bookPages").value;
-    const bookPages = bookPagesRaw === "" ? null : Number(bookPagesRaw);
-    const bookUnder = getRadio("bookUnderstand");
-    const explain = document.getElementById("bookExplain").value.trim();
+  /* ------ PROJE YAPILDI MI ------ */
+  if (group === "projDone") {
+    const block = document.getElementById("projResearchBlock");
+    if (val === "hayir") block.classList.remove("hidden");
+    else block.classList.add("hidden");
+  }
 
-    // --- PROJE ÖZET ---
-    if (projGiven === "hayir") {
-      summary.push("📌 Bugün proje / araştırma ödevi verilmedi.");
-    } else if (projGiven === "evet") {
-      summary.push("📋 Proje / araştırma ödevi verildi.");
-      if (projTopic) summary.push("→ Konu: " + projTopic);
+  /* ------ PROJE ARAŞTIRMA PDF BUTON ------ */
+  if (group === "projResearch") {
+    const showBtn = val === "evet";
+    document.getElementById("projSearchBtn").classList.toggle("hidden", !showBtn);
+  }
 
-      if (projDone === "evet") {
-        summary.push("→ Proje yapıldı ✔");
-      } else if (projDone === "hayir") {
-        summary.push("→ Proje henüz yapılmadı ❌");
-        if (projResearch === "evet") {
-          summary.push("→ Bu konuda PDF araması yapıldı (Google açıldı).");
-        }
-      }
+  /* ------ FASİKÜL YAPILDI MI ------ */
+  if (group === "fasDone") {
+    const yes = val === "evet";
+    document.getElementById("fasPages").classList.toggle("hidden", !yes);
+
+    // Fasikül yapılmamışsa TAKILDI SORU BLOĞU GÖZÜKMESİN
+    document.getElementById("stuckBlock").classList.toggle("hidden", !yes);
+  }
+
+  /* ------ TAKILDI SORU VAR MI ------ */
+  if (group === "fasStuck") {
+    const yes = val === "evet";
+    document.getElementById("stuckOptions").classList.toggle("hidden", !yes);
+  }
+
+  /* ------ SORU FOTOĞRAFI MI? KONU YAZMA MI? ------ */
+  if (group === "uploadQuestionImg") {
+    const yes = val === "evet";
+    document.getElementById("questionFile").classList.toggle("hidden", !yes);
+    document.getElementById("topicBlock").classList.toggle("hidden", yes);
+  }
+
+  /* ------ KİTAP OKUNDU MU ------ */
+  if (group === "bookRead") {
+    const yes = val === "evet";
+    document.getElementById("bookPages").classList.toggle("hidden", !yes);
+    document.getElementById("understandBlock").classList.toggle("hidden", !yes);
+
+    if (!yes) {
+      // kitap okunmamışsa anladın mı sorusu da kapanır
+      document.getElementById("bookExplain").classList.add("hidden");
     }
+  }
 
-    // --- FASİKÜL ÖZET ---
-    if (fasDone === "evet") {
-      summary.push(
-        "📕 Fasikül: " + (fasPages !== null ? fasPages : "?") + " sayfa yapıldı ✔"
-      );
-      if (fasStuck === "evet") {
-        if (hasFile) {
-          summary.push("→ Takıldığın soru fotoğrafı yüklendi 📎");
-        } else if (topic) {
-          summary.push("→ Takıldığın konu: " + topic);
-        } else {
-          summary.push("→ Takıldığın soru var, ama detay girilmedi ⚠️");
-        }
-      } else if (fasStuck === "hayir") {
-        summary.push("→ Fasikülde takıldığın soru yok ✓");
-      }
-    } else if (fasDone === "hayir") {
-      summary.push("📕 Fasikül ödevi yapılmadı ❌");
-    }
+  /* ------ OKUDUĞUNU ANLADIN MI ------ */
+  if (group === "bookUnderstand") {
+    const yes = val === "evet";
+    document.getElementById("bookExplain").classList.toggle("hidden", !yes);
+  }
 
-    // --- KİTAP ÖZET ---
-    if (bookRead === "evet") {
-      summary.push(
-        "📗 Kitap okundu (" + (bookPages !== null ? bookPages : "?") + " sayfa)"
-      );
-    } else if (bookRead === "hayir") {
-      summary.push("📗 Bugün kitap okunmadı ❌");
+  /* ------ EMAIL GÖNDERME ------ */
+  if (group === "sendEmail") {
+    const yes = val === "evet";
+    document.getElementById("emailSendButton").classList.toggle("hidden", !yes);
+  }
+
+  updateSummary();
+}
+
+/* -------------------------- GOOGLE PDF ARA -------------------------- */
+document.getElementById("googleSearchBtn").addEventListener("click", () => {
+  let konu = document.getElementById("topicText").value.trim();
+  if (!konu) return alert("Lütfen konu girin.");
+  window.open("https://www.google.com/search?q=" + encodeURIComponent(konu + " filetype:pdf"), "_blank");
+});
+
+/* -------------------------- PROJE KONUSUNDA PDF ARA -------------------------- */
+document.getElementById("projSearchBtn").addEventListener("click", () => {
+  let konu = document.getElementById("projText").value.trim();
+  if (!konu) return alert("Lütfen proje konusu yazın.");
+  window.open("https://www.google.com/search?q=" + encodeURIComponent(konu + " filetype:pdf"), "_blank");
+});
+
+/* -------------------------- ÖZET GÜNCELLE -------------------------- */
+function updateSummary() {
+  let summary = [];
+  let chip = document.getElementById("overallChip");
+  let prog = document.getElementById("progressBar");
+
+  const projGiven = getRadioValue("projGiven");
+  const projDone = getRadioValue("projDone");
+  const projResearch = getRadioValue("projResearch");
+  const projText = document.getElementById("projText").value.trim();
+
+  const fasDone = getRadioValue("fasDone");
+  const fasPages = Number(document.getElementById("fasPages").value || 0);
+
+  const fasStuck = getRadioValue("fasStuck");
+  const fileUploaded = document.getElementById("questionFile").files.length > 0;
+  const topic = document.getElementById("topicText").value.trim();
+
+  const bookRead = getRadioValue("bookRead");
+  const bookPages = Number(document.getElementById("bookPages").value || 0);
+
+  const bookUnder = getRadioValue("bookUnderstand");
+  const explain = document.getElementById("bookExplain").value.trim();
+
+  /* ---------- PROJE ---------- */
+  if (projGiven === "hayir") {
+    summary.push("📘 Bugün proje verilmedi.");
+  } else if (projGiven === "evet") {
+    summary.push("📘 Proje verildi.");
+    if (projText) summary.push("→ Konu: " + projText);
+
+    if (projDone === "evet") summary.push("→ Proje yapıldı ✔");
+    else if (projDone === "hayir") summary.push("→ ⚠️ Proje yapılmadı");
+  }
+
+  /* ---------- FASİKÜL ---------- */
+  if (fasDone === "evet") summary.push(`📕 Fasikül: ${fasPages} sayfa yapıldı`);
+  else summary.push("❌ Fasikül yapılmadı");
+
+  if (fasDone === "evet") {
+    if (fasStuck === "evet") {
+      if (fileUploaded) summary.push("→ 📎 Soru fotoğrafı yüklendi");
+      else if (topic) summary.push("→ 📌 Takıldığın konu: " + topic);
+    } else {
+      summary.push("→ Sorun yok ✓");
     }
+  }
+
+  /* ---------- KİTAP ---------- */
+  if (bookRead === "evet") {
+    summary.push(`📗 Kitap okundu (${bookPages} sayfa)`);
 
     if (bookUnder === "evet") {
-      summary.push("→ Okuduğunu anladı ✔");
+      summary.push("→ Anladı ✓");
       if (explain) summary.push("→ " + explain);
     } else if (bookUnder === "hayir") {
-      summary.push("→ Okuduğunu tam anlamadı ⚠️");
+      summary.push("→ ⚠️ Okuduğunu anlamadı");
     }
-
-    // --- ZORUNLU GÖREV HESABI ---
-    let completed = 0;
-    let totalMandatory = 2; // Kitap + Fasikül her zaman zorunlu
-    const errors = [];
-
-    // Kitap zorunluluğu
-    if (bookRead === "evet") {
-      if (bookPages === null) {
-        errors.push("📗 Kitap: Kaç sayfa okuduğunu seçmelisin.");
-      } else if (bookPages < 10) {
-        errors.push(
-          `📗 Kitap: En az 10 sayfa olmalı (eksik: ${10 - bookPages} sayfa).`
-        );
-      } else {
-        completed += 1;
-      }
-
-      if (bookUnder === "hayir") {
-        errors.push("📗 Kitap: Okudu ama anlamadı.");
-      }
-    } else if (bookRead === "hayir") {
-      errors.push("📗 Kitap: Bugün hiç okunmadı (en az 10 sayfa olmalı).");
-    }
-
-    // Fasikül zorunluluğu
-    if (fasDone === "evet") {
-      if (fasPages === null) {
-        errors.push("📕 Fasikül: Kaç sayfa yaptığını seçmelisin.");
-      } else if (fasPages < 3) {
-        errors.push(
-          `📕 Fasikül: En az 3 sayfa olmalı (eksik: ${3 - fasPages} sayfa).`
-        );
-      } else {
-        completed += 1;
-      }
-    } else if (fasDone === "hayir") {
-      errors.push("📕 Fasikül: Bugün yapılmadı (en az 3 sayfa olmalı).");
-    }
-
-    // Proje: sadece verildiyse zorunlu
-    if (projGiven === "evet") {
-      totalMandatory += 1;
-      if (projDone === "evet") {
-        completed += 1;
-      } else {
-        errors.push("📋 Proje: Öğretmen verdiği için yapılmalı.");
-      }
-    }
-
-    // Yüzde hesapla
-    let percent =
-      totalMandatory > 0 ? Math.round((completed / totalMandatory) * 100) : 0;
-    if (!isFinite(percent) || isNaN(percent)) percent = 0;
-
-    prog.style.width = percent + "%";
-    prog.textContent = percent + "%";
-
-    // GENEL DURUM
-    if (percent === 100 && errors.length === 0) {
-      chip.className = "status-chip ok";
-      chip.textContent = "Tüm zorunlu görevler tamamlandı 🎉";
-
-      if (!window.confettiPlayed) {
-        window.confettiPlayed = true;
-        const end = Date.now() + 2000;
-        (function frame() {
-          confetti({
-            particleCount: 6,
-            spread: 360,
-            startVelocity: 25,
-            origin: { x: Math.random(), y: Math.random() * 0.5 },
-          });
-          if (Date.now() < end) requestAnimationFrame(frame);
-        })();
-      }
-    } else {
-      chip.className = "status-chip bad";
-      chip.textContent = "Zorunlu görevler TAMAMLANMADI ❌";
-    }
-
-    summary.push("<hr>");
-    if (percent === 100 && errors.length === 0) {
-      summary.push(
-        "<b style='color:#22c55e'>🎉 Tüm zorunlu görevler TAMAMLANDI!</b>"
-      );
-    } else {
-      if (errors.length > 0) {
-        summary.push(
-          "<b style='color:#ef4444'>❌ Zorunlu görevler TAMAMLANMADI</b>"
-        );
-        errors.forEach((e) => summary.push("→ " + e));
-      } else {
-        summary.push(
-          "<b style='color:#eab308'>⚠️ Eksikler tam net değil, lütfen kontrole bak.</b>"
-        );
-      }
-    }
-
-    document.getElementById("summaryText").innerHTML = summary.join("<br>");
+  } else {
+    summary.push("❌ Bugün kitap okunmadı");
   }
 
-  document.getElementById("resetBtn").addEventListener("click", () =>
-    location.reload()
-  );
+  /* ---------------------- ZORUNLU GÖREV HESABI ---------------------- */
+  let total = 2; 
+  let done = 0;
+  let errors = [];
 
-  document.getElementById("emailSendButton").addEventListener("click", () => {
-    const txt = document.getElementById("summaryText").innerText;
+  /* ---- Kitap zorunlu ---- */
+  if (bookRead === "evet" && bookPages >= 10) done++;
+  else errors.push(`📗 Kitap: En az 10 sayfa olmalı (eksik: ${Math.max(0, 10 - bookPages)} sayfa)`);
+
+  /* ---- Fasikül zorunlu ---- */
+  if (fasDone === "evet" && fasPages >= 3) done++;
+  else errors.push(`📕 Fasikül: En az 3 sayfa olmalı (eksik: ${Math.max(0, 3 - fasPages)} sayfa)`);
+
+  /* ---- Proje verilmişse zorunluya dahil olur ---- */
+  if (projGiven === "evet") {
+    total++;
+    if (projDone === "evet") done++;
+    else errors.push("📘 Proje: Yapılmalı.");
+  }
+
+  /* ---- Yüzdelik ---- */
+  let percent = Math.round((done / total) * 100);
+  prog.style.width = percent + "%";
+  prog.textContent = percent + "%";
+
+  /* ---- Durum ---- */
+  if (percent === 100) {
+    chip.className = "status-chip ok";
+    chip.textContent = "✔ Görevlerin hepsi tamamlandı";
+
+    // Konfeti yağmuru
+    confetti({
+      particleCount: 200,
+      spread: 120,
+      startVelocity: 40,
+      origin: { y: 0.6 }
+    });
+
+  } else if (percent >= 50) {
+    chip.className = "status-chip warn";
+    chip.textContent = "Eksikler var";
+  } else {
+    chip.className = "status-chip bad";
+    chip.textContent = "❌ Zorunlu görevler TAMAMLANMADI";
+  }
+
+  /* EXCEL TARZI ÖZET */
+  if (errors.length > 0) {
+    summary.push("<br><strong>Eksikler:</strong>");
+    errors.forEach((e) => summary.push("→ " + e));
+  }
+
+  document.getElementById("summaryText").innerHTML = summary.join("<br>");
+}
+
+/* -------------------------- RESET -------------------------- */
+document.getElementById("resetBtn").onclick = () => location.reload();
+
+/* ----------------------- EMAIL GÖNDERME ----------------------- */
+document.getElementById("emailSendButton").addEventListener("click", () => {
+  const summaryText = document.getElementById("summaryText").innerText;
+  const fileInput = document.getElementById("questionFile");
+  const file = fileInput.files[0];
+
+  /* --- FOTO YOKSA NORMAL GÖNDER --- */
+  if (!file) {
     const mailTo =
       "mailto:erkan.saracoglu@gmail.com,oznur.saracevic@gmail.com" +
-      "?subject=" +
-      encodeURIComponent("Günlük Ödev Durumu") +
-      "&body=" +
-      encodeURIComponent(txt);
+      "?subject=" + encodeURIComponent("Günlük Ödev Durumu") +
+      "&body=" + encodeURIComponent(summaryText);
 
     window.location.href = mailTo;
-  });
+    return;
+  }
 
-  // Sayfa ilk açıldığında da özet sıfırdan hesaplansın
-  updateSummary();
+  /* --- FOTOĞRAF VARSA BASE64’E ÇEVİR VE BODY’YE GÖM --- */
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const base64 = e.target.result;
+
+    const htmlBody =
+      summaryText +
+      "\n\n---\nTAKILDIĞI SORU FOTOĞRAFI:\n\n" +
+      `<img src="${base64}" style="max-width:100%;height:auto;">`;
+
+    const mailTo =
+      "mailto:erkan.saracoglu@gmail.com,oznur.saracevic@gmail.com" +
+      "?subject=" + encodeURIComponent("Günlük Ödev Durumu") +
+      "&body=" + encodeURIComponent(htmlBody);
+
+    window.location.href = mailTo;
+  };
+
+  reader.readAsDataURL(file);
+});
 </script>
-
-</body>
-</html>
