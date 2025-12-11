@@ -550,6 +550,8 @@
 // Tarih gösterimi
 document.getElementById("dateBadge").textContent=new Date().toLocaleDateString("tr-TR",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
 
+ Date().toLocaleDateString("tr-TR",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+
 // Toast bildirim fonksiyonu
 function showToast(msg,bg){
   const t=document.createElement("div");
@@ -580,21 +582,18 @@ function getRadio(n){
 
 // Ana mantık fonksiyonu
 function handleLogic(g,v){
-  // PROJE VAR MI?
   if(g==="projGiven"){
     document.getElementById("projText").classList.toggle("hidden",v!=="evet");
     document.getElementById("projDoneBlock").classList.toggle("hidden",v!=="evet");
     document.getElementById("projResearchBlock").classList.add("hidden");
   }
   
-  // PROJE YAPILDI MI?
   if(g==="projDone"){
     const b=document.getElementById("projResearchBlock");
     if(v==="hayir")b.classList.remove("hidden");
     else b.classList.add("hidden");
   }
   
-  // ARAŞTIRMA ISTER MISIN?
   if(g==="projResearch"){
     const btn=document.getElementById("projSearchBtn");
     btn.classList.toggle("hidden",v!=="evet");
@@ -606,7 +605,6 @@ function handleLogic(g,v){
     };
   }
   
-  // FASİKÜL YAPILDI MI?
   if(g==="fasDone"){
     document.getElementById("fasPages").classList.toggle("hidden",v!=="evet");
     const b=document.getElementById("fasStuckBlock");
@@ -622,7 +620,6 @@ function handleLogic(g,v){
     }
   }
   
-  // FASİKÜL TAKILDI MI?
   if(g==="fasStuck"){
     const c=document.getElementById("fasStatus");
     const o=document.getElementById("stuckOptions");
@@ -637,13 +634,11 @@ function handleLogic(g,v){
     }
   }
   
-  // FOTOĞRAF MI KONU MU?
   if(g==="uploadQuestionImg"){
     document.getElementById("questionFile").classList.toggle("hidden",v!=="evet");
     document.getElementById("topicBlock").classList.toggle("hidden",v==="evet");
   }
   
-  // KİTAP OKUDUN MU?
   if(g==="bookRead"){
     const p=document.getElementById("bookPagesBlock");
     const u=document.getElementById("bookUnderstandBlock");
@@ -660,12 +655,10 @@ function handleLogic(g,v){
     }
   }
   
-  // KİTAP ANLADI MI?
   if(g==="bookUnderstand"){
     document.getElementById("bookExplain").classList.toggle("hidden",v!=="evet");
   }
   
-  // EMAIL GÖNDERME
   if(g==="sendEmail"){
     document.getElementById("emailSendButton").classList.toggle("hidden",v!=="evet");
   }
@@ -673,11 +666,9 @@ function handleLogic(g,v){
   updateSummary();
 }
 
-// Sayfa değişikliklerinde güncelleme
 document.getElementById("bookPages").onchange=updateSummary;
 document.getElementById("fasPages").onchange=updateSummary;
 
-// Google PDF Arama
 document.getElementById("googleSearchBtn").onclick=()=>{
   const t=document.getElementById("topicText").value.trim();
   if(!t){showToast("⚠️ Konu yazılmamış!","#eab308");return;}
@@ -685,7 +676,6 @@ document.getElementById("googleSearchBtn").onclick=()=>{
   window.open("https://www.google.com/search?q="+encodeURIComponent(t+" filetype:pdf"),"_blank");
 };
 
-// ÖZET GÜNCELLEME FONKSİYONU (HATA DÜZELTİLDİ)
 function updateSummary(){
   const sum=[];
   const chip=document.getElementById("overallChip");
@@ -694,20 +684,20 @@ function updateSummary(){
   const projGiven=getRadio("projGiven");
   const projDone=getRadio("projDone");
   const projTopic=document.getElementById("projText").value.trim();
-  const projResearch=getRadio("projResearch");
 
   const fasDone=getRadio("fasDone");
-  const fasPages=Number(document.getElementById("fasPages").value)||0;
+  const fasPagesSel=document.getElementById("fasPages").value;
+  const fasPages=fasPagesSel?Number(fasPagesSel):0;
   const fasStuck=getRadio("fasStuck");
   const hasFile=document.getElementById("questionFile").files.length>0;
   const topic=document.getElementById("topicText").value.trim();
 
   const bookRead=getRadio("bookRead");
-  const bookPages=Number(document.getElementById("bookPages").value)||0;
+  const bookPagesSel=document.getElementById("bookPages").value;
+  const bookPages=bookPagesSel?Number(bookPagesSel):0;
   const bookUnder=getRadio("bookUnderstand");
   const explain=document.getElementById("bookExplain").value.trim();
 
-  // PROJE ÖZET
   if(projGiven==="hayir"){
     sum.push("📌 Bugün proje / araştırma ödevi verilmedi.");
   }else if(projGiven==="evet"){
@@ -717,15 +707,15 @@ function updateSummary(){
       sum.push("→ Proje yapıldı ✔");
     }else if(projDone==="hayir"){
       sum.push("→ Proje yapılmadı ❌");
-      if(projResearch==="evet"){
-        sum.push("→ Bu konuda PDF araştırması açıldı ✓");
-      }
     }
   }
 
-  // FASİKÜL ÖZET
   if(fasDone==="evet"){
-    sum.push("📕 Fasikül: "+fasPages+" sayfa yapıldı ✔");
+    if(fasPages>0){
+      sum.push("📕 Fasikül: "+fasPages+" sayfa yapıldı ✔");
+    }else{
+      sum.push("📕 Fasikül: Yapıldı ama sayfa seçilmedi");
+    }
     if(fasStuck==="evet"){
       if(hasFile)sum.push("→ Takıldığın soru: fotoğraf yüklendi 📎");
       else if(topic)sum.push("→ Takıldığın konu: "+topic);
@@ -736,9 +726,12 @@ function updateSummary(){
     sum.push("📕 Fasikül ödevi yapılmadı ❌");
   }
 
-  // KİTAP ÖZET
   if(bookRead==="evet"){
-    sum.push("📗 Kitap okundu ("+(bookPages||"?")+" sayfa)");
+    if(bookPages>0){
+      sum.push("📗 Kitap okundu ("+bookPages+" sayfa)");
+    }else{
+      sum.push("📗 Kitap okundu ama sayfa seçilmedi");
+    }
   }else if(bookRead==="hayir"){
     sum.push("📗 Bugün kitap okunmadı ❌");
   }
@@ -750,20 +743,19 @@ function updateSummary(){
     sum.push("→ Okuduğunu tam anlamadı ⚠️");
   }
 
-  // ZORUNLU GÖREV HESAPLAMA (HATA DÜZELTİLDİ - SAYFA SEÇME KONTROLÜ EKLENDİ)
   let completed=0,total=2;
   const errors=[];
 
-  // Kitap kontrolü (min 10 sayfa) - SAYFA SEÇİLMİŞ Mİ KONTROLÜ
-  if(bookRead==="evet" && bookPages > 0 && bookPages >= 10){
+  // KİTAP KONTROLÜ
+  if(bookRead==="evet" && bookPages>=10){
     completed++;
   }else{
     if(bookRead==="hayir"){
       errors.push("📗 Kitap: Bugün hiç okunmadı (en az 10 sayfa olmalı).");
-    }else if(bookPages === 0){
+    }else if(bookPages===0){
       errors.push("📗 Kitap: Kaç sayfa okudun? Lütfen sayfa sayısı seç.");
     }else{
-      const eksik=Math.max(0,10-bookPages);
+      const eksik=10-bookPages;
       errors.push(`📗 Kitap: En az 10 sayfa olmalı (eksik: ${eksik} sayfa).`);
     }
   }
@@ -772,38 +764,34 @@ function updateSummary(){
     errors.push("📗 Kitap: Okudu ama anlamadı.");
   }
 
-  // Fasikül kontrolü (min 3 sayfa) - SAYFA SEÇİLMİŞ Mİ KONTROLÜ
-  if(fasDone==="evet" && fasPages > 0 && fasPages >= 3){
+  // FASİKÜL KONTROLÜ
+  if(fasDone==="evet" && fasPages>=3){
     completed++;
   }else{
     if(fasDone==="hayir"){
       errors.push("📕 Fasikül: Bugün hiç yapılmadı (en az 3 sayfa olmalı).");
-    }else if(fasPages === 0){
+    }else if(fasPages===0){
       errors.push("📕 Fasikül: Kaç sayfa yaptın? Lütfen sayfa sayısı seç.");
     }else{
-      const eksik=Math.max(0,3-fasPages);
+      const eksik=3-fasPages;
       errors.push(`📕 Fasikül: En az 3 sayfa olmalı (eksik: ${eksik} sayfa).`);
     }
   }
 
-  // Proje kontrolü (sadece verildiyse zorunlu)
   if(projGiven==="evet"){
     total++;
     if(projDone==="evet")completed++;
     else errors.push("📋 Proje: Öğretmen verdiği için yapılmalı.");
   }
 
-  // İlerleme hesaplama
   let percent=Math.round((completed/total)*100);
   prog.style.width=percent+"%";
   prog.textContent=percent+"%";
 
-  // İstatistik kartları güncelleme
   document.getElementById("statProgress").textContent=percent+"%";
   document.getElementById("statTasks").textContent=completed+"/"+total;
   document.getElementById("statPages").textContent=fasPages+bookPages;
 
-  // TAMAMLANMA KUTLAMASI 🎉 (HATA DÜZELTİLDİ)
   if(percent===100 && errors.length===0){
     chip.className="status-chip ok";
     chip.textContent="🎉 Tüm görevler tamamlandı!";
@@ -812,7 +800,6 @@ function updateSummary(){
       window.confettiPlayed=true;
       showToast("🎉 Harika! Tüm görevleri tamamladın!","linear-gradient(135deg, #22c55e, #16a34a)");
       
-      // Basit başarı sesi
       try{
         const audioContext=new(window.AudioContext||window.webkitAudioContext)();
         const oscillator=audioContext.createOscillator();
@@ -827,7 +814,6 @@ function updateSummary(){
         oscillator.stop(audioContext.currentTime+0.5);
       }catch(e){}
 
-      // Havai fişek animasyonu (3 saniye)
       const end=Date.now()+3000;
       (function frame(){
         confetti({
@@ -845,7 +831,6 @@ function updateSummary(){
     window.confettiPlayed=false;
   }
 
-  // Özet metni oluşturma
   sum.push("<hr>");
   if(percent===100 && errors.length===0){
     sum.push("<b style='color:#22c55e'>🎉 Tüm zorunlu görevler TAMAMLANDI!</b>");
@@ -857,7 +842,6 @@ function updateSummary(){
   document.getElementById("summaryText").innerHTML=sum.join("<br>");
 }
 
-// Sıfırlama butonu
 document.getElementById("resetBtn").onclick=()=>{
   if(confirm("Tüm bilgileri sıfırlamak istediğinden emin misin?")){
     showToast("🔄 Yeni gün başlatılıyor...","#6366f1");
@@ -865,7 +849,6 @@ document.getElementById("resetBtn").onclick=()=>{
   }
 };
 
-// Email gönderme butonu
 document.getElementById("emailSendButton").onclick=()=>{
   const txt=document.getElementById("summaryText").innerText;
   showToast("📧 Mail uygulaması açılıyor...","linear-gradient(135deg, #ec4899, #f43f5e)");
