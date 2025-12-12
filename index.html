@@ -884,7 +884,7 @@
     document.getElementById('projSearchBtn').addEventListener('click', () => {
       const topic = document.getElementById('projText').value.trim();
       if (topic) {
-        window.open(`https://www.google.com/search?q=${encodeURIComponent(topic + ' PDF')}`, '_blank');
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(topic + 'filetype:PDF')}`, '_blank');
       } else {
         alert('Lütfen önce konu başlığını yaz!');
       }
@@ -893,7 +893,7 @@
     document.getElementById('googleSearchBtn').addEventListener('click', () => {
       const topic = document.getElementById('topicText').value.trim();
       if (topic) {
-        window.open(`https://www.google.com/search?q=${encodeURIComponent(topic + ' PDF konu anlatımı')}`, '_blank');
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(topic + ' filetype:PDF konu anlatımı')}`, '_blank');
       } else {
         alert('Lütfen önce konuyu yaz!');
       }
