@@ -1132,8 +1132,12 @@
     bar.style.width = percentage + '%';
     bar.textContent = percentage + '%';
 
-    // 🎯 YENİ KONTROL: ÖZEL GÖREV VARSA KONFETİ PATLAMASIN
-    if (percentage === 100 && !hasNegativeConditions && !ozelGorevVar) {
+    // 🎯 ÇARK KURALLARI: En az 3 sayfa fasikül + 10 sayfa kitap
+    const fasikulYeterli = state.fasDone === 'evet' && parseInt(state.fasPages) >= 3;
+    const kitapYeterli = state.bookRead === 'evet' && parseInt(state.bookPages) >= 10;
+    const carkHakki = percentage === 100 && fasikulYeterli && kitapYeterli;
+
+    if (carkHakki) {
       chip.className = 'status-chip ok';
       chip.textContent = '🎉 Mükemmel! Tüm görevler tamamlandı!';
       
@@ -1144,11 +1148,13 @@
       });
       
       document.getElementById('rewardSection').classList.remove('hidden');
-    } else if (percentage === 100 && (hasNegativeConditions || ozelGorevVar)) {
+    } else if (percentage === 100) {
       chip.className = 'status-chip warn';
-      chip.textContent = '🎯 Görevler tamamlandı - Özel Görev Verildi!';
+      chip.textContent = '⚠️ Görevler tamam ama çark için: 3+ sayfa fasikül ve 10+ sayfa kitap gerek!';
       document.getElementById('rewardSection').classList.add('hidden');
     } else if (percentage >= 60) {
+    
+    
       chip.className = 'status-chip warn';
       chip.textContent = '⚠️ İyi, ama biraz eksik var';
       document.getElementById('rewardSection').classList.add('hidden');
