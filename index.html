@@ -713,5 +713,577 @@
     </div>
   </div>
 </div>
+<script>
+  // ============== STATE ==============
+  let state = loadState();
 
-  
+  function getDefaultState() {
+    return {
+      projGiven: null,
+      projText: '',
+      projDone: null,
+      projResearch: null,
+      fasDone: null,
+      fasPages: '',
+      fasStuck: null,
+      uploadQuestionImg: null,
+      topicText: '',
+      bookRead: null,
+      bookPages: '',
+      bookUnderstand: null,
+      bookExplain: '',
+      sendEmail: null,
+      games: ['Minecraft', 'Roblox', 'Fortnite'],
+      lastResetDate: new Date().toDateString()
+    };
+  }
+
+  function loadState() {
+    const saved = localStorage.getItem('elizHomeworkState');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      const today = new Date().toDateString();
+      if (parsed.lastResetDate !== today) {
+        return getDefaultState();
+      }
+      return parsed;
+    }
+    return getDefaultState();
+  }
+
+  function saveState() {
+    localStorage.setItem('elizHomeworkState', JSON.stringify(state));
+  }
+
+  // ============== INIT ==============
+  function init() {
+    updateDateBadge();
+    restoreUI();
+    attachListeners();
+    renderGamesList();
+    updateSummary();
+  }
+
+  function updateDateBadge() {
+    const today = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+    const dateStr = today.toLocaleDateString('tr-TR', options);
+    document.getElementById('dateBadge').textContent = dateStr;
+  }
+
+  function restoreUI() {
+    restoreRadio('projGiven', state.projGiven);
+    if (state.projGiven === 'evet') {
+      document.getElementById('projText').classList.remove('hidden');
+      document.getElementById('projText').value = state.projText;
+      document.getElementById('projDoneBlock').classList.remove('hidden');
+      restoreRadio('projDone', state.projDone);
+      if (state.projDone === 'hayir') {
+        document.getElementById('projResearchBlock').classList.remove('hidden');
+        restoreRadio('projResearch', state.projResearch);
+        if (state.projResearch === 'evet') {
+          document.getElementById('projSearchBtn').classList.remove('hidden');
+        }
+      }
+    }
+
+    restoreRadio('fasDone', state.fasDone);
+    if (state.fasDone === 'evet') {
+      document.getElementById('fasPages').classList.remove('hidden');
+      document.getElementById('fasPages').value = state.fasPages;
+      document.getElementById('stuckBlock').classList.remove('hidden');
+      restoreRadio('fasStuck', state.fasStuck);
+      if (state.fasStuck === 'evet') {
+        document.getElementById('stuckOptions').classList.remove('hidden');
+        restoreRadio('uploadQuestionImg', state.uploadQuestionImg);
+        if (state.uploadQuestionImg === 'evet') {
+          document.getElementById('questionFile').classList.remove('hidden');
+        } else if (state.uploadQuestionImg === 'hayir') {
+          document.getElementById('topicBlock').classList.remove('hidden');
+          document.getElementById('topicText').value = state.topicText;
+        }
+      }
+    }
+
+    restoreRadio('bookRead', state.bookRead);
+    if (state.bookRead === 'evet') {
+      document.getElementById('bookPages').classList.remove('hidden');
+      document.getElementById('bookPages').value = state.bookPages;
+      document.getElementById('understandBlock').classList.remove('hidden');
+      restoreRadio('bookUnderstand', state.bookUnderstand);
+      if (state.bookUnderstand === 'evet') {
+        document.getElementById('bookExplain').classList.remove('hidden');
+        document.getElementById('bookExplain').value = state.bookExplain;
+      }
+    }
+
+    restoreRadio('sendEmail', state.sendEmail);
+    if (state.sendEmail === 'evet') {
+      document.getElementById('emailSendButton').classList.remove('hidden');
+    }
+  }
+
+  function restoreRadio(groupName, value) {
+    if (!value) return;
+    const group = document.querySelector(`[data-group="${groupName}"]`);
+    if (!group) return;
+    const pill = group.querySelector(`[data-value="${value}"]`);
+    if (pill) {
+      pill.classList.add('checked');
+      pill.querySelector('input').checked = true;
+    }
+  }
+
+  // ============== LISTENERS ==============
+  function attachListeners() {
+    document.querySelectorAll('.radio-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const input = pill.querySelector('input');
+        const name = input.name;
+        const value = input.value;
+
+        document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+          r.closest('.radio-pill').classList.remove('checked');
+          r.checked = false;
+        });
+
+        pill.classList.add('checked');
+        input.checked = true;
+
+        handleRadioChange(name, value);
+      });
+    });
+
+    document.getElementById('projText').addEventListener('input', e => {
+      state.projText = e.target.value;
+      saveState();
+    });
+
+    document.getElementById('fasPages').addEventListener('change', e => {
+      state.fasPages = e.target.value;
+      saveState();
+      updateSummary();
+    });
+
+    document.getElementById('bookPages').addEventListener('change', e => {
+      state.bookPages = e.target.value;
+      saveState();
+      updateSummary();
+    });
+
+    document.getElementById('topicText').addEventListener('input', e => {
+      state.topicText = e.target.value;
+      saveState();
+    });
+
+    document.getElementById('bookExplain').addEventListener('input', e => {
+      state.bookExplain = e.target.value;
+      saveState();
+    });
+
+    document.getElementById('projSearchBtn').addEventListener('click', () => {
+      const topic = document.getElementById('projText').value.trim();
+      if (topic) {
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(topic + ' PDF')}`, '_blank');
+      } else {
+        alert('Lütfen önce konu başlığını yaz!');
+      }
+    });
+
+    document.getElementById('googleSearchBtn').addEventListener('click', () => {
+      const topic = document.getElementById('topicText').value.trim();
+      if (topic) {
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(topic + ' PDF konu anlatımı')}`, '_blank');
+      } else {
+        alert('Lütfen önce konuyu yaz!');
+      }
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (confirm('Bugünün tüm verilerini sıfırlamak istediğine emin misin?')) {
+        localStorage.removeItem('elizHomeworkState');
+        location.reload();
+      }
+    });
+
+    document.getElementById('emailSendButton').addEventListener('click', () => {
+      const summary = generateEmailSummary();
+      const subject = encodeURIComponent('Eliz Günlük Ödev Raporu - ' + new Date().toLocaleDateString('tr-TR'));
+      const body = encodeURIComponent(summary);
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    });
+
+    // Oyun listesi işlemleri
+    document.getElementById('newGameInput').addEventListener('keypress', e => {
+      if (e.key === 'Enter') {
+        addGame();
+      }
+    });
+
+    document.getElementById('addGameBtn').addEventListener('click', addGame);
+
+    // Şans çarkı işlemleri
+    document.getElementById('showWheelBtn').addEventListener('click', showWheel);
+    document.getElementById('closeModal').addEventListener('click', closeWheel);
+    document.getElementById('spinBtn').addEventListener('click', spinWheel);
+  }
+
+  function handleRadioChange(name, value) {
+    state[name] = value;
+    saveState();
+
+    if (name === 'projGiven') {
+      if (value === 'evet') {
+        document.getElementById('projText').classList.remove('hidden');
+        document.getElementById('projDoneBlock').classList.remove('hidden');
+      } else {
+        document.getElementById('projText').classList.add('hidden');
+        document.getElementById('projDoneBlock').classList.add('hidden');
+        document.getElementById('projResearchBlock').classList.add('hidden');
+        state.projText = '';
+        state.projDone = null;
+        state.projResearch = null;
+      }
+    }
+
+    if (name === 'projDone') {
+      if (value === 'hayir') {
+        document.getElementById('projResearchBlock').classList.remove('hidden');
+      } else {
+        document.getElementById('projResearchBlock').classList.add('hidden');
+        document.getElementById('projSearchBtn').classList.add('hidden');
+        state.projResearch = null;
+      }
+    }
+
+    if (name === 'projResearch') {
+      if (value === 'evet') {
+        document.getElementById('projSearchBtn').classList.remove('hidden');
+      } else {
+        document.getElementById('projSearchBtn').classList.add('hidden');
+      }
+    }
+
+    if (name === 'fasDone') {
+      if (value === 'evet') {
+        document.getElementById('fasPages').classList.remove('hidden');
+        document.getElementById('stuckBlock').classList.remove('hidden');
+      } else {
+        document.getElementById('fasPages').classList.add('hidden');
+        document.getElementById('stuckBlock').classList.add('hidden');
+        document.getElementById('stuckOptions').classList.add('hidden');
+        state.fasPages = '';
+        state.fasStuck = null;
+      }
+    }
+
+    if (name === 'fasStuck') {
+      if (value === 'evet') {
+        document.getElementById('stuckOptions').classList.remove('hidden');
+      } else {
+        document.getElementById('stuckOptions').classList.add('hidden');
+        document.getElementById('questionFile').classList.add('hidden');
+        document.getElementById('topicBlock').classList.add('hidden');
+        state.uploadQuestionImg = null;
+        state.topicText = '';
+      }
+    }
+
+    if (name === 'uploadQuestionImg') {
+      if (value === 'evet') {
+        document.getElementById('questionFile').classList.remove('hidden');
+        document.getElementById('topicBlock').classList.add('hidden');
+      } else {
+        document.getElementById('questionFile').classList.add('hidden');
+        document.getElementById('topicBlock').classList.remove('hidden');
+      }
+    }
+
+    if (name === 'bookRead') {
+      if (value === 'evet') {
+        document.getElementById('bookPages').classList.remove('hidden');
+        document.getElementById('understandBlock').classList.remove('hidden');
+      } else {
+        document.getElementById('bookPages').classList.add('hidden');
+        document.getElementById('understandBlock').classList.add('hidden');
+        document.getElementById('bookExplain').classList.add('hidden');
+        state.bookPages = '';
+        state.bookUnderstand = null;
+        state.bookExplain = '';
+      }
+    }
+
+    if (name === 'bookUnderstand') {
+      if (value === 'evet') {
+        document.getElementById('bookExplain').classList.remove('hidden');
+      } else {
+        document.getElementById('bookExplain').classList.add('hidden');
+        state.bookExplain = '';
+      }
+    }
+
+    if (name === 'sendEmail') {
+      if (value === 'evet') {
+        document.getElementById('emailSendButton').classList.remove('hidden');
+      } else {
+        document.getElementById('emailSendButton').classList.add('hidden');
+      }
+    }
+
+    updateSummary();
+  }
+
+  // ============== ÖZET ==============
+  function updateSummary() {
+    let completed = 0;
+    let total = 0;
+    let issues = [];
+    let goodPoints = [];
+
+    // Proje kontrolü
+    if (state.projGiven === 'evet') {
+      total++;
+      if (state.projDone === 'evet') {
+        completed++;
+        goodPoints.push('✓ Araştırma ödevi tamamlandı');
+      } else {
+        issues.push('⚠️ Araştırma ödevi yapılmadı');
+      }
+    }
+
+    // Fasikül kontrolü
+    if (state.fasDone === 'evet') {
+      total++;
+      completed++;
+      if (state.fasPages) {
+        goodPoints.push(`✓ Fasikül ${state.fasPages} sayfa çözüldü`);
+      } else {
+        goodPoints.push('✓ Fasikül ödevi yapıldı');
+      }
+      if (state.fasStuck === 'hayir') {
+        goodPoints.push('✓ Fasikülde hiçbir yerde takılmadı');
+      }
+    } else if (state.fasDone === 'hayir') {
+      total++;
+      issues.push('⚠️ Fasikül ödevi yapılmadı');
+    }
+
+    // Kitap kontrolü
+    if (state.bookRead === 'evet') {
+      total++;
+      completed++;
+      if (state.bookPages) {
+        goodPoints.push(`✓ Kitap ${state.bookPages} sayfa okundu`);
+      } else {
+        goodPoints.push('✓ Kitap okundu');
+      }
+      if (state.bookUnderstand === 'evet') {
+        goodPoints.push('✓ Okuduğunu anladı');
+      }
+    } else if (state.bookRead === 'hayir') {
+      total++;
+      issues.push('⚠️ Kitap okunmadı');
+    }
+
+    const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+    const bar = document.getElementById('progressBar');
+    const chip = document.getElementById('overallChip');
+    const summary = document.getElementById('summaryText');
+
+    bar.style.width = percentage + '%';
+    bar.textContent = percentage + '%';
+
+    if (percentage === 100) {
+      chip.className = 'status-chip ok';
+      chip.textContent = '🎉 Mükemmel! Tüm görevler tamamlandı!';
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      document.getElementById('rewardSection').classList.remove('hidden');
+    } else if (percentage >= 60) {
+      chip.className = 'status-chip warn';
+      chip.textContent = '⚠️ İyi, ama biraz eksik var';
+      document.getElementById('rewardSection').classList.add('hidden');
+    } else {
+      chip.className = 'status-chip bad';
+      chip.textContent = '❌ Eksikler çok fazla!';
+      document.getElementById('rewardSection').classList.add('hidden');
+    }
+
+    let summaryHtml = '';
+    if (goodPoints.length > 0) {
+      summaryHtml += '<div style="margin-bottom: 12px;"><strong>Yapılanlar:</strong><br>' + goodPoints.join('<br>') + '</div>';
+    }
+    if (issues.length > 0) {
+      summaryHtml += '<div><strong>Eksikler:</strong><br>' + issues.join('<br>') + '</div>';
+    }
+    if (summaryHtml === '') {
+      summaryHtml = '<em>Henüz bir şey seçilmedi...</em>';
+    }
+
+    summary.innerHTML = summaryHtml;
+  }
+
+  function generateEmailSummary() {
+    const date = new Date().toLocaleDateString('tr-TR');
+    let text = `Eliz - Günlük Ödev Raporu (${date})\n\n`;
+
+    if (state.projGiven === 'evet') {
+      text += `Araştırma Ödevi: ${state.projText || 'Belirtilmedi'}\n`;
+      text += `Yapıldı mı: ${state.projDone === 'evet' ? 'Evet' : 'Hayır'}\n\n`;
+    }
+
+    if (state.fasDone === 'evet') {
+      text += `Fasikül: ${state.fasPages} sayfa çözüldü\n`;
+      text += `Takıldı mı: ${state.fasStuck === 'evet' ? 'Evet' : 'Hayır'}\n\n`;
+    }
+
+    if (state.bookRead === 'evet') {
+      text += `Kitap: ${state.bookPages} sayfa okundu\n`;
+      text += `Anladı mı: ${state.bookUnderstand === 'evet' ? 'Evet' : 'Hayır'}\n\n`;
+    }
+
+    return text;
+  }
+
+  // ============== OYUN LİSTESİ ==============
+  function renderGamesList() {
+    const container = document.getElementById('gamesList');
+    container.innerHTML = '';
+    
+    state.games.forEach((game, index) => {
+      const item = document.createElement('div');
+      item.className = 'game-item';
+      item.innerHTML = `
+        <span>${index + 1}. ${game}</span>
+        <button class="delete-game" data-index="${index}">🗑️ Sil</button>
+      `;
+      container.appendChild(item);
+    });
+
+    document.querySelectorAll('.delete-game').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const index = parseInt(btn.dataset.index);
+        deleteGame(index);
+      });
+    });
+  }
+
+  function addGame() {
+    const input = document.getElementById('newGameInput');
+    const gameName = input.value.trim();
+    
+    if (gameName) {
+      state.games.push(gameName);
+      saveState();
+      renderGamesList();
+      input.value = '';
+    } else {
+      alert('Lütfen bir oyun adı gir!');
+    }
+  }
+
+  function deleteGame(index) {
+    if (state.games.length <= 3) {
+      alert('En az 3 oyun olmalı!');
+      return;
+    }
+    state.games.splice(index, 1);
+    saveState();
+    renderGamesList();
+  }
+
+  // ============== ŞANS ÇARKI ==============
+  let wheelCanvas, wheelCtx;
+  let isSpinning = false;
+
+  function showWheel() {
+    if (state.games.length < 3) {
+      alert('En az 3 oyun eklemelisin!');
+      return;
+    }
+    
+    document.getElementById('wheelModal').classList.remove('hidden');
+    document.getElementById('resultBox').classList.add('hidden');
+    
+    wheelCanvas = document.getElementById('wheelCanvas');
+    wheelCtx = wheelCanvas.getContext('2d');
+    drawWheel();
+  }
+
+  function closeWheel() {
+    document.getElementById('wheelModal').classList.add('hidden');
+    isSpinning = false;
+  }
+
+  function drawWheel() {
+    const games = state.games;
+    const numSegments = games.length;
+    const anglePerSegment = (2 * Math.PI) / numSegments;
+    const centerX = wheelCanvas.width / 2;
+    const centerY = wheelCanvas.height / 2;
+    const radius = Math.min(centerX, centerY) - 10;
+
+    const colors = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#a594f9', '#ff9ff3', '#54a0ff'];
+
+    wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+
+    for (let i = 0; i < numSegments; i++) {
+      const startAngle = i * anglePerSegment;
+      const endAngle = (i + 1) * anglePerSegment;
+      
+      wheelCtx.beginPath();
+      wheelCtx.moveTo(centerX, centerY);
+      wheelCtx.arc(centerX, centerY, radius, startAngle, endAngle);
+      wheelCtx.closePath();
+      wheelCtx.fillStyle = colors[i % colors.length];
+      wheelCtx.fill();
+      wheelCtx.strokeStyle = '#fff';
+      wheelCtx.lineWidth = 3;
+      wheelCtx.stroke();
+
+      wheelCtx.save();
+      wheelCtx.translate(centerX, centerY);
+      wheelCtx.rotate(startAngle + anglePerSegment / 2);
+      wheelCtx.textAlign = 'center';
+      wheelCtx.fillStyle = '#fff';
+      wheelCtx.font = 'bold 16px Arial';
+      wheelCtx.fillText(games[i], radius * 0.6, 0);
+      wheelCtx.restore();
+    }
+  }
+
+  function spinWheel() {
+    if (isSpinning) return;
+    isSpinning = true;
+
+    const games = state.games;
+    const randomIndex = Math.floor(Math.random() * games.length);
+    const anglePerSegment = (2 * Math.PI) / games.length;
+    const targetAngle = randomIndex * anglePerSegment + anglePerSegment / 2;
+    const spinRevolutions = 5;
+    const totalRotation = spinRevolutions * 2 * Math.PI + targetAngle;
+
+    wheelCanvas.style.transform = `rotate(${totalRotation}rad)`;
+    wheelCanvas.style.transition = 'transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+
+    setTimeout(() => {
+      document.getElementById('winnerGame').textContent = games[randomIndex];
+      document.getElementById('resultBox').classList.remove('hidden');
+      confetti({
+        particleCount: 200,
+        spread: 100,
+        origin: { y: 0.6 }
+      });
+      isSpinning = false;
+    }, 3000);
+  }
+
+  // ============== START ==============
+  init();
+</script>
+</body>
+</html>
