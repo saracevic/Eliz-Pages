@@ -671,24 +671,23 @@
     <button id="emailSendButton" class="text-input hidden">📧 Mail Gönder</button>
   </section>
 
-  <!-- OYUN LİSTESİ YÖNETİMİ -->
-  <section class="section">
-    <div class="section-title">🎮 Oyun Listesi Ayarları</div>
-
-    <div class="question-label">Favori oyunlarını ekle (En az 3 oyun):</div>
-    
-    <div id="gamesList"></div>
-    
-    <input id="newGameInput" class="text-input" placeholder="🎮 Oyun adı yazıp Enter'a bas..." />
-    <button id="addGameBtn" class="text-input">➕ Oyun Ekle</button>
-  </section>
-
-  <!-- ÖDÜL SİSTEMİ -->
+  <!-- ÖDÜL SİSTEMİ + OYUN LİSTESİ -->
   <section id="rewardSection" class="section hidden">
     <div class="section-title">🎁 Ödül Zamanı!</div>
     <p style="text-align: center; font-size: 18px; margin-bottom: 20px; color: var(--success); font-weight: 700;">
       🎉 Tüm görevlerini tamamladın! Şans çarkını çevirme hakkı kazandın! 🎉
     </p>
+
+    <!-- OYUN LİSTESİ -->
+    <div style="margin-bottom: 24px;">
+      <div class="question-label">Favori oyunlarını ekle (En az 3 oyun):</div>
+      
+      <div id="gamesList"></div>
+      
+      <input id="newGameInput" class="text-input" placeholder="🎮 Oyun adı yazıp Enter'a bas..." style="margin-bottom: 8px;" />
+      <button id="addGameBtn" class="text-input">➕ Oyun Ekle</button>
+    </div>
+
     <button id="showWheelBtn" class="text-input">🎡 Şans Çarkını Göster</button>
   </section>
 
@@ -713,7 +712,8 @@
     </div>
   </div>
 </div>
-<script>
+
+  <script>
   // ============== STATE ==============
   let state = loadState();
 
@@ -733,7 +733,7 @@
       bookUnderstand: null,
       bookExplain: '',
       sendEmail: null,
-      games: ['Minecraft', 'Roblox', 'Fortnite'],
+      games: [],
       lastResetDate: new Date().toDateString()
     };
   }
@@ -1097,11 +1097,14 @@
     if (percentage === 100) {
       chip.className = 'status-chip ok';
       chip.textContent = '🎉 Mükemmel! Tüm görevler tamamlandı!';
+      
+      // Konfeti patlatma
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 }
       });
+      
       document.getElementById('rewardSection').classList.remove('hidden');
     } else if (percentage >= 60) {
       chip.className = 'status-chip warn';
@@ -1273,11 +1276,14 @@
     setTimeout(() => {
       document.getElementById('winnerGame').textContent = games[randomIndex];
       document.getElementById('resultBox').classList.remove('hidden');
+      
+      // Kazanma konfetisi
       confetti({
         particleCount: 200,
         spread: 100,
         origin: { y: 0.6 }
       });
+      
       isSpinning = false;
     }, 3000);
   }
