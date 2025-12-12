@@ -179,7 +179,6 @@
       display: none;
     }
 
-    /* Normal radio seçimleri için yeşil/kırmızı */
     .radio-pill.checked[data-value="evet"] {
       background: linear-gradient(135deg, rgba(107, 207, 127, 0.4), rgba(107, 207, 127, 0.2));
       border-color: var(--success);
@@ -194,7 +193,6 @@
       box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
     }
 
-    /* Sadece fasStuck için ters renkler (takıldım = kırmızı, takılmadım = yeşil) */
     .radio-group-reverse .radio-pill.checked[data-value="evet"] {
       background: linear-gradient(135deg, rgba(255, 107, 107, 0.4), rgba(255, 107, 107, 0.2));
       border-color: var(--danger);
@@ -334,6 +332,142 @@
 
     .section-title {
       animation: float 3s ease-in-out infinite;
+    }
+
+    /* MODAL STYLES */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      padding: 40px;
+      border-radius: 24px;
+      border: 4px solid var(--accent);
+      max-width: 600px;
+      width: 90%;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 28px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+
+    .close-btn:hover {
+      color: var(--danger);
+      transform: rotate(90deg);
+    }
+
+    #wheelContainer {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      height: 400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #wheelCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      max-width: 400px;
+      max-height: 400px;
+    }
+
+    #wheelPointer {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 50px;
+      color: var(--danger);
+      text-shadow: 0 2px 8px rgba(255, 107, 107, 0.8);
+      z-index: 10;
+      filter: drop-shadow(0 0 10px rgba(255, 107, 107, 0.6));
+    }
+
+    .game-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: rgba(22, 33, 62, 0.8);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .game-item:hover {
+      transform: translateX(5px);
+      border-color: var(--accent);
+    }
+
+    .game-item span {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .delete-game {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+
+    .delete-game:hover {
+      background: #ff5252;
+      transform: scale(1.1);
+    }
+
+    @keyframes spinWheel {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(1800deg); }
+    }
+
+    .spinning {
+      animation: spinWheel 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+    }
+
+    @media (max-width: 600px) {
+      #wheelContainer {
+        height: 300px;
+      }
+      
+      #wheelCanvas {
+        max-width: 300px;
+        max-height: 300px;
+      }
     }
   </style>
 </head>
@@ -537,353 +671,47 @@
     <button id="emailSendButton" class="text-input hidden">📧 Mail Gönder</button>
   </section>
 
+  <!-- OYUN LİSTESİ YÖNETİMİ -->
+  <section class="section">
+    <div class="section-title">🎮 Oyun Listesi Ayarları</div>
+
+    <div class="question-label">Favori oyunlarını ekle (En az 3 oyun):</div>
+    
+    <div id="gamesList"></div>
+    
+    <input id="newGameInput" class="text-input" placeholder="🎮 Oyun adı yazıp Enter'a bas..." />
+    <button id="addGameBtn" class="text-input">➕ Oyun Ekle</button>
+  </section>
+
+  <!-- ÖDÜL SİSTEMİ -->
+  <section id="rewardSection" class="section hidden">
+    <div class="section-title">🎁 Ödül Zamanı!</div>
+    <p style="text-align: center; font-size: 18px; margin-bottom: 20px; color: var(--success); font-weight: 700;">
+      🎉 Tüm görevlerini tamamladın! Şans çarkını çevirme hakkı kazandın! 🎉
+    </p>
+    <button id="showWheelBtn" class="text-input">🎡 Şans Çarkını Göster</button>
+  </section>
+
 </div>
 
-  <script>
-/* -------------------------- TARİH -------------------------- */
-document.getElementById("dateBadge").textContent =
-  new Date().toLocaleDateString("tr-TR", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
-/* -------------------------- RADIO SEÇİMLER -------------------------- */
-document.querySelectorAll(".radio-group").forEach((group) => {
-  group.addEventListener("click", (e) => {
-    const pill = e.target.closest(".radio-pill");
-    if (!pill) return;
-
-    group.querySelectorAll(".radio-pill").forEach((p) => p.classList.remove("checked"));
-    pill.classList.add("checked");
-
-    const input = pill.querySelector("input");
-    input.checked = true;
-
-    handleLogic(group.dataset.group, pill.dataset.value);
-  });
-});
-
-function getRadioValue(name) {
-  const el = document.querySelector(`input[name='${name}']:checked`);
-  return el ? el.value : null;
-}
-
-/* -------------------------- ANA KONTROL MANTIĞI -------------------------- */
-function handleLogic(group, val) {
-  if (group === "projGiven") {
-    const show = val === "evet";
-    document.getElementById("projText").classList.toggle("hidden", !show);
-    document.getElementById("projDoneBlock").classList.toggle("hidden", !show);
-    document.getElementById("projResearchBlock").classList.add("hidden");
+<!-- ŞANS ÇARKI MODAL -->
+<div id="wheelModal" class="modal hidden">
+  <div class="modal-content">
+    <span id="closeModal" class="close-btn">✖</span>
+    <h2 style="text-align: center; color: var(--accent); margin-bottom: 20px;">🎡 ŞANS ÇARKI 🎡</h2>
     
-    // Hayır seçilirse tüm alt blokları gizle
-    if (!show) {
-      document.getElementById("projSearchBtn").classList.add("hidden");
-    }
-  }
-
-  if (group === "projDone") {
-    const block = document.getElementById("projResearchBlock");
-    if (val === "hayir") {
-      block.classList.remove("hidden");
-    } else {
-      block.classList.add("hidden");
-      document.getElementById("projSearchBtn").classList.add("hidden");
-    }
-  }
-
-  if (group === "projResearch") {
-    const showBtn = val === "evet";
-    document.getElementById("projSearchBtn").classList.toggle("hidden", !showBtn);
-  }
-
-  if (group === "fasDone") {
-    const yes = val === "evet";
-    document.getElementById("fasPages").classList.toggle("hidden", !yes);
-    document.getElementById("stuckBlock").classList.toggle("hidden", !yes);
+    <div id="wheelContainer">
+      <canvas id="wheelCanvas" width="400" height="400"></canvas>
+      <div id="wheelPointer">▼</div>
+    </div>
     
-    // Hayır seçilirse tüm alt blokları gizle
-    if (!yes) {
-      document.getElementById("stuckOptions").classList.add("hidden");
-      document.getElementById("questionFile").classList.add("hidden");
-      document.getElementById("topicBlock").classList.add("hidden");
-    }
-  }
-
-  if (group === "fasStuck") {
-    const yes = val === "evet";
-    document.getElementById("stuckOptions").classList.toggle("hidden", !yes);
+    <button id="spinBtn" class="text-input" style="margin-top: 20px;">🎯 ÇEVİR!</button>
     
-    // Hayır seçilirse alt seçenekleri gizle
-    if (!yes) {
-      document.getElementById("questionFile").classList.add("hidden");
-      document.getElementById("topicBlock").classList.add("hidden");
-    }
-  }
+    <div id="resultBox" class="hidden" style="margin-top: 30px; padding: 20px; background: rgba(107, 207, 127, 0.2); border: 3px solid var(--success); border-radius: 16px; text-align: center;">
+      <h3 style="color: var(--success); font-size: 24px; margin-bottom: 10px;">🎊 KAZANDIN! 🎊</h3>
+      <p id="winnerGame" style="font-size: 32px; font-weight: 900; color: var(--accent);"></p>
+    </div>
+  </div>
+</div>
 
-  if (group === "uploadQuestionImg") {
-    const yes = val === "evet";
-    document.getElementById("questionFile").classList.toggle("hidden", !yes);
-    document.getElementById("topicBlock").classList.toggle("hidden", yes);
-  }
-
-  if (group === "bookRead") {
-    const yes = val === "evet";
-    document.getElementById("bookPages").classList.toggle("hidden", !yes);
-    document.getElementById("understandBlock").classList.toggle("hidden", !yes);
-
-    // Hayır seçilirse tüm alt blokları gizle
-    if (!yes) {
-      document.getElementById("bookExplain").classList.add("hidden");
-    }
-  }
-
-  if (group === "bookUnderstand") {
-    const yes = val === "evet";
-    document.getElementById("bookExplain").classList.toggle("hidden", !yes);
-  }
-
-  if (group === "sendEmail") {
-    const yes = val === "evet";
-    document.getElementById("emailSendButton").classList.toggle("hidden", !yes);
-  }
-
-  updateSummary();
-}
-
-/* -------------------------- GOOGLE PDF ARA -------------------------- */
-document.getElementById("googleSearchBtn").addEventListener("click", () => {
-  let konu = document.getElementById("topicText").value.trim();
-  if (!konu) return alert("Lütfen konu girin.");
-  window.open("https://www.google.com/search?q=" + encodeURIComponent(konu + " filetype:pdf"), "_blank");
-});
-
-/* -------------------------- PROJE KONUSUNDA PDF ARA -------------------------- */
-document.getElementById("projSearchBtn").addEventListener("click", () => {
-  let konu = document.getElementById("projText").value.trim();
-  if (!konu) return alert("Lütfen proje konusu yazın.");
-  window.open("https://www.google.com/search?q=" + encodeURIComponent(konu + " filetype:pdf"), "_blank");
-});
-
-/* -------------------------- ÖZET GÜNCELLE -------------------------- */
-function updateSummary() {
-  let summary = [];
-  let chip = document.getElementById("overallChip");
-  let prog = document.getElementById("progressBar");
-
-  const projGiven = getRadioValue("projGiven");
-  const projDone = getRadioValue("projDone");
-  const projText = document.getElementById("projText").value.trim();
-
-  const fasDone = getRadioValue("fasDone");
-  const fasPages = Number(document.getElementById("fasPages").value || 0);
-
-  const fasStuck = getRadioValue("fasStuck");
-  const fileUploaded = document.getElementById("questionFile").files.length > 0;
-  const topic = document.getElementById("topicText").value.trim();
-
-  const bookRead = getRadioValue("bookRead");
-  const bookPages = Number(document.getElementById("bookPages").value || 0);
-
-  const bookUnder = getRadioValue("bookUnderstand");
-  const explain = document.getElementById("bookExplain").value.trim();
-
-  /* ---------- PROJE ---------- */
-  if (projGiven === "hayir") {
-    summary.push("📘 Bugün proje verilmedi.");
-  } else if (projGiven === "evet") {
-    summary.push("📘 Proje verildi.");
-    if (projText) summary.push("→ Konu: " + projText);
-
-    if (projDone === "evet") summary.push("→ Proje yapıldı ✔");
-    else if (projDone === "hayir") summary.push("→ ⚠️ Proje yapılmadı");
-  }
-
-  /* ---------- FASİKÜL ---------- */
-  if (fasDone === "evet") {
-    summary.push(`📕 Fasikül: ${fasPages} sayfa yapıldı`);
-    
-    if (fasStuck === "evet") {
-      if (fileUploaded) summary.push("→ 📎 Soru fotoğrafı yüklendi");
-      else if (topic) summary.push("→ 📌 Takıldığın konu: " + topic);
-    } else if (fasStuck === "hayir") {
-      summary.push("→ Sorun yok ✓");
-    }
-  } else {
-    summary.push("❌ Fasikül yapılmadı");
-  }
-
-  /* ---------- KİTAP ---------- */
-  if (bookRead === "evet") {
-    summary.push(`📗 Kitap okundu (${bookPages} sayfa)`);
-
-    if (bookUnder === "evet") {
-      summary.push("→ Anladı ✓");
-      if (explain) summary.push("→ " + explain);
-    } else if (bookUnder === "hayir") {
-      summary.push("→ ⚠️ Okuduğunu anlamadı");
-    }
-  } else {
-    summary.push("❌ Bugün kitap okunmadı");
-  }
-
-  /* ---------------------- ZORUNLU GÖREV HESABI ---------------------- */
-  let total = 2; 
-  let done = 0;
-  let errors = [];
-
-  /* ---- Kitap zorunlu ---- */
-  if (bookRead === "evet" && bookPages >= 10) {
-    done++;
-  } else if (bookRead === "evet" && bookPages < 10) {
-    errors.push(`📗 Kitap: En az 10 sayfa olmalı (eksik: ${10 - bookPages} sayfa)`);
-  } else {
-    errors.push(`📗 Kitap: En az 10 sayfa okunmalı`);
-  }
-
-  /* ---- Fasikül zorunlu ---- */
-  if (fasDone === "evet" && fasPages >= 3) {
-    done++;
-  } else if (fasDone === "evet" && fasPages < 3) {
-    errors.push(`📕 Fasikül: En az 3 sayfa olmalı (eksik: ${3 - fasPages} sayfa)`);
-  } else {
-    errors.push(`📕 Fasikül: En az 3 sayfa yapılmalı`);
-  }
-
-  /* ---- Proje verilmişse zorunluya dahil olur ---- */
-  if (projGiven === "evet") {
-    total++;
-    if (projDone === "evet") {
-      done++;
-    } else {
-      errors.push("📘 Proje: Yapılmalı.");
-    }
-  }
-
-  /* ---- Yüzdelik ---- */
-  let percent = Math.round((done / total) * 100);
-  prog.style.width = percent + "%";
-  prog.textContent = percent + "%";
-
-  /* ---- Durum ---- */
-  if (percent === 100) {
-    chip.className = "status-chip ok";
-    chip.textContent = "🎉 Görevlerin hepsi tamamlandı!";
-
-    // 2 saniye bekle, sonra konfeti patlat
-    setTimeout(() => {
-      // İlk patlama
-      confetti({
-        particleCount: 150,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#ffd93d', '#a594f9', '#6bcf7f', '#ff6b6b']
-      });
-
-      // 300ms sonra ikinci patlama
-      setTimeout(() => {
-        confetti({
-          particleCount: 100,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 },
-          colors: ['#ffd93d', '#a594f9', '#6bcf7f']
-        });
-      }, 300);
-
-      // 300ms sonra üçüncü patlama
-      setTimeout(() => {
-        confetti({
-          particleCount: 100,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 },
-          colors: ['#ffd93d', '#a594f9', '#6bcf7f']
-        });
-      }, 600);
-
-      // 1 saniye sonra yağmur gibi konfeti
-      setTimeout(() => {
-        const duration = 3 * 1000;
-        const animationEnd = Date.now() + duration;
-        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-        function randomInRange(min, max) {
-          return Math.random() * (max - min) + min;
-        }
-
-        const interval = setInterval(function() {
-          const timeLeft = animationEnd - Date.now();
-
-          if (timeLeft <= 0) {
-            return clearInterval(interval);
-          }
-
-          const particleCount = 50 * (timeLeft / duration);
-          
-          confetti(Object.assign({}, defaults, {
-            particleCount,
-            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-            colors: ['#ffd93d', '#a594f9', '#6bcf7f', '#ff6b6b']
-          }));
-          
-          confetti(Object.assign({}, defaults, {
-            particleCount,
-            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-            colors: ['#ffd93d', '#a594f9', '#6bcf7f', '#ff6b6b']
-          }));
-        }, 250);
-      }, 1000);
-
-    }, 2000);
-
-  } else if (percent >= 50) {
-    chip.className = "status-chip warn";
-    chip.textContent = "⚠️ Eksikler var";
-  } else {
-    chip.className = "status-chip bad";
-    chip.textContent = "❌ Zorunlu görevler TAMAMLANMADI";
-  }
-
-  /* EXCEL TARZI ÖZET */
-  if (errors.length > 0) {
-    summary.push("<br><strong>⚠️ Eksikler:</strong>");
-    errors.forEach((e) => summary.push("→ " + e));
-  }
-
-  document.getElementById("summaryText").innerHTML = summary.join("<br>");
-}
-
-/* -------------------------- RESET -------------------------- */
-document.getElementById("resetBtn").onclick = () => location.reload();
-
-/* ----------------------- EMAIL GÖNDERME ----------------------- */
-document.getElementById("emailSendButton").addEventListener("click", async () => {
-  const summaryText = document.getElementById("summaryText").innerText;
-  const fileInput = document.getElementById("questionFile");
-  const file = fileInput.files[0];
-
-  let emailBody = "📋 ELİZ - GÜNLÜK ÖDEV DURUMU\n";
-  emailBody += "━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
-  emailBody += summaryText;
-
-  /* --- FOTOĞRAF VARSA UYARI EKLE --- */
-  if (file) {
-    emailBody += "\n\n━━━━━━━━━━━━━━━━━━━━━━━━\n";
-    emailBody += "📸 NOT: Takıldığı soru fotoğrafı yüklendi.\n";
-    emailBody += "Dosya adı: " + file.name + "\n";
-    emailBody += "(Fotoğrafı ayrıca e-postaya eklemeniz gerekir)";
-  }
-
-  const mailTo =
-    "mailto:erkan.saracoglu@gmail.com,oznur.saracevic@gmail.com" +
-    "?subject=" + encodeURIComponent("Eliz - Günlük Ödev Durumu (" + new Date().toLocaleDateString("tr-TR") + ")") +
-    "&body=" + encodeURIComponent(emailBody);
-
-  window.location.href = mailTo;
-});
-</script>
-</body>
-</html>
+  
