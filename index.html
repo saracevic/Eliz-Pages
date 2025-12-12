@@ -179,20 +179,35 @@
       display: none;
     }
 
-/* Sadece fasStuck için ters renkler */
-.radio-group-reverse .radio-pill.checked[data-value="evet"] {
-  background: linear-gradient(135deg, rgba(255, 107, 107, 0.4), rgba(255, 107, 107, 0.2));
-  border-color: var(--danger);
-  color: var(--danger);
-  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
-}
+    /* Normal radio seçimleri için yeşil/kırmızı */
+    .radio-pill.checked[data-value="evet"] {
+      background: linear-gradient(135deg, rgba(107, 207, 127, 0.4), rgba(107, 207, 127, 0.2));
+      border-color: var(--success);
+      color: var(--success);
+      box-shadow: 0 4px 12px rgba(107, 207, 127, 0.3);
+    }
 
-.radio-group-reverse .radio-pill.checked[data-value="hayir"] {
-  background: linear-gradient(135deg, rgba(107, 207, 127, 0.4), rgba(107, 207, 127, 0.2));
-  border-color: var(--success);
-  color: var(--success);
-  box-shadow: 0 4px 12px rgba(107, 207, 127, 0.3);
-}
+    .radio-pill.checked[data-value="hayir"] {
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.4), rgba(255, 107, 107, 0.2));
+      border-color: var(--danger);
+      color: var(--danger);
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    /* Sadece fasStuck için ters renkler (takıldım = kırmızı, takılmadım = yeşil) */
+    .radio-group-reverse .radio-pill.checked[data-value="evet"] {
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.4), rgba(255, 107, 107, 0.2));
+      border-color: var(--danger);
+      color: var(--danger);
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    .radio-group-reverse .radio-pill.checked[data-value="hayir"] {
+      background: linear-gradient(135deg, rgba(107, 207, 127, 0.4), rgba(107, 207, 127, 0.2));
+      border-color: var(--success);
+      color: var(--success);
+      box-shadow: 0 4px 12px rgba(107, 207, 127, 0.3);
+    }
 
     .text-input,
     .file-input,
@@ -524,7 +539,7 @@
 
 </div>
 
-<script>
+  <script>
 /* -------------------------- TARİH -------------------------- */
 document.getElementById("dateBadge").textContent =
   new Date().toLocaleDateString("tr-TR", {
@@ -562,12 +577,21 @@ function handleLogic(group, val) {
     document.getElementById("projText").classList.toggle("hidden", !show);
     document.getElementById("projDoneBlock").classList.toggle("hidden", !show);
     document.getElementById("projResearchBlock").classList.add("hidden");
+    
+    // Hayır seçilirse tüm alt blokları gizle
+    if (!show) {
+      document.getElementById("projSearchBtn").classList.add("hidden");
+    }
   }
 
   if (group === "projDone") {
     const block = document.getElementById("projResearchBlock");
-    if (val === "hayir") block.classList.remove("hidden");
-    else block.classList.add("hidden");
+    if (val === "hayir") {
+      block.classList.remove("hidden");
+    } else {
+      block.classList.add("hidden");
+      document.getElementById("projSearchBtn").classList.add("hidden");
+    }
   }
 
   if (group === "projResearch") {
@@ -579,11 +603,24 @@ function handleLogic(group, val) {
     const yes = val === "evet";
     document.getElementById("fasPages").classList.toggle("hidden", !yes);
     document.getElementById("stuckBlock").classList.toggle("hidden", !yes);
+    
+    // Hayır seçilirse tüm alt blokları gizle
+    if (!yes) {
+      document.getElementById("stuckOptions").classList.add("hidden");
+      document.getElementById("questionFile").classList.add("hidden");
+      document.getElementById("topicBlock").classList.add("hidden");
+    }
   }
 
   if (group === "fasStuck") {
     const yes = val === "evet";
     document.getElementById("stuckOptions").classList.toggle("hidden", !yes);
+    
+    // Hayır seçilirse alt seçenekleri gizle
+    if (!yes) {
+      document.getElementById("questionFile").classList.add("hidden");
+      document.getElementById("topicBlock").classList.add("hidden");
+    }
   }
 
   if (group === "uploadQuestionImg") {
@@ -597,6 +634,7 @@ function handleLogic(group, val) {
     document.getElementById("bookPages").classList.toggle("hidden", !yes);
     document.getElementById("understandBlock").classList.toggle("hidden", !yes);
 
+    // Hayır seçilirse tüm alt blokları gizle
     if (!yes) {
       document.getElementById("bookExplain").classList.add("hidden");
     }
@@ -708,8 +746,7 @@ function updateSummary() {
   /* ---- Fasikül zorunlu ---- */
   if (fasDone === "evet" && fasPages >= 3) {
     done++;
-  } else if (fasDone === "evet"
-  && fasPages < 3) {
+  } else if (fasDone === "evet" && fasPages < 3) {
     errors.push(`📕 Fasikül: En az 3 sayfa olmalı (eksik: ${3 - fasPages} sayfa)`);
   } else {
     errors.push(`📕 Fasikül: En az 3 sayfa yapılmalı`);
@@ -828,37 +865,24 @@ document.getElementById("emailSendButton").addEventListener("click", async () =>
   const fileInput = document.getElementById("questionFile");
   const file = fileInput.files[0];
 
-  /* --- FOTO YOKSA NORMAL GÖNDER --- */
-  if (!file) {
-    const mailTo =
-      "mailto:erkan.saracoglu@gmail.com,oznur.saracevic@gmail.com" +
-      "?subject=" + encodeURIComponent("Eliz - Günlük Ödev Durumu") +
-      "&body=" + encodeURIComponent(summaryText);
+  let emailBody = "📋 ELİZ - GÜNLÜK ÖDEV DURUMU\n";
+  emailBody += "━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+  emailBody += summaryText;
 
-    window.location.href = mailTo;
-    return;
+  /* --- FOTOĞRAF VARSA UYARI EKLE --- */
+  if (file) {
+    emailBody += "\n\n━━━━━━━━━━━━━━━━━━━━━━━━\n";
+    emailBody += "📸 NOT: Takıldığı soru fotoğrafı yüklendi.\n";
+    emailBody += "Dosya adı: " + file.name + "\n";
+    emailBody += "(Fotoğrafı ayrıca e-postaya eklemeniz gerekir)";
   }
 
-  /* --- FOTOĞRAF VARSA BASE64'E ÇEVİR VE BODY'YE GÖM --- */
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    const base64 = e.target.result;
+  const mailTo =
+    "mailto:erkan.saracoglu@gmail.com,oznur.saracevic@gmail.com" +
+    "?subject=" + encodeURIComponent("Eliz - Günlük Ödev Durumu (" + new Date().toLocaleDateString("tr-TR") + ")") +
+    "&body=" + encodeURIComponent(emailBody);
 
-    const htmlBody = 
-      summaryText + 
-      "\n\n━━━━━━━━━━━━━━━━━━━━\n" +
-      "📸 TAKILDIĞI SORU FOTOĞRAFI:\n\n" +
-      `<img src="${base64}" style="max-width:600px;height:auto;border:3px solid #ffd93d;border-radius:12px;">`;
-
-    const mailTo =
-      "mailto:erkan.saracoglu@gmail.com,oznur.saracevic@gmail.com" +
-      "?subject=" + encodeURIComponent("Eliz - Günlük Ödev Durumu") +
-      "&body=" + encodeURIComponent(htmlBody);
-
-    window.location.href = mailTo;
-  };
-
-  reader.readAsDataURL(file);
+  window.location.href = mailTo;
 });
 </script>
 </body>
