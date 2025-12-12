@@ -179,14 +179,15 @@
       display: none;
     }
 
-    .radio-pill.checked[data-value="evet"] {
+/* Sadece fasStuck için ters renkler */
+.radio-group-reverse .radio-pill.checked[data-value="evet"] {
   background: linear-gradient(135deg, rgba(255, 107, 107, 0.4), rgba(255, 107, 107, 0.2));
   border-color: var(--danger);
   color: var(--danger);
   box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
 }
 
-.radio-pill.checked[data-value="hayir"] {
+.radio-group-reverse .radio-pill.checked[data-value="hayir"] {
   background: linear-gradient(135deg, rgba(107, 207, 127, 0.4), rgba(107, 207, 127, 0.2));
   border-color: var(--success);
   color: var(--success);
@@ -413,7 +414,7 @@
     <div id="stuckBlock" class="hidden">
       <div class="question-label">Fasikülde takıldığın soru oldu mu?</div>
 
-      <div class="radio-group" data-group="fasStuck">
+      <div class="radio-group radio-group-reverse" data-group="fasStuck">
         <label class="radio-pill" data-value="evet">
           <input type="radio" name="fasStuck" value="evet">⚠️ Evet
         </label>
