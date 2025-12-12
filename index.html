@@ -742,7 +742,9 @@
     const saved = localStorage.getItem('elizHomeworkState');
     if (saved) {
       const parsed = JSON.parse(saved);
-      const today = new Date().toDateString();
+      const today
+
+    = new Date().toDateString();
       if (parsed.lastResetDate !== today) {
         return getDefaultState();
       }
@@ -913,7 +915,6 @@
       window.location.href = `mailto:?subject=${subject}&body=${body}`;
     });
 
-    // Oyun listesi işlemleri
     document.getElementById('newGameInput').addEventListener('keypress', e => {
       if (e.key === 'Enter') {
         addGame();
@@ -921,8 +922,6 @@
     });
 
     document.getElementById('addGameBtn').addEventListener('click', addGame);
-
-    // Şans çarkı işlemleri
     document.getElementById('showWheelBtn').addEventListener('click', showWheel);
     document.getElementById('closeModal').addEventListener('click', closeWheel);
     document.getElementById('spinBtn').addEventListener('click', spinWheel);
@@ -1039,8 +1038,8 @@
     let total = 0;
     let issues = [];
     let goodPoints = [];
+    let hasNegativeConditions = false;
 
-    // Proje kontrolü
     if (state.projGiven === 'evet') {
       total++;
       if (state.projDone === 'evet') {
@@ -1048,10 +1047,10 @@
         goodPoints.push('✓ Araştırma ödevi tamamlandı');
       } else {
         issues.push('⚠️ Araştırma ödevi yapılmadı');
+        hasNegativeConditions = true;
       }
     }
 
-    // Fasikül kontrolü
     if (state.fasDone === 'evet') {
       total++;
       completed++;
@@ -1062,13 +1061,19 @@
       }
       if (state.fasStuck === 'hayir') {
         goodPoints.push('✓ Fasikülde hiçbir yerde takılmadı');
+      } else if (state.fasStuck === 'evet') {
+        hasNegativeConditions = true;
+      }
+      
+      if (state.uploadQuestionImg === 'evet' || state.uploadQuestionImg === 'hayir') {
+        hasNegativeConditions = true;
       }
     } else if (state.fasDone === 'hayir') {
       total++;
       issues.push('⚠️ Fasikül ödevi yapılmadı');
+      hasNegativeConditions = true;
     }
 
-    // Kitap kontrolü
     if (state.bookRead === 'evet') {
       total++;
       completed++;
@@ -1083,6 +1088,11 @@
     } else if (state.bookRead === 'hayir') {
       total++;
       issues.push('⚠️ Kitap okunmadı');
+      hasNegativeConditions = true;
+    }
+    
+    if (state.sendEmail === 'evet' || state.sendEmail === 'hayir') {
+      hasNegativeConditions = true;
     }
 
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
@@ -1094,11 +1104,10 @@
     bar.style.width = percentage + '%';
     bar.textContent = percentage + '%';
 
-    if (percentage === 100) {
+    if (percentage === 100 && !hasNegativeConditions) {
       chip.className = 'status-chip ok';
       chip.textContent = '🎉 Mükemmel! Tüm görevler tamamlandı!';
       
-      // Konfeti patlatma
       confetti({
         particleCount: 100,
         spread: 70,
@@ -1106,6 +1115,10 @@
       });
       
       document.getElementById('rewardSection').classList.remove('hidden');
+    } else if (percentage === 100 && hasNegativeConditions) {
+      chip.className = 'status-chip warn';
+      chip.textContent = '⚠️ Görevler tamamlandı ama bazı sorunlar var';
+      document.getElementById('rewardSection').classList.add('hidden');
     } else if (percentage >= 60) {
       chip.className = 'status-chip warn';
       chip.textContent = '⚠️ İyi, ama biraz eksik var';
@@ -1152,7 +1165,6 @@
     return text;
   }
 
-  // ============== OYUN LİSTESİ ==============
   function renderGamesList() {
     const container = document.getElementById('gamesList');
     container.innerHTML = '';
@@ -1199,7 +1211,6 @@
     renderGamesList();
   }
 
-  // ============== ŞANS ÇARKI ==============
   let wheelCanvas, wheelCtx;
   let isSpinning = false;
 
@@ -1277,7 +1288,6 @@
       document.getElementById('winnerGame').textContent = games[randomIndex];
       document.getElementById('resultBox').classList.remove('hidden');
       
-      // Kazanma konfetisi
       confetti({
         particleCount: 200,
         spread: 100,
@@ -1288,7 +1298,6 @@
     }, 3000);
   }
 
-  // ============== START ==============
   init();
 </script>
 </body>
