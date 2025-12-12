@@ -4,116 +4,193 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Eliz - Günlük Ödev Kontrol Paneli</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <style>
     :root {
-      --bg: #050918;
-      --bg-card: rgba(15, 23, 42, 0.95);
-      --accent: #38bdf8;
-      --text: #e5e7eb;
-      --text-muted: #9ca3af;
-      --border: rgba(148, 163, 184, 0.3);
-      --danger: #ef4444;
-      --warn: #eab308;
-      --success: #22c55e;
+      --bg: #1a1a2e;
+      --bg-card: rgba(22, 33, 62, 0.95);
+      --accent: #ffd93d;
+      --text: #f5f5f5;
+      --text-muted: #a8b2d1;
+      --border: rgba(255, 217, 61, 0.3);
+      --danger: #ff6b6b;
+      --warn: #ffd93d;
+      --success: #6bcf7f;
+      --purple: #a594f9;
     }
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: system-ui, sans-serif;
+      font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', sans-serif;
     }
 
     body {
-      background: radial-gradient(circle at top, #0f172a 0, #020617 60%, #000 100%);
+      background: 
+        linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%),
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 217, 61, 0.03) 2px, rgba(255, 217, 61, 0.03) 4px),
+        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 217, 61, 0.03) 2px, rgba(255, 217, 61, 0.03) 4px);
       min-height: 100vh;
       padding: 16px;
       color: var(--text);
       display: flex;
       justify-content: center;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        radial-gradient(circle at 20% 50%, rgba(165, 148, 249, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 217, 61, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
     }
 
     .app {
       width: 100%;
       max-width: 900px;
       background: var(--bg-card);
-      padding: 20px;
-      border-radius: 20px;
-      border: 1px solid rgba(148,163,184,0.25);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      padding: 24px;
+      border-radius: 24px;
+      border: 3px solid var(--accent);
+      box-shadow: 
+        0 10px 40px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255, 217, 61, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 1;
     }
 
-    .header { margin-bottom: 20px; }
+    .header { 
+      margin-bottom: 24px; 
+      text-align: center;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(165, 148, 249, 0.2) 0%, rgba(255, 217, 61, 0.2) 100%);
+      border-radius: 16px;
+      border: 2px solid var(--border);
+    }
+
     .title { 
-      font-size: 22px; 
-      font-weight: 700;
-      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      font-size: 28px; 
+      font-weight: 900;
+      background: linear-gradient(135deg, #ffd93d 0%, #a594f9 50%, #6bcf7f 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 10px rgba(255, 217, 61, 0.3);
+      letter-spacing: 1px;
     }
-    .subtitle { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
-    .date-badge {
+
+    .subtitle { 
+      color: var(--text-muted); 
+      font-size: 15px; 
       margin-top: 8px;
-      padding: 6px 12px;
-      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .date-badge {
+      margin-top: 12px;
+      padding: 8px 16px;
+      font-size: 14px;
       border-radius: 999px;
-      background: rgba(56, 189, 248, 0.25);
+      background: rgba(255, 217, 61, 0.3);
+      border: 2px solid var(--accent);
       display: inline-block;
+      font-weight: 700;
+      color: var(--accent);
+      box-shadow: 0 2px 8px rgba(255, 217, 61, 0.2);
     }
 
     .section {
-      margin-bottom: 22px;
-      background: rgba(15, 23, 42, 0.6);
-      padding: 16px;
-      border-radius: 16px;
-      border: 1px solid rgba(148,163,184,0.25);
+      margin-bottom: 24px;
+      background: rgba(22, 33, 62, 0.7);
+      padding: 20px;
+      border-radius: 20px;
+      border: 3px solid rgba(255, 217, 61, 0.4);
       backdrop-filter: blur(10px);
+      box-shadow: 
+        0 4px 16px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .section:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 6px 20px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
     .section-title {
-      font-size: 17px;
-      font-weight: 600;
-      margin-bottom: 12px;
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      color: var(--accent);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
     .question-label { 
-      font-size: 14px; 
-      font-weight: 500;
-      margin-bottom: 8px;
+      font-size: 15px; 
+      font-weight: 700;
+      margin-bottom: 10px;
       display: block;
+      color: var(--text);
     }
 
     .radio-group {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .radio-pill {
-      padding: 8px 14px;
+      padding: 10px 18px;
       border-radius: 999px;
-      border: 1px solid var(--border);
+      border: 3px solid var(--border);
       cursor: pointer;
-      font-size: 14px;
+      font-size: 15px;
+      font-weight: 700;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      transition: all 0.3s ease;
-      background: rgba(15, 23, 42, 0.6);
+      gap: 8px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: rgba(22, 33, 62, 0.8);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .radio-pill:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .radio-pill input {
+      display: none;
     }
 
     .radio-pill.checked[data-value="evet"] {
-      background: rgba(34,197,94,0.3);
+      background: linear-gradient(135deg, rgba(107, 207, 127, 0.4), rgba(107, 207, 127, 0.2));
       border-color: var(--success);
+      color: var(--success);
+      box-shadow: 0 4px 12px rgba(107, 207, 127, 0.3);
     }
+
     .radio-pill.checked[data-value="hayir"] {
-      background: rgba(239,68,68,0.3);
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.4), rgba(255, 107, 107, 0.2));
       border-color: var(--danger);
+      color: var(--danger);
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
     }
 
     .text-input,
@@ -121,67 +198,126 @@
     .textarea-box,
     .select-input {
       width: 100%;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(15,23,42,0.85);
+      padding: 12px 16px;
+      border-radius: 16px;
+      border: 3px solid var(--border);
+      background: rgba(22, 33, 62, 0.9);
       color: var(--text);
       margin-bottom: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .text-input:focus,
+    .textarea-box:focus,
+    .select-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255, 217, 61, 0.2);
+    }
+
+    button.text-input {
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      color: var(--bg);
+      font-weight: 800;
+      cursor: pointer;
+      border: 3px solid var(--accent);
+      box-shadow: 0 4px 12px rgba(255, 217, 61, 0.3);
+    }
+
+    button.text-input:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 217, 61, 0.4);
+    }
+
+    button.text-input:active {
+      transform: translateY(0);
     }
 
     .hidden { display: none !important; }
 
     .progress-container {
       width: 100%;
-      background: rgba(255,255,255,0.1);
-      height: 20px;
-      border-radius: 12px;
+      background: rgba(0,0,0,0.4);
+      height: 32px;
+      border-radius: 16px;
       overflow: hidden;
-      border: 1px solid var(--border);
+      border: 3px solid var(--border);
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
     }
 
     .progress-bar {
       height: 100%;
       width: 0%;
-      transition: width .4s;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       text-align: center;
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 800;
       color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(90deg, var(--success), var(--accent));
+      box-shadow: 0 0 20px rgba(107, 207, 127, 0.5);
     }
 
     .status-chip {
-      padding: 6px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      font-size: 13px;
+      padding: 10px 20px;
+      border-radius: 16px;
+      border: 3px solid;
+      font-size: 15px;
+      font-weight: 800;
       display: inline-block;
-      margin-top: 10px;
+      margin-top: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
     .ok {
-      background: rgba(34,197,94,0.2);
+      background: linear-gradient(135deg, rgba(107, 207, 127, 0.3), rgba(107, 207, 127, 0.1));
       border-color: var(--success);
       color: var(--success);
+      box-shadow: 0 4px 12px rgba(107, 207, 127, 0.4);
     }
+
     .bad {
-      background: rgba(239,68,68,0.2);
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.3), rgba(255, 107, 107, 0.1));
       border-color: var(--danger);
       color: var(--danger);
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
     }
+
     .warn {
-      background: rgba(234,179,8,0.2);
+      background: linear-gradient(135deg, rgba(255, 217, 61, 0.3), rgba(255, 217, 61, 0.1));
       border-color: var(--warn);
       color: var(--warn);
+      box-shadow: 0 4px 12px rgba(255, 217, 61, 0.4);
     }
 
     .summary-text {
-      margin-top: 14px;
-      padding: 12px;
-      background: rgba(15,23,42,0.6);
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      font-size: 14px;
+      margin-top: 16px;
+      padding: 16px;
+      background: rgba(22, 33, 62, 0.8);
+      border-radius: 16px;
+      border: 3px solid var(--border);
+      font-size: 15px;
+      line-height: 1.8;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .textarea-box {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .section-title {
+      animation: float 3s ease-in-out infinite;
     }
   </style>
 </head>
@@ -190,10 +326,11 @@
 <div class="app">
 
   <div class="header">
-    <div class="title">📚 Eliz'in Günlük Ödev Kontrol Paneli</div>
-    <div class="subtitle">Öğretmen – öğrenci – veli takip sistemi</div>
+    <div class="title">🎒 Eliz'in Günlük Ödev Kontrol Paneli 📚</div>
+    <div class="subtitle">✏️ Öğretmen – Öğrenci – Veli Takip Sistemi ✏️</div>
     <div id="dateBadge" class="date-badge"></div>
   </div>
+
   <!-- PROJE -->
   <section class="section">
     <div class="section-title">🔍 Öğretmen Proje / Araştırma Ödevi Verdi mi?</div>
@@ -210,7 +347,7 @@
         </label>
       </div>
 
-      <input id="projText" class="text-input hidden" placeholder="Ödev konusu..." />
+      <input id="projText" class="text-input hidden" placeholder="📝 Ödev konusu..." />
     </div>
 
     <div id="projDoneBlock" class="hidden">
@@ -278,10 +415,10 @@
 
       <div class="radio-group" data-group="fasStuck">
         <label class="radio-pill" data-value="evet">
-          <input type="radio" name="fasStuck" value="evet">✓ Evet
+          <input type="radio" name="fasStuck" value="evet">⚠️ Evet
         </label>
         <label class="radio-pill" data-value="hayir">
-          <input type="radio" name="fasStuck" value="hayir">✗ Hayır
+          <input type="radio" name="fasStuck" value="hayir">✓ Hayır
         </label>
       </div>
 
@@ -290,7 +427,7 @@
 
         <div class="radio-group" data-group="uploadQuestionImg">
           <label class="radio-pill" data-value="evet">
-            <input type="radio" name="uploadQuestionImg" value="evet">✓ Evet
+            <input type="radio" name="uploadQuestionImg" value="evet">📷 Evet
           </label>
           <label class="radio-pill" data-value="hayir">
             <input type="radio" name="uploadQuestionImg" value="hayir">✗ Hayır
@@ -359,7 +496,7 @@
       <div id="progressBar" class="progress-bar"></div>
     </div>
 
-    <span id="overallChip" class="status-chip warn">Eksikler olabilir</span>
+    <span id="overallChip" class="status-chip warn">⏳ Eksikler olabilir</span>
 
     <div id="summaryText" class="summary-text"></div>
 
@@ -384,8 +521,9 @@
     <button id="emailSendButton" class="text-input hidden">📧 Mail Gönder</button>
   </section>
 
-</div> <!-- app kapanış -->
-  <script>
+</div>
+
+<script>
 /* -------------------------- TARİH -------------------------- */
 document.getElementById("dateBadge").textContent =
   new Date().toLocaleDateString("tr-TR", {
@@ -418,70 +556,56 @@ function getRadioValue(name) {
 
 /* -------------------------- ANA KONTROL MANTIĞI -------------------------- */
 function handleLogic(group, val) {
-  /* ------ PROJE VERİLDİ Mİ ------ */
   if (group === "projGiven") {
     const show = val === "evet";
     document.getElementById("projText").classList.toggle("hidden", !show);
     document.getElementById("projDoneBlock").classList.toggle("hidden", !show);
-
-    // Proje verilmemişse zorunlulara dahil olmayacak
     document.getElementById("projResearchBlock").classList.add("hidden");
   }
 
-  /* ------ PROJE YAPILDI MI ------ */
   if (group === "projDone") {
     const block = document.getElementById("projResearchBlock");
     if (val === "hayir") block.classList.remove("hidden");
     else block.classList.add("hidden");
   }
 
-  /* ------ PROJE ARAŞTIRMA PDF BUTON ------ */
   if (group === "projResearch") {
     const showBtn = val === "evet";
     document.getElementById("projSearchBtn").classList.toggle("hidden", !showBtn);
   }
 
-  /* ------ FASİKÜL YAPILDI MI ------ */
   if (group === "fasDone") {
     const yes = val === "evet";
     document.getElementById("fasPages").classList.toggle("hidden", !yes);
-
-    // Fasikül yapılmamışsa TAKILDI SORU BLOĞU GÖZÜKMESİN
     document.getElementById("stuckBlock").classList.toggle("hidden", !yes);
   }
 
-  /* ------ TAKILDI SORU VAR MI ------ */
   if (group === "fasStuck") {
     const yes = val === "evet";
     document.getElementById("stuckOptions").classList.toggle("hidden", !yes);
   }
 
-  /* ------ SORU FOTOĞRAFI MI? KONU YAZMA MI? ------ */
   if (group === "uploadQuestionImg") {
     const yes = val === "evet";
     document.getElementById("questionFile").classList.toggle("hidden", !yes);
     document.getElementById("topicBlock").classList.toggle("hidden", yes);
   }
 
-  /* ------ KİTAP OKUNDU MU ------ */
   if (group === "bookRead") {
     const yes = val === "evet";
     document.getElementById("bookPages").classList.toggle("hidden", !yes);
     document.getElementById("understandBlock").classList.toggle("hidden", !yes);
 
     if (!yes) {
-      // kitap okunmamışsa anladın mı sorusu da kapanır
       document.getElementById("bookExplain").classList.add("hidden");
     }
   }
 
-  /* ------ OKUDUĞUNU ANLADIN MI ------ */
   if (group === "bookUnderstand") {
     const yes = val === "evet";
     document.getElementById("bookExplain").classList.toggle("hidden", !yes);
   }
 
-  /* ------ EMAIL GÖNDERME ------ */
   if (group === "sendEmail") {
     const yes = val === "evet";
     document.getElementById("emailSendButton").classList.toggle("hidden", !yes);
@@ -512,7 +636,6 @@ function updateSummary() {
 
   const projGiven = getRadioValue("projGiven");
   const projDone = getRadioValue("projDone");
-  const projResearch = getRadioValue("projResearch");
   const projText = document.getElementById("projText").value.trim();
 
   const fasDone = getRadioValue("fasDone");
@@ -540,16 +663,17 @@ function updateSummary() {
   }
 
   /* ---------- FASİKÜL ---------- */
-  if (fasDone === "evet") summary.push(`📕 Fasikül: ${fasPages} sayfa yapıldı`);
-  else summary.push("❌ Fasikül yapılmadı");
-
   if (fasDone === "evet") {
+    summary.push(`📕 Fasikül: ${fasPages} sayfa yapıldı`);
+    
     if (fasStuck === "evet") {
       if (fileUploaded) summary.push("→ 📎 Soru fotoğrafı yüklendi");
       else if (topic) summary.push("→ 📌 Takıldığın konu: " + topic);
-    } else {
+    } else if (fasStuck === "hayir") {
       summary.push("→ Sorun yok ✓");
     }
+  } else {
+    summary.push("❌ Fasikül yapılmadı");
   }
 
   /* ---------- KİTAP ---------- */
@@ -572,18 +696,32 @@ function updateSummary() {
   let errors = [];
 
   /* ---- Kitap zorunlu ---- */
-  if (bookRead === "evet" && bookPages >= 10) done++;
-  else errors.push(`📗 Kitap: En az 10 sayfa olmalı (eksik: ${Math.max(0, 10 - bookPages)} sayfa)`);
+  if (bookRead === "evet" && bookPages >= 10) {
+    done++;
+  } else if (bookRead === "evet" && bookPages < 10) {
+    errors.push(`📗 Kitap: En az 10 sayfa olmalı (eksik: ${10 - bookPages} sayfa)`);
+  } else {
+    errors.push(`📗 Kitap: En az 10 sayfa okunmalı`);
+  }
 
   /* ---- Fasikül zorunlu ---- */
-  if (fasDone === "evet" && fasPages >= 3) done++;
-  else errors.push(`📕 Fasikül: En az 3 sayfa olmalı (eksik: ${Math.max(0, 3 - fasPages)} sayfa)`);
+  if (fasDone === "evet" && fasPages >= 3) {
+    done++;
+  } else if (fasDone === "evet"
+  && fasPages < 3) {
+    errors.push(`📕 Fasikül: En az 3 sayfa olmalı (eksik: ${3 - fasPages} sayfa)`);
+  } else {
+    errors.push(`📕 Fasikül: En az 3 sayfa yapılmalı`);
+  }
 
   /* ---- Proje verilmişse zorunluya dahil olur ---- */
   if (projGiven === "evet") {
     total++;
-    if (projDone === "evet") done++;
-    else errors.push("📘 Proje: Yapılmalı.");
+    if (projDone === "evet") {
+      done++;
+    } else {
+      errors.push("📘 Proje: Yapılmalı.");
+    }
   }
 
   /* ---- Yüzdelik ---- */
@@ -594,19 +732,78 @@ function updateSummary() {
   /* ---- Durum ---- */
   if (percent === 100) {
     chip.className = "status-chip ok";
-    chip.textContent = "✔ Görevlerin hepsi tamamlandı";
+    chip.textContent = "🎉 Görevlerin hepsi tamamlandı!";
 
-    // Konfeti yağmuru
-    confetti({
-      particleCount: 200,
-      spread: 120,
-      startVelocity: 40,
-      origin: { y: 0.6 }
-    });
+    // 2 saniye bekle, sonra konfeti patlat
+    setTimeout(() => {
+      // İlk patlama
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#ffd93d', '#a594f9', '#6bcf7f', '#ff6b6b']
+      });
+
+      // 300ms sonra ikinci patlama
+      setTimeout(() => {
+        confetti({
+          particleCount: 100,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: ['#ffd93d', '#a594f9', '#6bcf7f']
+        });
+      }, 300);
+
+      // 300ms sonra üçüncü patlama
+      setTimeout(() => {
+        confetti({
+          particleCount: 100,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: ['#ffd93d', '#a594f9', '#6bcf7f']
+        });
+      }, 600);
+
+      // 1 saniye sonra yağmur gibi konfeti
+      setTimeout(() => {
+        const duration = 3 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+        function randomInRange(min, max) {
+          return Math.random() * (max - min) + min;
+        }
+
+        const interval = setInterval(function() {
+          const timeLeft = animationEnd - Date.now();
+
+          if (timeLeft <= 0) {
+            return clearInterval(interval);
+          }
+
+          const particleCount = 50 * (timeLeft / duration);
+          
+          confetti(Object.assign({}, defaults, {
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+            colors: ['#ffd93d', '#a594f9', '#6bcf7f', '#ff6b6b']
+          }));
+          
+          confetti(Object.assign({}, defaults, {
+            particleCount,
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+            colors: ['#ffd93d', '#a594f9', '#6bcf7f', '#ff6b6b']
+          }));
+        }, 250);
+      }, 1000);
+
+    }, 2000);
 
   } else if (percent >= 50) {
     chip.className = "status-chip warn";
-    chip.textContent = "Eksikler var";
+    chip.textContent = "⚠️ Eksikler var";
   } else {
     chip.className = "status-chip bad";
     chip.textContent = "❌ Zorunlu görevler TAMAMLANMADI";
@@ -614,7 +811,7 @@ function updateSummary() {
 
   /* EXCEL TARZI ÖZET */
   if (errors.length > 0) {
-    summary.push("<br><strong>Eksikler:</strong>");
+    summary.push("<br><strong>⚠️ Eksikler:</strong>");
     errors.forEach((e) => summary.push("→ " + e));
   }
 
@@ -625,7 +822,7 @@ function updateSummary() {
 document.getElementById("resetBtn").onclick = () => location.reload();
 
 /* ----------------------- EMAIL GÖNDERME ----------------------- */
-document.getElementById("emailSendButton").addEventListener("click", () => {
+document.getElementById("emailSendButton").addEventListener("click", async () => {
   const summaryText = document.getElementById("summaryText").innerText;
   const fileInput = document.getElementById("questionFile");
   const file = fileInput.files[0];
@@ -634,26 +831,27 @@ document.getElementById("emailSendButton").addEventListener("click", () => {
   if (!file) {
     const mailTo =
       "mailto:erkan.saracoglu@gmail.com,oznur.saracevic@gmail.com" +
-      "?subject=" + encodeURIComponent("Günlük Ödev Durumu") +
+      "?subject=" + encodeURIComponent("Eliz - Günlük Ödev Durumu") +
       "&body=" + encodeURIComponent(summaryText);
 
     window.location.href = mailTo;
     return;
   }
 
-  /* --- FOTOĞRAF VARSA BASE64’E ÇEVİR VE BODY’YE GÖM --- */
+  /* --- FOTOĞRAF VARSA BASE64'E ÇEVİR VE BODY'YE GÖM --- */
   const reader = new FileReader();
   reader.onload = function (e) {
     const base64 = e.target.result;
 
-    const htmlBody =
-      summaryText +
-      "\n\n---\nTAKILDIĞI SORU FOTOĞRAFI:\n\n" +
-      `<img src="${base64}" style="max-width:100%;height:auto;">`;
+    const htmlBody = 
+      summaryText + 
+      "\n\n━━━━━━━━━━━━━━━━━━━━\n" +
+      "📸 TAKILDIĞI SORU FOTOĞRAFI:\n\n" +
+      `<img src="${base64}" style="max-width:600px;height:auto;border:3px solid #ffd93d;border-radius:12px;">`;
 
     const mailTo =
       "mailto:erkan.saracoglu@gmail.com,oznur.saracevic@gmail.com" +
-      "?subject=" + encodeURIComponent("Günlük Ödev Durumu") +
+      "?subject=" + encodeURIComponent("Eliz - Günlük Ödev Durumu") +
       "&body=" + encodeURIComponent(htmlBody);
 
     window.location.href = mailTo;
@@ -662,3 +860,5 @@ document.getElementById("emailSendButton").addEventListener("click", () => {
   reader.readAsDataURL(file);
 });
 </script>
+</body>
+</html>
