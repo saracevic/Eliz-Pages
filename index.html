@@ -18,6 +18,9 @@
       --warn: #ffd93d;
       --success: #6bcf7f;
       --purple: #a594f9;
+      --minecraft-brown: #8B4513;
+      --minecraft-wood: #DEB887;
+      --minecraft-stone: #808080;
     }
 
     * {
@@ -383,32 +386,49 @@
     #wheelContainer {
       position: relative;
       width: 100%;
-      max-width: 400px;
-      height: 400px;
+      max-width: 450px;
+      height: 450px;
       margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: center;
+      background: 
+        repeating-linear-gradient(0deg, var(--minecraft-brown) 0px, var(--minecraft-brown) 4px, var(--minecraft-wood) 4px, var(--minecraft-wood) 8px),
+        repeating-linear-gradient(90deg, var(--minecraft-brown) 0px, var(--minecraft-brown) 4px, var(--minecraft-wood) 4px, var(--minecraft-wood) 8px);
+      border: 8px solid var(--minecraft-stone);
+      border-radius: 8px;
+      box-shadow: 
+        inset 0 0 20px rgba(0,0,0,0.5),
+        0 8px 24px rgba(0,0,0,0.8),
+        0 0 0 4px var(--minecraft-brown);
+      padding: 20px;
     }
 
     #wheelCanvas {
       display: block;
       width: 100%;
       height: 100%;
-      max-width: 400px;
-      max-height: 400px;
+      max-width: 380px;
+      max-height: 380px;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+      image-rendering: pixelated;
     }
 
     #wheelPointer {
       position: absolute;
-      top: -10px;
+      top: -20px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 50px;
-      color: var(--danger);
-      text-shadow: 0 2px 8px rgba(255, 107, 107, 0.8);
+      font-size: 60px;
+      color: #ff0000;
+      text-shadow: 
+        0 4px 8px rgba(255, 0, 0, 0.8),
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000;
       z-index: 10;
-      filter: drop-shadow(0 0 10px rgba(255, 107, 107, 0.6));
+      filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
     }
 
     .game-item {
@@ -461,12 +481,13 @@
 
     @media (max-width: 600px) {
       #wheelContainer {
-        height: 300px;
+        height: 350px;
+        max-width: 350px;
       }
       
       #wheelCanvas {
-        max-width: 300px;
-        max-height: 300px;
+        max-width: 280px;
+        max-height: 280px;
       }
     }
   </style>
@@ -514,7 +535,7 @@
     </div>
 
     <div id="projResearchBlock" class="hidden">
-      <div class="question-label">İnternetten aramaştırma yapmak ister misin?</div>
+      <div class="question-label">İnternetten araştırma yapmak ister misin?</div>
 
       <div class="radio-group" data-group="projResearch">
         <label class="radio-pill" data-value="evet">
@@ -525,11 +546,14 @@
         </label>
       </div>
 
-      <button id="projSearchBtn" class="text-input hidden">🔍 Konuya Göre PDF Ara</button>
+      <div id="projSearchButtons" class="hidden" style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px;">
+        <button id="projSearchPdfBtn" class="text-input" style="flex: 1; min-width: 200px;">📄 PDF Ara</button>
+        <button id="projSearchYoutubeBtn" class="text-input" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #ff0000, #cc0000); border-color: #ff0000;">📺 YouTube'da Ara</button>
+      </div>
     </div>
   </section>
-
-  <!-- FASİKÜL -->
+  
+<!-- FASİKÜL -->
   <section class="section">
     <div class="section-title">📕 Fasikül Ödevi</div>
 
@@ -589,7 +613,10 @@
         <div id="topicBlock" class="hidden">
           <div class="question-label">Takıldığın konuyu yaz:</div>
           <input id="topicText" class="text-input" placeholder="Örn: Çemberde açı..." />
-          <button id="googleSearchBtn" class="text-input">🔍 PDF Ara</button>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px;">
+            <button id="fasSearchPdfBtn" class="text-input" style="flex: 1; min-width: 200px;">📄 PDF Ara</button>
+            <button id="fasSearchYoutubeBtn" class="text-input" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #ff0000, #cc0000); border-color: #ff0000;">📺 YouTube'da Ara</button>
+          </div>
         </div>
       </div>
     </div>
@@ -697,18 +724,18 @@
 <div id="wheelModal" class="modal hidden">
   <div class="modal-content">
     <span id="closeModal" class="close-btn">✖</span>
-    <h2 style="text-align: center; color: var(--accent); margin-bottom: 20px;">🎡 ŞANS ÇARKI 🎡</h2>
+    <h2 style="text-align: center; color: var(--accent); margin-bottom: 20px; text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;">⛏️ MİNECRAFT ŞANS ÇARKI ⛏️</h2>
     
     <div id="wheelContainer">
-      <canvas id="wheelCanvas" width="400" height="400"></canvas>
+      <canvas id="wheelCanvas" width="380" height="380"></canvas>
       <div id="wheelPointer">▼</div>
     </div>
     
-    <button id="spinBtn" class="text-input" style="margin-top: 20px;">🎯 ÇEVİR!</button>
+    <button id="spinBtn" class="text-input" style="margin-top: 20px; background: linear-gradient(135deg, #4CAF50, #2E7D32); border-color: #4CAF50; text-shadow: 2px 2px 0 #000;">⚡ ÇEVİR! ⚡</button>
     
-    <div id="resultBox" class="hidden" style="margin-top: 30px; padding: 20px; background: rgba(107, 207, 127, 0.2); border: 3px solid var(--success); border-radius: 16px; text-align: center;">
-      <h3 style="color: var(--success); font-size: 24px; margin-bottom: 10px;">🎊 KAZANDIN! 🎊</h3>
-      <p id="winnerGame" style="font-size: 32px; font-weight: 900; color: var(--accent);"></p>
+    <div id="resultBox" class="hidden" style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(46, 125, 50, 0.2)); border: 4px solid #4CAF50; border-radius: 16px; text-align: center; box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);">
+      <h3 style="color: #4CAF50; font-size: 24px; margin-bottom: 10px; text-shadow: 2px 2px 0 #000;">🎊 KAZANDIN! 🎊</h3>
+      <p id="winnerGame" style="font-size: 32px; font-weight: 900; color: var(--accent); text-shadow: 3px 3px 0 #000, -2px -2px 0 #000;"></p>
     </div>
   </div>
 </div>
@@ -782,7 +809,7 @@
         document.getElementById('projResearchBlock').classList.remove('hidden');
         restoreRadio('projResearch', state.projResearch);
         if (state.projResearch === 'evet') {
-          document.getElementById('projSearchBtn').classList.remove('hidden');
+          document.getElementById('projSearchButtons').classList.remove('hidden');
         }
       }
     }
@@ -881,19 +908,39 @@
       saveState();
     });
 
-    document.getElementById('projSearchBtn').addEventListener('click', () => {
+    // PROJE ARAMALARI
+    document.getElementById('projSearchPdfBtn').addEventListener('click', () => {
       const topic = document.getElementById('projText').value.trim();
       if (topic) {
-        window.open(`https://www.google.com/search?q=${encodeURIComponent(topic + 'filetype:PDF')}`, '_blank');
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(topic + ' filetype:pdf')}`, '_blank');
       } else {
         alert('Lütfen önce konu başlığını yaz!');
       }
     });
 
-    document.getElementById('googleSearchBtn').addEventListener('click', () => {
+    document.getElementById('projSearchYoutubeBtn').addEventListener('click', () => {
+      const topic = document.getElementById('projText').value.trim();
+      if (topic) {
+        window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(topic + ' konu anlatımı')}`, '_blank');
+      } else {
+        alert('Lütfen önce konu başlığını yaz!');
+      }
+    });
+
+    // FASİKÜL ARAMALARI
+    document.getElementById('fasSearchPdfBtn').addEventListener('click', () => {
       const topic = document.getElementById('topicText').value.trim();
       if (topic) {
-        window.open(`https://www.google.com/search?q=${encodeURIComponent(topic + ' filetype:PDF konu anlatımı')}`, '_blank');
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(topic + ' filetype:pdf')}`, '_blank');
+      } else {
+        alert('Lütfen önce konuyu yaz!');
+      }
+    });
+
+    document.getElementById('fasSearchYoutubeBtn').addEventListener('click', () => {
+      const topic = document.getElementById('topicText').value.trim();
+      if (topic) {
+        window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(topic + ' konu anlatımı')}`, '_blank');
       } else {
         alert('Lütfen önce konuyu yaz!');
       }
@@ -948,16 +995,16 @@
         document.getElementById('projResearchBlock').classList.remove('hidden');
       } else {
         document.getElementById('projResearchBlock').classList.add('hidden');
-        document.getElementById('projSearchBtn').classList.add('hidden');
+        document.getElementById('projSearchButtons').classList.add('hidden');
         state.projResearch = null;
       }
     }
 
     if (name === 'projResearch') {
       if (value === 'evet') {
-        document.getElementById('projSearchBtn').classList.remove('hidden');
+        document.getElementById('projSearchButtons').classList.remove('hidden');
       } else {
-        document.getElementById('projSearchBtn').classList.add('hidden');
+        document.getElementById('projSearchButtons').classList.add('hidden');
       }
     }
 
@@ -1153,8 +1200,6 @@
       chip.textContent = '⚠️ Görevler tamam ama çark için: 3+ sayfa fasikül ve 10+ sayfa kitap gerek!';
       document.getElementById('rewardSection').classList.add('hidden');
     } else if (percentage >= 60) {
-    
-    
       chip.className = 'status-chip warn';
       chip.textContent = '⚠️ İyi, ama biraz eksik var';
       document.getElementById('rewardSection').classList.add('hidden');
@@ -1190,7 +1235,7 @@
     if (state.fasDone === 'evet') {
       text += `Fasikül: ${state.fasPages} sayfa çözüldü\n`;
       text += `Takıldı mı: ${state.fasStuck === 'evet' ? 'Evet' : 'Hayır'}\n\n`;
-    }
+      }
 
     if (state.bookRead === 'evet') {
       text += `Kitap: ${state.bookPages} sayfa okundu\n`;
@@ -1276,33 +1321,81 @@
     const centerY = wheelCanvas.height / 2;
     const radius = Math.min(centerX, centerY) - 10;
 
-    const colors = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#a594f9', '#ff9ff3', '#54a0ff'];
+    // Minecraft tarzı renkler - daha canlı ve pixel art tarzı
+    const colors = [
+      '#ff6b6b', // Kırmızı
+      '#ffd93d', // Sarı
+      '#6bcf7f', // Yeşil
+      '#4a90e2', // Mavi
+      '#a594f9', // Mor
+      '#ff9ff3', // Pembe
+      '#54a0ff', // Açık Mavi
+      '#ff9f43'  // Turuncu
+    ];
 
     wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+
+    // Minecraft pixel art efekti için
+    wheelCtx.imageSmoothingEnabled = false;
 
     for (let i = 0; i < numSegments; i++) {
       const startAngle = i * anglePerSegment;
       const endAngle = (i + 1) * anglePerSegment;
       
+      // Ana dilim
       wheelCtx.beginPath();
       wheelCtx.moveTo(centerX, centerY);
       wheelCtx.arc(centerX, centerY, radius, startAngle, endAngle);
       wheelCtx.closePath();
       wheelCtx.fillStyle = colors[i % colors.length];
       wheelCtx.fill();
-      wheelCtx.strokeStyle = '#fff';
-      wheelCtx.lineWidth = 3;
+      
+      // Koyu kenarlık (Minecraft blok stili)
+      wheelCtx.strokeStyle = '#000';
+      wheelCtx.lineWidth = 4;
       wheelCtx.stroke();
 
+      // İç gölge efekti
+      wheelCtx.beginPath();
+      wheelCtx.moveTo(centerX, centerY);
+      wheelCtx.arc(centerX, centerY, radius * 0.85, startAngle, endAngle);
+      wheelCtx.closePath();
+      wheelCtx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      wheelCtx.lineWidth = 2;
+      wheelCtx.stroke();
+
+      // Oyun ismi
       wheelCtx.save();
       wheelCtx.translate(centerX, centerY);
       wheelCtx.rotate(startAngle + anglePerSegment / 2);
       wheelCtx.textAlign = 'center';
-      wheelCtx.fillStyle = '#fff';
+      wheelCtx.textBaseline = 'middle';
+      
+      // Minecraft tarzı yazı gölgesi
+      wheelCtx.fillStyle = '#000';
       wheelCtx.font = 'bold 16px Arial';
+      wheelCtx.fillText(games[i], radius * 0.6 + 2, 2);
+      
+      wheelCtx.fillStyle = '#fff';
       wheelCtx.fillText(games[i], radius * 0.6, 0);
       wheelCtx.restore();
     }
+
+    // Merkez daire (Minecraft taş bloğu stili)
+    const centerRadius = 30;
+    wheelCtx.beginPath();
+    wheelCtx.arc(centerX, centerY, centerRadius, 0, 2 * Math.PI);
+    wheelCtx.fillStyle = '#808080';
+    wheelCtx.fill();
+    wheelCtx.strokeStyle = '#000';
+    wheelCtx.lineWidth = 4;
+    wheelCtx.stroke();
+
+    // Merkez parlama
+    wheelCtx.beginPath();
+    wheelCtx.arc(centerX, centerY, centerRadius * 0.6, 0, 2 * Math.PI);
+    wheelCtx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    wheelCtx.fill();
   }
 
   function spinWheel() {
@@ -1313,24 +1406,44 @@
     const randomIndex = Math.floor(Math.random() * games.length);
     const anglePerSegment = (2 * Math.PI) / games.length;
     const targetAngle = randomIndex * anglePerSegment + anglePerSegment / 2;
-    const spinRevolutions = 5;
+    const spinRevolutions = 5 + Math.random() * 3; // 5-8 tur arası
     const totalRotation = spinRevolutions * 2 * Math.PI + targetAngle;
 
     wheelCanvas.style.transform = `rotate(${totalRotation}rad)`;
-    wheelCanvas.style.transition = 'transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+    wheelCanvas.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
 
     setTimeout(() => {
       document.getElementById('winnerGame').textContent = games[randomIndex];
       document.getElementById('resultBox').classList.remove('hidden');
       
+      // Minecraft achievement kazanma sesi efekti için konfeti
       confetti({
         particleCount: 200,
-        spread: 100,
-        origin: { y: 0.6 }
+        spread: 120,
+        origin: { y: 0.6 },
+        colors: ['#FFD700', '#FFA500', '#FF6B6B', '#4CAF50', '#2196F3'],
+        shapes: ['square', 'circle'],
+        scalar: 1.2
       });
+
+      // Ekstra konfeti patlaması
+      setTimeout(() => {
+        confetti({
+          particleCount: 100,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 }
+        });
+        confetti({
+          particleCount: 100,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 }
+        });
+      }, 250);
       
       isSpinning = false;
-    }, 3000);
+    }, 4000);
   }
 
   init();
