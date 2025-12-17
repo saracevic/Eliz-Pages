@@ -281,9 +281,62 @@
             margin: 20px auto;
         }
 
-        @keyframes spin {
+@keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        /* iPad ve Tablet Tam Ekran Desteği */
+        @media screen and (min-width: 768px) {
+            body {
+                padding: 0;
+            }
+            
+            .game-container {
+                max-width: 100vw;
+                width: 100%;
+                min-height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        /* Yatay Mod (Landscape) Optimizasyonu */
+        @media screen and (orientation: landscape) {
+            .game-container {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+            
+            .question-area {
+                padding: 20px;
+            }
+            
+            .answers {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                padding: 0 20px 20px;
+            }
+            
+            .jokers {
+                gap: 15px;
+            }
+            
+            .joker-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 12px;
+            }
+        }
+
+        /* Büyük ekranlar için */
+        @media screen and (min-width: 1024px) and (orientation: landscape) {
+            .answers {
+                grid-template-columns: 1fr 1fr;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
         }
     </style>
 </head>
@@ -712,15 +765,21 @@ const allQuestions = [
     
         ];
 
+        let questions = [];
         let currentQuestion = 0;
         let usedJokers = { "50": false, "audience": false, "phone": false, "pass": false };
         let eliminatedAnswers = [];
-
+        
         function startGame() {
+            // Rastgele 12 soru seç
+            const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
+            questions = shuffled.slice(0, 12);
+            
             document.getElementById('startScreen').classList.remove('active');
             document.getElementById('gameScreen').classList.add('active');
             loadQuestion();
         }
+        
 
         function loadQuestion() {
             eliminatedAnswers = [];
