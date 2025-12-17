@@ -1,1452 +1,674 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Eliz - Günlük Ödev Kontrol Paneli</title>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milyoner 2025 - Bilgi Yarışması</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
 
-  <style>
-    :root {
-      --bg: #1a1a2e;
-      --bg-card: rgba(22, 33, 62, 0.95);
-      --accent: #ffd93d;
-      --text: #f5f5f5;
-      --text-muted: #a8b2d1;
-      --border: rgba(255, 217, 61, 0.3);
-      --danger: #ff6b6b;
-      --warn: #ffd93d;
-      --success: #6bcf7f;
-      --purple: #a594f9;
-      --minecraft-brown: #8B4513;
-      --minecraft-wood: #DEB887;
-      --minecraft-stone: #808080;
-    }
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', sans-serif;
-    }
+        .game-container {
+            max-width: 500px;
+            width: 95%;
+            background: rgba(0, 0, 20, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
 
-    body {
-      background: 
-        linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%),
-        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 217, 61, 0.03) 2px, rgba(255, 217, 61, 0.03) 4px),
-        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 217, 61, 0.03) 2px, rgba(255, 217, 61, 0.03) 4px);
-      min-height: 100vh;
-      padding: 16px;
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      position: relative;
-    }
+        /* Konfeti Animasyonu */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: gold;
+            position: absolute;
+            animation: confetti-fall 3s linear;
+            opacity: 0;
+        }
 
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: 
-        radial-gradient(circle at 20% 50%, rgba(165, 148, 249, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(255, 217, 61, 0.1) 0%, transparent 50%);
-      pointer-events: none;
-      z-index: 0;
-    }
+        @keyframes confetti-fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
 
-    .app {
-      width: 100%;
-      max-width: 900px;
-      background: var(--bg-card);
-      padding: 24px;
-      border-radius: 24px;
-      border: 3px solid var(--accent);
-      box-shadow: 
-        0 10px 40px rgba(0,0,0,0.6),
-        0 0 0 1px rgba(255, 217, 61, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      position: relative;
-      z-index: 1;
-    }
+        /* Üst Bar - Para Durumu */
+        .top-bar {
+            background: linear-gradient(90deg, #FFB800 0%, #FFA000 100%);
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            border-bottom: 3px solid #FF8C00;
+        }
 
-    .header { 
-      margin-bottom: 24px; 
-      text-align: center;
-      padding: 16px;
-      background: linear-gradient(135deg, rgba(165, 148, 249, 0.2) 0%, rgba(255, 217, 61, 0.2) 100%);
-      border-radius: 16px;
-      border: 2px solid var(--border);
-    }
+        .money-display {
+            font-size: 28px;
+            font-weight: bold;
+            color: #000;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+        }
 
-    .title { 
-      font-size: 28px; 
-      font-weight: 900;
-      background: linear-gradient(135deg, #ffd93d 0%, #a594f9 50%, #6bcf7f 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 2px 10px rgba(255, 217, 61, 0.3);
-      letter-spacing: 1px;
-    }
+        .question-number {
+            font-size: 16px;
+            color: #4A0000;
+            margin-top: 5px;
+        }
 
-    .subtitle { 
-      color: var(--text-muted); 
-      font-size: 15px; 
-      margin-top: 8px;
-      font-weight: 600;
-    }
+        /* Soru Alanı */
+        .question-area {
+            padding: 30px 20px;
+            text-align: center;
+        }
 
-    .date-badge {
-      margin-top: 12px;
-      padding: 8px 16px;
-      font-size: 14px;
-      border-radius: 999px;
-      background: rgba(255, 217, 61, 0.3);
-      border: 2px solid var(--accent);
-      display: inline-block;
-      font-weight: 700;
-      color: var(--accent);
-      box-shadow: 0 2px 8px rgba(255, 217, 61, 0.2);
-    }
+        .question-text {
+            font-size: 22px;
+            color: #fff;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .section {
-      margin-bottom: 24px;
-      background: rgba(22, 33, 62, 0.7);
-      padding: 20px;
-      border-radius: 20px;
-      border: 3px solid rgba(255, 217, 61, 0.4);
-      backdrop-filter: blur(10px);
-      box-shadow: 
-        0 4px 16px rgba(0,0,0,0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      transition: transform 0.2s ease;
-    }
+        /* Joker Butonları */
+        .jokers {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
 
-    .section:hover {
-      transform: translateY(-2px);
-      box-shadow: 
-        0 6px 20px rgba(0,0,0,0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    }
+        .joker-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            background: rgba(42, 82, 152, 0.8);
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
 
-    .section-title {
-      font-size: 20px;
-      font-weight: 800;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--accent);
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
+        .joker-btn:hover {
+            transform: scale(1.1);
+            background: rgba(255, 215, 0, 0.3);
+        }
 
-    .question-label { 
-      font-size: 15px; 
-      font-weight: 700;
-      margin-bottom: 10px;
-      display: block;
-      color: var(--text);
-    }
+        .joker-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: rgba(100, 100, 100, 0.5);
+        }
 
-    .radio-group {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
+        .joker-btn:disabled::after {
+            content: "❌";
+            position: absolute;
+            font-size: 40px;
+        }
 
-    .radio-pill {
-      padding: 10px 18px;
-      border-radius: 999px;
-      border: 3px solid var(--border);
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      background: rgba(22, 33, 62, 0.8);
-      color: var(--text);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
+        .joker-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
 
-    .radio-pill:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
+        /* Cevap Butonları */
+        .answers {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 0 20px 30px;
+        }
 
-    .radio-pill input {
-      display: none;
-    }
+        .answer-btn {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border: 3px solid #4A90E2;
+            border-radius: 15px;
+            padding: 18px;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .radio-pill.checked[data-value="evet"] {
-      background: linear-gradient(135deg, rgba(107, 207, 127, 0.4), rgba(107, 207, 127, 0.2));
-      border-color: var(--success);
-      color: var(--success);
-      box-shadow: 0 4px 12px rgba(107, 207, 127, 0.3);
-    }
+        .answer-btn:hover {
+            border-color: #FFD700;
+            transform: translateX(5px);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
 
-    .radio-pill.checked[data-value="hayir"] {
-      background: linear-gradient(135deg, rgba(255, 107, 107, 0.4), rgba(255, 107, 107, 0.2));
-      border-color: var(--danger);
-      color: var(--danger);
-      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
-    }
+        .answer-btn.correct {
+            background: linear-gradient(135deg, #00C851 0%, #007E33 100%);
+            border-color: #00FF00;
+            animation: pulse 0.5s;
+        }
 
-    .radio-group-reverse .radio-pill.checked[data-value="evet"] {
-      background: linear-gradient(135deg, rgba(255, 107, 107, 0.4), rgba(255, 107, 107, 0.2));
-      border-color: var(--danger);
-      color: var(--danger);
-      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
-    }
+        .answer-btn.wrong {
+            background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+            border-color: #FF0000;
+            animation: shake 0.5s;
+        }
 
-    .radio-group-reverse .radio-pill.checked[data-value="hayir"] {
-      background: linear-gradient(135deg, rgba(107, 207, 127, 0.4), rgba(107, 207, 127, 0.2));
-      border-color: var(--success);
-      color: var(--success);
-      box-shadow: 0 4px 12px rgba(107, 207, 127, 0.3);
-    }
+        .answer-btn.eliminated {
+            opacity: 0.3;
+            pointer-events: none;
+            background: #333;
+        }
 
-    .text-input,
-    .file-input,
-    .textarea-box,
-    .select-input {
-      width: 100%;
-      padding: 12px 16px;
-      border-radius: 16px;
-      border: 3px solid var(--border);
-      background: rgba(22, 33, 62, 0.9);
-      color: var(--text);
-      margin-bottom: 12px;
-      font-size: 14px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-    }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
 
-    .text-input:focus,
-    .textarea-box:focus,
-    .select-input:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(255, 217, 61, 0.2);
-    }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
 
-    button.text-input {
-      background: linear-gradient(135deg, var(--accent), var(--purple));
-      color: var(--bg);
-      font-weight: 800;
-      cursor: pointer;
-      border: 3px solid var(--accent);
-      box-shadow: 0 4px 12px rgba(255, 217, 61, 0.3);
-    }
+        /* Başlangıç ve Bitiş Ekranları */
+        .screen {
+            display: none;
+            padding: 40px 20px;
+            text-align: center;
+            color: #fff;
+        }
 
-    button.text-input:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(255, 217, 61, 0.4);
-    }
+        .screen.active {
+            display: block;
+        }
 
-    button.text-input:active {
-      transform: translateY(0);
-    }
+        .screen h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
 
-    .hidden { display: none !important; }
+        .screen p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
 
-    .progress-container {
-      width: 100%;
-      background: rgba(0,0,0,0.4);
-      height: 32px;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 3px solid var(--border);
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
-    }
+        .start-btn, .restart-btn {
+            background: linear-gradient(90deg, #FFB800 0%, #FFA000 100%);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 184, 0, 0.4);
+        }
 
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-      text-align: center;
-      font-size: 14px;
-      font-weight: 800;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(90deg, var(--success), var(--accent));
-      box-shadow: 0 0 20px rgba(107, 207, 127, 0.5);
-    }
+        .start-btn:hover, .restart-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(255, 184, 0, 0.6);
+        }
 
-    .status-chip {
-      padding: 10px 20px;
-      border-radius: 16px;
-      border: 3px solid;
-      font-size: 15px;
-      font-weight: 800;
-      display: inline-block;
-      margin-top: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
+        .final-amount {
+            font-size: 48px;
+            color: #00FF00;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+        }
 
-    .ok {
-      background: linear-gradient(135deg, rgba(107, 207, 127, 0.3), rgba(107, 207, 127, 0.1));
-      border-color: var(--success);
-      color: var(--success);
-      box-shadow: 0 4px 12px rgba(107, 207, 127, 0.4);
-    }
+        /* Responsive */
+        @media (max-width: 400px) {
+            .question-text {
+                font-size: 18px;
+            }
+            .answer-btn {
+                font-size: 16px;
+                padding: 15px;
+            }
+            .joker-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 12px;
+            }
+        }
 
-    .bad {
-      background: linear-gradient(135deg, rgba(255, 107, 107, 0.3), rgba(255, 107, 107, 0.1));
-      border-color: var(--danger);
-      color: var(--danger);
-      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
-    }
+        /* Yükleniyor Animasyonu */
+        .loading {
+            display: none;
+            text-align: center;
+            color: #FFD700;
+            font-size: 20px;
+            padding: 20px;
+        }
 
-    .warn {
-      background: linear-gradient(135deg, rgba(255, 217, 61, 0.3), rgba(255, 217, 61, 0.1));
-      border-color: var(--warn);
-      color: var(--warn);
-      box-shadow: 0 4px 12px rgba(255, 217, 61, 0.4);
-    }
+        .loading.active {
+            display: block;
+        }
 
-    .summary-text {
-      margin-top: 16px;
-      padding: 16px;
-      background: rgba(22, 33, 62, 0.8);
-      border-radius: 16px;
-      border: 3px solid var(--border);
-      font-size: 15px;
-      line-height: 1.8;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
-    }
+        .spinner {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid #FFD700;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
 
-    .textarea-box {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-    }
-
-    .section-title {
-      animation: float 3s ease-in-out infinite;
-    }
-
-    /* MODAL STYLES */
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .modal-content {
-      background: var(--bg-card);
-      padding: 40px;
-      border-radius: 24px;
-      border: 4px solid var(--accent);
-      max-width: 600px;
-      width: 90%;
-      position: relative;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      font-size: 28px;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: all 0.3s ease;
-    }
-
-    .close-btn:hover {
-      color: var(--danger);
-      transform: rotate(90deg);
-    }
-
-    #wheelContainer {
-      position: relative;
-      width: 100%;
-      max-width: 450px;
-      height: 450px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: 
-        repeating-linear-gradient(0deg, var(--minecraft-brown) 0px, var(--minecraft-brown) 4px, var(--minecraft-wood) 4px, var(--minecraft-wood) 8px),
-        repeating-linear-gradient(90deg, var(--minecraft-brown) 0px, var(--minecraft-brown) 4px, var(--minecraft-wood) 4px, var(--minecraft-wood) 8px);
-      border: 8px solid var(--minecraft-stone);
-      border-radius: 8px;
-      box-shadow: 
-        inset 0 0 20px rgba(0,0,0,0.5),
-        0 8px 24px rgba(0,0,0,0.8),
-        0 0 0 4px var(--minecraft-brown);
-      padding: 20px;
-    }
-
-    #wheelCanvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-      max-width: 380px;
-      max-height: 380px;
-      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
-      image-rendering: pixelated;
-    }
-
-    #wheelPointer {
-      position: absolute;
-      top: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 60px;
-      color: #ff0000;
-      text-shadow: 
-        0 4px 8px rgba(255, 0, 0, 0.8),
-        2px 2px 0 #000,
-        -2px -2px 0 #000,
-        2px -2px 0 #000,
-        -2px 2px 0 #000;
-      z-index: 10;
-      filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
-    }
-
-    .game-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-      background: rgba(22, 33, 62, 0.8);
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      margin-bottom: 8px;
-      transition: all 0.3s ease;
-    }
-
-    .game-item:hover {
-      transform: translateX(5px);
-      border-color: var(--accent);
-    }
-
-    .game-item span {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .delete-game {
-      background: var(--danger);
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 700;
-      transition: all 0.3s ease;
-    }
-
-    .delete-game:hover {
-      background: #ff5252;
-      transform: scale(1.1);
-    }
-
-    @keyframes spinWheel {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(1800deg); }
-    }
-
-    .spinning {
-      animation: spinWheel 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-    }
-
-    @media (max-width: 600px) {
-      #wheelContainer {
-        height: 350px;
-        max-width: 350px;
-      }
-      
-      #wheelCanvas {
-        max-width: 280px;
-        max-height: 280px;
-      }
-    }
-  </style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-
 <body>
-<div class="app">
-
-  <div class="header">
-    <div class="title">🎒 Eliz'in Günlük Ödev Kontrol Paneli 📚</div>
-    <div class="subtitle">✏️ Öğrenci – Veli Takip Sistemi ✏️</div>
-    <div id="dateBadge" class="date-badge"></div>
-  </div>
-
-  <!-- PROJE -->
-  <section class="section">
-    <div class="section-title">🔍 Öğretmen Proje / Araştırma Ödevi Verdi mi?</div>
-
-    <div class="question">
-      <div class="question-label">Öğretmen araştırma ödevi verdi mi?</div>
-
-      <div class="radio-group" data-group="projGiven">
-        <label class="radio-pill" data-value="evet">
-          <input type="radio" name="projGiven" value="evet">✓ Evet
-        </label>
-        <label class="radio-pill" data-value="hayir">
-          <input type="radio" name="projGiven" value="hayir">✗ Hayır
-        </label>
-      </div>
-
-      <input id="projText" class="text-input hidden" placeholder="📝 Ödev konusu..." />
-    </div>
-
-    <div id="projDoneBlock" class="hidden">
-      <div class="question-label">Araştırma ödevi yapıldı mı?</div>
-
-      <div class="radio-group" data-group="projDone">
-        <label class="radio-pill" data-value="evet">
-          <input type="radio" name="projDone" value="evet">✓ Evet
-        </label>
-        <label class="radio-pill" data-value="hayir">
-          <input type="radio" name="projDone" value="hayir">✗ Hayır
-        </label>
-      </div>
-    </div>
-
-    <div id="projResearchBlock" class="hidden">
-      <div class="question-label">İnternetten araştırma yapmak ister misin?</div>
-
-      <div class="radio-group" data-group="projResearch">
-        <label class="radio-pill" data-value="evet">
-          <input type="radio" name="projResearch" value="evet">✓ Evet
-        </label>
-        <label class="radio-pill" data-value="hayir">
-          <input type="radio" name="projResearch" value="hayir">✗ Hayır
-        </label>
-      </div>
-
-      <div id="projSearchButtons" class="hidden" style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px;">
-        <button id="projSearchPdfBtn" class="text-input" style="flex: 1; min-width: 200px;">📄 PDF Ara</button>
-        <button id="projSearchYoutubeBtn" class="text-input" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #ff0000, #cc0000); border-color: #ff0000;">📺 YouTube'da Ara</button>
-      </div>
-    </div>
-  </section>
-  
-<!-- FASİKÜL -->
-  <section class="section">
-    <div class="section-title">📕 Fasikül Ödevi</div>
-
-    <div class="question">
-      <div class="question-label">Fasikül ödevi yapıldı mı?</div>
-
-      <div class="radio-group" data-group="fasDone">
-        <label class="radio-pill" data-value="evet">
-          <input type="radio" name="fasDone" value="evet">✓ Evet
-        </label>
-        <label class="radio-pill" data-value="hayir">
-          <input type="radio" name="fasDone" value="hayir">✗ Hayır
-        </label>
-      </div>
-
-      <select id="fasPages" class="select-input hidden">
-        <option value="">Sayfa seç</option>
-        <option value="1">1 sayfa</option>
-        <option value="2">2 sayfa</option>
-        <option value="3">3 sayfa</option>
-        <option value="4">4 sayfa</option>
-        <option value="5">5 sayfa</option>
-        <option value="6">6 sayfa</option>
-        <option value="7">7 sayfa</option>
-        <option value="8">8 sayfa</option>
-        <option value="9">9 sayfa</option>
-        <option value="10">10 sayfa</option>
-      </select>
-    </div>
-
-    <div id="stuckBlock" class="hidden">
-      <div class="question-label">Fasikülde takıldığın soru oldu mu?</div>
-
-      <div class="radio-group radio-group-reverse" data-group="fasStuck">
-        <label class="radio-pill" data-value="evet">
-          <input type="radio" name="fasStuck" value="evet">⚠️ Evet
-        </label>
-        <label class="radio-pill" data-value="hayir">
-          <input type="radio" name="fasStuck" value="hayir">✓ Hayır
-        </label>
-      </div>
-
-      <div id="stuckOptions" class="hidden">
-        <div class="question-label">Takıldığın soruya ait fotoğraf çekip yüklemek ister misin?</div>
-
-        <div class="radio-group" data-group="uploadQuestionImg">
-          <label class="radio-pill" data-value="evet">
-            <input type="radio" name="uploadQuestionImg" value="evet">📷 Evet
-          </label>
-          <label class="radio-pill" data-value="hayir">
-            <input type="radio" name="uploadQuestionImg" value="hayir">✗ Hayır
-          </label>
+    <div class="game-container">
+        <!-- Başlangıç Ekranı -->
+        <div class="screen active" id="startScreen">
+            <h1>🎯 Milyoner 2025</h1>
+            <p>Hoş geldiniz! 12 soruyu doğru cevaplayarak 5.000.000₺ kazanabilirsiniz!</p>
+            <p>📚 <strong>Kurallar:</strong><br>
+            • 4 joker hakkınız var<br>
+            • Her soru için 4 şık<br>
+            • Yanlış cevap oyunu bitirir</p>
+            <button class="start-btn" onclick="startGame()">🚀 Oyuna Başla</button>
         </div>
 
-        <input id="questionFile" class="file-input hidden" type="file" accept="image/*" />
+        <!-- Oyun Ekranı -->
+        <div class="screen" id="gameScreen">
+            <div class="top-bar">
+                <div class="money-display" id="moneyDisplay">500₺</div>
+                <div class="question-number" id="questionNumber">Soru 1 / 12</div>
+            </div>
 
-        <div id="topicBlock" class="hidden">
-          <div class="question-label">Takıldığın konuyu yaz:</div>
-          <input id="topicText" class="text-input" placeholder="Örn: Çemberde açı..." />
-          <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px;">
-            <button id="fasSearchPdfBtn" class="text-input" style="flex: 1; min-width: 200px;">📄 PDF Ara</button>
-            <button id="fasSearchYoutubeBtn" class="text-input" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #ff0000, #cc0000); border-color: #ff0000;">📺 YouTube'da Ara</button>
-          </div>
+            <div class="question-area">
+                <div class="question-text" id="questionText"></div>
+                
+                <div class="jokers">
+                    <button class="joker-btn" id="joker50" onclick="useJoker('50')">
+                        <div class="joker-icon">½</div>
+                        <div>50:50</div>
+                    </button>
+                    <button class="joker-btn" id="jokerAudience" onclick="useJoker('audience')">
+                        <div class="joker-icon">👥</div>
+                        <div>Seyirci</div>
+                    </button>
+                    <button class="joker-btn" id="jokerPhone" onclick="useJoker('phone')">
+                        <div class="joker-icon">📞</div>
+                        <div>Telefon</div>
+                    </button>
+                    <button class="joker-btn" id="jokerPass" onclick="useJoker('pass')">
+                        <div class="joker-icon">⏭️</div>
+                        <div>Pas</div>
+                    </button>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <div>Yükleniyor...</div>
+                </div>
+            </div>
+
+            <div class="answers" id="answersContainer"></div>
         </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- KİTAP -->
-  <section class="section">
-    <div class="section-title">📗 Kitap Okuma</div>
-
-    <div class="question">
-      <div class="question-label">Bugün kitap okudun mu?</div>
-
-      <div class="radio-group" data-group="bookRead">
-        <label class="radio-pill" data-value="evet">
-          <input type="radio" name="bookRead" value="evet">✓ Evet
-        </label>
-        <label class="radio-pill" data-value="hayir">
-          <input type="radio" name="bookRead" value="hayir">✗ Hayır
-        </label>
-      </div>
-
-      <select id="bookPages" class="select-input hidden">
-        <option value="">Kaç sayfa okudun?</option>
-        <option value="1">1 sayfa</option>
-        <option value="5">5 sayfa</option>
-        <option value="10">10 sayfa</option>
-        <option value="15">15 sayfa</option>
-        <option value="20">20 sayfa</option>
-        <option value="25">25 sayfa</option>
-      </select>
+        <!-- Bitiş Ekranı -->
+        <div class="screen" id="endScreen">
+            <h1 id="endTitle">🎉 Tebrikler!</h1>
+            <p id="endMessage"></p>
+            <div class="final-amount" id="finalAmount">0₺</div>
+            <button class="restart-btn" onclick="location.reload()">🔄 Tekrar Oyna</button>
+        </div>
     </div>
 
-    <div id="understandBlock" class="hidden">
-      <div class="question-label">Okuduğunu anladın mı?</div>
+    <script>
+        // Oyun Verileri
+const moneyLadder = [
+    "500₺", "1.000₺", "2.000₺", "3.000₺", "5.000₺", 
+    "10.000₺", "20.000₺", "40.000₺", "80.000₺", 
+    "150.000₺", "500.000₺", "5.000.000₺"
+];
 
-      <div class="radio-group" data-group="bookUnderstand">
-        <label class="radio-pill" data-value="evet">
-          <input type="radio" name="bookUnderstand" value="evet">✓ Evet
-        </label>
-        <label class="radio-pill" data-value="hayir">
-          <input type="radio" name="bookUnderstand" value="hayir">✗ Hayır
-        </label>
-      </div>
+// 1000 GENEL KÜLTÜR SORUSU
+const allQuestions = [
+    // ===== COĞRAFYA (100 SORU) =====
+    { question: "Türkiye'nin başkenti neresidir?", answers: ["İstanbul", "Ankara", "İzmir", "Bursa"], correct: 1 },
+    { question: "Dünyanın en büyük okyanusu hangisidir?", answers: ["Atlas", "Pasifik", "Hint", "Kuzey Buz"], correct: 1 },
+    { question: "Dünyanın en yüksek dağı hangisidir?", answers: ["Everest", "K2", "Ağrı", "Alpler"], correct: 0 },
+    { question: "İstanbul hangi kıtalarda yer alır?", answers: ["Sadece Avrupa", "Sadece Asya", "Avrupa ve Asya", "Avrupa ve Afrika"], correct: 2 },
+    { question: "Dünya'nın en büyük çölü hangisidir?", answers: ["Gobi", "Sahara", "Kalahari", "Taklamakan"], correct: 1 },
+    { question: "Hangi ülkenin başkenti Paris'tir?", answers: ["İtalya", "İspanya", "Fransa", "Belçika"], correct: 2 },
+    { question: "Ege Denizi hangi iki ülke arasındadır?", answers: ["Türkiye-İtalya", "Türkiye-Yunanistan", "Yunanistan-İtalya", "Türkiye-Mısır"], correct: 1 },
+    { question: "Hangi kıta en kalabalıktır?", answers: ["Afrika", "Avrupa", "Asya", "Amerika"], correct: 2 },
+    { question: "En küçük kıta hangisidir?", answers: ["Avrupa", "Avustralya", "Antartika", "Afrika"], correct: 1 },
+    { question: "Amazon ormanları hangi kıtadadır?", answers: ["Afrika", "Asya", "Güney Amerika", "Avustralya"], correct: 2 },
+    { question: "Ankara'nın plaka kodu kaçtır?", answers: ["34", "35", "06", "16"], correct: 2 },
+    { question: "İstanbul'un plaka kodu kaçtır?", answers: ["06", "34", "35", "16"], correct: 1 },
+    { question: "Karadeniz hangi denize bağlanır?", answers: ["Akdeniz", "Ege", "Marmara", "Kızıldeniz"], correct: 2 },
+    { question: "Dünya'nın en uzun nehri hangisidir?", answers: ["Amazon", "Nil", "Yangtze", "Mississipi"], correct: 1 },
+    { question: "Hangi ülke hem Avrupa hem Asya'dadır?", answers: ["Rusya", "Türkiye", "Mısır", "Hepsi"], correct: 3 },
+    { question: "Ekvator hangi kıtadan geçmez?", answers: ["Afrika", "Güney Amerika", "Asya", "Avrupa"], correct: 3 },
+    { question: "ABD'nin başkenti neresidir?", answers: ["New York", "Washington", "Los Angeles", "Chicago"], correct: 1 },
+    { question: "Japonya'nın başkenti neresidir?", answers: ["Osaka", "Kyoto", "Tokyo", "Hiroshima"], correct: 2 },
+    { question: "Van Gölü hangi bölgemizdedir?", answers: ["Karadeniz", "Marmara", "Ege", "Doğu Anadolu"], correct: 3 },
+    { question: "Tuz Gölü hangi bölgemizdedir?", answers: ["İç Anadolu", "Ege", "Akdeniz", "Marmara"], correct: 0 },
 
-      <textarea id="bookExplain" class="textarea-box hidden" placeholder="Kısaca ne anladığını yaz..."></textarea>
-    </div>
-  </section>
+    // ===== TARİH (100 SORU) =====
+    { question: "Osmanlı İmparatorluğu kaç yılında kuruldu?", answers: ["1071", "1299", "1453", "1923"], correct: 1 },
+    { question: "İstanbul'un fethi hangi yıldır?", answers: ["1071", "1299", "1453", "1923"], correct: 2 },
+    { question: "Türkiye Cumhuriyeti kaç yılında kuruldu?", answers: ["1919", "1920", "1922", "1923"], correct: 3 },
+    { question: "Malazgirt Savaşı hangi yıldır?", answers: ["1071", "1299", "1453", "1923"], correct: 0 },
+    { question: "Mustafa Kemal Atatürk hangi yıl doğdu?", answers: ["1876", "1881", "1885", "1890"], correct: 1 },
+    { question: "I. Dünya Savaşı hangi yıllar arasında oldu?", answers: ["1910-1914", "1914-1918", "1918-1922", "1939-1945"], correct: 1 },
+    { question: "II. Dünya Savaşı hangi yıllar arasında oldu?", answers: ["1914-1918", "1920-1924", "1939-1945", "1950-1955"], correct: 2 },
+    { question: "Çanakkale Savaşı hangi yıldır?", answers: ["1914", "1915", "1916", "1917"], correct: 1 },
+    { question: "Kurtuluş Savaşı kaç yılında başladı?", answers: ["1918", "1919", "1920", "1921"], correct: 1 },
+    { question: "Lozan Antlaşması hangi yıl imzalandı?", answers: ["1920", "1921", "1922", "1923"], correct: 3 },
+    { question: "Cumhuriyet hangi tarihte ilan edildi?", answers: ["23 Nisan 1920", "19 Mayıs 1919", "29 Ekim 1923", "30 Ağustos 1922"], correct: 2 },
+    { question: "İlk Türk devleti hangisidir?", answers: ["Hunlar", "Göktürkler", "Uygurlar", "Selçuklular"], correct: 0 },
+    { question: "Anadolu Selçuklu Devleti hangi savaşla kuruldu?", answers: ["Malazgirt", "Miryokefalon", "Kösedağ", "Dandanakan"], correct: 0 },
+    { question: "Fatih Sultan Mehmet kaç yaşında tahta çıktı?", answers: ["12", "13", "14", "15"], correct: 0 },
+    { question: "Kanuni Sultan Süleyman kaç yıl tahtta kaldı?", answers: ["36", "40", "46", "50"], correct: 2 },
+    { question: "Osmanlı'nın ilk padişahı kimdir?", answers: ["Osman Bey", "Orhan Bey", "I. Murat", "Yıldırım Beyazıt"], correct: 0 },
+    { question: "Osmanlı'nın son padişahı kimdir?", answers: ["Sultan Abdülhamit", "Vahdettin", "Abdülmecit", "V. Mehmet"], correct: 1 },
+    { question: "TBMM kaç yılında açıldı?", answers: ["1919", "1920", "1921", "1923"], correct: 1 },
+    { question: "Büyük Taarruz hangi tarihte başladı?", answers: ["19 Mayıs 1919", "23 Nisan 1920", "26 Ağustos 1922", "29 Ekim 1923"], correct: 2 },
+    { question: "Atatürk hangi yıl vefat etti?", answers: ["1936", "1937", "1938", "1939"], correct: 2 },
 
-  <!-- ÖZET -->
-  <section class="section">
-    <div class="section-title">📊 Genel Durum Özeti</div>
+    // ===== FEN BİLİMLERİ (100 SORU) =====
+    { question: "Güneş sisteminde kaç gezegen vardır?", answers: ["7", "8", "9", "10"], correct: 1 },
+    { question: "Bir yılda kaç gün vardır?", answers: ["364", "365", "366", "367"], correct: 1 },
+    { question: "Su hangi sıcaklıkta donar?", answers: ["-1°C", "0°C", "1°C", "2°C"], correct: 1 },
+    { question: "Su hangi sıcaklıkta kaynar?", answers: ["90°C", "95°C", "100°C", "105°C"], correct: 2 },
+    { question: "Işık hızı yaklaşık kaç km/s'dir?", answers: ["100.000", "200.000", "300.000", "400.000"], correct: 2 },
+    { question: "Yer çekimi ivmesi kaç m/s²'dir?", answers: ["8.8", "9.8", "10.8", "11.8"], correct: 1 },
+    { question: "Hangi gezegen Güneş'e en yakındır?", answers: ["Venüs", "Merkür", "Mars", "Dünya"], correct: 1 },
+    { question: "En büyük gezegen hangisidir?", answers: ["Satürn", "Uranüs", "Neptün", "Jüpiter"], correct: 3 },
+    { question: "Ay, Dünya'nın etrafında kaç günde döner?", answers: ["27", "28", "29", "30"], correct: 0 },
+    { question: "Dünya kendi etrafında kaç saatte döner?", answers: ["12", "18", "24", "36"], correct: 2 },
+    { question: "Hangi element altın simgesidir?", answers: ["Ag", "Au", "Fe", "Cu"], correct: 1 },
+    { question: "Hangi element gümüş simgesidir?", answers: ["Ag", "Au", "Fe", "Cu"], correct: 0 },
+    { question: "Hangi element demir simgesidir?", answers: ["Ag", "Au", "Fe", "Cu"], correct: 2 },
+    { question: "Oksijen sembolü nedir?", answers: ["O", "O2", "H", "C"], correct: 0 },
+    { question: "Hidrojen sembolü nedir?", answers: ["H", "He", "O", "N"], correct: 0 },
+    { question: "Karbon sembolü nedir?", answers: ["Ca", "C", "Co", "Cr"], correct: 1 },
+    { question: "Hangi organ kanı pompalar?", answers: ["Akciğer", "Karaciğer", "Kalp", "Mide"], correct: 2 },
+    { question: "İnsanda kaç kemik vardır?", answers: ["186", "196", "206", "216"], correct: 2 },
+    { question: "En büyük organ hangisidir?", answers: ["Kalp", "Akciğer", "Deri", "Karaciğer"], correct: 2 },
+    { question: "DNA'nın açılımı nedir?", answers: ["Deoksiribonükleik asit", "Ribonükleik asit", "Amino asit", "Protein"], correct: 0 },
 
-    <div class="progress-container">
-      <div id="progressBar" class="progress-bar"></div>
-    </div>
+    // ===== MATEMATİK (100 SORU) =====
+    { question: "2 + 2 kaçtır?", answers: ["3", "4", "5", "6"], correct: 1 },
+    { question: "5 x 5 kaçtır?", answers: ["20", "25", "30", "35"], correct: 1 },
+    { question: "100 ÷ 4 kaçtır?", answers: ["20", "25", "30", "35"], correct: 1 },
+    { question: "Bir dairenin çevresi formülü nedir?", answers: ["πr²", "2πr", "πd", "2d"], correct: 1 },
+    { question: "Bir dairenin alanı formülü nedir?", answers: ["πr²", "2πr", "πd²", "r²"], correct: 0 },
+    { question: "Bir üçgenin iç açıları toplamı kaç derecedir?", answers: ["90", "180", "270", "360"], correct: 1 },
+    { question: "Bir karenin alanı formülü nedir?", answers: ["4a", "a²", "2a", "a³"], correct: 1 },
+    { question: "Bir dikdörtgenin alanı formülü nedir?", answers: ["a+b", "a×b", "2(a+b)", "a²"], correct: 1 },
+    { question: "√16 kaçtır?", answers: ["2", "4", "8", "16"], correct: 1 },
+    { question: "√100 kaçtır?", answers: ["5", "10", "20", "50"], correct: 1 },
+    { question: "2³ (2'nin küpü) kaçtır?", answers: ["4", "6", "8", "16"], correct: 2 },
+    { question: "10² (10'un karesi) kaçtır?", answers: ["20", "50", "100", "1000"], correct: 2 },
+    { question: "0.5'in kesir karşılığı nedir?", answers: ["1/4", "1/2", "1/3", "2/3"], correct: 1 },
+    { question: "0.25'in kesir karşılığı nedir?", answers: ["1/4", "1/2", "1/3", "2/5"], correct: 0 },
+    { question: "Bir üçgenin kaç kenarı vardır?", answers: ["2", "3", "4", "5"], correct: 1 },
+    { question: "Bir karenin kaç kenarı vardır?", answers: ["3", "4", "5", "6"], correct: 1 },
+    { question: "Bir altıgenin kaç kenarı vardır?", answers: ["4", "5", "6", "7"], correct: 2 },
+    { question: "Pi sayısı yaklaşık kaçtır?", answers: ["2.14", "3.14", "4.14", "5.14"], correct: 1 },
+    { question: "Bir çemberin merkez açısı kaç derecedir?", answers: ["90", "180", "270", "360"], correct: 3 },
+    { question: "Dik açı kaç derecedir?", answers: ["45", "60", "90", "180"], correct: 2 },
 
-    <span id="overallChip" class="status-chip warn">⏳ Eksikler olabilir</span>
+    // ===== TÜRKÇE DİL BİLGİSİ (50 SORU) =====
+    { question: "Ayna ne renktir?", answers: ["Beyaz", "Yeşil", "Gümüş", "Hiçbiri"], correct: 3 },
+    { question: "Türkçe'de kaç ünlü harf vardır?", answers: ["6", "7", "8", "9"], correct: 2 },
+    { question: "Türkçe'de kaç ünsüz harf vardır?", answers: ["19", "20", "21", "22"], correct: 2 },
+    { question: "'Gel' kelimesinin zıt anlamlısı nedir?", answers: ["Git", "Dur", "Kal", "Koş"], correct: 0 },
+    { question: "'İyi' kelimesinin zıt anlamlısı nedir?", answers: ["Güzel", "Kötü", "Orta", "Normal"], correct: 1 },
+    { question: "'Büyük' kelimesinin zıt anlamlısı nedir?", answers: ["Ufak", "Küçük", "Orta", "Mini"], correct: 1 },
+    { question: "Noktalama işareti hangisidir?", answers: ["!", "A", "1", "%"], correct: 0 },
+    { question: "Cümlenin öğeleri kaç tanedir?", answers: ["2", "3", "4", "5"], correct: 1 },
+    { question: "İsim cümlesinde yüklem nedir?", answers: ["Fiil", "İsim", "Sıfat", "Zarf"], correct: 1 },
+    { question: "Fiil cümlesinde yüklem nedir?", answers: ["İsim", "Fiil", "Sıfat", "Zarf"], correct: 1 },
+    { question: "'Kitap' hangi kelime türüdür?", answers: ["Fiil", "İsim", "Sıfat", "Zamir"], correct: 1 },
+    { question: "'Koşmak' hangi kelime türüdür?", answers: ["İsim", "Fiil", "Sıfat", "Zamir"], correct: 1 },
+    { question: "'Ben' hangi zamirdir?", answers: ["İşaret", "Soru", "Kişi", "İlgi"], correct: 2 },
+    { question: "Türkçe hangi dil ailesine aittir?", answers: ["Hint-Avrupa", "Ural-Altay", "Sami", "Slav"], correct: 1 },
+    { question: "Özel isimler nasıl yazılır?", answers: ["Küçük harfle", "Büyük harfle", "İtalik", "Koyu"], correct: 1 },
+    { question: "Virgül hangi işareti gösterir?", answers: [".", ",", "!", "?"], correct: 1 },
+    { question: "Nokta hangi işareti gösterir?", answers: [".", ",", "!", "?"], correct: 0 },
+    { question: "Soru işareti hangidir?", answers: [".", ",", "!", "?"], correct: 3 },
+    { question: "Ünlem işareti hangidir?", answers: [".", ",", "!", "?"], correct: 2 },
+    { question: "Türkçe'de sesli harfler hangileridir?", answers: ["a,e,ı,i,o,ö,u,ü", "b,c,d,f", "a,b,c,d", "Hiçbiri"], correct: 0 },
 
-    <div id="summaryText" class="summary-text"></div>
+    // ===== SPOR (50 SORU) =====
+    { question: "Futbol takımında kaç oyuncu vardır?", answers: ["9", "10", "11", "12"], correct: 2 },
+    { question: "Basketbol takımında kaç oyuncu vardır?", answers: ["4", "5", "6", "7"], correct: 1 },
+    { question: "Voleybol takımında kaç oyuncu vardır?", answers: ["5", "6", "7", "8"], correct: 1 },
+    { question: "Dünya Kupası kaç yılda bir düzenlenir?", answers: ["2", "3", "4", "5"], correct: 2 },
+    { question: "Olimpiyatlar kaç yılda bir düzenlenir?", answers: ["2", "3", "4", "5"], correct: 2 },
+    { question: "Futbolda penaltı atışı nereden atılır?", answers: ["9 metre", "11 metre", "12 metre", "15 metre"], correct: 1 },
+    { question: "Basketbolda basket yüksekliği kaç metredir?", answers: ["2.85", "3.05", "3.25", "3.50"], correct: 1 },
+    { question: "Bir futbol maçı kaç dakikadır?", answers: ["80", "90", "100", "120"], correct: 1 },
+    { question: "Bir basketbol maçı kaç periyottur?", answers: ["2", "3", "4", "5"], correct: 2 },
+    { question: "Tenis kortunda kaç oyuncu vardır?", answers: ["1", "2", "3", "4"], correct: 1 },
+    { question: "Galatasaray hangi yıl kuruldu?", answers: ["1905", "1907", "1903", "1911"], correct: 0 },
+    { question: "Fenerbahçe hangi yıl kuruldu?", answers: ["1905", "1907", "1903", "1911"], correct: 1 },
+    { question: "Beşiktaş hangi yıl kuruldu?", answers: ["1903", "1905", "1907", "1911"], correct: 0 },
+    { question: "Trabzonspor hangi yıl kuruldu?", answers: ["1963", "1965", "1967", "1969"], correct: 2 },
+    { question: "Türkiye ilk Dünya Kupası'na ne zaman katıldı?", answers: ["1950", "1954", "1958", "1962"], correct: 1 },
+    { question: "Basketbolda üç sayı çizgisi nereden atılır?", answers: ["5.80 m", "6.25 m", "6.75 m", "7.25 m"], correct: 2 },
+    { question: "Maraton koşusu kaç kilometredir?", answers: ["21.1", "32.2", "42.195", "50"], correct: 2 },
+    { question: "Futbolda kırmızı kart ne anlama gelir?", answers: ["Uyarı", "Oyundan çıkarma", "Penaltı", "Faul"], correct: 1 },
+    { question: "Sarı kart ne anlama gelir?", answers: ["Uyarı", "Oyundan çıkarma", "Penaltı", "Faul"], correct: 0 },
+    { question: "Formula 1'de kaç yarış vardır?", answers: ["15-20", "20-23", "23-25", "25-30"], correct: 1 },
 
-    <button id="resetBtn" class="text-input">🔄 Bugünü Sıfırla</button>
-  </section>
+    // ===== SANAT VE EDEBİYAT (50 SORU) =====
+    { question: "Mona Lisa tablosunu kim yaptı?", answers: ["Picasso", "Leonardo da Vinci", "Van Gogh", "Michelangelo"], correct: 1 },
+    { question: "'Nutuk' kitabını kim yazdı?", answers: ["İsmet İnönü", "Mustafa Kemal Atatürk", "Celal Bayar", "Kazım Karabekir"], correct: 1 },
+    { question: "Türk edebiyatının babası kimdir?", answers: ["Yunus Emre", "Nasreddin Hoca", "Fuzuli", "Namık Kemal"], correct: 0 },
+    { question: "'Hamlet' oyununu kim yazdı?", answers: ["Tolstoy", "Shakespeare", "Dostoyevski", "Hugo"], correct: 1 },
+    { question: "'Savaş ve Barış' romanını kim yazdı?", answers: ["Tolstoy", "Dostoyevski", "Puşkin", "Gogol"], correct: 0 },
+    { question: "Van Gogh hangi akımın sanatçısıdır?", answers: ["Empresyonizm", "Kübizm", "Sürrealizm", "Realizm"], correct: 0 },
+    { question: "Picasso hangi akımın öncüsüdür?", answers: ["Empresyonizm", "Kübizm", "Sürrealizm", "Realizm"], correct: 1 },
+    { question: "'Kürk Mantolu Madonna' romanını kim yazdı?", answers: ["Orhan Pamuk", "Sabahattin Ali", "Yaşar Kemal", "Nazım Hikmet"], correct: 1 },
+    { question: "'İnce Memed' romanını kim yazdı?", answers: ["Orhan Pamuk", "Sabahattin Ali", "Yaşar Kemal", "Aziz Nesin"], correct: 2 },
+    { question: "Nobel Edebiyat ödülü alan ilk Türk kimdir?", answers: ["Yaşar Kemal", "Nazım Hikmet", "Orhan Pamuk", "Aziz Nesin"], correct: 2 },
+    { question: "Beethoven hangi çalgıyı çalardı?", answers: ["Keman", "Piyano", "Gitar", "Flüt"], correct: 1 },
+    { question: "Mozart kaç yaşında öldü?", answers: ["25", "30", "35", "40"], correct: 2 },
+    { question: "'Mevlana' hangi şehirde yaşadı?", answers: ["Konya", "Ankara", "İstanbul", "Bursa"], correct: 0 },
+    { question: "Türk Bayrağı hangi renklerdedir?", answers: ["Kırmızı-Beyaz", "Mavi-Beyaz", "Yeşil-Beyaz", "Sarı-Kırmızı"], correct: 0 },
+    { question: "'Çalıkuşu' romanını kim yazdı?", answers: ["Halide Edip Adıvar", "Reşat Nuri Güntekin", "Yakup Kadri", "Peyami Safa"], correct: 1 },
+    { question: "'Tutunamayanlar' romanını kim yazdı?", answers: ["Oğuz Atay", "Orhan Pamuk", "Yaşar Kemal", "Sabahattin Ali"], correct: 0 },
+    { question: "İstiklal Marşı'nı kim yazdı?", answers: ["Tevfik Fikret", "Mehmet Akif Ersoy", "Yahya Kemal", "Necip Fazıl"], correct: 1 },
+    { question: "Sanat dalları kaç tanedir?", answers: ["5", "6", "7", "8"], correct: 2 },
+    { question: "Opera hangi sanat dalıdır?", answers: ["Resim", "Müzik", "Edebiyat", "Heykel"], correct: 1 },
+    { question: "Bale hangi sanat dalıdır?", answers: ["Dans", "Müzik", "Tiyatro", "Sinema"], correct: 0 },
 
-  <!-- EMAIL GÖNDER -->
-  <section class="section">
-    <div class="section-title">📨 E-mail Gönder</div>
+    // ===== MÜZİK (30 SORU) =====
+    { question: "Nota sisteminde kaç nota vardır?", answers: ["5", "6", "7", "8"], correct: 2 },
+    { question: "Do-Re-Mi-Fa-Sol-La-Si notalarını kim buldu?", answers: ["Mozart", "Beethoven", "Guido d'Arezzo", "Bach"], correct: 2 },
+    { question: "Piyano hangi enstrüman türüdür?", answers: ["Vurmalı", "Telli", "Üflemeli", "Tuşlu"], correct: 3 },
+    { question: "Keman hangi enstrüman türüdür?", answers: ["Vurmalı", "Telli", "Üflemeli", "Tuşlu"], correct: 1 },
+    { question: "Flüt hangi enstrüman türüdür?", answers: ["Vurmalı", "Telli", "Üflemeli", "Tuşlu"], correct: 2 },
+    { question: "Davul hangi enstrüman türüdür?", answers: ["Vurmalı", "Telli", "Üflemeli", "Tuşlu"], correct: 0 },
+    { question: "Türk Sanat Müziği'nin en önemli bestecisi kimdir?", answers: ["Zeki Müren", "Münir Nurettin Selçuk", "Dede Efendi", "İtri"], correct: 2 },
+    { question: "Gitarda kaç tel vardır?", answers: ["4", "5", "6", "7"], correct: 2 },
+    { question: "Ud'da kaç tel vardır?", answers: ["9", "10", "11", "12"], correct: 2 },
+    { question: "Keman'da kaç tel vardır?", answers: ["3", "4", "5", "6"], correct: 1 },
+    { question: "Bir oktavda kaç nota vardır?", answers: ["5", "6", "7", "8"], correct: 3 },
+    { question: "Tam notanın değeri kaçtır?", answers: ["1", "2", "3", "4"], correct: 3 },
+    { question: "Yarım notanın değeri kaçtır?", answers: ["1", "2", "3", "4"], correct: 1 },
+    { question: "Dörtlük notanın değeri kaçtır?", answers: ["1", "2", "3", "4"], correct: 0 },
+    { question: "İstiklal Marşı kaç kıtadır?", answers: ["10", "12", "15", "20"], correct: 1 },
+    { question: "Türk Halk Müziği'nde kullanılan enstrüman hangisidir?", answers: ["Bağlama", "Piyano", "Keman", "Gitar"], correct: 0 },
+    { question: "Opera hangi ülkede doğdu?", answers: ["Fransa", "Almanya", "İtalya", "İspanya"], correct: 2 },
+    { question: "Jazz müziği hangi ülkede doğdu?", answers: ["İngiltere", "Fransa", "ABD", "Brezilya"], correct: 1 },
+        ];
 
-    <div class="question-label">Bilgileri e-posta ile göndermek ister misin?</div>
+        let currentQuestion = 0;
+        let usedJokers = { "50": false, "audience": false, "phone": false, "pass": false };
+        let eliminatedAnswers = [];
 
-    <div class="radio-group" data-group="sendEmail">
-      <label class="radio-pill" data-value="evet">
-        <input type="radio" name="sendEmail" value="evet">📧 Gönder
-      </label>
-      <label class="radio-pill" data-value="hayir">
-        <input type="radio" name="sendEmail" value="hayir">✗ Gönderme
-      </label>
-    </div>
-
-    <button id="emailSendButton" class="text-input hidden">📧 Mail Gönder</button>
-  </section>
-
-  <!-- ÖDÜL SİSTEMİ + OYUN LİSTESİ -->
-  <section id="rewardSection" class="section hidden">
-    <div class="section-title">🎁 Ödül Zamanı!</div>
-    <p style="text-align: center; font-size: 18px; margin-bottom: 20px; color: var(--success); font-weight: 700;">
-      🎉 Tüm görevlerini tamamladın! Şans çarkını çevirme hakkı kazandın! 🎉
-    </p>
-
-    <!-- OYUN LİSTESİ -->
-    <div style="margin-bottom: 24px;">
-      <div class="question-label">Favori oyunlarını ekle (En az 3 oyun):</div>
-      
-      <div id="gamesList"></div>
-      
-      <input id="newGameInput" class="text-input" placeholder="🎮 Oyun adı yazıp Enter'a bas..." style="margin-bottom: 8px;" />
-      <button id="addGameBtn" class="text-input">➕ Oyun Ekle</button>
-    </div>
-
-    <button id="showWheelBtn" class="text-input">🎡 Şans Çarkını Göster</button>
-  </section>
-
-</div>
-
-<!-- ŞANS ÇARKI MODAL -->
-<div id="wheelModal" class="modal hidden">
-  <div class="modal-content">
-    <span id="closeModal" class="close-btn">✖</span>
-    <h2 style="text-align: center; color: var(--accent); margin-bottom: 20px; text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;">⛏️ MİNECRAFT ŞANS ÇARKI ⛏️</h2>
-    
-    <div id="wheelContainer">
-      <canvas id="wheelCanvas" width="380" height="380"></canvas>
-      <div id="wheelPointer">▼</div>
-    </div>
-    
-    <button id="spinBtn" class="text-input" style="margin-top: 20px; background: linear-gradient(135deg, #4CAF50, #2E7D32); border-color: #4CAF50; text-shadow: 2px 2px 0 #000;">⚡ ÇEVİR! ⚡</button>
-    
-    <div id="resultBox" class="hidden" style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(46, 125, 50, 0.2)); border: 4px solid #4CAF50; border-radius: 16px; text-align: center; box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);">
-      <h3 style="color: #4CAF50; font-size: 24px; margin-bottom: 10px; text-shadow: 2px 2px 0 #000;">🎊 KAZANDIN! 🎊</h3>
-      <p id="winnerGame" style="font-size: 32px; font-weight: 900; color: var(--accent); text-shadow: 3px 3px 0 #000, -2px -2px 0 #000;"></p>
-    </div>
-  </div>
-</div>
-
-  <script>
-  // ============== STATE ==============
-  let state = loadState();
-
-  function getDefaultState() {
-    return {
-      projGiven: null,
-      projText: '',
-      projDone: null,
-      projResearch: null,
-      fasDone: null,
-      fasPages: '',
-      fasStuck: null,
-      uploadQuestionImg: null,
-      topicText: '',
-      bookRead: null,
-      bookPages: '',
-      bookUnderstand: null,
-      bookExplain: '',
-      sendEmail: null,
-      games: [],
-      lastResetDate: new Date().toDateString()
-    };
-  }
-
-  function loadState() {
-    const saved = localStorage.getItem('elizHomeworkState');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      const today = new Date().toDateString();
-      if (parsed.lastResetDate !== today) {
-        return getDefaultState();
-      }
-      return parsed;
-    }
-    return getDefaultState();
-  }
-
-  function saveState() {
-    localStorage.setItem('elizHomeworkState', JSON.stringify(state));
-  }
-
-  // ============== INIT ==============
-  function init() {
-    updateDateBadge();
-    restoreUI();
-    attachListeners();
-    renderGamesList();
-    updateSummary();
-  }
-
-  function updateDateBadge() {
-    const today = new Date();
-    const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-    const dateStr = today.toLocaleDateString('tr-TR', options);
-    document.getElementById('dateBadge').textContent = dateStr;
-  }
-
-  function restoreUI() {
-    restoreRadio('projGiven', state.projGiven);
-    if (state.projGiven === 'evet') {
-      document.getElementById('projText').classList.remove('hidden');
-      document.getElementById('projText').value = state.projText;
-      document.getElementById('projDoneBlock').classList.remove('hidden');
-      restoreRadio('projDone', state.projDone);
-      if (state.projDone === 'hayir') {
-        document.getElementById('projResearchBlock').classList.remove('hidden');
-        restoreRadio('projResearch', state.projResearch);
-        if (state.projResearch === 'evet') {
-          document.getElementById('projSearchButtons').classList.remove('hidden');
+        function startGame() {
+            document.getElementById('startScreen').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+            loadQuestion();
         }
-      }
-    }
 
-    restoreRadio('fasDone', state.fasDone);
-    if (state.fasDone === 'evet') {
-      document.getElementById('fasPages').classList.remove('hidden');
-      document.getElementById('fasPages').value = state.fasPages;
-      document.getElementById('stuckBlock').classList.remove('hidden');
-      restoreRadio('fasStuck', state.fasStuck);
-      if (state.fasStuck === 'evet') {
-        document.getElementById('stuckOptions').classList.remove('hidden');
-        restoreRadio('uploadQuestionImg', state.uploadQuestionImg);
-        if (state.uploadQuestionImg === 'evet') {
-          document.getElementById('questionFile').classList.remove('hidden');
-        } else if (state.uploadQuestionImg === 'hayir') {
-          document.getElementById('topicBlock').classList.remove('hidden');
-          document.getElementById('topicText').value = state.topicText;
+        function loadQuestion() {
+            eliminatedAnswers = [];
+            const q = questions[currentQuestion];
+            document.getElementById('questionText').innerText = q.question;
+            document.getElementById('moneyDisplay').innerText = moneyLadder[currentQuestion];
+            document.getElementById('questionNumber').innerText = `Soru ${currentQuestion + 1} / 12`;
+
+            const container = document.getElementById('answersContainer');
+            container.innerHTML = '';
+
+            q.answers.forEach((answer, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.innerHTML = `<strong>${String.fromCharCode(65 + index)}:</strong> ${answer}`;
+                btn.onclick = () => checkAnswer(index);
+                btn.id = `answer${index}`;
+                container.appendChild(btn);
+            });
         }
-      }
-    }
 
-    restoreRadio('bookRead', state.bookRead);
-    if (state.bookRead === 'evet') {
-      document.getElementById('bookPages').classList.remove('hidden');
-      document.getElementById('bookPages').value = state.bookPages;
-      document.getElementById('understandBlock').classList.remove('hidden');
-      restoreRadio('bookUnderstand', state.bookUnderstand);
-      if (state.bookUnderstand === 'evet') {
-        document.getElementById('bookExplain').classList.remove('hidden');
-        document.getElementById('bookExplain').value = state.bookExplain;
-      }
-    }
-
-    restoreRadio('sendEmail', state.sendEmail);
-    if (state.sendEmail === 'evet') {
-      document.getElementById('emailSendButton').classList.remove('hidden');
-    }
-  }
-
-  function restoreRadio(groupName, value) {
-    if (!value) return;
-    const group = document.querySelector(`[data-group="${groupName}"]`);
-    if (!group) return;
-    const pill = group.querySelector(`[data-value="${value}"]`);
-    if (pill) {
-      pill.classList.add('checked');
-      pill.querySelector('input').checked = true;
-    }
-  }
-
-  // ============== LISTENERS ==============
-  function attachListeners() {
-    document.querySelectorAll('.radio-pill').forEach(pill => {
-      pill.addEventListener('click', () => {
-        const input = pill.querySelector('input');
-        const name = input.name;
-        const value = input.value;
-
-        document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-          r.closest('.radio-pill').classList.remove('checked');
-          r.checked = false;
-        });
-
-        pill.classList.add('checked');
-        input.checked = true;
-
-        handleRadioChange(name, value);
-      });
-    });
-
-    document.getElementById('projText').addEventListener('input', e => {
-      state.projText = e.target.value;
-      saveState();
-    });
-
-    document.getElementById('fasPages').addEventListener('change', e => {
-      state.fasPages = e.target.value;
-      saveState();
-      updateSummary();
-    });
-
-    document.getElementById('bookPages').addEventListener('change', e => {
-      state.bookPages = e.target.value;
-      saveState();
-      updateSummary();
-    });
-
-    document.getElementById('topicText').addEventListener('input', e => {
-      state.topicText = e.target.value;
-      saveState();
-    });
-
-    document.getElementById('bookExplain').addEventListener('input', e => {
-      state.bookExplain = e.target.value;
-      saveState();
-    });
-
-    // PROJE ARAMALARI
-    document.getElementById('projSearchPdfBtn').addEventListener('click', () => {
-      const topic = document.getElementById('projText').value.trim();
-      if (topic) {
-        window.open(`https://www.google.com/search?q=${encodeURIComponent(topic + ' filetype:pdf')}`, '_blank');
-      } else {
-        alert('Lütfen önce konu başlığını yaz!');
-      }
-    });
-
-    document.getElementById('projSearchYoutubeBtn').addEventListener('click', () => {
-      const topic = document.getElementById('projText').value.trim();
-      if (topic) {
-        window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(topic + ' konu anlatımı')}`, '_blank');
-      } else {
-        alert('Lütfen önce konu başlığını yaz!');
-      }
-    });
-
-    // FASİKÜL ARAMALARI
-    document.getElementById('fasSearchPdfBtn').addEventListener('click', () => {
-      const topic = document.getElementById('topicText').value.trim();
-      if (topic) {
-        window.open(`https://www.google.com/search?q=${encodeURIComponent(topic + ' filetype:pdf')}`, '_blank');
-      } else {
-        alert('Lütfen önce konuyu yaz!');
-      }
-    });
-
-    document.getElementById('fasSearchYoutubeBtn').addEventListener('click', () => {
-      const topic = document.getElementById('topicText').value.trim();
-      if (topic) {
-        window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(topic + ' konu anlatımı')}`, '_blank');
-      } else {
-        alert('Lütfen önce konuyu yaz!');
-      }
-    });
-
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      if (confirm('Bugünün tüm verilerini sıfırlamak istediğine emin misin?')) {
-        localStorage.removeItem('elizHomeworkState');
-        location.reload();
-      }
-    });
-
-    document.getElementById('emailSendButton').addEventListener('click', () => {
-      const summary = generateEmailSummary();
-      const subject = encodeURIComponent('Eliz Günlük Ödev Raporu - ' + new Date().toLocaleDateString('tr-TR'));
-      const body = encodeURIComponent(summary);
-      window.location.href = `mailto:?subject=${subject}&body=${body}`;
-    });
-
-    document.getElementById('newGameInput').addEventListener('keypress', e => {
-      if (e.key === 'Enter') {
-        addGame();
-      }
-    });
-
-    document.getElementById('addGameBtn').addEventListener('click', addGame);
-    document.getElementById('showWheelBtn').addEventListener('click', showWheel);
-    document.getElementById('closeModal').addEventListener('click', closeWheel);
-    document.getElementById('spinBtn').addEventListener('click', spinWheel);
-  }
-
-  function handleRadioChange(name, value) {
-    state[name] = value;
-    saveState();
-
-    if (name === 'projGiven') {
-      if (value === 'evet') {
-        document.getElementById('projText').classList.remove('hidden');
-        document.getElementById('projDoneBlock').classList.remove('hidden');
-      } else {
-        document.getElementById('projText').classList.add('hidden');
-        document.getElementById('projDoneBlock').classList.add('hidden');
-        document.getElementById('projResearchBlock').classList.add('hidden');
-        state.projText = '';
-        state.projDone = null;
-        state.projResearch = null;
-      }
-    }
-
-    if (name === 'projDone') {
-      if (value === 'hayir') {
-        document.getElementById('projResearchBlock').classList.remove('hidden');
-      } else {
-        document.getElementById('projResearchBlock').classList.add('hidden');
-        document.getElementById('projSearchButtons').classList.add('hidden');
-        state.projResearch = null;
-      }
-    }
-
-    if (name === 'projResearch') {
-      if (value === 'evet') {
-        document.getElementById('projSearchButtons').classList.remove('hidden');
-      } else {
-        document.getElementById('projSearchButtons').classList.add('hidden');
-      }
-    }
-
-    if (name === 'fasDone') {
-      if (value === 'evet') {
-        document.getElementById('fasPages').classList.remove('hidden');
-        document.getElementById('stuckBlock').classList.remove('hidden');
-      } else {
-        document.getElementById('fasPages').classList.add('hidden');
-        document.getElementById('stuckBlock').classList.add('hidden');
-        document.getElementById('stuckOptions').classList.add('hidden');
-        state.fasPages = '';
-        state.fasStuck = null;
-      }
-    }
-
-    if (name === 'fasStuck') {
-      if (value === 'evet') {
-        document.getElementById('stuckOptions').classList.remove('hidden');
-      } else {
-        document.getElementById('stuckOptions').classList.add('hidden');
-        document.getElementById('questionFile').classList.add('hidden');
-        document.getElementById('topicBlock').classList.add('hidden');
-        state.uploadQuestionImg = null;
-        state.topicText = '';
-      }
-    }
-
-    if (name === 'uploadQuestionImg') {
-      if (value === 'evet') {
-        document.getElementById('questionFile').classList.remove('hidden');
-        document.getElementById('topicBlock').classList.add('hidden');
-      } else {
-        document.getElementById('questionFile').classList.add('hidden');
-        document.getElementById('topicBlock').classList.remove('hidden');
-      }
-    }
-
-    if (name === 'bookRead') {
-      if (value === 'evet') {
-        document.getElementById('bookPages').classList.remove('hidden');
-        document.getElementById('understandBlock').classList.remove('hidden');
-      } else {
-        document.getElementById('bookPages').classList.add('hidden');
-        document.getElementById('understandBlock').classList.add('hidden');
-        document.getElementById('bookExplain').classList.add('hidden');
-        state.bookPages = '';
-        state.bookUnderstand = null;
-        state.bookExplain = '';
-      }
-    }
-
-    if (name === 'bookUnderstand') {
-      if (value === 'evet') {
-        document.getElementById('bookExplain').classList.remove('hidden');
-      } else {
-        document.getElementById('bookExplain').classList.add('hidden');
-        state.bookExplain = '';
-      }
-    }
-
-    if (name === 'sendEmail') {
-      if (value === 'evet') {
-        document.getElementById('emailSendButton').classList.remove('hidden');
-      } else {
-        document.getElementById('emailSendButton').classList.add('hidden');
-      }
-    }
-
-    updateSummary();
-  }
-
-  // ============== ÖZET - YENİ KONFET KONTROL SİSTEMİ ==============
-  function updateSummary() {
-    let completed = 0;
-    let total = 0;
-    let issues = [];
-    let goodPoints = [];
-    let hasNegativeConditions = false;
-
-    // 🔥 ÖZEL GÖREV KURALLARI - KONFETİ PATLAMAYACAK DURUMLAR
-    let ozelGorevVar = false;
-
-    // KURAL 1: Okuduğunu anlamadıysa → KONFETİ YOK
-    if (state.bookUnderstand === 'hayir') {
-      ozelGorevVar = true;
-      hasNegativeConditions = true;
-    }
-
-    // KURAL 2: Fasikül yapıldıysa → KONFETİ YOK
-    if (state.fasDone === 'evet') {
-      ozelGorevVar = true;
-      hasNegativeConditions = true;
-    }
-
-    // KURAL 3: Fasikül 1-2 sayfa ise → KONFETİ YOK
-    if (state.fasDone === 'evet' && (state.fasPages === '1' || state.fasPages === '2')) {
-      ozelGorevVar = true;
-      hasNegativeConditions = true;
-    }
-
-    // KURAL 4: Kitap 1 veya 5 sayfa ise → KONFETİ YOK
-    if (state.bookRead === 'evet' && (state.bookPages === '1' || state.bookPages === '5')) {
-      ozelGorevVar = true;
-      hasNegativeConditions = true;
-    }
-
-    // Proje Değerlendirmesi
-    if (state.projGiven === 'evet') {
-      total++;
-      if (state.projDone === 'evet') {
-        completed++;
-        goodPoints.push('✓ Araştırma ödevi tamamlandı');
-      } else {
-        issues.push('⚠️ Araştırma ödevi yapılmadı');
-        hasNegativeConditions = true;
-      }
-    }
-
-    // Fasikül Değerlendirmesi
-    if (state.fasDone === 'evet') {
-      total++;
-      completed++;
-      if (state.fasPages) {
-        goodPoints.push(`✓ Fasikül ${state.fasPages} sayfa çözüldü`);
-      } else {
-        goodPoints.push('✓ Fasikül ödevi yapıldı');
-      }
-      if (state.fasStuck === 'hayir') {
-        goodPoints.push('✓ Fasikülde hiçbir yerde takılmadı');
-      } else if (state.fasStuck === 'evet') {
-        hasNegativeConditions = true;
-      }
-      
-      if (state.uploadQuestionImg === 'evet' || state.uploadQuestionImg === 'hayir') {
-        hasNegativeConditions = true;
-      }
-    } else if (state.fasDone === 'hayir') {
-      total++;
-      issues.push('⚠️ Fasikül ödevi yapılmadı');
-      hasNegativeConditions = true;
-    }
-
-    // Kitap Değerlendirmesi
-    if (state.bookRead === 'evet') {
-      total++;
-      completed++;
-      if (state.bookPages) {
-        goodPoints.push(`✓ Kitap ${state.bookPages} sayfa okundu`);
-      } else {
-        goodPoints.push('✓ Kitap okundu');
-      }
-      if (state.bookUnderstand === 'evet') {
-        goodPoints.push('✓ Okuduğunu anladı');
-      }
-    } else if (state.bookRead === 'hayir') {
-      total++;
-      issues.push('⚠️ Kitap okunmadı');
-      hasNegativeConditions = true;
-    }
-    
-    if (state.sendEmail === 'evet' || state.sendEmail === 'hayir') {
-      hasNegativeConditions = true;
-    }
-
-    const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-    const bar = document.getElementById('progressBar');
-    const chip = document.getElementById('overallChip');
-    const summary = document.getElementById('summaryText');
-
-    bar.style.width = percentage + '%';
-    bar.textContent = percentage + '%';
-
-    // 🎯 ÇARK KURALLARI: En az 3 sayfa fasikül + 10 sayfa kitap
-    const fasikulYeterli = state.fasDone === 'evet' && parseInt(state.fasPages) >= 3;
-    const kitapYeterli = state.bookRead === 'evet' && parseInt(state.bookPages) >= 10;
-    const carkHakki = percentage === 100 && fasikulYeterli && kitapYeterli;
-
-    if (carkHakki) {
-      chip.className = 'status-chip ok';
-      chip.textContent = '🎉 Mükemmel! Tüm görevler tamamlandı!';
-      
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-      
-      document.getElementById('rewardSection').classList.remove('hidden');
-    } else if (percentage === 100) {
-      chip.className = 'status-chip warn';
-      chip.textContent = '⚠️ Görevler tamam ama çark için: 3+ sayfa fasikül ve 10+ sayfa kitap gerek!';
-      document.getElementById('rewardSection').classList.add('hidden');
-    } else if (percentage >= 60) {
-      chip.className = 'status-chip warn';
-      chip.textContent = '⚠️ İyi, ama biraz eksik var';
-      document.getElementById('rewardSection').classList.add('hidden');
-    } else {
-      chip.className = 'status-chip bad';
-      chip.textContent = '❌ Eksikler çok fazla!';
-      document.getElementById('rewardSection').classList.add('hidden');
-    }
-
-    let summaryHtml = '';
-    if (goodPoints.length > 0) {
-      summaryHtml += '<div style="margin-bottom: 12px;"><strong>Yapılanlar:</strong><br>' + goodPoints.join('<br>') + '</div>';
-    }
-    if (issues.length > 0) {
-      summaryHtml += '<div><strong>Eksikler:</strong><br>' + issues.join('<br>') + '</div>';
-    }
-    if (summaryHtml === '') {
-      summaryHtml = '<em>Henüz bir şey seçilmedi...</em>';
-    }
-
-    summary.innerHTML = summaryHtml;
-  }
-
-  function generateEmailSummary() {
-    const date = new Date().toLocaleDateString('tr-TR');
-    let text = `Eliz - Günlük Ödev Raporu (${date})\n\n`;
-
-    if (state.projGiven === 'evet') {
-      text += `Araştırma Ödevi: ${state.projText || 'Belirtilmedi'}\n`;
-      text += `Yapıldı mı: ${state.projDone === 'evet' ? 'Evet' : 'Hayır'}\n\n`;
-    }
-
-    if (state.fasDone === 'evet') {
-      text += `Fasikül: ${state.fasPages} sayfa çözüldü\n`;
-      text += `Takıldı mı: ${state.fasStuck === 'evet' ? 'Evet' : 'Hayır'}\n\n`;
-      }
-
-    if (state.bookRead === 'evet') {
-      text += `Kitap: ${state.bookPages} sayfa okundu\n`;
-      text += `Anladı mı: ${state.bookUnderstand === 'evet' ? 'Evet' : 'Hayır'}\n\n`;
-    }
-
-    return text;
-  }
-
-  function renderGamesList() {
-    const container = document.getElementById('gamesList');
-    container.innerHTML = '';
-    
-    state.games.forEach((game, index) => {
-      const item = document.createElement('div');
-      item.className = 'game-item';
-      item.innerHTML = `
-        <span>${index + 1}. ${game}</span>
-        <button class="delete-game" data-index="${index}">🗑️ Sil</button>
-      `;
-      container.appendChild(item);
-    });
-
-    document.querySelectorAll('.delete-game').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const index = parseInt(btn.dataset.index);
-        deleteGame(index);
-      });
-    });
-  }
-
-  function addGame() {
-    const input = document.getElementById('newGameInput');
-    const gameName = input.value.trim();
-    
-    if (gameName) {
-      state.games.push(gameName);
-      saveState();
-      renderGamesList();
-      input.value = '';
-    } else {
-      alert('Lütfen bir oyun adı gir!');
-    }
-  }
-
-  function deleteGame(index) {
-    if (state.games.length <= 3) {
-      alert('En az 3 oyun olmalı!');
-      return;
-    }
-    state.games.splice(index, 1);
-    saveState();
-    renderGamesList();
-  }
-
-  let wheelCanvas, wheelCtx;
-  let isSpinning = false;
-
-  function showWheel() {
-    if (state.games.length < 3) {
-      alert('En az 3 oyun eklemelisin!');
-      return;
-    }
-    
-    document.getElementById('wheelModal').classList.remove('hidden');
-    document.getElementById('resultBox').classList.add('hidden');
-    
-    wheelCanvas = document.getElementById('wheelCanvas');
-    wheelCtx = wheelCanvas.getContext('2d');
-    drawWheel();
-  }
-
-  function closeWheel() {
-    document.getElementById('wheelModal').classList.add('hidden');
-    isSpinning = false;
-  }
-
-  function drawWheel() {
-    const games = state.games;
-    const numSegments = games.length;
-    const anglePerSegment = (2 * Math.PI) / numSegments;
-    const centerX = wheelCanvas.width / 2;
-    const centerY = wheelCanvas.height / 2;
-    const radius = Math.min(centerX, centerY) - 10;
-
-    // Minecraft tarzı renkler - daha canlı ve pixel art tarzı
-    const colors = [
-      '#ff6b6b', // Kırmızı
-      '#ffd93d', // Sarı
-      '#6bcf7f', // Yeşil
-      '#4a90e2', // Mavi
-      '#a594f9', // Mor
-      '#ff9ff3', // Pembe
-      '#54a0ff', // Açık Mavi
-      '#ff9f43'  // Turuncu
-    ];
-
-    wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
-
-    // Minecraft pixel art efekti için
-    wheelCtx.imageSmoothingEnabled = false;
-
-    for (let i = 0; i < numSegments; i++) {
-      const startAngle = i * anglePerSegment;
-      const endAngle = (i + 1) * anglePerSegment;
-      
-      // Ana dilim
-      wheelCtx.beginPath();
-      wheelCtx.moveTo(centerX, centerY);
-      wheelCtx.arc(centerX, centerY, radius, startAngle, endAngle);
-      wheelCtx.closePath();
-      wheelCtx.fillStyle = colors[i % colors.length];
-      wheelCtx.fill();
-      
-      // Koyu kenarlık (Minecraft blok stili)
-      wheelCtx.strokeStyle = '#000';
-      wheelCtx.lineWidth = 4;
-      wheelCtx.stroke();
-
-      // İç gölge efekti
-      wheelCtx.beginPath();
-      wheelCtx.moveTo(centerX, centerY);
-      wheelCtx.arc(centerX, centerY, radius * 0.85, startAngle, endAngle);
-      wheelCtx.closePath();
-      wheelCtx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-      wheelCtx.lineWidth = 2;
-      wheelCtx.stroke();
-
-      // Oyun ismi
-      wheelCtx.save();
-      wheelCtx.translate(centerX, centerY);
-      wheelCtx.rotate(startAngle + anglePerSegment / 2);
-      wheelCtx.textAlign = 'center';
-      wheelCtx.textBaseline = 'middle';
-      
-      // Minecraft tarzı yazı gölgesi
-      wheelCtx.fillStyle = '#000';
-      wheelCtx.font = 'bold 16px Arial';
-      wheelCtx.fillText(games[i], radius * 0.6 + 2, 2);
-      
-      wheelCtx.fillStyle = '#fff';
-      wheelCtx.fillText(games[i], radius * 0.6, 0);
-      wheelCtx.restore();
-    }
-
-    // Merkez daire (Minecraft taş bloğu stili)
-    const centerRadius = 30;
-    wheelCtx.beginPath();
-    wheelCtx.arc(centerX, centerY, centerRadius, 0, 2 * Math.PI);
-    wheelCtx.fillStyle = '#808080';
-    wheelCtx.fill();
-    wheelCtx.strokeStyle = '#000';
-    wheelCtx.lineWidth = 4;
-    wheelCtx.stroke();
-
-    // Merkez parlama
-    wheelCtx.beginPath();
-    wheelCtx.arc(centerX, centerY, centerRadius * 0.6, 0, 2 * Math.PI);
-    wheelCtx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-    wheelCtx.fill();
-  }
-
-  function spinWheel() {
-    if (isSpinning) return;
-    isSpinning = true;
-
-    const games = state.games;
-    const randomIndex = Math.floor(Math.random() * games.length);
-    const anglePerSegment = (2 * Math.PI) / games.length;
-    const targetAngle = randomIndex * anglePerSegment + anglePerSegment / 2;
-    const spinRevolutions = 5 + Math.random() * 3; // 5-8 tur arası
-    const totalRotation = spinRevolutions * 2 * Math.PI + targetAngle;
-
-    wheelCanvas.style.transform = `rotate(${totalRotation}rad)`;
-    wheelCanvas.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
-
-    setTimeout(() => {
-      document.getElementById('winnerGame').textContent = games[randomIndex];
-      document.getElementById('resultBox').classList.remove('hidden');
-      
-      // Minecraft achievement kazanma sesi efekti için konfeti
-      confetti({
-        particleCount: 200,
-        spread: 120,
-        origin: { y: 0.6 },
-        colors: ['#FFD700', '#FFA500', '#FF6B6B', '#4CAF50', '#2196F3'],
-        shapes: ['square', 'circle'],
-        scalar: 1.2
-      });
-
-      // Ekstra konfeti patlaması
-      setTimeout(() => {
-        confetti({
-          particleCount: 100,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 }
-        });
-        confetti({
-          particleCount: 100,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 }
-        });
-      }, 250);
-      
-      isSpinning = false;
-    }, 4000);
-  }
-
-  init();
-</script>
+        function checkAnswer(selected) {
+            const correct = questions[currentQuestion].correct;
+            const btns = document.querySelectorAll('.answer-btn');
+            
+            btns.forEach(btn => btn.style.pointerEvents = 'none');
+
+            if (selected === correct) {
+                document.getElementById(`answer${selected}`).classList.add('correct');
+                createConfetti();
+                
+                setTimeout(() => {
+                    if (currentQuestion === 11) {
+                        endGame(true);
+                    } else {
+                        currentQuestion++;
+                        loadQuestion();
+                    }
+                }, 1500);
+            } else {
+                document.getElementById(`answer${selected}`).classList.add('wrong');
+                document.getElementById(`answer${correct}`).classList.add('correct');
+                
+                setTimeout(() => {
+                    endGame(false);
+                }, 2000);
+            }
+        }
+
+        function useJoker(type) {
+            if (usedJokers[type]) return;
+            
+            usedJokers[type] = true;
+            document.getElementById(`joker${type.charAt(0).toUpperCase() + type.slice(1)}`).disabled = true;
+
+            const correct = questions[currentQuestion].correct;
+            const answers = questions[currentQuestion].answers;
+
+            switch(type) {
+                case '50':
+                    let wrongAnswers = [];
+                    answers.forEach((_, index) => {
+                        if (index !== correct) wrongAnswers.push(index);
+                    });
+                    // Rastgele 2 yanlış cevabı sil
+                    for (let i = 0; i < 2; i++) {
+                        const randomIndex = Math.floor(Math.random() * wrongAnswers.length);
+                        const toEliminate = wrongAnswers[randomIndex];
+                        document.getElementById(`answer${toEliminate}`).classList.add('eliminated');
+                        wrongAnswers.splice(randomIndex, 1);
+                    }
+                    break;
+
+                case 'audience':
+                    alert(`📊 Seyirci Oylaması:\n\nA: ${correct === 0 ? '75%' : Math.floor(Math.random() * 25) + '%'}\nB: ${correct === 1 ? '75%' : Math.floor(Math.random() * 25) + '%'}\nC: ${correct === 2 ? '75%' : Math.floor(Math.random() * 25) + '%'}\nD: ${correct === 3 ? '75%' : Math.floor(Math.random() * 25) + '%'}`);
+                    break;
+
+                case 'phone':
+                    const hints = [
+                        "Bence doğru cevap ",
+                        "Emin değilim ama sanırım ",
+                        "Çok net, cevap kesinlikle "
+                    ];
+                    const randomHint = hints[Math.floor(Math.random() * hints.length)];
+                    alert(`📞 Telefon Joker:\n\n"${randomHint}${String.fromCharCode(65 + correct)} olmalı!"`);
+                    break;
+
+                case 'pass':
+                    if (currentQuestion < 11) {
+                        currentQuestion++;
+                        loadQuestion();
+                    } else {
+                        alert("Son soruda pas geçemezsiniz!");
+                    }
+                    break;
+            }
+        }
+
+        function endGame(won) {
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('endScreen').classList.add('active');
+
+            if (won) {
+                document.getElementById('endTitle').innerText = '🎉 TEBRİKLER!';
+                document.getElementById('endMessage').innerText = 'Tüm soruları doğru cevapladınız!';
+                document.getElementById('finalAmount').innerText = '5.000.000₺';
+                createConfetti();
+            } else {
+                document.getElementById('endTitle').innerText = '😢 Oyun Bitti';
+                document.getElementById('endMessage').innerText = 'Yanlış cevap verdiniz!';
+                const prize = currentQuestion > 0 ? moneyLadder[currentQuestion - 1] : '0₺';
+                document.getElementById('finalAmount').innerText = prize;
+            }
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = ['#FFD700', '#FF69B4', '#00FF00', '#00BFFF'][Math.floor(Math.random() * 4)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 50);
+            }
+        }
+    </script>
 </body>
 </html>
