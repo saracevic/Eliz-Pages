@@ -1482,12 +1482,13 @@ const allQuestions = [
         }
 
         function timeOut() {
-            const btns = document.querySelectorAll('.answer-btn');
-            btns.forEach(btn => btn.style.pointerEvents = 'none');
-            
-            alert('⏰ Süre doldu! Oyun bitti.');
-            setTimeout(() => endGame(false), 500);
-        }
+    playSound('timeout'); // SES EKLENDI
+    const btns = document.querySelectorAll('.answer-btn');
+    btns.forEach(btn => btn.style.pointerEvents = 'none');
+    
+    alert('⏰ Süre doldu! Oyun bitti.');
+    setTimeout(() => endGame(false), 500);
+}
 
         // ===== CEVAP SEÇİMİ =====
         function selectAnswer(index, answerText) {
@@ -1517,39 +1518,41 @@ const allQuestions = [
             checkAnswer(selectedAnswerIndex);
         }
 
-        // ===== CEVAP KONTROL =====
-        function checkAnswer(selected) {
-            const correct = questions[currentQuestion].correct;
-            const btns = document.querySelectorAll('.answer-btn');
-            
-            btns.forEach(btn => btn.style.pointerEvents = 'none');
+// ===== CEVAP KONTROL =====
+function checkAnswer(selected) {
+    const correct = questions[currentQuestion].correct;
+    const btns = document.querySelectorAll('.answer-btn');
+    
+    btns.forEach(btn => btn.style.pointerEvents = 'none');
 
-            if (selected === correct) {
-                document.getElementById(`answer${selected}`).classList.add('correct');
-                createConfetti();
-                
-                setTimeout(() => {
-                    currentQuestion++;
-                    
-                    if (currentQuestion >= questions.length) {
-                        endGame(true);
-                    } 
-                    else if (currentQuestion >= 15 && (currentQuestion - 15) % 5 === 0) {
-                        showMotivation();
-                    } 
-                    else {
-                        loadQuestion();
-                    }
-                }, 1500);
-            } else {
-                document.getElementById(`answer${selected}`).classList.add('wrong');
-                document.getElementById(`answer${correct}`).classList.add('correct');
-                
-                setTimeout(() => {
-                    endGame(false);
-                }, 2000);
+    if (selected === correct) {
+        playSound('correct'); // SES EKLENDI
+        document.getElementById(`answer${selected}`).classList.add('correct');
+        createConfetti();
+        
+        setTimeout(() => {
+            currentQuestion++;
+            
+            if (currentQuestion >= questions.length) {
+                endGame(true);
+            } 
+            else if (currentQuestion >= 15 && (currentQuestion - 15) % 5 === 0) {
+                showMotivation();
+            } 
+            else {
+                loadQuestion();
             }
-        }
+        }, 1500);
+    } else {
+        playSound('wrong'); // SES EKLENDI
+        document.getElementById(`answer${selected}`).classList.add('wrong');
+        document.getElementById(`answer${correct}`).classList.add('correct');
+        
+        setTimeout(() => {
+            endGame(false);
+        }, 2000);
+    }
+}
 
         // ===== MOTİVASYON =====
         function showMotivation() {
@@ -1670,6 +1673,52 @@ const allQuestions = [
                 }, i * 30);
             }
         }
+
+// ===== SES EFEKTLERİ =====
+function playSound(type) {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    if (type === 'correct') {
+        // Doğru cevap sesi - Yükselen melodik ses
+        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C
+        oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E
+        oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+    } 
+    else if (type === 'wrong') {
+        // Yanlış cevap sesi - Alçalan dramatik ses
+        oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.5);
+        oscillator.type = 'sawtooth';
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+    }
+    else if (type === 'timeout') {
+        // Süre doldu sesi - Alarm tarzı
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+        oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.3);
+        oscillator.type = 'square';
+        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.4);
+    }
+}
+
+
+        
     </script>
 </body>
 </html>
