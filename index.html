@@ -69,6 +69,24 @@
             margin-top: 5px;
         }
 
+        /* Zamanlayıcı */
+        .timer {
+            font-size: 20px;
+            color: #FFD700;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .timer.warning {
+            color: #FF0000;
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.5; }
+        }
+
         /* Soru Alanı */
         .question-area {
             padding: 30px 20px;
@@ -163,6 +181,11 @@
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
 
+        .answer-btn.selected {
+            border-color: #FFD700;
+            background: linear-gradient(135deg, #FFB800 0%, #FFA000 100%);
+        }
+
         .answer-btn.correct {
             background: linear-gradient(135deg, #00C851 0%, #007E33 100%);
             border-color: #00FF00;
@@ -190,6 +213,76 @@
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
             75% { transform: translateX(10px); }
+        }
+
+        /* Onay Popup */
+        .confirmation-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirmation-overlay.active {
+            display: flex;
+        }
+
+        .confirmation-box {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border: 3px solid #FFD700;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .confirmation-box h2 {
+            color: #FFD700;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-box p {
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .confirmation-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .confirm-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .confirm-yes {
+            background: linear-gradient(90deg, #00C851 0%, #007E33 100%);
+            color: #fff;
+        }
+
+        .confirm-no {
+            background: linear-gradient(90deg, #ff4444 0%, #cc0000 100%);
+            color: #fff;
+        }
+
+        .confirm-btn:hover {
+            transform: scale(1.1);
         }
 
         /* Başlangıç ve Bitiş Ekranları */
@@ -281,7 +374,7 @@
             margin: 20px auto;
         }
 
-@keyframes spin {
+        @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
@@ -345,9 +438,10 @@
         <!-- Başlangıç Ekranı -->
         <div class="screen active" id="startScreen">
             <h1>🎯 Milyoner 2025</h1>
-            <p>Hoş geldiniz! 12 soruyu doğru cevaplayarak 5.000.000₺ kazanabilirsiniz!</p>
+            <p>Hoş geldiniz! 12 soruyu doğru cevaplayarak 2.500.000₺ kazanabilirsiniz!</p>
             <p>📚 <strong>Kurallar:</strong><br>
-            • 4 joker hakkınız var<br>
+            • 3 joker hakkınız var (50:50, Seyirci, Telefon)<br>
+            • Her soru için 30 saniye süreniz var<br>
             • Her soru için 4 şık<br>
             • Yanlış cevap oyunu bitirir</p>
             <button class="start-btn" onclick="startGame()">🚀 Oyuna Başla</button>
@@ -356,8 +450,9 @@
         <!-- Oyun Ekranı -->
         <div class="screen" id="gameScreen">
             <div class="top-bar">
-                <div class="money-display" id="moneyDisplay">500₺</div>
+                <div class="money-display" id="moneyDisplay">250₺</div>
                 <div class="question-number" id="questionNumber">Soru 1 / 12</div>
+                <div class="timer" id="timer">⏱️ 30</div>
             </div>
 
             <div class="question-area">
@@ -375,10 +470,6 @@
                     <button class="joker-btn" id="jokerPhone" onclick="useJoker('phone')">
                         <div class="joker-icon">📞</div>
                         <div>Telefon</div>
-                    </button>
-                    <button class="joker-btn" id="jokerPass" onclick="useJoker('pass')">
-                        <div class="joker-icon">⏭️</div>
-                        <div>Pas</div>
                     </button>
                 </div>
 
@@ -400,12 +491,33 @@
         </div>
     </div>
 
+    <!-- Onay Popup -->
+    <div class="confirmation-overlay" id="confirmationOverlay">
+        <div class="confirmation-box">
+            <h2>⚠️ Emin misiniz?</h2>
+            <p>Seçtiğiniz cevap: <strong id="selectedAnswer"></strong></p>
+            <p>Bu son kararınız mı?</p>
+            <div class="confirmation-buttons">
+                <button class="confirm-btn confirm-yes" onclick="confirmAnswer(true)">✅ Evet</button>
+                <button class="confirm-btn confirm-no" onclick="confirmAnswer(false)">❌ Hayır</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ses dosyaları -->
+    <audio id="correctSound" preload="auto">
+        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="wrongSound" preload="auto">
+        <source src="https://www.soundjay.com/misc/sounds/fail-buzzer-01.mp3" type="audio/mpeg">
+    </audio>
+
     <script>
         // Oyun Verileri
 const moneyLadder = [
-    "500₺", "1.000₺", "2.000₺", "3.000₺", "5.000₺", 
-    "10.000₺", "20.000₺", "40.000₺", "80.000₺", 
-    "150.000₺", "500.000₺", "5.000.000₺"
+    "250₺", "500₺", "1.000₺", "1.500₺", "2.500₺", 
+    "5.000₺", "10.000₺", "20.000₺", "40.000₺", 
+    "75.000₺", "250.000₺", "2.500.000₺"
 ];
 
 // 1000 GENEL KÜLTÜR SORUSU
@@ -759,17 +871,16 @@ const allQuestions = [
 { question: "Minotaur hangi hayvanın başına sahiptir?", answers: ["Aslan", "Boğa", "Kartal", "Yılan"], correct: 1 },
 { question: "Sfenks hangi soruyu sorar?", answers: ["Kim ben?", "Ne zaman?", "Nerede?", "Sabah 4, öğlen 2, akşam 3 ayaklı nedir?"], correct: 3 },
 { question: "Pegasus hangi hayvandır?", answers: ["Kanatlı aslan", "Kanatlı at", "Kanatlı boğa", "Kanatlı kartal"], correct: 1 },
-{ question: "Olimpos Dağı hangi ülkededir?", answers: ["İtalya", "Yunanistan", "Türkiye", "Mısır"], correct: 1 }
-
-
-    
-        ];
+{ question: "Olimpos Dağı hangi ülkededir?", answers: ["İtalya", "Yunanistan", "Türkiye", "Mısır"], correct: 1 }];
 
         let questions = [];
         let currentQuestion = 0;
-        let usedJokers = { "50": false, "audience": false, "phone": false, "pass": false };
+        let usedJokers = { "50": false, "audience": false, "phone": false };
         let eliminatedAnswers = [];
-        
+        let timeLeft = 30;
+        let timerInterval;
+        let selectedAnswerIndex = null;
+
         function startGame() {
             // Rastgele 12 soru seç
             const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
@@ -779,10 +890,12 @@ const allQuestions = [
             document.getElementById('gameScreen').classList.add('active');
             loadQuestion();
         }
-        
 
         function loadQuestion() {
             eliminatedAnswers = [];
+            selectedAnswerIndex = null;
+            timeLeft = 30;
+            
             const q = questions[currentQuestion];
             document.getElementById('questionText').innerText = q.question;
             document.getElementById('moneyDisplay').innerText = moneyLadder[currentQuestion];
@@ -795,10 +908,72 @@ const allQuestions = [
                 const btn = document.createElement('button');
                 btn.className = 'answer-btn';
                 btn.innerHTML = `<strong>${String.fromCharCode(65 + index)}:</strong> ${answer}`;
-                btn.onclick = () => checkAnswer(index);
+                btn.onclick = () => selectAnswer(index, answer);
                 btn.id = `answer${index}`;
                 container.appendChild(btn);
             });
+
+            startTimer();
+        }
+
+        function startTimer() {
+            const timerElement = document.getElementById('timer');
+            timerElement.classList.remove('warning');
+            
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.innerText = `⏱️ ${timeLeft}`;
+                
+                if (timeLeft <= 10) {
+                    timerElement.classList.add('warning');
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timeOut();
+                }
+            }, 1000);
+        }
+
+        function timeOut() {
+            const btns = document.querySelectorAll('.answer-btn');
+            btns.forEach(btn => btn.style.pointerEvents = 'none');
+            
+            alert('⏰ Süre doldu! Oyun bitti.');
+            setTimeout(() => endGame(false), 500);
+        }
+
+        function selectAnswer(index, answerText) {
+            // Önceki seçimi kaldır
+            document.querySelectorAll('.answer-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Yeni seçimi işaretle
+            document.getElementById(`answer${index}`).classList.add('selected');
+            selectedAnswerIndex = index;
+            
+            // Onay popup'ını göster
+            document.getElementById('selectedAnswer').innerText = answerText;
+            document.getElementById('confirmationOverlay').classList.add('active');
+        }
+
+        function confirmAnswer(confirmed) {
+            document.getElementById('confirmationOverlay').classList.remove('active');
+            
+            if (!confirmed) {
+                // Hayır denirse seçimi kaldır
+                document.querySelectorAll('.answer-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                selectedAnswerIndex = null;
+                return;
+            }
+            
+            // Evet denirse cevabı kontrol et
+            clearInterval(timerInterval);
+            checkAnswer(selectedAnswerIndex);
         }
 
         function checkAnswer(selected) {
@@ -809,6 +984,7 @@ const allQuestions = [
 
             if (selected === correct) {
                 document.getElementById(`answer${selected}`).classList.add('correct');
+                document.getElementById('correctSound').play();
                 createConfetti();
                 
                 setTimeout(() => {
@@ -822,6 +998,7 @@ const allQuestions = [
             } else {
                 document.getElementById(`answer${selected}`).classList.add('wrong');
                 document.getElementById(`answer${correct}`).classList.add('correct');
+                document.getElementById('wrongSound').play();
                 
                 setTimeout(() => {
                     endGame(false);
@@ -866,30 +1043,22 @@ const allQuestions = [
                     const randomHint = hints[Math.floor(Math.random() * hints.length)];
                     alert(`📞 Telefon Joker:\n\n"${randomHint}${String.fromCharCode(65 + correct)} olmalı!"`);
                     break;
-
-                case 'pass':
-                    if (currentQuestion < 11) {
-                        currentQuestion++;
-                        loadQuestion();
-                    } else {
-                        alert("Son soruda pas geçemezsiniz!");
-                    }
-                    break;
             }
         }
 
         function endGame(won) {
+            clearInterval(timerInterval);
             document.getElementById('gameScreen').classList.remove('active');
             document.getElementById('endScreen').classList.add('active');
 
             if (won) {
                 document.getElementById('endTitle').innerText = '🎉 TEBRİKLER!';
                 document.getElementById('endMessage').innerText = 'Tüm soruları doğru cevapladınız!';
-                document.getElementById('finalAmount').innerText = '5.000.000₺';
+                document.getElementById('finalAmount').innerText = '2.500.000₺';
                 createConfetti();
             } else {
                 document.getElementById('endTitle').innerText = '😢 Oyun Bitti';
-                document.getElementById('endMessage').innerText = 'Yanlış cevap verdiniz!';
+                document.getElementById('endMessage').innerText = 'Yanlış cevap verdiniz veya süre doldu!';
                 const prize = currentQuestion > 0 ? moneyLadder[currentQuestion - 1] : '0₺';
                 document.getElementById('finalAmount').innerText = prize;
             }
