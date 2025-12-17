@@ -285,6 +285,93 @@
             transform: scale(1.1);
         }
 
+        /* Motivasyon Popup */
+        .motivation-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .motivation-overlay.active {
+            display: flex;
+        }
+
+        .motivation-box {
+            background: linear-gradient(135deg, #FFB800 0%, #FFA000 100%);
+            border: 5px solid #FFD700;
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            animation: motivationPop 0.5s;
+        }
+
+        @keyframes motivationPop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .motivation-box h2 {
+            color: #000;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+        }
+
+        .motivation-box p {
+            color: #000;
+            font-size: 20px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .motivation-box .prize {
+            color: #00FF00;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .motivation-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .motivation-btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .continue-btn {
+            background: linear-gradient(90deg, #00C851 0%, #007E33 100%);
+            color: #fff;
+        }
+
+        .quit-btn {
+            background: linear-gradient(90deg, #ff4444 0%, #cc0000 100%);
+            color: #fff;
+        }
+
+        .motivation-btn:hover {
+            transform: scale(1.1);
+        }
+
         /* Başlangıç ve Bitiş Ekranları */
         .screen {
             display: none;
@@ -438,12 +525,12 @@
         <!-- Başlangıç Ekranı -->
         <div class="screen active" id="startScreen">
             <h1>🎯 Milyoner 2025</h1>
-            <p>Hoş geldiniz! 12 soruyu doğru cevaplayarak 2.500.000₺ kazanabilirsiniz!</p>
+            <p>Hoş geldiniz! Tüm soruları doğru cevaplayarak büyük ödüller kazanın!</p>
             <p>📚 <strong>Kurallar:</strong><br>
             • 3 joker hakkınız var (50:50, Seyirci, Telefon)<br>
             • Her soru için 30 saniye süreniz var<br>
-            • Her soru için 4 şık<br>
-            • Yanlış cevap oyunu bitirir</p>
+            • Yanlış cevap yapana kadar devam eder<br>
+            • Her 5 soruda bir çekilme hakkınız var</p>
             <button class="start-btn" onclick="startGame()">🚀 Oyuna Başla</button>
         </div>
 
@@ -451,7 +538,7 @@
         <div class="screen" id="gameScreen">
             <div class="top-bar">
                 <div class="money-display" id="moneyDisplay">250₺</div>
-                <div class="question-number" id="questionNumber">Soru 1 / 12</div>
+                <div class="question-number" id="questionNumber">Soru 1</div>
                 <div class="timer" id="timer">⏱️ 30</div>
             </div>
 
@@ -504,6 +591,20 @@
         </div>
     </div>
 
+    <!-- Motivasyon/Çekilme Popup -->
+    <div class="motivation-overlay" id="motivationOverlay">
+        <div class="motivation-box">
+            <h2 id="motivationTitle">🌟 Harika Gidiyorsun!</h2>
+            <p id="motivationMessage"></p>
+            <div class="prize" id="currentPrize">0₺</div>
+            <p><strong>Bu parayı riske atmak istemezsen çekilebilirsin!</strong></p>
+            <div class="motivation-buttons">
+                <button class="motivation-btn continue-btn" onclick="continueGame()">💪 Devam Et</button>
+                <button class="motivation-btn quit-btn" onclick="quitGame()">💰 Parayı Al ve Çekil</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Ses dosyaları -->
     <audio id="correctSound" preload="auto">
         <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg">
@@ -514,11 +615,43 @@
 
     <script>
         // Oyun Verileri
-const moneyLadder = [
-    "250₺", "500₺", "1.000₺", "1.500₺", "2.500₺", 
-    "5.000₺", "10.000₺", "20.000₺", "40.000₺", 
-    "75.000₺", "250.000₺", "2.500.000₺"
-];
+        const baseMoneyLadder = [
+            250, 500, 1000, 1500, 2500, 
+            5000, 10000, 20000, 40000, 
+            75000, 250000, 2500000
+        ];
+
+        // Para merdiveni - katlanarak devam eder
+        function getMoneyForQuestion(questionIndex) {
+            if (questionIndex < baseMoneyLadder.length) {
+                return formatMoney(baseMoneyLadder[questionIndex]);
+            }
+            // 12. sorudan sonra para katlanarak artar
+            const lastAmount = baseMoneyLadder[baseMoneyLadder.length - 1];
+            const multiplier = Math.pow(2, questionIndex - baseMoneyLadder.length + 1);
+            return formatMoney(lastAmount * multiplier);
+        }
+
+        function formatMoney(amount) {
+            if (amount >= 1000000) {
+                return (amount / 1000000).toFixed(1).replace('.0', '') + 'M₺';
+            }
+            return amount.toLocaleString('tr-TR') + '₺';
+        }
+
+        // Motivasyon mesajları
+        const motivationMessages = [
+            "Sen bir genel kültür dehasısın! 🌟",
+            "İnanılmaz performans gösteriyorsun! 🎯",
+            "Bilgi dağarcığın muhteşem! 📚",
+            "Şimdiye kadar harika gittin! ⭐",
+            "Gerçek bir milyoner adayısın! 💎",
+            "Bu başarı tesadüf değil, yeteneksin! 🏆",
+            "Zekân parlıyor! 🧠✨",
+            "Muhteşem bir performans sergiliyorsun! 🎪",
+            "Bilgi denizinde yüzüyorsun! 🌊",
+            "Her soruyu ustaca çözüyorsun! 🎨"
+        ];
 
 // 1000 GENEL KÜLTÜR SORUSU
 const allQuestions = [
@@ -1037,7 +1170,6 @@ const allQuestions = [
 { question: "Hangi besin kemikler için önemlidir?", answers: ["Şeker", "Süt", "Kola", "Çikolata"], correct: 1 }
 ];
 
-
         let questions = [];
         let currentQuestion = 0;
         let usedJokers = { "50": false, "audience": false, "phone": false };
@@ -1047,9 +1179,9 @@ const allQuestions = [
         let selectedAnswerIndex = null;
 
         function startGame() {
-            // Rastgele 12 soru seç
+            // Tüm soruları karıştır (50+ soru)
             const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
-            questions = shuffled.slice(0, 12);
+            questions = shuffled;
             
             document.getElementById('startScreen').classList.remove('active');
             document.getElementById('gameScreen').classList.add('active');
@@ -1063,8 +1195,8 @@ const allQuestions = [
             
             const q = questions[currentQuestion];
             document.getElementById('questionText').innerText = q.question;
-            document.getElementById('moneyDisplay').innerText = moneyLadder[currentQuestion];
-            document.getElementById('questionNumber').innerText = `Soru ${currentQuestion + 1} / 12`;
+            document.getElementById('moneyDisplay').innerText = getMoneyForQuestion(currentQuestion);
+            document.getElementById('questionNumber').innerText = `Soru ${currentQuestion + 1}`;
 
             const container = document.getElementById('answersContainer');
             container.innerHTML = '';
@@ -1153,10 +1285,17 @@ const allQuestions = [
                 createConfetti();
                 
                 setTimeout(() => {
-                    if (currentQuestion === 11) {
+                    currentQuestion++;
+                    
+                    // Eğer sorular bittiyse, kazandı
+                    if (currentQuestion >= questions.length) {
                         endGame(true);
-                    } else {
-                        currentQuestion++;
+                    } 
+                    // Her 5 soruda bir (15. sorudan sonra) motivasyon mesajı
+                    else if (currentQuestion >= 15 && (currentQuestion - 15) % 5 === 0) {
+                        showMotivation();
+                    } 
+                    else {
                         loadQuestion();
                     }
                 }, 1500);
@@ -1169,6 +1308,44 @@ const allQuestions = [
                     endGame(false);
                 }, 2000);
             }
+        }
+
+        function showMotivation() {
+            // Rastgele 8-10 arası mesaj sayısı seç
+            const messageCount = Math.floor(Math.random() * 3) + 8; // 8, 9 veya 10
+            const selectedMessages = [];
+            
+            // Rastgele mesajları seç
+            const shuffled = [...motivationMessages].sort(() => Math.random() - 0.5);
+            for (let i = 0; i < Math.min(messageCount, shuffled.length); i++) {
+                selectedMessages.push(shuffled[i]);
+            }
+            
+            const randomMessage = selectedMessages[Math.floor(Math.random() * selectedMessages.length)];
+            
+            document.getElementById('motivationTitle').innerText = '🌟 ' + randomMessage;
+            document.getElementById('motivationMessage').innerText = 
+                `${currentQuestion}. soruya kadar geldin! Şu ana kadar ${getMoneyForQuestion(currentQuestion - 1)} kazandın!`;
+            document.getElementById('currentPrize').innerText = getMoneyForQuestion(currentQuestion - 1);
+            document.getElementById('motivationOverlay').classList.add('active');
+        }
+
+        function continueGame() {
+            document.getElementById('motivationOverlay').classList.remove('active');
+            loadQuestion();
+        }
+
+        function quitGame() {
+            clearInterval(timerInterval);
+            document.getElementById('motivationOverlay').classList.remove('active');
+            
+            // Çekilme ile oyunu bitir
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('endScreen').classList.add('active');
+            
+            document.getElementById('endTitle').innerText = '💰 Tebrikler!';
+            document.getElementById('endMessage').innerText = 'Akıllıca bir karar verdin ve parayı aldın!';
+            document.getElementById('finalAmount').innerText = getMoneyForQuestion(currentQuestion - 1);
         }
 
         function useJoker(type) {
@@ -1197,51 +1374,50 @@ const allQuestions = [
 
                 case 'audience':
                     alert(`📊 Seyirci Oylaması:\n\nA: ${correct === 0 ? '75%' : Math.floor(Math.random() * 25) + '%'}\nB: ${correct === 1 ? '75%' : Math.floor(Math.random() * 25) + '%'}\nC: ${correct === 2 ? '75%' : Math.floor(Math.random() * 25) + '%'}\nD: ${correct === 3 ? '75%' : Math.floor(Math.random() * 25) + '%'}`);
-                    break;
-
-                case 'phone':
-                    const hints = [
-                        "Bence doğru cevap ",
-                        "Emin değilim ama sanırım ",
-                        "Çok net, cevap kesinlikle "
-                    ];
-                    const randomHint = hints[Math.floor(Math.random() * hints.length)];
-                    alert(`📞 Telefon Joker:\n\n"${randomHint}${String.fromCharCode(65 + correct)} olmalı!"`);
-                    break;
-            }
+break;
+case 'phone':
+                const hints = [
+                    "Bence doğru cevap ",
+                    "Emin değilim ama sanırım ",
+                    "Çok net, cevap kesinlikle "
+                ];
+                const randomHint = hints[Math.floor(Math.random() * hints.length)];
+                alert(`📞 Telefon Joker:\n\n"${randomHint}${String.fromCharCode(65 + correct)} olmalı!"`);
+                break;
         }
+    }
 
-        function endGame(won) {
-            clearInterval(timerInterval);
-            document.getElementById('gameScreen').classList.remove('active');
-            document.getElementById('endScreen').classList.add('active');
+    function endGame(won) {
+        clearInterval(timerInterval);
+        document.getElementById('gameScreen').classList.remove('active');
+        document.getElementById('endScreen').classList.add('active');
 
-            if (won) {
-                document.getElementById('endTitle').innerText = '🎉 TEBRİKLER!';
-                document.getElementById('endMessage').innerText = 'Tüm soruları doğru cevapladınız!';
-                document.getElementById('finalAmount').innerText = '2.500.000₺';
-                createConfetti();
-            } else {
-                document.getElementById('endTitle').innerText = '😢 Oyun Bitti';
-                document.getElementById('endMessage').innerText = 'Yanlış cevap verdiniz veya süre doldu!';
-                const prize = currentQuestion > 0 ? moneyLadder[currentQuestion - 1] : '0₺';
-                document.getElementById('finalAmount').innerText = prize;
-            }
+        if (won) {
+            document.getElementById('endTitle').innerText = '🎉 SÜPER!';
+            document.getElementById('endMessage').innerText = 'Tüm soruları doğru cevapladınız! İnanılmaz bir performans!';
+            document.getElementById('finalAmount').innerText = getMoneyForQuestion(currentQuestion - 1);
+            createConfetti();
+        } else {
+            document.getElementById('endTitle').innerText = '😢 Oyun Bitti';
+            document.getElementById('endMessage').innerText = 'Yanlış cevap verdiniz veya süre doldu!';
+            const prize = currentQuestion > 0 ? getMoneyForQuestion(currentQuestion - 1) : '0₺';
+            document.getElementById('finalAmount').innerText = prize;
         }
+    }
 
-        function createConfetti() {
-            for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + '%';
-                    confetti.style.background = ['#FFD700', '#FF69B4', '#00FF00', '#00BFFF'][Math.floor(Math.random() * 4)];
-                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
-                    document.body.appendChild(confetti);
-                    setTimeout(() => confetti.remove(), 3000);
-                }, i * 50);
-            }
+    function createConfetti() {
+        for (let i = 0; i < 50; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = ['#FFD700', '#FF69B4', '#00FF00', '#00BFFF'][Math.floor(Math.random() * 4)];
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000);
+            }, i * 50);
         }
-    </script>
+    }
+</script>
 </body>
 </html>
