@@ -1952,42 +1952,44 @@ const allQuestions = [
             const isWin = card.dataset.isWin === 'true';
             
             setTimeout(() => {
-                // selectBonusCard fonksiyonunda (satır ~440 civarı)
-if (isWin) {
-    card.classList.add('win');
-    card.innerHTML = '<div class="bonus-result">🎮</div>';
-    playSound('correct');
-    createConfetti();
-    bonusUsed = true;
-    
-    setTimeout(() => {
-        document.getElementById('bonusOverlay').classList.remove('active');
-        bonusRoundActive = false;
-        currentQuestion++; // ← BU SATIRI EKLE
-        showReadyScreen();
-    }, 2000);
-}
-                
-} else {
-    card.classList.add('lose');
-    card.innerHTML = '<div class="bonus-result">❌</div>';
-    playSound('wrong');
-    
-    // Doğru kartı göster
-    setTimeout(() => {
-        document.querySelectorAll('.bonus-card').forEach(c => {
-            if (c.dataset.isWin === 'true') {
-                c.classList.add('flipped', 'win');
-                c.innerHTML = '<div class="bonus-result">🎮</div>';
-            }
-        });
-    }, 1000);
-    
-    setTimeout(() => {
-        document.getElementById('bonusOverlay').classList.remove('active');
-        bonusRoundActive = false;
-        endGame(false);
-    }, 3000);
+                if (isWin) {
+                    card.classList.add('win');
+                    card.innerHTML = '<div class="bonus-result">🎮</div>';
+                    playSound('correct');
+                    createConfetti();
+                    bonusUsed = true;
+                    
+                    setTimeout(() => {
+                        document.getElementById('bonusOverlay').classList.remove('active');
+                        bonusRoundActive = false;
+                        // Bonus kazanıldı, bir sonraki soruya geç
+                        currentQuestion++;
+                        if (currentQuestion >= questions.length) {
+                            endGame(true);
+                        } else {
+                            showReadyScreen();
+                        }
+                    }, 2000);
+                } else {
+                    card.classList.add('lose');
+                    card.innerHTML = '<div class="bonus-result">❌</div>';
+                    playSound('wrong');
+                    
+                    // Doğru kartı göster
+                    setTimeout(() => {
+                        document.querySelectorAll('.bonus-card').forEach(c => {
+                            if (c.dataset.isWin === 'true') {
+                                c.classList.add('flipped', 'win');
+                                c.innerHTML = '<div class="bonus-result">🎮</div>';
+                            }
+                        });
+                    }, 1000);
+                    
+                    setTimeout(() => {
+                        document.getElementById('bonusOverlay').classList.remove('active');
+                        bonusRoundActive = false;
+                        endGame(false);
+                    }, 3000);
                 }
             }, 600);
         }
