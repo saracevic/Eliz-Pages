@@ -1963,26 +1963,26 @@ const allQuestions = [
         bonusRoundActive = false;
         showReadyScreen();
     }, 2000);
-                } else {
-                    card.classList.add('lose');
-                    card.innerHTML = '<div class="bonus-result">❌</div>';
-                    playSound('wrong');
-                    
-                    // Doğru kartı göster
-                    setTimeout(() => {
-                        document.querySelectorAll('.bonus-card').forEach(c => {
-                            if (c.dataset.isWin === 'true') {
-                                c.classList.add('flipped', 'win');
-                                c.innerHTML = '<div class="bonus-result">🎮</div>';
-                            }
-                        });
-                    }, 1000);
-                    
-                    setTimeout(() => {
-                        document.getElementById('bonusOverlay').classList.remove('active');
-                        bonusRoundActive = false;
-                        endGame(false);
-                    }, 3000);
+} else {
+    card.classList.add('lose');
+    card.innerHTML = '<div class="bonus-result">❌</div>';
+    playSound('wrong');
+    
+    // Doğru kartı göster
+    setTimeout(() => {
+        document.querySelectorAll('.bonus-card').forEach(c => {
+            if (c.dataset.isWin === 'true') {
+                c.classList.add('flipped', 'win');
+                c.innerHTML = '<div class="bonus-result">🎮</div>';
+            }
+        });
+    }, 1000);
+    
+    setTimeout(() => {
+        document.getElementById('bonusOverlay').classList.remove('active');
+        bonusRoundActive = false;
+        endGame(false);
+    }, 3000);
                 }
             }, 600);
         }
