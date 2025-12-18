@@ -1815,44 +1815,44 @@ const allQuestions = [
             clearInterval(timerInterval);
             checkAnswer(selectedAnswerIndex);
         }
-        // ===== CEVAP KONTROL =====
-        function checkAnswer(selected) {
-            const correct = questions[currentQuestion].correct;
-            const btns = document.querySelectorAll('.answer-btn');
-            
-            btns.forEach(btn => btn.style.pointerEvents = 'none');
-
-            if (selected === correct) {
-                playSound('correct');
-                document.getElementById(`answer${selected}`).classList.add('correct');
-                createConfetti();
-                
-                setTimeout(() => {
-                    currentQuestion++;
-                    
-                    if (currentQuestion >= questions.length) {
-                        endGame(true);
-                    } 
-                    else if (currentQuestion >= 15 && (currentQuestion - 15) % 5 === 0) {
-                        showMotivation();
-                    } 
-                    else {
-                        showReadyScreen();
-                    }
-                }, 1500);
-// checkAnswer fonksiyonunda (satır ~345 civarı)
-} else {
-    playSound('wrong');
-    document.getElementById(`answer${selected}`).classList.add('wrong');
-    document.getElementById(`answer${correct}`).classList.add('correct');
+  // ===== CEVAP KONTROL =====
+function checkAnswer(selected) {
+    const correct = questions[currentQuestion].correct;
+    const btns = document.querySelectorAll('.answer-btn');
     
-    setTimeout(() => {
-        if (!bonusUsed) {
-            showBonusRound();
-        } else {
-            endGame(false);
-        }
-    }, 2000);
+    btns.forEach(btn => btn.style.pointerEvents = 'none');
+
+    if (selected === correct) {
+        playSound('correct');
+        document.getElementById(`answer${selected}`).classList.add('correct');
+        createConfetti();
+        
+        setTimeout(() => {
+            currentQuestion++;
+            
+            if (currentQuestion >= questions.length) {
+                endGame(true);
+            } 
+            else if (currentQuestion >= 15 && (currentQuestion - 15) % 5 === 0) {
+                showMotivation();
+            } 
+            else {
+                showReadyScreen();
+            }
+        }, 1500);
+    } else {
+        playSound('wrong');
+        document.getElementById(`answer${selected}`).classList.add('wrong');
+        document.getElementById(`answer${correct}`).classList.add('correct');
+        
+        setTimeout(() => {
+            if (!bonusUsed) {
+                showBonusRound();
+            } else {
+                endGame(false);
+            }
+        }, 2000);
+    }
 }
 
         // ===== BONUS ROUND =====
