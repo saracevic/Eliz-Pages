@@ -1624,7 +1624,7 @@ const allQuestions = [
 { question: "Dişlerimizi günde kaç kez fırçalamalıyız?", answers: ["1", "2", "3", "4"], correct: 1 },
 { question: "Hangi içecek vücuda en faydalıdır?", answers: ["Kola", "Su", "Meyve suyu", "Çay"], correct: 1 },
 { question: "Günde kaç öğün yemek yemeliyiz?", answers: ["1", "2", "3", "5"], correct: 2 },
-{ question: "Hangi besin kemikler için önemlidir?", answers: ["Şeker", "Süt", "Kola", "Çikolata"], correct: 1 },
+{ question: "Hangi besin kemikler için önemlidir?", answers: ["Şeker", "Süt", "Kola", "Çikolata"], correct: 1 }
 ]; 
 
 
@@ -2022,7 +2022,7 @@ const allQuestions = [
             pauseTimer();
             
             usedJokers[type] = true;
-            const jokerBtn = document.getElementById(type === '50' ? 'joker50' : `joker${type.charAt(0).toUpperCase() + type.slice(1)}`);
+            const jokerBtn = document.getElementById(`joker${type.charAt(0).toUpperCase() + type.slice(1)}`);
             jokerBtn.disabled = true;
 
             const correct = questions[currentQuestion].correct;
