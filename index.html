@@ -1690,7 +1690,7 @@ const allQuestions = [
             document.getElementById('readyQuestionNum').innerText = currentQuestion + 1;
             document.getElementById('readyScreen').classList.add('active');
             
-            //playSound('ready');
+            playSound('ready');
             
             setTimeout(() => {
                 document.getElementById('readyScreen').classList.remove('active');
@@ -2022,7 +2022,7 @@ const allQuestions = [
             pauseTimer();
             
             usedJokers[type] = true;
-            const jokerBtn = document.getElementById(`joker${type.charAt(0).toUpperCase() + type.slice(1)}`);
+            const jokerBtn = document.getElementById(type === '50' ? 'joker50' : `joker${type.charAt(0).toUpperCase() + type.slice(1)}`);
             jokerBtn.disabled = true;
 
             const correct = questions[currentQuestion].correct;
