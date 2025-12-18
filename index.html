@@ -1963,6 +1963,7 @@ if (isWin) {
     setTimeout(() => {
         document.getElementById('bonusOverlay').classList.remove('active');
         bonusRoundActive = false;
+        currentQuestion++; // ← BU SATIRI EKLE
         showReadyScreen();
     }, 2000);
 }
