@@ -1840,7 +1840,8 @@ const allQuestions = [
                         showReadyScreen();
                     }
                 }, 1500);
-    } else {
+// checkAnswer fonksiyonunda (satır ~345 civarı)
+} else {
     playSound('wrong');
     document.getElementById(`answer${selected}`).classList.add('wrong');
     document.getElementById(`answer${correct}`).classList.add('correct');
@@ -1849,7 +1850,7 @@ const allQuestions = [
         if (!bonusUsed) {
             showBonusRound();
         } else {
-            endGame(false); // Bonus kullanılmışsa direkt oyun biter
+            endGame(false);
         }
     }, 2000);
 }
@@ -1951,18 +1952,21 @@ const allQuestions = [
             const isWin = card.dataset.isWin === 'true';
             
             setTimeout(() => {
-                if (isWin) {
+                // selectBonusCard fonksiyonunda (satır ~440 civarı)
+if (isWin) {
     card.classList.add('win');
     card.innerHTML = '<div class="bonus-result">🎮</div>';
     playSound('correct');
     createConfetti();
-    bonusUsed = true; // Bonus kullanıldı olarak işaretle
+    bonusUsed = true;
     
     setTimeout(() => {
         document.getElementById('bonusOverlay').classList.remove('active');
         bonusRoundActive = false;
         showReadyScreen();
     }, 2000);
+}
+                
 } else {
     card.classList.add('lose');
     card.innerHTML = '<div class="bonus-result">❌</div>';
