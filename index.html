@@ -1673,14 +1673,22 @@ const allQuestions = [
             return amount.toLocaleString('tr-TR') + '₺';
         }
 
-        // ===== OYUN BAŞLATMA =====
-        function startGame() {
-            const shuffled = [...allQuestions]
-                .sort(() => Math.random() - 0.5)
-                .sort(() => Math.random() - 0.5)
-                .sort(() => Math.random() - 0.5);
-            
-            questions = shuffled;
+function startGame() {
+    // Fisher-Yates shuffle algoritması ile güçlü karıştırma
+    const shuffled = [...allQuestions];
+    
+    // 3 kez Fisher-Yates shuffle uygula
+    for (let round = 0; round < 3; round++) {
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+    }
+    
+    // Ek güvenlik için son bir karıştırma daha
+    shuffled.sort(() => Math.random() - 0.5);
+    
+    questions = shuffled;
             
             document.getElementById('startScreen').classList.remove('active');
             showReadyScreen();
