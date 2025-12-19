@@ -456,9 +456,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 80px;
+    font-size: 100px;
     position: relative;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    line-height: 1;
 }
 
         .bonus-card:hover {
@@ -1892,9 +1893,9 @@ function showBonusRound() {
     }, 1000);
 }
 
-        function shuffleCards(cards) {
+  function shuffleCards(cards) {
     cardShuffleCount = 0;
-    const totalShuffles = 6;
+    const totalShuffles = 6; // 6 hareket, her biri 800ms
     
     const shuffleInterval = setInterval(() => {
         const idx1 = Math.floor(Math.random() * 5);
@@ -1904,29 +1905,32 @@ function showBonusRound() {
             const card1 = cards[idx1];
             const card2 = cards[idx2];
             
-            // Kartların pozisyonlarını al
+            // Kartların parent container'ındaki konumlarını değiştir
+            const parent = card1.parentNode;
+            const next1 = card1.nextSibling === card2 ? card1 : card1.nextSibling;
+            const next2 = card2.nextSibling;
+            
+            // Animasyon için geçici pozisyonlar
             const rect1 = card1.getBoundingClientRect();
             const rect2 = card2.getBoundingClientRect();
             
-            // Animasyonlu hareket
+            card1.style.transition = 'transform 0.4s ease-in-out';
+            card2.style.transition = 'transform 0.4s ease-in-out';
+            
             card1.style.transform = `translate(${rect2.left - rect1.left}px, ${rect2.top - rect1.top}px)`;
             card2.style.transform = `translate(${rect1.left - rect2.left}px, ${rect1.top - rect2.top}px)`;
             
             setTimeout(() => {
-                // Veriyi değiştir
-                const tempData = card1.dataset.isWin;
-                const tempIndex = card1.dataset.index;
+                // DOM'da gerçekten yer değiştir
+                parent.insertBefore(card2, next1);
+                parent.insertBefore(card1, next2);
                 
-                card1.dataset.isWin = card2.dataset.isWin;
-                card1.dataset.index = card2.dataset.index;
-                card2.dataset.isWin = tempData;
-                card2.dataset.index = tempIndex;
-                
-                // Onclick'leri güncelle
-                card1.onclick = () => selectBonusCard(card1, parseInt(card1.dataset.index));
-                card2.onclick = () => selectBonusCard(card2, parseInt(card2.dataset.index));
+                // Array'deki sırayı da değiştir
+                [cards[idx1], cards[idx2]] = [cards[idx2], cards[idx1]];
                 
                 // Transform'u sıfırla
+                card1.style.transition = 'none';
+                card2.style.transition = 'none';
                 card1.style.transform = '';
                 card2.style.transform = '';
             }, 400);
@@ -1939,68 +1943,66 @@ function showBonusRound() {
             setTimeout(() => {
                 cards.forEach(card => {
                     card.style.pointerEvents = 'auto';
-                    card.style.animation = 'pulse 1s ease-in-out infinite';
+                    card.style.cursor = 'pointer';
                 });
             }, 500);
         }
     }, 800);
 }
 
-        function selectBonusCard(card, index) {
-            if (card.classList.contains('flipped')) return;
-            
-            // Tüm kartları tıklanamaz yap
-            document.querySelectorAll('.bonus-card').forEach(c => {
-                c.style.pointerEvents = 'none';
-                c.style.animation = 'none';
-            });
-            
-            card.classList.add('flipped');
-            
-            const isWin = card.dataset.isWin === 'true';
+function selectBonusCard(card, index) {
+    if (card.classList.contains('flipped')) return;
+    
+    // Tüm kartları tıklanamaz yap
+    document.querySelectorAll('.bonus-card').forEach(c => {
+        c.style.pointerEvents = 'none';
+    });
+    
+    card.classList.add('flipped');
+    
+    const isWin = card.dataset.isWin === 'true';
+    
+    setTimeout(() => {
+        if (isWin) {
+            card.classList.add('win');
+            card.innerHTML = '🃏'; // TAM EKRAN JOKER
+            playSound('correct');
+            createConfetti();
+            bonusUsed = true;
             
             setTimeout(() => {
-                if (isWin) {
-                    card.classList.add('win');
-                    card.innerHTML = '<div class="bonus-result">🎮</div>';
-                    playSound('correct');
-                    createConfetti();
-                    bonusUsed = true;
-                    
-                    setTimeout(() => {
-                        document.getElementById('bonusOverlay').classList.remove('active');
-                        bonusRoundActive = false;
-                        // Bonus kazanıldı, bir sonraki soruya geç
-                        currentQuestion++;
-                        if (currentQuestion >= questions.length) {
-                            endGame(true);
-                        } else {
-                            showReadyScreen();
-                        }
-                    }, 2000);
+                document.getElementById('bonusOverlay').classList.remove('active');
+                bonusRoundActive = false;
+                currentQuestion++;
+                if (currentQuestion >= questions.length) {
+                    endGame(true);
                 } else {
-                    card.classList.add('lose');
-                    card.innerHTML = '<div class="bonus-result">❌</div>';
-                    playSound('wrong');
-                    
-                    // Doğru kartı göster
-                    setTimeout(() => {
-                        document.querySelectorAll('.bonus-card').forEach(c => {
-                            if (c.dataset.isWin === 'true') {
-                                c.classList.add('flipped', 'win');
-                                c.innerHTML = '<div class="bonus-result">🎮</div>';
-                            }
-                        });
-                    }, 1000);
-                    
-                    setTimeout(() => {
-                        document.getElementById('bonusOverlay').classList.remove('active');
-                        bonusRoundActive = false;
-                        endGame(false);
-                    }, 3000);
+                    showReadyScreen();
                 }
-            }, 600);
+            }, 2000);
+        } else {
+            card.classList.add('lose');
+            card.innerHTML = '❌'; // TAM EKRAN X
+            playSound('wrong');
+            
+            // Doğru kartı göster
+            setTimeout(() => {
+                document.querySelectorAll('.bonus-card').forEach(c => {
+                    if (c.dataset.isWin === 'true') {
+                        c.classList.add('flipped', 'win');
+                        c.innerHTML = '🃏'; // TAM EKRAN JOKER
+                    }
+                });
+            }, 1000);
+            
+            setTimeout(() => {
+                document.getElementById('bonusOverlay').classList.remove('active');
+                bonusRoundActive = false;
+                endGame(false);
+            }, 3000);
         }
+    }, 600);
+}
 
         // ===== MOTİVASYON =====
         function showMotivation() {
