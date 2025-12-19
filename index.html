@@ -1855,38 +1855,46 @@ function checkAnswer(selected) {
     }
 }
 
-        // ===== BONUS ROUND =====
-        function showBonusRound() {
-            bonusRoundActive = true;
-            const container = document.getElementById('bonusCards');
-            container.innerHTML = '';
+// ===== BONUS ROUND =====
+function showBonusRound() {
+    bonusRoundActive = true;
+    const container = document.getElementById('bonusCards');
+    container.innerHTML = '';
+    
+    // 5 kart oluştur
+    const cards = [];
+    correctCardIndex = Math.floor(Math.random() * 5);
+    
+    for (let i = 0; i < 5; i++) {
+        const card = document.createElement('div');
+        card.className = 'bonus-card';
+        card.innerHTML = '❓'; // Başlangıçta hepsi soru işareti
+        card.dataset.index = i;
+        card.dataset.isWin = i === correctCardIndex ? 'true' : 'false';
+        card.onclick = () => selectBonusCard(card, i);
+        container.appendChild(card);
+        cards.push(card);
+    }
+    
+    document.getElementById('bonusOverlay').classList.add('active');
+    
+    // 1 saniye sonra doğru kartı göster
+    setTimeout(() => {
+        cards[correctCardIndex].innerHTML = '🃏'; // Doğru kart JOKER gösterir
+        
+        // 1 saniye sonra tekrar gizle ve karıştırmaya başla
+        setTimeout(() => {
+            cards[correctCardIndex].innerHTML = '❓'; // Tekrar soru işareti yap
             
-            // 5 kart oluştur
-            const cards = [];
-            correctCardIndex = Math.floor(Math.random() * 5);
-            
-            for (let i = 0; i < 5; i++) {
-                const card = document.createElement('div');
-                card.className = 'bonus-card';
-                card.innerHTML = '❓';
-                card.dataset.index = i;
-                card.dataset.isWin = i === correctCardIndex ? 'true' : 'false';
-                card.onclick = () => selectBonusCard(card, i);
-                container.appendChild(card);
-                cards.push(card);
-            }
-            
-            document.getElementById('bonusOverlay').classList.add('active');
-            
-            // Kartları karıştır
-            setTimeout(() => {
-                shuffleCards(cards);
-            }, 2000);
-        }
+            // Hemen karıştırmaya başla
+            shuffleCards(cards);
+        }, 1000);
+    }, 1000);
+}
 
         function shuffleCards(cards) {
     cardShuffleCount = 0;
-    const totalShuffles = 12;
+    const totalShuffles = 6;
     
     const shuffleInterval = setInterval(() => {
         const idx1 = Math.floor(Math.random() * 5);
