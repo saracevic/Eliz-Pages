@@ -1686,19 +1686,51 @@ const allQuestions = [
             showReadyScreen();
         }
 
-        // ===== HAZIR OLUN EKRANI =====
-        function showReadyScreen() {
-            document.getElementById('readyQuestionNum').innerText = currentQuestion + 1;
-            document.getElementById('readyScreen').classList.add('active');
+// ===== HAZIR OLUN EKRANI =====
+function showReadyScreen() {
+    const readyScreen = document.getElementById('readyScreen');
+    const readyContent = readyScreen.querySelector('.ready-content');
+    
+    if (currentQuestion === 0) {
+        // İLK SORU - GERİ SAYIM
+        readyContent.innerHTML = `
+            <h1>YARIŞMA BAŞLIYOR!</h1>
+            <div class="question-num" id="countdown">3</div>
+        `;
+        
+        readyScreen.classList.add('active');
+        
+        let count = 3;
+        const countdownInterval = setInterval(() => {
+            count--;
+            document.getElementById('countdown').innerText = count;
             
-            //playSound('ready');
-            
-            setTimeout(() => {
-                document.getElementById('readyScreen').classList.remove('active');
-                document.getElementById('gameScreen').classList.add('active');
-                loadQuestion();
-            }, 3000);
-        }
+            if (count === 0) {
+                clearInterval(countdownInterval);
+                setTimeout(() => {
+                    readyScreen.classList.remove('active');
+                    document.getElementById('gameScreen').classList.add('active');
+                    loadQuestion();
+                }, 500);
+            }
+        }, 666); // 3 sayı için 2 saniye (2000ms / 3 = 666ms)
+        
+    } else {
+        // DİĞER SORULAR - HAZIR OLUN
+        readyContent.innerHTML = `
+            <h1>HAZIR OL!</h1>
+            <div class="question-num">${currentQuestion + 1}. SORU</div>
+        `;
+        
+        readyScreen.classList.add('active');
+        
+        setTimeout(() => {
+            readyScreen.classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+            loadQuestion();
+        }, 2000); // 2 saniye
+    }
+}
 
         // ===== SORU YÜKLEME =====
         function loadQuestion() {
