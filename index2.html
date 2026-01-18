@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eşya Tahmin Oyunu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f3f3f3;
+        }
+        h1 {
+            color: #333;
+        }
+        .game-board {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            width: 80%;
+        }
+        .player-area {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            max-width: 45%;
+            min-height: 300px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            background-color: #eee;
+        }
+        .object {
+            width: 60px;
+            height: 60px;
+            border: 1px solid #999;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            background-color: white;
+        }
+        .selected {
+            background-color: yellow;
+        }
+        .hidden {
+            background-color: red;
+        }
+        .explode {
+            background-color: gold;
+            color: white;
+            font-weight: bold;
+            animation: explode 0.4s ease-in-out;
+        }
+
+        @keyframes explode {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Eşya Tahmin Oyunu</h1>
+    <div class="instructions">
+        <p>Her oyuncu sırası ile 3 eşya seçer. Diğer oyuncu bu eşyaları tahmin etmeye çalışır. Doğru tahmin yapılırsa, eşya "patlar"!</p>
+    </div>
+    <div class="game-board">
+        <div class="player-area" id="player1">
+            <!-- Oyuncu 1'in objeleri burada yer alacak -->
+        </div>
+        <div class="player-area" id="player2">
+            <!-- Oyuncu 2'nin objeleri burada yer alacak -->
+        </div>
+    </div>
+    <button id="submit-selections">Seçimleri Kaydet</button>
+    <script>
+        // Oyun objesi oluşturma fonksiyonu
+        function createObject(objectId, parentArea) {
+            const object = document.createElement("div");
+            object.classList.add("object");
+            object.textContent = objectId; // Obje numarası
+            object.dataset.id = objectId;
+            object.addEventListener("click", () => selectObject(object, parentArea));
+            return object;
+        }
+
+        // Oyuncunun seçtiği objeyi işaretleme
+        function selectObject(element, playerArea) {
+            const selectedObjects = document.querySelectorAll(`#${playerArea.id} .selected`);
+            if (selectedObjects.length < 3 || element.classList.contains('selected')) {
+                element.classList.toggle("selected");
+            }
+        }
+
+        // Oyunun temelini oluştur
+        function setupGame() {
+            const player1Area = document.getElementById("player1");
+            const player2Area = document.getElementById("player2");
+
+            // Her oyuncu için 12 obje
+            for (let i = 1; i <= 12; i++) {
+                player1Area.appendChild(createObject(`Obj-${i}`, player1Area));
+                player2Area.appendChild(createObject(`Obj-${i}`, player2Area));
+            }
+        }
+
+        // Oyuncuların seçimlerini kontrol etme
+        document.getElementById("submit-selections").addEventListener("click", () => {
+            const player1Selections = document.querySelectorAll("#player1 .selected");
+            const player2Selections = document.querySelectorAll("#player2 .selected");
+
+            if (player1Selections.length === 3 && player2Selections.length === 3) {
+                alert("Her iki oyuncu 3 obje seçti! Şimdi tahmin yapabilirler.");
+            } else {
+                alert("Her oyuncu 3 obje seçmelidir!");
+            }
+        });
+
+        // Oyunu başlat
+        setupGame();
+    </script>
+</body>
+</html>
